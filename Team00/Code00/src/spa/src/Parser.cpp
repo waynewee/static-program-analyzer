@@ -8,7 +8,9 @@ using namespace std;
 #include "PKB.h"
 #include "TNode.h"
 
-int Parse () {
+int Parse (std::string str) {
+
+	std::cout << str;
 
 	return 0;
 }

@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\autotester",
+    "\\src\\autotester\\src",
+    "\\src\\spa",
+    "\\src\\spa\\src",
+    "\\src\\spa\\src\\Tokens"
+  ],
+  "SelectedNode": "\\src\\spa\\src\\DesignExtractor.cpp",
+  "PreviewInSolutionExplorer": false
+}

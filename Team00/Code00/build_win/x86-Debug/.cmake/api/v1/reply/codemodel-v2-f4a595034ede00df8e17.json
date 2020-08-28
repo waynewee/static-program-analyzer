@@ -1,0 +1,146 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.9.2"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "src/spa",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.9.2"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src/spa",
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"build" : "src/autotester",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.9.2"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src/autotester",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "src/unit_testing",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.9.2"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src/unit_testing",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "src/integration_testing",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.9.2"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src/integration_testing",
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					],
+					"name" : "autotester",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 2,
+					"id" : "autotester::@37dbecee11c06986acd4",
+					"jsonFile" : "target-autotester-Debug-17dd45e5e53e53e1487b.json",
+					"name" : "autotester",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "integration_testing::@25fbdcce590032a54191",
+					"jsonFile" : "target-integration_testing-Debug-a2cb82406becfe48255c.json",
+					"name" : "integration_testing",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "spa::@f0bc9597d9bef5996e8c",
+					"jsonFile" : "target-spa-Debug-a9ffab8de44150a7b381.json",
+					"name" : "spa",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "unit_testing::@7dbbfc419d0b57465d7c",
+					"jsonFile" : "target-unit_testing-Debug-ad3af05ea993e618c991.json",
+					"name" : "unit_testing",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/wayne/OneDrive/NUS/4.1/CS3203/team13-cp-spa-20s1/Team00/Code00/build_win/x86-Debug",
+		"source" : "C:/Users/wayne/OneDrive/NUS/4.1/CS3203/team13-cp-spa-20s1/Team00/Code00"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 0
+	}
+}
