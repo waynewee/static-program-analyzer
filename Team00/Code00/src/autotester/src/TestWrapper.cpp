@@ -1,4 +1,7 @@
+#include <fstream>
+#include <string>
 #include "TestWrapper.h"
+#include "Parser.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -18,7 +21,16 @@ TestWrapper::TestWrapper() {
 // method for parsing the SIMPLE source
 void TestWrapper::parse(std::string filename) {
 	
+	std::ifstream ifs(filename);
+	std::string input;
+
+	input.assign((std::istreambuf_iterator<char>(ifs)),
+		(std::istreambuf_iterator<char>()));
 	
+	Parser parser = Parser(input);
+
+	parser.parse();
+
 
 }
 
