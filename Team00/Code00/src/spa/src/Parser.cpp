@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Parser.h"
+#include "Token.h"
 
 Parser::Parser(std::string input) {
 	cache = {};
@@ -12,6 +13,8 @@ Parser::Parser(std::string input) {
 	len = text.length();
 
 	token = "";
+
+	std::vector<Token> tokenList;
 }
 
 int Parser::parse() {
@@ -29,12 +32,12 @@ int Parser::parse() {
 		//detect punctuation
 		} else if (isPunc(c)) {
 			appendCharToToken(c);
-			printToken("PUNC");
+			addToken(Token::TOKEN_TYPE::PUNC);
 			resetToken();
 		//detect arithmetic operators
 		} else if (isArop(c)) {
 			appendCharToToken(c);
-			printToken("AROP");
+			addToken(Token::TOKEN_TYPE::AROP);
 			resetToken();
 		}
 		//detect logical operators
@@ -52,7 +55,7 @@ int Parser::parse() {
 				pos += 1;
 			}
 
-			printToken("LGOP");
+			addToken(Token::TOKEN_TYPE::LGOP);
 			resetToken();
 
 
@@ -94,8 +97,7 @@ int Parser::parse() {
 			}
 
 			if (isInteger) {
-				//std::cout << "Integer:" << sprintTokentd::endl;
-				printToken("INTR");
+				addToken(Token::TOKEN_TYPE::INTR);
 			}
 			else {
 
@@ -110,12 +112,10 @@ int Parser::parse() {
 				}
 
 				if (isKeyword) {
-					//std::cout << "Keyword:" << std::endl;
-					printToken("KEYW");
+					addToken(Token::TOKEN_TYPE::KEYW);
 				}
 				else {
-					//std::cout << "Name:" << std::endl;
-					printToken("NAME");
+					addToken(Token::TOKEN_TYPE::NAME);
 				}
 
 			}
@@ -125,6 +125,8 @@ int Parser::parse() {
 		}
 
 	}
+
+	printTokenList();
 
 	return 0;
 	
@@ -165,6 +167,20 @@ void Parser::printToken(std::string type) {
 	std::cout << type + "\t" + token << std::endl;
 }
 
+void Parser::addToken(Token::TOKEN_TYPE tokenType) {
+	Token token_obj = Token(token, tokenType);
+
+	tokenList.push_back(token_obj);
+}
+
 void Parser::resetToken() {
 	token = "";
+}
+
+void Parser::printTokenList() {
+
+	for (Token token : tokenList) {
+		token.print();
+	}
+
 }

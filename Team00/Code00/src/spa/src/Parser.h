@@ -4,6 +4,8 @@
 #include <map>
 #include <vector>
 
+#include "Token.h"
+
 class Parser {
 public:
 	std::map<std::string, std::string> cache;
@@ -12,6 +14,7 @@ public:
 	int len;
 	std::string token;
 	std::vector<std::string> keywords = { "procedure", "print", "read", "call", "while", "if", "then", "else" };
+	std::vector<Token> tokenList;
 
 	int parse();
 	
@@ -19,6 +22,8 @@ public:
 	void printToken(std::string type);
 	void appendStrToToken(std::string str);
 	void appendCharToToken(char c);
+	void addToken(Token::TOKEN_TYPE tokenType);
+	void printTokenList();
 
 	bool isWhiteSpace(char c);
 	bool isPunc(char c);

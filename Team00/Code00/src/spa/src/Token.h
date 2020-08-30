@@ -5,8 +5,13 @@
 
 class Token{
 public:
+	enum class TOKEN_TYPE { INTR, KEYW, NAME, AROP, LGOP, PUNC };
+	
 	std::string value;
-	std::string type;
+	TOKEN_TYPE type;
 
-	Token(std::string tokenVal, std::string tokenType);
+	void print();
+	std::string getTokenTypeStr(TOKEN_TYPE tokenType);
+
+	Token(std::string tokenVal, TOKEN_TYPE tokenType);
 };
