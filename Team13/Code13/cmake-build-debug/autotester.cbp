@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="autotester"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\cmake\;CMake Files\src\;CMake Files\src\spa\;CMake Files\src\autotester\;CMake Files\src\unit_testing\;CMake Files\src\integration_testing\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="spa">
+				<Option output="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/spa/libspa.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/spa"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/lib"/>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/spa/Makefile&quot;  VERBOSE=1 spa"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/spa/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/spa/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/spa/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="spa/fast">
+				<Option output="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/spa/libspa.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/spa"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/lib"/>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/spa/Makefile&quot;  VERBOSE=1 spa/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/spa/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/spa/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/spa/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="autotester">
+				<Option output="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/autotester/autotester" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/autotester"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/lib"/>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/autotester/Makefile&quot;  VERBOSE=1 autotester"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/autotester/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/autotester/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/autotester/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="autotester/fast">
+				<Option output="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/autotester/autotester" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/autotester"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/lib"/>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/autotester/Makefile&quot;  VERBOSE=1 autotester/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/autotester/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/autotester/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/autotester/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="unit_testing">
+				<Option output="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/unit_testing/unit_testing" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/unit_testing"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/lib"/>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/unit_testing/Makefile&quot;  VERBOSE=1 unit_testing"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/unit_testing/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/unit_testing/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/unit_testing/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="unit_testing/fast">
+				<Option output="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/unit_testing/unit_testing" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/unit_testing"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/lib"/>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/unit_testing/Makefile&quot;  VERBOSE=1 unit_testing/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/unit_testing/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/unit_testing/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/unit_testing/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="integration_testing">
+				<Option output="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/integration_testing/integration_testing" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/integration_testing"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/lib"/>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/integration_testing/Makefile&quot;  VERBOSE=1 integration_testing"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/integration_testing/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/integration_testing/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/integration_testing/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="integration_testing/fast">
+				<Option output="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/integration_testing/integration_testing" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/integration_testing"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/lib"/>
+					<Add directory="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/integration_testing/Makefile&quot;  VERBOSE=1 integration_testing/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/integration_testing/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/integration_testing/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake-build-debug/src/integration_testing/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/autotester/src/TestWrapper.cpp">
+			<Option target="autotester"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/autotester/src/TestWrapper.h">
+			<Option target="autotester"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/integration_testing/src/TestFrontEnd.cpp">
+			<Option target="integration_testing"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/integration_testing/src/main.cpp">
+			<Option target="integration_testing"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src/DesignExtractor.cpp">
+			<Option target="spa"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src/PKB.cpp">
+			<Option target="spa"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src/PKB.h">
+			<Option target="spa"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src/Parser.cpp">
+			<Option target="spa"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src/Parser.h">
+			<Option target="spa"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src/TNode.cpp">
+			<Option target="spa"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/src/TNode.h">
+			<Option target="spa"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/unit_testing/src/TestAST.cpp">
+			<Option target="unit_testing"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/unit_testing/src/main.cpp">
+			<Option target="unit_testing"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/cmake/FindAutotester.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/spa/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\spa\"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/autotester/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\autotester\"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/unit_testing/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\unit_testing\"/>
+		</Unit>
+		<Unit filename="/Users/spicywatermelon/Documents/CS3203/team13-cp-spa-20s1/Team00/Code00/src/integration_testing/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\integration_testing\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
