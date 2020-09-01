@@ -51,7 +51,7 @@ class TNode
 {
 public:
 	TNode(void);
-	TNode(NodeType _type, Name _name, Value _value, Operator _op, Index _index, list<TNode*>* _children);
+	TNode(NodeType _type, Name _name, Value _value, Operator _op, Index _index);
 	bool AddChild(TNode* child);
 	bool SetParent(TNode* newParent);
 	bool SetName(string newName);

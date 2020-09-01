@@ -4,17 +4,10 @@ TNode::TNode(void) {
 
 }
 
-TNode::TNode(NodeType _type, Name _name, Value _value, Operator _op, Index _index, list<TNode*>* _children) 
+TNode::TNode(NodeType _type, Name _name, Value _value, Operator _op, Index _index) 
 	: type(_type), value(_value), name(_name), op(_op), index(_index)
 {
-	if (_children != NULL) 
-	{
-		children = _children;
-	}
-	else 
-	{
-		children = new list<TNode*>;
-	}
+	children = new list<TNode*>;
 };
 
 bool TNode::AddChild(TNode* child)
