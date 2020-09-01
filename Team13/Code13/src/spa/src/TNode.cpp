@@ -4,7 +4,7 @@ TNode::TNode(void) {
 
 }
 
-TNode::TNode(NodeType _type, Name _name, Value _value, Operator _op, Index _index) 
+TNode::TNode(NODE_TYPE _type, VAR_NAME _name, CONST_VALUE _value, OPERATOR _op, STMT_IDX _index) 
 	: type(_type), value(_value), name(_name), op(_op), index(_index)
 {
 	children = new list<TNode*>;
@@ -28,7 +28,7 @@ bool TNode::SetParent(TNode* newParent)
 	return true;
 };
 
-bool TNode::SetName(string newName)
+bool TNode::SetName(VAR_NAME newName)
 {
 	if (type != varName && type != procName) {
 		return false;
@@ -37,7 +37,7 @@ bool TNode::SetName(string newName)
 	return true;
 };
 
-bool TNode::SetValue(double newValue)
+bool TNode::SetValue(CONST_VALUE newValue)
 {
 	if (type != constValue) {
 		return false;
@@ -46,7 +46,7 @@ bool TNode::SetValue(double newValue)
 	return true;
 };
 
-bool TNode::SetOp(Operator newOp)
+bool TNode::SetOp(OPERATOR newOp)
 {
 	if (type != relExpr && type != condExpr && type != expr && type != term) {
 		return false;

@@ -17,6 +17,7 @@ void* VAR_TABLE::add(VAR_NAME name, TNode* tnode) {
     }
     LIST_OF_TNODE_PTR vec = data.find(name)->second;
     vec.push_back(tnode);
+    return NULL;
 }
 
 LIST_OF_VAR_NAME VAR_TABLE::getAllVars() {

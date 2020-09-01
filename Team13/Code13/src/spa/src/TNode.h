@@ -1,9 +1,11 @@
 #include <string>
 #include <list>
+#include <VAR_NAME.h>
+#include <STMT_IDX.h>
 
 using namespace std;
 
-enum NodeType
+enum NODE_TYPE
 {
 	program,
 	procedure,
@@ -25,7 +27,7 @@ enum NodeType
 	constValue
 };
 
-enum Operator
+enum OPERATOR
 {
 	not,
 	and,
@@ -43,27 +45,25 @@ enum Operator
 	mod
 };
 
-typedef double Value;
-typedef string Name;
-typedef int Index;
+typedef double CONST_VALUE;
 
 class TNode
 {
 public:
 	TNode(void);
-	TNode(NodeType _type, Name _name, Value _value, Operator _op, Index _index);
+	TNode(NODE_TYPE _type, VAR_NAME _name, CONST_VALUE _value, OPERATOR _op, STMT_IDX _index);
 	bool AddChild(TNode* child);
 	bool SetParent(TNode* newParent);
-	bool SetName(string newName);
-	bool SetValue(double newValue);
-	bool SetOp(Operator newOp);
+	bool SetName(VAR_NAME newName);
+	bool SetValue(CONST_VALUE newValue);
+	bool SetOp(OPERATOR newOp);
 
 private:
-	NodeType type;
+	NODE_TYPE type;
 	TNode* parent;
 	list<TNode*>* children;
-	Value value;
-	Name name;
-	Operator op;
-	Index index;
+	CONST_VALUE value;
+	VAR_NAME name;
+	OPERATOR op;
+	STMT_IDX index;
 };

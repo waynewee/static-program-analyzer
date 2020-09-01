@@ -13,6 +13,7 @@ TNode* STMT_TABLE::get(STMT_IDX idx) {
 
 void* STMT_TABLE::add(STMT_IDX idx, TNode* tnode) {
     data.insert({idx, tnode});
+    return NULL;
 }
 
 LIST_OF_STMT_IDX STMT_TABLE::getAllStmts() {
