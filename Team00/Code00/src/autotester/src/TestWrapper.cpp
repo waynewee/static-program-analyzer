@@ -27,9 +27,9 @@ void TestWrapper::parse(std::string filename) {
 	input.assign((std::istreambuf_iterator<char>(ifs)),
 		(std::istreambuf_iterator<char>()));
 	
-	Parser parser = Parser(input);
+	Parser parser = Parser();
 
-	parser.parse();
+	parser.parse(input);
 
 
 }

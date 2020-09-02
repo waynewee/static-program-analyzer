@@ -1,7 +1,7 @@
 <?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
 <test_results>
 <info>
-<name>Tests00</name><parsing_time_taken>53.000000</parsing_time_taken>
+<name>Tests00</name><parsing_time_taken>55.000000</parsing_time_taken>
 </info>
 <queries>
 </queries>
