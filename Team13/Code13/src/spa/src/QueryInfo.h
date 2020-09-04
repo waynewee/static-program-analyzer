@@ -7,10 +7,18 @@ using namespace std;
 class QueryInfo
 {
 public:
-	unordered_set<string> assign_declarations;
+	unordered_map<string, string> var_map;
+	unordered_map<string, vector<vector<string>>> relRef_map;
+	vector<string> output_var;
 
-	unordered_map<string, vector<string>> relRef_map;
+	/* getters */
+	unordered_map<string, vector<vector<string>>> getRelRefMap();
+	unordered_map<string, string> getVarMap();
+	vector<string> getOutputVar();
 
-	void setRelRefMap(unordered_map<string, vector<string>> relRef_map);
+	/* setters */
+	void setRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map);
+	void setVarMap(unordered_map<string, string> var_map);
+	void setOutputVar(vector<string> output_var);
 };
 
