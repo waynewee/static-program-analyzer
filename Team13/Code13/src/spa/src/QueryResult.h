@@ -1,11 +1,13 @@
 #include <string>
+#include <unordered_set>
 using namespace std;
 
 class QueryResult
 {
 public:
-	string result;
+	unordered_set<string> result;
 
-	string getResult();
-	void setResult(string result);
+	unordered_set<string> getResult();
+	void setResult(unordered_set<string> result);
+	bool isEmpty();
 };

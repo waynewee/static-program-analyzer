@@ -6,19 +6,19 @@ using namespace std;
 #pragma once
 class QueryInfo
 {
-public:
+private:
 	unordered_map<string, string> var_map;
 	unordered_map<string, vector<vector<string>>> relRef_map;
-	vector<string> output_var;
-
+	string output_var;
+public:
 	/* getters */
 	unordered_map<string, vector<vector<string>>> getRelRefMap();
 	unordered_map<string, string> getVarMap();
-	vector<string> getOutputVar();
+	string getOutputVar();
 
 	/* setters */
 	void setRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map);
 	void setVarMap(unordered_map<string, string> var_map);
-	void setOutputVar(vector<string> output_var);
+	void setOutputVar(string output_var);
 };
 

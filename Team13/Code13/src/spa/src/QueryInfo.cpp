@@ -9,7 +9,7 @@ unordered_map<string, string> QueryInfo::getVarMap() {
 	return this->var_map;
 }
 
-vector<string> QueryInfo::getOutputVar() {
+string QueryInfo::getOutputVar() {
 	return this->output_var;
 }
 
@@ -23,6 +23,6 @@ void QueryInfo::setVarMap(unordered_map<string, string> var_map) {
 	this->var_map = var_map;
 }
 
-void QueryInfo::setOutputVar(vector<string> output_var) {
+void QueryInfo::setOutputVar(string output_var) {
 	this->output_var = output_var;
 }
