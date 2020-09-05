@@ -1,7 +1,6 @@
 #include <string>
-#include <list>
-#include <VAR_NAME.h>
-#include <STMT_IDX.h>
+#include <vector>
+#include <CustomTypes.h>
 
 using namespace std;
 
@@ -61,7 +60,7 @@ public:
 private:
 	NODE_TYPE type;
 	TNode* parent;
-	list<TNode*>* children;
+	vector<TNode*>* children;
 	CONST_VALUE value;
 	VAR_NAME name;
 	OPERATOR op;

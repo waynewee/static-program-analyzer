@@ -1,7 +1,7 @@
 //
 // Created by Xu Lin on 31/8/20.
 //
-#include <VAR_TABLE.h>
+#include <VarTable.h>
 
 using namespace std;
 

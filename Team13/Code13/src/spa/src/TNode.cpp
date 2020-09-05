@@ -7,7 +7,7 @@ TNode::TNode(void) {
 TNode::TNode(NODE_TYPE _type, VAR_NAME _name, CONST_VALUE _value, OPERATOR _op, STMT_IDX _index) 
 	: type(_type), value(_value), name(_name), op(_op), index(_index)
 {
-	children = new list<TNode*>;
+	children = new vector<TNode*>;
 };
 
 bool TNode::AddChild(TNode* child)

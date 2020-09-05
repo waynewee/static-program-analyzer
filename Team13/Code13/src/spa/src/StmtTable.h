@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <unordered_map>
-#include <LIST_OF_STMT_IDX.h>
+#include <CustomTypes.h>
 #include <TNode.h>
 
 typedef class StmtTable {

@@ -2,7 +2,7 @@
 // Created by Xu Lin on 1/9/20.
 //
 
-#include <STMT_TABLE.h>
+#include <StmtTable.h>
 
 using namespace std;
 TNode* STMT_TABLE::get(STMT_IDX idx) {

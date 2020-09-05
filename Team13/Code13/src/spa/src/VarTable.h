@@ -4,9 +4,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <unordered_map>
-#include <VAR_NAME.h>
-#include <LIST_OF_VAR_NAME.h>
-#include <LIST_OF_TNODE_PTR.h>
+#include <CustomTypes.h>
+#include <ListOfTNodePointers.h>
 
 typedef class VarTable {
 private:
