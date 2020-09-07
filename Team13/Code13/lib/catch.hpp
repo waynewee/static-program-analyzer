@@ -1127,7 +1127,7 @@ namespace Catch {
             struct TupleElementPrinter {
             static void print(const Tuple& tuple, std::ostream& os) {
                 os << (N ? ", " : " ")
-                    << ::Catch::Detail::stringify(std::get<N>(tuple));
+                    << ::Catch::Detail::stringify(std::Get<N>(tuple));
                 TupleElementPrinter<Tuple, N + 1>::print(tuple, os);
             }
         };
@@ -1147,7 +1147,7 @@ namespace Catch {
         static std::string convert(const std::tuple<Types...>& tuple) {
             ReusableStringStream rss;
             rss << '{';
-            Detail::TupleElementPrinter<std::tuple<Types...>>::print(tuple, rss.get());
+            Detail::TupleElementPrinter<std::tuple<Types...>>::print(tuple, rss.Get());
             rss << " }";
             return rss.str();
         }
@@ -7209,7 +7209,7 @@ namespace Catch {
             std::size_t         size;
 
             // Initialize the flags so that, if sysctl fails for some bizarre
-            // reason, we get a predictable result.
+            // reason, we Get a predictable result.
 
             info.kp_proc.p_flag = 0;
 
@@ -7245,7 +7245,7 @@ namespace Catch {
         // this process itself to still allow attaching to this process later
         // if wanted, so is rather heavy. Under Linux we have the PID of the
         // "debugger" (which doesn't need to be gdb, of course, it could also
-        // be strace, for example) in /proc/$PID/status, so just get it from
+        // be strace, for example) in /proc/$PID/status, so just Get it from
         // there instead.
         bool isDebuggerActive(){
             // Libstdc++ has a bug, where std::ifstream sets errno to 0
@@ -8422,7 +8422,7 @@ namespace Catch {
 #if defined(_MSC_VER)
     TempFile::TempFile() {
         if (tmpnam_s(m_buffer)) {
-            throw std::runtime_error("Could not get a temp filename");
+            throw std::runtime_error("Could not Get a temp filename");
         }
         if (fopen_s(&m_file, m_buffer, "w")) {
             char buffer[100];
@@ -9376,7 +9376,7 @@ namespace Catch {
         }
 
         Catch::Totals runTests(std::shared_ptr<Config> const& config) {
-            // FixMe: Add listeners in order first, then add reporters.
+            // FixMe: Add listeners in order first, then Add reporters.
 
             auto reporter = makeReporter(config);
 
@@ -9708,7 +9708,7 @@ namespace Catch {
             mutable std::ostream m_os;
         public:
             // Store the streambuf from cout up-front because
-            // cout may get redirected when running tests
+            // cout may Get redirected when running tests
             CoutStream() : m_os( Catch::cout().rdbuf() ) {}
             ~CoutStream() override = default;
 

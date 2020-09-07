@@ -5,13 +5,13 @@
 
 using namespace std;
 
-LIST_OF_TNODE_PTR VAR_TABLE::get(VAR_NAME var_name) {
+LIST_OF_TNODE_PTR VAR_TABLE::Get(VAR_NAME var_name) {
     auto val = data.find(var_name);
     if (!(val == data.end())) return val->second;
     return LIST_OF_TNODE_PTR();
 }
 
-void* VAR_TABLE::add(VAR_NAME name, TNode* tnode) {
+void* VAR_TABLE::Add(VAR_NAME name, TNode* tnode) {
     if (!(data.find(name) == data.end())) {
         data.insert({name, vector<TNode*>()});
     }
@@ -20,7 +20,7 @@ void* VAR_TABLE::add(VAR_NAME name, TNode* tnode) {
     return NULL;
 }
 
-LIST_OF_VAR_NAME VAR_TABLE::getAllVars() {
+LIST_OF_VAR_NAME VAR_TABLE::GetAllVars() {
     LIST_OF_VAR_NAME vars;
     for(auto & it : data) {
         vars.push_back(it.first);
