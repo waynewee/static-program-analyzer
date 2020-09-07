@@ -3,8 +3,14 @@
 #include <iostream>
 #include <cstdlib>
 #include <unordered_map>
-#include <CustomTypes.h>
 #include <TNode.h>
+
+#ifndef CUSTOM_TYPE_HEADER
+#define CUSTOM_TYPE_HEADER
+
+#include <CustomTypes.h>
+
+#endif 
 
 typedef class StmtTable {
 private:

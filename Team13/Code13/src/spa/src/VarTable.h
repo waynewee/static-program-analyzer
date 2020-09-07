@@ -4,8 +4,14 @@
 #include <iostream>
 #include <cstdlib>
 #include <unordered_map>
-#include <CustomTypes.h>
 #include <ListOfTNodePointers.h>
+
+#ifndef CUSTOM_TYPE_HEADER
+#define CUSTOM_TYPE_HEADER
+
+#include <CustomTypes.h>
+
+#endif 
 
 typedef class VarTable {
 private:
