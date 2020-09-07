@@ -5,13 +5,11 @@ TNode::TNode(void) {
 }
 
 TNode::TNode(NODE_TYPE _type, VAR_NAME _name, CONST_VALUE _value, OPERATOR _op, STMT_IDX _index) 
-	: type(_type), value(_value), name(_name), op(_op), index(_index)
-{
+	: type(_type), value(_value), name(_name), op(_op), index(_index) {
 	children = new vector<TNode*>;
 };
 
-bool TNode::AddChild(TNode* child)
-{
+bool TNode::AddChild(TNode* child) {
 	if (child == NULL) {
 		return false;
 	}
@@ -19,8 +17,7 @@ bool TNode::AddChild(TNode* child)
 	return true;
 };
 
-bool TNode::SetParent(TNode* newParent)
-{
+bool TNode::SetParent(TNode* newParent) {
 	if (newParent == NULL) {
 		return false;
 	}
@@ -28,8 +25,7 @@ bool TNode::SetParent(TNode* newParent)
 	return true;
 };
 
-bool TNode::SetName(VAR_NAME newName)
-{
+bool TNode::SetName(VAR_NAME newName) {
 	if (type != varName && type != procName) {
 		return false;
 	}
@@ -37,8 +33,7 @@ bool TNode::SetName(VAR_NAME newName)
 	return true;
 };
 
-bool TNode::SetValue(CONST_VALUE newValue)
-{
+bool TNode::SetValue(CONST_VALUE newValue) {
 	if (type != constValue) {
 		return false;
 	}
@@ -46,8 +41,7 @@ bool TNode::SetValue(CONST_VALUE newValue)
 	return true;
 };
 
-bool TNode::SetOp(OPERATOR newOp)
-{
+bool TNode::SetOp(OPERATOR newOp) {
 	if (type != relExpr && type != condExpr && type != expr && type != term) {
 		return false;
 	}
