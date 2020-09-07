@@ -4,6 +4,7 @@
 using namespace std;
 
 #include "PQLEvaluator.h"
+#include "PKB.h"
 
 QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 	unordered_map<unordered_set<string>, unordered_set<string>> interResults;
@@ -165,13 +166,13 @@ unordered_set<string> PQLEvaluator::getAllApi(string entity_type) {
 	list<string> returnStmts = {"stmt", "read", "print", "call", "while", "if", "assign"};
 	
 	if (find(returnStmts.begin(), returnStmts.end(), entity_type) != returnStmts.end()) {
-		/*return PKB_API.getAllStmt(null);*/
+		/*return PKB_API.getAllStmt(entity_type);*/
 	}
 	else if (entity_type.compare("variable")) {
-		/*return PKB_API.getAllVar(null);*/
+		/*return PKB_API.getAllVariables();*/
 	}
 	else if (entity_type.compare("procedure")) {
-		/*return PKB_API.getAllProc(null);*/
+		/*return PKB_API.getAllProcs();*/
 	}
 	else if (isConst(entity_type)) {
 		return { entity_type };
