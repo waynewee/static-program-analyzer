@@ -16,8 +16,8 @@ typedef class StmtTable {
 private:
     std::unordered_map<STMT_IDX, TNode*> data;
 public:
-    TNode* get(STMT_IDX idx);
-    LIST_OF_STMT_IDX getAllStmts();
-    void* add(STMT_IDX idx, TNode* tnode);
+    TNode* Get(STMT_IDX idx);
+    LIST_OF_STMT_IDX GetAllStmts();
+    void* Add(STMT_IDX idx, TNode* tnode);
 }STMT_TABLE;
 
