@@ -1,11 +1,16 @@
 #include <string>
 #include <vector>
+
+#ifndef CUSTOM_TYPE_HEADER
+#define CUSTOM_TYPE_HEADER
+
 #include <CustomTypes.h>
+
+#endif 
 
 using namespace std;
 
-enum NODE_TYPE
-{
+enum NODE_TYPE {
 	program,
 	procedure,
 	stmtList,
@@ -26,8 +31,7 @@ enum NODE_TYPE
 	constValue
 };
 
-enum OPERATOR
-{
+enum OPERATOR {
 	not,
 	and,
 	or ,
@@ -44,10 +48,7 @@ enum OPERATOR
 	mod
 };
 
-typedef double CONST_VALUE;
-
-class TNode
-{
+class TNode {
 public:
 	TNode(void);
 	TNode(NODE_TYPE _type, VAR_NAME _name, CONST_VALUE _value, OPERATOR _op, STMT_IDX _index);
