@@ -18,11 +18,11 @@ enum ENTITY_TYPE {
 };
 
 enum STATEMENT_TYPE {
-	Assign,
-	If,
-	While,
-	Read,
-	Print,
+	assignStatement,
+	ifStatement,
+	whileStatement,
+	readStatement,
+	printStatement,
 };
 
 struct ENTITY {
@@ -30,23 +30,23 @@ struct ENTITY {
 };
 
 struct STATEMENT: ENTITY {
-	ENTITY_TYPE entityType = ENTITY_TYPE::statement;
-	STATEMENT_TYPE type; 
+	ENTITY_TYPE type = ENTITY_TYPE::statement;
+	STATEMENT_TYPE statement_type; 
 	STMT_IDX idx;
 };
 
 struct VARIABLE: ENTITY {
-	ENTITY_TYPE entityType = ENTITY_TYPE::variable;
+	ENTITY_TYPE type = ENTITY_TYPE::variable;
 	VAR_NAME name;
 };
 
 struct PROCEDURE : ENTITY {
-	ENTITY_TYPE entityType = ENTITY_TYPE::proc;
+	ENTITY_TYPE type = ENTITY_TYPE::proc;
 	PROC_NAME name;
 };
 
 struct CONSTANT : ENTITY {
-	ENTITY_TYPE entityType = ENTITY_TYPE::constant;
+	ENTITY_TYPE type = ENTITY_TYPE::constant;
 	CONST_VALUE value;
 };
 

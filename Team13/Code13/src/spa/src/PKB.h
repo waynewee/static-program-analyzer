@@ -13,7 +13,6 @@
 #endif 
 
 using namespace std;
-typedef short PROC;
 
 class TNode;
 
@@ -22,31 +21,31 @@ class StmtTable;
 
 class PKB {
 private:
-	static VarTable* varTable;
-	static StmtTable* stmtTable;
+	static VarTable* var_table;
+	static StmtTable* stmt_table;
 	TNode* root;
 
 public:
-	static int setProcToAST(TNode* r);
-	static TNode* getRootAST();
+	static int SetProcToAST(TNode* r);
+	static TNode* GetRootAST();
 
-	bool Follows(STATEMENT* s1, STATEMENT* s2);
-	bool FollowsStar(STATEMENT* s1, STATEMENT* s2);
-	bool Parent(STATEMENT* s1, STATEMENT* s2);
-	bool ParentStar(STATEMENT* s1, STATEMENT* s2);
-	bool Uses(ENTITY* e, VARIABLE* v);
-	bool Modifies(ENTITY* e, VARIABLE* v);
+	bool IsFollows(STATEMENT* s1, STATEMENT* s2);
+	bool IsFollowsStar(STATEMENT* s1, STATEMENT* s2);
+	bool IsParent(STATEMENT* s1, STATEMENT* s2);
+	bool IsParentStar(STATEMENT* s1, STATEMENT* s2);
+	bool IsUses(ENTITY* e, VARIABLE* v);
+	bool IsModifies(ENTITY* e, VARIABLE* v);
 
-	STATEMENT_LIST getFollows(STATEMENT* s1, STATEMENT* s2);
-	STATEMENT_LIST getFollowsStar(STATEMENT* s1, STATEMENT* s2);
-	STATEMENT_LIST getParent(STATEMENT* s1, STATEMENT* s2);
-	STATEMENT_LIST getParentStar(STATEMENT* s1, STATEMENT* s2);
-	ENTITY_LIST getUses(ENTITY* e, VARIABLE* v);
-	ENTITY_LIST getModifies(ENTITY* e, VARIABLE* v);
+	STATEMENT_LIST GetFollows(STATEMENT* s1, STATEMENT* s2);
+	STATEMENT_LIST GetFollowsStar(STATEMENT* s1, STATEMENT* s2);
+	STATEMENT_LIST GetParent(STATEMENT* s1, STATEMENT* s2);
+	STATEMENT_LIST GetParentStar(STATEMENT* s1, STATEMENT* s2);
+	ENTITY_LIST GetUses(ENTITY* e, VARIABLE* v);
+	ENTITY_LIST GetModifies(ENTITY* e, VARIABLE* v);
 
-	STATEMENT_LIST getPattern(STATEMENT_TYPE t, VARIABLE* v, EXPRESSION e);
+	STATEMENT_LIST GetPattern(STATEMENT_TYPE t, VARIABLE* v, EXPRESSION e);
 
-	VARIABLE_LIST allVariables();
-	PROCEDURE_LIST allProcs();
+	VARIABLE_LIST GetAllVariables();
+	PROCEDURE_LIST GetAllProcs();
 };
 

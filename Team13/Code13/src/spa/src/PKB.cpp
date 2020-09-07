@@ -8,85 +8,85 @@ using namespace std;
 #include "PKB.h"
 #include "TNode.h"
 
-int PKB::setProcToAST(TNode* r) {
+int PKB::SetProcToAST(TNode* r) {
 	return 0;
 }
 
-TNode* PKB::getRootAST(){
+TNode* PKB::GetRootAST(){
 	return nullptr;
 }
 
-bool PKB::Follows(STATEMENT* s1, STATEMENT* s2)
+bool PKB::IsFollows(STATEMENT* s1, STATEMENT* s2)
 {
 	return false;
 }
 
-bool PKB::FollowsStar(STATEMENT* s1, STATEMENT* s2)
+bool PKB::IsFollowsStar(STATEMENT* s1, STATEMENT* s2)
 {
 	return false;
 }
 
-bool PKB::Parent(STATEMENT* s1, STATEMENT* s2)
+bool PKB::IsParent(STATEMENT* s1, STATEMENT* s2)
 {
 	return false;
 }
 
-bool PKB::ParentStar(STATEMENT* s1, STATEMENT* s2)
+bool PKB::IsParentStar(STATEMENT* s1, STATEMENT* s2)
 {
 	return false;
 }
 
-bool PKB::Uses(ENTITY* e, VARIABLE* v)
+bool PKB::IsUses(ENTITY* e, VARIABLE* v)
 {
 	return false;
 }
 
-bool PKB::Modifies(ENTITY* e, VARIABLE* v)
+bool PKB::IsModifies(ENTITY* e, VARIABLE* v)
 {
 	return false;
 }
 
-STATEMENT_LIST PKB::getFollows(STATEMENT* s1, STATEMENT* s2)
+STATEMENT_LIST PKB::GetFollows(STATEMENT* s1, STATEMENT* s2)
 {
 	return STATEMENT_LIST();
 }
 
-STATEMENT_LIST PKB::getFollowsStar(STATEMENT* s1, STATEMENT* s2)
+STATEMENT_LIST PKB::GetFollowsStar(STATEMENT* s1, STATEMENT* s2)
 {
 	return STATEMENT_LIST();
 }
 
-STATEMENT_LIST PKB::getParent(STATEMENT* s1, STATEMENT* s2)
+STATEMENT_LIST PKB::GetParent(STATEMENT* s1, STATEMENT* s2)
 {
 	return STATEMENT_LIST();
 }
 
-STATEMENT_LIST PKB::getParentStar(STATEMENT* s1, STATEMENT* s2)
+STATEMENT_LIST PKB::GetParentStar(STATEMENT* s1, STATEMENT* s2)
 {
 	return STATEMENT_LIST();
 }
 
-ENTITY_LIST PKB::getUses(ENTITY* e, VARIABLE* v)
+ENTITY_LIST PKB::GetUses(ENTITY* e, VARIABLE* v)
 {
 	return ENTITY_LIST();
 }
 
-ENTITY_LIST PKB::getModifies(ENTITY* e, VARIABLE* v)
+ENTITY_LIST PKB::GetModifies(ENTITY* e, VARIABLE* v)
 {
 	return ENTITY_LIST();
 }
 
-STATEMENT_LIST PKB::getPattern(STATEMENT_TYPE t, VARIABLE* v, EXPRESSION e)
+STATEMENT_LIST PKB::GetPattern(STATEMENT_TYPE t, VARIABLE* v, EXPRESSION e)
 {
 	return STATEMENT_LIST();
 }
 
-VARIABLE_LIST PKB::allVariables()
+VARIABLE_LIST PKB::GetAllVariables()
 {
 	return VARIABLE_LIST();
 }
 
-PROCEDURE_LIST PKB::allProcs()
+PROCEDURE_LIST PKB::GetAllProcs()
 {
 	return PROCEDURE_LIST();
 }
