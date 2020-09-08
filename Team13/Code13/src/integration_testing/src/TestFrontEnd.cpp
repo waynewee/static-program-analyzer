@@ -1,4 +1,4 @@
-#include "pkb/TNode.h"
+#include <TNode.h>
 #include "catch.hpp"
 using namespace std;
 void require(bool b) {

@@ -1,7 +1,4 @@
-#include<stdio.h>
-#include <iostream>
-#include <string>
-#include <vector>
+#include <Parser.h>
 
 using namespace std;
 
