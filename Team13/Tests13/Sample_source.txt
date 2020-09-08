@@ -8,7 +8,8 @@ procedure Example {
       z = x + 1; }
     else {
       y = z + x; }
-    z = z + x + i;
+    z = z + (x + i);
+    x = (5 * 4 + 3 *2) -1;
     call q;
     i = i - 1; }
   call p; }
@@ -16,7 +17,7 @@ procedure Example {
 procedure p {
   if (x<0) then {
     while (i>0) {
-      x = z * 3 + 2 * y;
+      x = z * 3 + 2 - y;
       call q;
       i = i - 1; }
     x = x + 1;

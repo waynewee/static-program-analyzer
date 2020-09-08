@@ -1,5 +1,6 @@
 #include <vector>
 #include <stack>
+#include <queue>
 #include <iostream>
 
 #include "Tokenizer.h"
@@ -8,6 +9,7 @@
 #include "Token.h"
 #include "TNode.h"
 #include "Statement.h"
+#include "ExprEvaluator.h"
 
 Parser::Parser() {
 	currentStatement = Statement();
@@ -232,9 +234,8 @@ TNode Parser::parseExpressionStatement(Parser::expressionType exprType) {
 	* An assign expression looks like
 	* x + 1;
 	*/
-	std::vector<std::string> exprList;
+	std::vector<Token> exprList;
 
-	TNode expressionNode;
 	Token nextToken;
 
 	if (exprType == Parser::expressionType::ASSIGN) {
@@ -242,7 +243,7 @@ TNode Parser::parseExpressionStatement(Parser::expressionType exprType) {
 
 		while (Parser::peekNextToken().getValue() != ";") {
 			nextToken = Parser::getNextToken();
-			exprList.push_back(nextToken.getValue());
+			exprList.push_back(nextToken);
 		}
 	}
 	else if (exprType == Parser::expressionType::IF || exprType == Parser::expressionType::WHILE) {
@@ -256,7 +257,7 @@ TNode Parser::parseExpressionStatement(Parser::expressionType exprType) {
 
 		while (Parser::peekNextToken().getValue() != ")") {
 			nextToken = Parser::getNextToken();
-			exprList.push_back(nextToken.getValue());
+			exprList.push_back(nextToken);
 		}
 
 		//iterate till end of list
@@ -265,12 +266,84 @@ TNode Parser::parseExpressionStatement(Parser::expressionType exprType) {
 		}
 	}
 
-	for (std::string s : exprList) {
-		std::cout << s << std::endl;
-	}
+	TNode expressionNode = Parser::parseExpression(exprList);
 
 	return expressionNode;
 	
+}
+
+int getPrecedence(Token t) {
+	std::string val = t.getValue();
+
+	if (val == "(" || val == ")") {
+		return 7;
+	}
+	else if (val == "!") {
+		return 6;
+	}
+	else if (val == "*" || val == "%") {
+		return 5;
+	}
+	else if (val == "+" || val == "-") {
+		return 4;
+	}
+	else if (val == "<" || val == ">" || val == "<=" || val == ">=") {
+		return 3;
+	}
+	else if (val == "==" || val == "!=") {
+		return 2;
+	}
+	else if (val == "&&") {
+		return 1;
+	}
+	else if (val == "||") {
+		return 0;
+	}
+
+	std::cout << "Invalid token" << std::endl;
+
+	throw "Invalid token";
+}
+
+/**
+* seems like everything is left asso
+*/
+bool isLeftAssoc(Token t) {
+
+	std::string val = t.getValue();
+
+	if (val == "(" || val == ")" || val == "<" || val == ">" || val == "<=" || val == ">=") {
+		return false;
+	}
+
+	return true;
+}
+
+int compareOpPrecedence(Token a, Token b) {
+
+	int aPrecedence = getPrecedence(a);
+	int bPrecedence = getPrecedence(b);
+
+	if (aPrecedence == bPrecedence) {
+		return 0;
+	}
+	else if (aPrecedence < bPrecedence) {
+		return -1;
+	}
+	else {
+		return 1;
+	}
+}
+
+
+TNode Parser::parseExpression(std::vector<Token> exprList) {
+
+	ExprEvaluator exprEvaluator(exprList);
+
+	TNode rootNode = exprEvaluator.evaluate();
+
+	return rootNode;
+
 }
 
 // Returns the number of tokens inside a statement list
