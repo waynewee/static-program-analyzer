@@ -9,6 +9,8 @@ Token::Token(std::string tokenVal, TokenType::TOKEN_TYPE tokenType) {
 	type = tokenType;
 }
 
+Token::Token(){}
+
 void Token::print() {
 
 	std::string output = "";

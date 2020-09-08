@@ -8,25 +8,29 @@
 class Parser {
 public:
 	Parser();
+	int tokenIndx;
+	std::vector<Token> tokenList;
 	std::vector<Statement> statementList;
 	Statement currentStatement;
 	int parse(std::string input);
+	enum expressionType { IF, WHILE, ASSIGN };
 
 private:
-	TNode parseProgram(std::vector<Token> tokenList);
-	TNode parseStatement(int* tokenIndex, std::vector<Token> tokenList); 
+	TNode parseProgram();
+	TNode parseStatement(); 
 
-	TNode parseProcStatement(int* tokenIndex, std::vector<Token> tokenList);
-	TNode parseReadStatement(int* tokenIndex, std::vector<Token> tokenList);
-	TNode parsePrntStatement(int* tokenIndex, std::vector<Token> tokenList);
-	TNode parseIfStatement(int* tokenIndex, std::vector<Token> tokenList);
-	TNode parseWhleStatement(int* tokenIndex, std::vector<Token> tokenList);
-	TNode parseCallStatement(int* tokenIndex, std::vector<Token> tokenList);
-	TNode parseAssgnStatement(Token nameToken, int* tokenIndex, std::vector<Token> tokenList);
-	TNode parseStatementList(int* tokenIndex, std::vector<Token> tokenList);
-	TNode parseExpression(int* tokenIndex, std::vector<Token> tokenList);
+	TNode parseProcStatement();
+	TNode parseReadStatement();
+	TNode parsePrntStatement();
+	TNode parseIfStatement();
+	TNode parseWhleStatement();
+	TNode parseCallStatement();
+	TNode parseAssgnStatement(Token nameToken);
+	TNode parseStatementList();
+	TNode parseExpressionStatement(expressionType exprType);
+	TNode parseExpression();
 
-	Token getNextToken(int* tokenIndex, std::vector<Token> tokenList);
-	Token peekNextToken(int* tokenIndex, std::vector<Token> tokenList);
-	int getEndIndxOfStatementList(int* tokenIndex, std::vector<Token> tokenList);
+	Token getNextToken();
+	Token peekNextToken();
+	int getEndIndxOfStatementList();
 };
