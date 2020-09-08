@@ -13,7 +13,7 @@ Tokenizer::Tokenizer(std::string input) {
 	text = input;
 	len = text.length();
 
-	token = "";
+	tokenStr = "";
 
 	std::vector<Token> tokenList;
 }
@@ -80,7 +80,7 @@ int Tokenizer::tokenize() {
 		* If we encounter a whitespace on the next char, we evaluate the token
 		*/
 		if (
-			token.length() > 0
+			tokenStr.length() > 0
 			&& (pos + 1 >= len
 				|| ((
 					isWhiteSpace(text.at(pos + 1))
@@ -93,7 +93,7 @@ int Tokenizer::tokenize() {
 			bool isInteger = true;
 
 			//check if integer
-			for (char _c : token) {
+			for (char _c : tokenStr) {
 				if (!isdigit(_c)) {
 					isInteger = false;
 				}
@@ -108,7 +108,7 @@ int Tokenizer::tokenize() {
 
 				//check if keyword
 				for (std::string keyword : keywords) {
-					if (token == keyword) {
+					if (tokenStr == keyword) {
 						isKeyword = true;
 						break;
 					}
@@ -117,7 +117,7 @@ int Tokenizer::tokenize() {
 				if (isKeyword) {
 					Token* keywordToken = addToken(TokenType::TOKEN_TYPE::KEYW);
 
-					keywordToken->keywordType = TokenType::getTokenTypeKeyw(token);
+					keywordToken->keywordType = TokenType::getTokenTypeKeyw(tokenStr);
 				}
 				else {
 					addToken(TokenType::TOKEN_TYPE::NAME);
@@ -165,7 +165,7 @@ void Tokenizer::appendCharToTokenStr(char c) {
 }
 
 void Tokenizer::appendStrToTokenStr(std::string str) {
-	token += str;
+	tokenStr += str;
 }
 
 void Tokenizer::printToken(std::string type) {
@@ -173,7 +173,7 @@ void Tokenizer::printToken(std::string type) {
 }
 
 Token* Tokenizer::addToken(TokenType::TOKEN_TYPE tokenType) {
-	Token token_obj = Token(token, tokenType);
+	Token token_obj = Token(tokenStr, tokenType);
 
 	tokenList.push_back(token_obj);
 
@@ -181,7 +181,7 @@ Token* Tokenizer::addToken(TokenType::TOKEN_TYPE tokenType) {
 }
 
 void Tokenizer::resetTokenStr() {
-	token = "";
+	tokenStr = "";
 }
 
 void Tokenizer::printTokenList() {

@@ -13,7 +13,7 @@ public:
 	std::string text;
 	int pos;
 	int len;
-	std::string token;
+	std::string tokenStr;
 	std::vector<std::string> keywords = { "procedure", "print", "read", "call", "while", "if", "then", "else" };
 	std::vector<Token> tokenList;
 
