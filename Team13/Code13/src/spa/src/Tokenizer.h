@@ -19,10 +19,10 @@ public:
 
 	int tokenize();
 
-	void resetToken();
+	void resetTokenStr();
 	void printToken(std::string type);
-	void appendStrToToken(std::string str);
-	void appendCharToToken(char c);
+	void appendStrToTokenStr(std::string str);
+	void appendCharToTokenStr(char c);
 	Token* addToken(TokenType::TOKEN_TYPE tokenType);
 	void printTokenList();
 	std::vector<Token> getTokenList();

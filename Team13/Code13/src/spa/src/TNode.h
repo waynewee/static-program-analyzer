@@ -1,11 +1,5 @@
-<<<<<<< HEAD
 #pragma once
 
-class TNode
-{
-public:
-	TNode();
-=======
 #include <string>
 #include <vector>
 
@@ -74,5 +68,4 @@ private:
 	VAR_NAME name;
 	OPERATOR op;
 	STMT_IDX index;
->>>>>>> 76f55f88c64cabee3ea1669fc34d274d971cbe77
 };

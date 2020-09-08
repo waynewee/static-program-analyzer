@@ -33,20 +33,20 @@ int Tokenizer::tokenize() {
 			//detect punctuation
 		}
 		else if (isPunc(c)) {
-			appendCharToToken(c);
+			appendCharToTokenStr(c);
 			addToken(TokenType::TOKEN_TYPE::PUNC);
-			resetToken();
+			resetTokenStr();
 			//detect arithmetic operators
 		}
 		else if (isArop(c)) {
-			appendCharToToken(c);
+			appendCharToTokenStr(c);
 			addToken(TokenType::TOKEN_TYPE::AROP);
-			resetToken();
+			resetTokenStr();
 		}
 		//detect logical operators
 		else if (isLgopPart(c)) {
 
-			appendCharToToken(c);
+			appendCharToTokenStr(c);
 
 			/** check if next char forms a logical op string with current char*/
 			std::string opStr = "";
@@ -54,17 +54,17 @@ int Tokenizer::tokenize() {
 			opStr += text.at(pos + 1);
 
 			if (isLgop(opStr)) {
-				appendCharToToken(text.at(pos + 1));
+				appendCharToTokenStr(text.at(pos + 1));
 				pos += 1;
 			}
 
 			addToken(TokenType::TOKEN_TYPE::LGOP);
-			resetToken();
+			resetTokenStr();
 
 
 		}
 		else {
-			appendCharToToken(c);
+			appendCharToTokenStr(c);
 		}
 
 
@@ -125,7 +125,7 @@ int Tokenizer::tokenize() {
 
 			}
 
-			resetToken();
+			resetTokenStr();
 
 		}
 
@@ -157,14 +157,14 @@ bool Tokenizer::isLgop(std::string str) {
 	return (str == "&&" || str == "||" || str == "<=" || str == ">=" || str == "==" || str == "!=");
 }
 
-void Tokenizer::appendCharToToken(char c) {
+void Tokenizer::appendCharToTokenStr(char c) {
 	std::string str = "";
 	str += c;
 
-	appendStrToToken(str);
+	appendStrToTokenStr(str);
 }
 
-void Tokenizer::appendStrToToken(std::string str) {
+void Tokenizer::appendStrToTokenStr(std::string str) {
 	token += str;
 }
 
@@ -180,7 +180,7 @@ Token* Tokenizer::addToken(TokenType::TOKEN_TYPE tokenType) {
 	return &tokenList.at(tokenList.size()-1);
 }
 
-void Tokenizer::resetToken() {
+void Tokenizer::resetTokenStr() {
 	token = "";
 }
 

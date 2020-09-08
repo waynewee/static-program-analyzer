@@ -1,8 +1,5 @@
 #include "TNode.h"
 
-<<<<<<< HEAD
-TNode::TNode() {}
-=======
 TNode::TNode(void) {
 
 }
@@ -51,4 +48,3 @@ bool TNode::SetOp(OPERATOR newOp) {
 	op = newOp;
 	return true;
 };
->>>>>>> 76f55f88c64cabee3ea1669fc34d274d971cbe77
