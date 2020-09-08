@@ -27,5 +27,6 @@ private:
 	TNode parseExpression(int* tokenIndex, std::vector<Token> tokenList);
 
 	Token getNextToken(int* tokenIndex, std::vector<Token> tokenList);
+	Token peekNextToken(int* tokenIndex, std::vector<Token> tokenList);
 	int getEndIndxOfStatementList(int* tokenIndex, std::vector<Token> tokenList);
 };

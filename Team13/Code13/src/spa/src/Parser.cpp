@@ -32,8 +32,8 @@ TNode Parser::parseProgram(std::vector<Token> tokenList) {
 		Parser::parseStatement(indxPtr, tokenList);
 		Parser::statementList.push_back(Parser::currentStatement);
 
-		Parser::currentStatement.print();
-		Parser::currentStatement = Statement::Statement();
+		//Parser::currentStatement.print();
+		//Parser::currentStatement = Statement::Statement();
 	}
 	TNode rootNode;
 	return rootNode;
@@ -41,11 +41,9 @@ TNode Parser::parseProgram(std::vector<Token> tokenList) {
 
 // Returns a statement node
 TNode Parser::parseStatement(int* tokenIndex, std::vector<Token> tokenList) {
-
-	std::cout << "Parse Statement Called" << std::endl;
+	//std::cout << "Parse Statement Called" << std::endl;
 	Token firstToken = Parser::getNextToken(tokenIndex, tokenList);
-
-	// ADD INTO STATEMENT TABLE
+ 	// ADD INTO STATEMENT TABLE
 	TNode statementNode;
 	switch (firstToken.getTokenType()) {
 	case TokenType::TOKEN_TYPE::KEYW:
@@ -69,6 +67,8 @@ TNode Parser::parseStatement(int* tokenIndex, std::vector<Token> tokenList) {
 			statementNode = Parser::parseWhleStatement(tokenIndex, tokenList);
 			break;
 		default:
+			std::cout << "Unhandled token" << std::endl;
+
 			break;
 			// Throw unhandled keyword exception
 		}
@@ -78,14 +78,17 @@ TNode Parser::parseStatement(int* tokenIndex, std::vector<Token> tokenList) {
 		break;
 	default:
 		// Throw unhandled statement exception
+		std::cout << "Unhandled Token: " << firstToken.getValue() <<std::endl;
 		break;
 	}
-	return statementNode;
+	Parser::currentStatement.print();
+	Parser::currentStatement = Statement::Statement();
 
+	return statementNode;
 }
 
 TNode Parser::parseProcStatement(int* tokenIndex, std::vector<Token> tokenList) {
-	std::cout << "Parse ProcStatement Called" << std::endl;
+	//std::cout << "Parse ProcStatement Called" << std::endl;
 	TNode procNode;
 	Token nextToken = Parser::getNextToken(tokenIndex, tokenList);
 	if (nextToken.getTokenType() != TokenType::TOKEN_TYPE::NAME) {
@@ -100,7 +103,7 @@ TNode Parser::parseProcStatement(int* tokenIndex, std::vector<Token> tokenList) 
 }
 
 TNode Parser::parseReadStatement(int* tokenIndex, std::vector<Token> tokenList) {
-	std::cout << "Parse ReadStatement Called" << std::endl;
+	//std::cout << "Parse ReadStatement Called" << std::endl;
 	TNode readNode;
 	Token nameToken = Parser::getNextToken(tokenIndex, tokenList);
 
@@ -120,7 +123,7 @@ TNode Parser::parseReadStatement(int* tokenIndex, std::vector<Token> tokenList) 
 }
 
 TNode Parser::parsePrntStatement(int* tokenIndex, std::vector<Token> tokenList) {
-	std::cout << "Parse PrintStatement Called" << std::endl;
+	//std::cout << "Parse PrintStatement Called" << std::endl;
 	TNode printNode;
 	Token nameToken = Parser::getNextToken(tokenIndex, tokenList);
 	if (nameToken.getTokenType() != TokenType::TOKEN_TYPE::NAME) {
@@ -138,7 +141,7 @@ TNode Parser::parsePrntStatement(int* tokenIndex, std::vector<Token> tokenList) 
 }
 
 TNode Parser::parseCallStatement(int* tokenIndex, std::vector<Token> tokenList) {
-	std::cout << "Parse CallStatement Called" << std::endl;
+	//std::cout << "Parse CallStatement Called" << std::endl;
 	TNode callNode;
 	Token nameToken = Parser::getNextToken(tokenIndex, tokenList);
 	if (nameToken.getTokenType() != TokenType::TOKEN_TYPE::NAME) {
@@ -156,12 +159,21 @@ TNode Parser::parseCallStatement(int* tokenIndex, std::vector<Token> tokenList) 
 }
 
 TNode Parser::parseIfStatement(int* tokenIndex, std::vector<Token> tokenList) {
-	std::cout << "Parse IfStatement Called" << std::endl;
+	//std::cout << "Parse IfStatement Called" << std::endl;
 	TNode ifNode;
 	TNode exprNode = Parser::parseExpression(tokenIndex, tokenList);
-	TNode stmtListNode = Parser::parseStatementList(tokenIndex, tokenList);
+	TNode thenStmtListNode = Parser::parseStatementList(tokenIndex, tokenList);
 	// ADD EXPR NODE TO CHILD OF IFNODE
 	// ADD STMTLIST NODE TO CHILD OF IFNODE
+	std::cout << "Checking if have else" << std::endl;
+
+	if (peekNextToken(tokenIndex, tokenList).getValue() != "else") {
+		return ifNode;
+	}
+
+	getNextToken(tokenIndex, tokenList);
+	TNode elseStmtListNode = Parser::parseStatementList(tokenIndex, tokenList);
+	//Add Child for Else Stmt List Node
 	return ifNode;
 }
 
@@ -176,7 +188,7 @@ TNode Parser::parseWhleStatement(int* tokenIndex, std::vector<Token> tokenList) 
 
 
 TNode Parser::parseAssgnStatement(Token nameToken, int* tokenIndex, std::vector<Token> tokenList) {
-	std::cout << "Parse AssgnStatement Called" << std::endl;
+	//std::cout << "Parse AssgnStatement Called" << std::endl;
 	TNode assgnNode;
 	if (Parser::getNextToken(tokenIndex, tokenList).getValue() != "=") {
 		// throw error for invalid assign statement
@@ -186,7 +198,7 @@ TNode Parser::parseAssgnStatement(Token nameToken, int* tokenIndex, std::vector<
 	
 	if (Parser::getNextToken(tokenIndex, tokenList).getValue() != ";") {
 		// throw error for invalid statement
-		std::cout << "Missing ;" << std::endl;
+		std::cout << "Where is my ;" << std::endl;
 	}
 
 	// Set value
@@ -196,14 +208,20 @@ TNode Parser::parseAssgnStatement(Token nameToken, int* tokenIndex, std::vector<
 
 // Returns a stmtList node
 TNode Parser::parseStatementList(int* tokenIndex, std::vector<Token> tokenList) {
-	std::cout << "Parse StatementList Called" << std::endl;
+	//std::cout << "Parse StatementList Called" << std::endl;
 	int endIndex = Parser::getEndIndxOfStatementList(tokenIndex, tokenList);
 	TNode stmtListNode;
 	// Parse the whole statement block 
-	while ((*tokenIndex) < endIndex - 1) { // - 1 to account for the last "}"
+	while ((*tokenIndex) < endIndex) {
+		if (peekNextToken(tokenIndex, tokenList).getValue() == "{" ||
+			peekNextToken(tokenIndex, tokenList).getValue() == "}") {
+			getNextToken(tokenIndex, tokenList);
+			continue;
+		}
 		Parser::parseStatement(tokenIndex, tokenList);
 		// stmtListNode.addChild(parseStatement(tokenIndex, tokenList));
 	}
+
 	return stmtListNode;
 }
 
@@ -211,21 +229,19 @@ TNode Parser::parseStatementList(int* tokenIndex, std::vector<Token> tokenList) 
 // Only for expressions in the form of x, 5, (NAME LROP NAME/VAR)
 
 TNode Parser::parseExpression(int* tokenIndex, std::vector<Token> tokenList) {
-	std::cout << "Parse Expression Called" << std::endl;
+	//std::cout << "Parse Expression Called" << std::endl;
 	TNode expressionNode;
 	Token nextToken = Parser::getNextToken(tokenIndex, tokenList);
 
-	if (nextToken.getTokenType() == TokenType::TOKEN_TYPE::INTR ||
-		nextToken.getTokenType() == TokenType::TOKEN_TYPE::NAME) {
-		return expressionNode;
-	} 
-
-	while (nextToken.getValue() != ";" && nextToken.getValue() != "{") {
+	while (true) {
+		if (nextToken.getValue() == ";" || nextToken.getValue() == "{") {
+			break;
+		}
 		nextToken = Parser::getNextToken(tokenIndex, tokenList);
 	}
-	if (nextToken.getValue() == "{") {
-		(*tokenIndex)--;
-	}
+	
+	(*tokenIndex)--;
+	Parser::currentStatement.tokensList.pop_back();
 	
 	return expressionNode;
 }
@@ -233,7 +249,7 @@ TNode Parser::parseExpression(int* tokenIndex, std::vector<Token> tokenList) {
 // Returns the number of tokens inside a statement list
 int Parser::getEndIndxOfStatementList(int* tokenIndex, std::vector<Token> tokenList) {
 	std::stack <Token> bracketMatcher;
-	Token firstToken = tokenList[(*tokenIndex) + 1];
+	Token firstToken = Parser::peekNextToken(tokenIndex, tokenList);
 	int counter = 1;
 
 	if (firstToken.getValue() == "{") {
@@ -253,12 +269,20 @@ int Parser::getEndIndxOfStatementList(int* tokenIndex, std::vector<Token> tokenL
 			counter++;
 		}
 	}
-	return (*tokenIndex) + counter + 1;
+	return (*tokenIndex) + counter;
 }
 
 Token Parser::getNextToken(int* tokenIndex, std::vector<Token> tokenList) {
 	(*tokenIndex)++;
-	//std::cout << "Proccesing: " << tokenList[(*tokenIndex)].getValue() << std::endl;
+	//std::cout << "Get: ";
+	//std::cout << tokenList[(*tokenIndex)].getValue() << std::endl;
 	Parser::currentStatement.addToken(tokenList[(*tokenIndex)]); 
 	return tokenList[(*tokenIndex)];
+}
+
+Token Parser::peekNextToken(int* tokenIndex, std::vector<Token> tokenList) {
+	//std::cout << "Peek: ";
+	//std::cout << tokenList[(*tokenIndex) + 1].getValue() << std::endl;
+
+	return tokenList[(*tokenIndex) + 1];
 }
