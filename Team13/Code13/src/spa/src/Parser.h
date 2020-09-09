@@ -9,6 +9,7 @@ class Parser {
 public:
 	Parser();
 	int tokenIndx;
+	int statementIndex;
 	std::vector<Token> tokenList;
 	std::vector<Statement> statementList;
 	Statement currentStatement;
