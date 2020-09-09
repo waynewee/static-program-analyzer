@@ -14,9 +14,9 @@ typedef std::string EXPRESSION;
 typedef std::vector<VAR_NAME*> VAR_NAME_LIST;
 typedef std::vector<PROC_NAME*> PROC_NAME_LIST;
 typedef std::vector<STMT_IDX> STMT_IDX_LIST;
-typedef std::unordered_set<VAR_NAME> VAR_NAME_SET;
+typedef std::unordered_set<VAR_NAME*> VAR_NAME_SET;
 typedef std::unordered_set<PROC_NAME*> PROC_NAME_SET;
-typedef std::unordered_set<STMT_IDX*> STMT_IDX_SET;
+typedef std::unordered_set<STMT_IDX> STMT_IDX_SET;
 
 enum ENTITY_TYPE {
 	statement,
@@ -26,6 +26,7 @@ enum ENTITY_TYPE {
 };
 
 enum STATEMENT_TYPE {
+    null,
 	assignStatement,
 	ifStatement,
 	whileStatement,
