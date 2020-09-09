@@ -4,7 +4,7 @@ TNode::TNode(void) {
 
 }
 
-TNode::TNode(NODE_TYPE _type, VAR_NAME _name, CONST_VALUE _value, OPERATOR _op, STMT_IDX _index) 
+TNode::TNode(NODE_TYPE _type, VAR_NAME *_name, CONST_VALUE _value, OPERATOR _op, STMT_IDX _index)
 	: type(_type), value(_value), name(_name), op(_op), index(_index) {
 	children = new vector<TNode*>;
 };
@@ -25,7 +25,7 @@ bool TNode::SetParent(TNode* newParent) {
 	return true;
 };
 
-bool TNode::SetName(VAR_NAME newName) {
+bool TNode::SetName(VAR_NAME *newName) {
 	if (type != varName && type != procName) {
 		return false;
 	}

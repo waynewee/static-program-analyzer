@@ -7,7 +7,7 @@
 using namespace std;
 
 bool Statements::addStatement(STATEMENT_TYPE t, STMT_IDX s) {
-    if (data[t]->insert(&s).second || data[ALL]->insert(&s).second) {
+    if (data[t]->insert(s).second || data[ALL]->insert(s).second) {
         return true;
     }
     return false;
