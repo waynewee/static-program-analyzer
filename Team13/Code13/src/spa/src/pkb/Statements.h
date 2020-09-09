@@ -9,22 +9,22 @@
 #include <vector>
 #include <CustomTypes.h>
 
-#define ALL 0
-#define ASSIGN 1
-#define READ 2
-#define PRINT 3
-#define CALL 4
-#define WHILE 5
-#define IF 6
-#define size 7
+
 
 class Statements {
-
+#define _ALL_ 0
+#define _ASSIGN_ 1
+#define _READ_ 2
+#define _PRINT_ 3
+#define _CALL_ 4
+#define _WHILE_ 5
+#define _IF_ 6
+#define _size_ 7
 private:
     std::vector<STMT_IDX_SET *> data;
 public:
     Statements() {
-        for (int i; i < size; i++) {
+        for (int i; i < _size_; i++) {
             STMT_IDX_SET stmtSet = STMT_IDX_SET();
             data.push_back(&stmtSet);
         }

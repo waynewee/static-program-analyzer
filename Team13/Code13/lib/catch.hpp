@@ -7448,7 +7448,7 @@ namespace Catch {
         exceptionHandlerHandle = nullptr;
         // Register as first handler in current chain
         exceptionHandlerHandle = AddVectoredExceptionHandler(1, handleVectoredException);
-        // Pass in guarantee size to be filled
+        // Pass in guarantee _size_ to be filled
         SetThreadStackGuarantee(&guaranteeSize);
     }
 
