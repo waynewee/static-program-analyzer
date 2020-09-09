@@ -1,12 +1,9 @@
+#ifndef _TNODE_H_
+#define _TNODE_H_
+
 #include <string>
 #include <vector>
-
-#ifndef CUSTOM_TYPE_HEADER
-#define CUSTOM_TYPE_HEADER
-
 #include <CustomTypes.h>
-
-#endif 
 
 using namespace std;
 
@@ -32,20 +29,20 @@ enum NODE_TYPE {
 };
 
 enum OPERATOR {
-	not,
-	and,
-	or ,
-	greater,
-	geq,
-	lesser,
-	leq,
-	equal,
-	unequal,
-	plus,
-	minus,
-	times,
-	divide,
-	mod
+    notOp,
+    andOp,
+    orOp,
+    greater,
+    geq,
+    lesser,
+    leq,
+    equal,
+    unequal,
+    plus,
+    minus,
+    times,
+    divide,
+    mod
 };
 
 class TNode {
@@ -67,3 +64,6 @@ private:
 	OPERATOR op;
 	STMT_IDX index;
 };
+
+
+#endif

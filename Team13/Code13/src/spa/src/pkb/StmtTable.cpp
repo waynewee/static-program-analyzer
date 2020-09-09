@@ -2,7 +2,7 @@
 // Created by Xu Lin on 1/9/20.
 //
 
-#include <StmtTable.h>
+#include "StmtTable.h"
 
 using namespace std;
 TNode* STMT_TABLE::Get(STMT_IDX idx) {
@@ -16,8 +16,8 @@ void* STMT_TABLE::Add(STMT_IDX idx, TNode* tnode) {
     return NULL;
 }
 
-LIST_OF_STMT_IDX STMT_TABLE::GetAllStmts() {
-    LIST_OF_STMT_IDX stmts;
+STMT_IDX_LIST STMT_TABLE::GetAllStmts() {
+    STMT_IDX_LIST stmts;
     for(auto & it : data) {
         stmts.push_back(it.first);
     }
