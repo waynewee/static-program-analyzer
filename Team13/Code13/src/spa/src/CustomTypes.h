@@ -26,7 +26,6 @@ enum ENTITY_TYPE {
 };
 
 enum STATEMENT_TYPE {
-    null,
 	assignStatement,
 	ifStatement,
 	whileStatement,

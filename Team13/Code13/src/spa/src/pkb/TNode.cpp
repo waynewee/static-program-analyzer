@@ -1,13 +1,22 @@
 #include "TNode.h"
 
-TNode::TNode(void) {
+TNode::TNode(TNode::NODE_TYPE _type, string *_name):
+    type(_type), name(_name) {
+    children = new vector<TNode*>;
+}
+TNode::TNode(TNode::NODE_TYPE _type, CONST_VALUE _value):
+    type(_type), value(_value){
+    children = new vector<TNode*>;
 
 }
-
-TNode::TNode(NODE_TYPE _type, VAR_NAME *_name, CONST_VALUE _value, OPERATOR _op, STMT_IDX _index)
-	: type(_type), value(_value), name(_name), op(_op), index(_index) {
-	children = new vector<TNode*>;
-};
+TNode::TNode(TNode::NODE_TYPE _type, TNode::OPERATOR _op):
+    type(_type), op(_op) {
+    children = new vector<TNode*>;
+}
+TNode::TNode(TNode::NODE_TYPE _type, STMT_IDX _idx):
+    type(_type), index(_idx) {
+    children = new vector<TNode*>;
+}
 
 bool TNode::AddChild(TNode* child) {
 	if (child == NULL) {
@@ -47,4 +56,9 @@ bool TNode::SetOp(OPERATOR newOp) {
 	}
 	op = newOp;
 	return true;
-};
+}
+TNode::TNode(TNode::NODE_TYPE _type):
+    type(_type) {
+    children = new vector<TNode*>;
+
+}
