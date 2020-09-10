@@ -148,3 +148,6 @@ Team13/Code13/build_win/x86-Release/CMakeFiles/3.17.20032601-MSVC_2/CompilerIdCX
 Team13/Code13/build_win/x86-Release/CMakeFiles/ShowIncludes/foo.h
 Team13/Code13/build_win/x86-Release/CMakeFiles/ShowIncludes/main.c
 Team13/Code13/build_win/x86-Release/CMakeFiles/ShowIncludes/main.obj
+.idea/
+**/.vs/
+Team13/Code13/build_win/
