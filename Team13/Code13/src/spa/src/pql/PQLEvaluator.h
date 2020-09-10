@@ -8,11 +8,11 @@ public:
 
 	bool evaluateBoolSet(tuple<RELREF, string, string> func);
 	int parsingStmtRef(string param);
-	string* parsingEntRef(string param);
+	string* parsingEntRef(string* param);
 
 	unordered_set<string> evaluateGetSet(tuple<RELREF, string, string> func, unordered_map<string, ENTITY> varMap, ENTITY outputVar);
 	int parsingStmtRef(string param, unordered_map<string, ENTITY> varMap);
-	string* parsingEntRef(string param, unordered_map<string, ENTITY> varMap);
+	string* parsingEntRef(string* param, unordered_map<string, ENTITY> varMap);
 	unordered_set<string> convertSet(unordered_set<int>* resultSet);
 	unordered_set<string> convertSet(unordered_set<string*>* resultSet);
 
