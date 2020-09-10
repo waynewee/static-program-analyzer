@@ -89,13 +89,14 @@ TNode Parser::parseProcStatement() {
 	//std::cout << "Parse ProcStatement Called" << std::endl;
 	Token nameToken = Parser::getNextToken();
 	if (nameToken.getTokenType() != TokenType::TOKEN_TYPE::NAME) {
-		throw "Invalid procedure namen";
+		throw "Invalid procedure name";
 	}
 	
-	TNode procNode(NODE_TYPE::procedure, NULL, NULL, NULL, statementIndex);
-	TNode procNameNode(NODE_TYPE::procName, NULL, nameToken.getValue(), NULL, statementIndex);
-	TNode* procNameNodePtr = &procNameNode;
+	TNode procNode(NODE_TYPE::procedure, NULL, NULL, OPERATOR::and, statementIndex);
+	TNode procNameNode(NODE_TYPE::procName, nameToken.getValue(), NULL, OPERATOR::and, statementIndex);
 	TNode stmtListNode = Parser::parseStatementList();
+
+	TNode* procNameNodePtr = &procNameNode;
 	TNode* stmtListNodePtr = &stmtListNode;
 	
 	bool addedProcName = procNode.AddChild(procNameNodePtr);
@@ -109,7 +110,6 @@ TNode Parser::parseProcStatement() {
 
 TNode Parser::parseReadStatement() {
 	//std::cout << "Parse ReadStatement Called" << std::endl;
-	TNode readNode;
 	Token varToken = Parser::getNextToken();
 
 	if (varToken.getTokenType() != TokenType::TOKEN_TYPE::NAME) {
@@ -118,8 +118,8 @@ TNode Parser::parseReadStatement() {
 
 	// insert into VarTable
 	
-	TNode readNode(NODE_TYPE::readStmt, NULL, NULL,	NULL, statementIndex);
-	TNode varNode(NODE_TYPE::varName, varToken.getValue(), NULL, NULL, NULL, statementIndex);
+	TNode readNode(NODE_TYPE::readStmt, NULL, NULL, OPERATOR::and, statementIndex);
+	TNode varNode(NODE_TYPE::varName, varToken.getValue(), NULL, OPERATOR::and, statementIndex);
 	TNode* varNodePtr = &varNode;
 
 	if (Parser::getNextToken().getValue() != ";") {
@@ -140,8 +140,8 @@ TNode Parser::parsePrntStatement() {
 		throw "Invalid variable name for print statement";
 	}
 
-	TNode printNode(NODE_TYPE::printStmt, NULL, NULL, NULL, statementIndex);
-	TNode varNode(NODE_TYPE::varName, varToken.getValue(), NULL, NULL, statementIndex);
+	TNode printNode(NODE_TYPE::printStmt, NULL, NULL, OPERATOR::and, statementIndex);
+	TNode varNode(NODE_TYPE::varName, varToken.getValue(), NULL, OPERATOR::and, statementIndex);
 	TNode* varNodePtr = &varNode;
 	// Set value of print node
 
@@ -164,8 +164,8 @@ TNode Parser::parseCallStatement() {
 		throw "Invalid procedure name for call statement";
 	}
 	
-	TNode callNode(NODE_TYPE::callStmt, NULL, NULL, NULL, statementIndex);
-	TNode procNameNode(NODE_TYPE::procName, NULL, NULL, NULL, statementIndex);
+	TNode callNode(NODE_TYPE::callStmt, NULL, NULL, OPERATOR::and, statementIndex);
+	TNode procNameNode(NODE_TYPE::procName, NULL, NULL, OPERATOR::and, statementIndex);
 	TNode* procNameNodePtr = &procNameNode;
 
 	if (Parser::getNextToken().getValue() != ";") {
@@ -180,7 +180,7 @@ TNode Parser::parseCallStatement() {
 
 TNode Parser::parseIfStatement() {
 	//std::cout << "Parse IfStatement Called" << std::endl;
-	TNode ifNode(NODE_TYPE::ifStmt, NULL, NULL, NULL, statementIndex);
+	TNode ifNode(NODE_TYPE::ifStmt, NULL, NULL, OPERATOR::and, statementIndex);
 	TNode exprNode = Parser::parseExpressionStatement(Parser::expressionType::IF);
 
 	if (getNextToken().getValue() != "then") {
@@ -211,7 +211,7 @@ TNode Parser::parseIfStatement() {
 }
 
 TNode Parser::parseWhleStatement() {
-	TNode whleNode(NODE_TYPE::whileStmt, NULL, NULL, NULL, statementIndex);
+	TNode whleNode(NODE_TYPE::whileStmt, NULL, NULL, OPERATOR::and, statementIndex);
 	TNode exprNode = Parser::parseExpressionStatement(Parser::expressionType::WHILE);
 	TNode stmtListNode = Parser::parseStatementList();
 	
@@ -228,7 +228,7 @@ TNode Parser::parseWhleStatement() {
 
 TNode Parser::parseAssgnStatement(Token nameToken) {
 	//std::cout << "Parse AssgnStatement Called" << std::endl;
-	TNode assgnNode(NODE_TYPE::assignStmt, NULL, NULL, NULL, statementIndex);
+	TNode assgnNode(NODE_TYPE::assignStmt, NULL, NULL, OPERATOR::and, statementIndex);
 	if (Parser::getNextToken().getValue() != "=") {
 		throw "Expected '=' token in line " + statementIndex;
 	}
@@ -250,7 +250,7 @@ TNode Parser::parseAssgnStatement(Token nameToken) {
 TNode Parser::parseStatementList() {
 	//std::cout << "Parse StatementList Called" << std::endl;
 	int endIndex = Parser::getEndIndxOfStatementList();
-	TNode stmtListNode;
+	TNode stmtListNode(NODE_TYPE::stmtList, NULL, NULL, OPERATOR::and, statementIndex);
 	// Parse the whole statement block 
 	while ((tokenIndx) < endIndex) {
 		if (peekNextToken().getValue() == "{" ||
