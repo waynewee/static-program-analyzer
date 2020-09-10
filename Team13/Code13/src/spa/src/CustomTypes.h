@@ -34,6 +34,18 @@ enum STATEMENT_TYPE {
 	callStatement,
 };
 
+enum RELREF {
+	Follows,
+	FollowsT,
+	Parent,
+	ParentT,
+	UsesS, 
+	UsesP,
+	ModifiesS,
+	ModifiesP,
+	pattern,
+};
+
 struct ENTITY {
 	ENTITY_TYPE type;
 };

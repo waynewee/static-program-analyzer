@@ -22,12 +22,12 @@ void PQLDriver::query(string queryString) {
 	*/
 
 
-	QueryInfo parsedInfo;
+	//QueryInfo parsedInfo;
 	
 	//parsedInfo = parser.parse(queryString);
 
-	QueryResult result = evaluator.evaluate(parsedInfo);
+	//QueryResult result = evaluator.evaluate(parsedInfo);
 
-	string finalResult = projector.project(result);
-	cout << "Final Result: \"" << finalResult << "\"" << std::endl;
+	//string finalResult = projector.project(result);
+	//cout << "Final Result: \"" << finalResult << "\"" << std::endl;
 }
