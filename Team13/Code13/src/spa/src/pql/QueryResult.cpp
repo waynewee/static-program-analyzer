@@ -1,6 +1,3 @@
-#include <string>
-using namespace std;
-
 #include "QueryResult.h"
 
 unordered_set<string> QueryResult::getResult() {
