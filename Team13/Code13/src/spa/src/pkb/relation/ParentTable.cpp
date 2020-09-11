@@ -9,6 +9,6 @@ bool ParentTable::addParent(STMT_IDX s1, STMT_IDX s2) {
 bool ParentTable::IsParent(STMT_IDX s1, STMT_IDX s2) {
     return false;
 }
-STMT_IDX_SET ParentTable::GetParents(STMT_IDX s) {
-    return STMT_IDX_SET();
+STMT_IDX_SET *ParentTable::GetParents(STMT_IDX s) {
+    return nullptr;
 }

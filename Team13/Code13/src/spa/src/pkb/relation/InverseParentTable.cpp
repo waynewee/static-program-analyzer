@@ -9,6 +9,6 @@ bool InverseParentTable::addInverseParent(STMT_IDX s1, STMT_IDX s2) {
 bool InverseParentTable::IsInverseParent(STMT_IDX s1, STMT_IDX s2) {
     return false;
 }
-STMT_IDX_SET InverseParentTable::GetInverseParents(STMT_IDX s) {
-    return STMT_IDX_SET();
+STMT_IDX_SET * InverseParentTable::GetInverseParents(STMT_IDX s) {
+    return nullptr;
 }

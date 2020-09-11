@@ -9,6 +9,6 @@ bool InverseParentStarTable::addInverseParentStar(STMT_IDX s1, STMT_IDX s2) {
 bool InverseParentStarTable::IsInverseParentStar(STMT_IDX s1, STMT_IDX s2) {
     return false;
 }
-STMT_IDX_SET InverseParentStarTable::GetInverseParentStars(STMT_IDX s) {
-    return STMT_IDX_SET();
+STMT_IDX_SET *InverseParentStarTable::GetInverseParentStars(STMT_IDX s) {
+    return nullptr;
 }

@@ -17,6 +17,12 @@ typedef std::vector<STMT_IDX> STMT_IDX_LIST;
 typedef std::unordered_set<VAR_NAME*> VAR_NAME_SET;
 typedef std::unordered_set<PROC_NAME*> PROC_NAME_SET;
 typedef std::unordered_set<STMT_IDX> STMT_IDX_SET;
+typedef std::tuple<STMT_IDX, STMT_IDX> STMT_PAIR;
+typedef std::tuple<STMT_IDX, VAR_NAME*> STMT_VAR_PAIR;
+typedef std::tuple<PROC_NAME*, VAR_NAME*> PROC_VAR_PAIR;
+typedef std::unordered_set<STMT_PAIR*> STMT_PAIR_SET;
+typedef std::unordered_set<STMT_VAR_PAIR*> STMT_VAR_PAIR_SET;
+typedef std::unordered_set<PROC_VAR_PAIR*> PROC_VAR_PAIR_SET;
 
 enum ENTITY_TYPE {
 	statement,

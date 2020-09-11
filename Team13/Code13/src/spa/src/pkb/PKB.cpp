@@ -53,24 +53,64 @@ bool PKB::IsProcModifies(PROC_NAME *p, VAR_NAME *v) {
     return false;
 }
 
-STMT_IDX_SET *PKB::GetFollows(STMT_IDX s1, STMT_IDX s2)
+STMT_IDX_SET *PKB::GetFollows(STMT_IDX s)
 {
 	return nullptr;
 }
 
-STMT_IDX_SET *PKB::GetFollowsStar(STMT_IDX s1, STMT_IDX s2)
+STMT_IDX_SET *PKB::GetInverseFollows(STMT_IDX s)
+{
+    return nullptr;
+}
+
+STMT_PAIR_SET *PKB::GetAllFollows()
+{
+    return nullptr;
+}
+
+STMT_IDX_SET *PKB::GetFollowsStars(STMT_IDX s)
 {
 	return nullptr;
 }
 
-STMT_IDX_SET *PKB::GetParent(STMT_IDX s1, STMT_IDX s2)
+STMT_IDX_SET *PKB::GetInverseFollowsStars(STMT_IDX s)
+{
+    return nullptr;
+}
+
+STMT_PAIR_SET *PKB::GetAllFollowsStars()
+{
+    return nullptr;
+}
+
+STMT_IDX_SET *PKB::GetParents(STMT_IDX s)
 {
 	return nullptr;
 }
 
-STMT_IDX_SET *PKB::GetParentStar(STMT_IDX s1, STMT_IDX s2)
+STMT_IDX_SET *PKB::GetInverseParents(STMT_IDX s)
+{
+    return nullptr;
+}
+
+STMT_PAIR_SET *PKB::GetAllParents()
+{
+    return nullptr;
+}
+
+STMT_IDX_SET *PKB::GetParentStars(STMT_IDX s)
 {
 	return nullptr;
+}
+
+STMT_IDX_SET *PKB::GetInverseParentStars(STMT_IDX s)
+{
+    return nullptr;
+}
+
+STMT_PAIR_SET *PKB::GetAllParentStars()
+{
+    return nullptr;
 }
 
 VAR_NAME_SET *PKB::GetStmtUses(STMT_IDX s) {
@@ -78,6 +118,10 @@ VAR_NAME_SET *PKB::GetStmtUses(STMT_IDX s) {
 }
 
 STMT_IDX_SET *PKB::GetInverseStmtUses(VAR_NAME *v) {
+    return nullptr;
+}
+
+STMT_VAR_PAIR_SET *PKB::GetAllStmtUses() {
     return nullptr;
 }
 
@@ -89,6 +133,10 @@ STMT_IDX_SET *PKB::GetInverseProcUses(VAR_NAME *v) {
     return nullptr;
 }
 
+PROC_VAR_PAIR_SET* PKB::GetAllProcUses() {
+    return nullptr;
+}
+
 VAR_NAME_SET *PKB::GetStmtModifies(STMT_IDX s) {
     return nullptr;
 }
@@ -97,11 +145,19 @@ STMT_IDX_SET *PKB::GetInverseStmtModifies(VAR_NAME *v) {
     return nullptr;
 }
 
+STMT_VAR_PAIR_SET *PKB::GetAllStmtModifies() {
+    return nullptr;
+}
+
 VAR_NAME_SET *PKB::GetProcModifies(PROC_NAME *p) {
     return nullptr;
 }
 
 STMT_IDX_SET *PKB::GetInverseProcModifies(VAR_NAME *v) {
+    return nullptr;
+}
+
+PROC_VAR_PAIR_SET *PKB::GetAllProcModifies() {
     return nullptr;
 }
 
