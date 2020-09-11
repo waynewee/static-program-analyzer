@@ -4,7 +4,7 @@
 
 #include "TokenType.h"
 
-class Token{
+class Token {
 public:
 
 	TokenType::TOKEN_TYPE type;

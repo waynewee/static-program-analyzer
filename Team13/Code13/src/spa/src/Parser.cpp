@@ -32,6 +32,7 @@ int Parser::parse(std::string input) {
 
 //NODE Node(NODE_TYPE type, NAME name, VALUE value, OPERATOR op, INDEX line_no, LIST<NODE> children
 TNode Parser::parseProgram() {
+
 	while (tokenIndx < (int) tokenList.size() - 1) {
 		Parser::parseStatement();
 		//Parser::statementList.push_back(Parser::currentStatement);
@@ -47,6 +48,7 @@ TNode Parser::parseStatement() {
 	statementIndex++;
  	// ADD INTO STATEMENT TABLE
 	TNode statementNode;
+
 	switch (firstToken.getTokenType()) {
 	case TokenType::TOKEN_TYPE::KEYW:
 		switch (firstToken.getKeywordType()) {
