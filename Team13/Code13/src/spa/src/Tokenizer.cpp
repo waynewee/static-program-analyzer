@@ -22,6 +22,9 @@ int Tokenizer::tokenize() {
 
 //	std::cout << "Begin Parse" << std::endl;
 
+	Token prevToken;
+	Token* currTokenPtr;
+
 	while (pos < len - 1) {
 		pos += 1;
 
@@ -40,7 +43,9 @@ int Tokenizer::tokenize() {
 		}
 		else if (isArop(c)) {
 			appendCharToTokenStr(c);
-			addToken(TokenType::TOKEN_TYPE::AROP);
+			prevToken = tokenList.back();
+			currTokenPtr = addToken(TokenType::TOKEN_TYPE::AROP);
+			testAndSetUnary(currTokenPtr, prevToken);
 			resetTokenStr();
 		}
 		//detect logical operators
@@ -58,7 +63,9 @@ int Tokenizer::tokenize() {
 				pos += 1;
 			}
 
-			addToken(TokenType::TOKEN_TYPE::LGOP);
+			prevToken = tokenList.back();
+			currTokenPtr = addToken(TokenType::TOKEN_TYPE::LGOP);
+			testAndSetUnary(currTokenPtr, prevToken);
 			resetTokenStr();
 
 
@@ -170,6 +177,19 @@ void Tokenizer::appendStrToTokenStr(std::string str) {
 
 void Tokenizer::printToken(std::string type) {
 //	std::cout << type + "\t" + token << std::endl;
+}
+
+void Tokenizer::testAndSetUnary(Token* currPtr, Token prev) {
+	
+	Token curr = *currPtr;
+
+	if (curr.getValue() == "!" || curr.getValue() == "-") {
+		if (prev.getTokenType() == TokenType::TOKEN_TYPE::LGOP || prev.getTokenType() == TokenType::TOKEN_TYPE::AROP || prev.getValue() == "(") {
+			currPtr->isUnaryOp = true;
+		}
+	}
+
+	return;
 }
 
 Token* Tokenizer::addToken(TokenType::TOKEN_TYPE tokenType) {

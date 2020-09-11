@@ -284,22 +284,30 @@ TNode Parser::parseExpressionStatement(Parser::expressionType exprType) {
 		}
 	}
 	else if (exprType == Parser::expressionType::IF || exprType == Parser::expressionType::WHILE) {
+		
 		std::cout << "Parsing IF/WHILE expression" << std::endl;
 
-		nextToken = Parser::getNextToken();
-
-		if (nextToken.getValue() != "(") {
-			throw "Invalid IF/WHILE expression";
+		if (Parser::peekNextToken().getValue() != "(") {
+			throw "Invalid IF/WHILE statement";
 		}
 
-		while (Parser::peekNextToken().getValue() != ")") {
-			nextToken = Parser::getNextToken();
-			exprList.push_back(nextToken);
-		}
+		if (exprType == Parser::expressionType::IF) {
+			
+			while (Parser::peekNextToken().getValue() != "then") {
+				nextToken = Parser::getNextToken();
+				exprList.push_back(nextToken);
+			}
 
-		//iterate till end of list
-		while (Parser::peekNextToken().getValue() != "{") {
 			Parser::getNextToken();
+
+		}
+		else {
+
+			while (Parser::peekNextToken().getValue() != "{") {
+				nextToken = Parser::getNextToken();
+				exprList.push_back(nextToken);
+			}
+
 		}
 	}
 

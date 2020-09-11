@@ -10,6 +10,10 @@
 
 ExprEvaluator::ExprEvaluator(std::vector<Token> exprList) {
 	tokenList = exprList;
+
+	for (Token t : exprList) {
+		t.print();
+	}
 }
 
 TNode ExprEvaluator::evaluate() {
@@ -23,35 +27,42 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 	while (shuntedQ.size() > 0) {
 		Token token = shuntedQ.front();
 		shuntedQ.pop();
-		
+				
 		if (token.getTokenType() == TokenType::TOKEN_TYPE::INTR || token.getTokenType() == TokenType::TOKEN_TYPE::NAME) {
 			tStack.push(token);
-			std::cout << "Pushing ";
-			std::cout << token.getValue() << std::endl;
 		}
 		//guaranteed to be an operator
 		else {
 			//TNode node = createNode(token)
 
 			/**
-			* Pop off two kids
+			* Check size of stack, if size == 1, then is unary
 			*/
-			Token rToken = tStack.top();
-			std::cout << "Popping Right ";
-			std::cout << rToken.getValue() << std::endl;
-			tStack.pop();
+			if (token.isUnaryOp) {
+				/**
+				* Pop off one kid
+				*/
+				Token cToken = tStack.top();
+				tStack.pop();
 
-			Token lToken = tStack.top();
-			std::cout << "Popping Left ";
-			std::cout << lToken.getValue() << std::endl;
-			tStack.pop();
+				std::cout << cToken.getValue() + "___" + token.getValue() << std::endl;
+			}
+			else {
+				/**
+				* Pop off two kids
+				*/
+				Token rToken = tStack.top();
+				tStack.pop();
 
-			//createLeftChild( node, lToken)
-			//createRightChild( node, rToken)
+				Token lToken = tStack.top();
+				tStack.pop();
 
-			std::cout << "Pushing ";
-			std::cout << token.getValue() << std::endl;
+				std::cout << lToken.getValue() + "___" + token.getValue() + "___" + rToken.getValue() << std::endl;
+
+			}
+
 			tStack.push(token);
+
 
 		}
 
@@ -66,7 +77,11 @@ std::queue<Token> ExprEvaluator::shunt() {
 	std::queue<Token> outputQ;
 	std::stack<Token> opStack;
 
-	for (Token token : tokenList) {
+	int i = 0;
+
+	while( i < tokenList.size()){
+
+		Token token = tokenList.at(i);
 
 		TokenType::TOKEN_TYPE tokenType = token.getTokenType();
 
@@ -92,7 +107,7 @@ std::queue<Token> ExprEvaluator::shunt() {
 
 			opStack.push(token);
 		}
-		else if (token.getValue() == "(")
+		else if ( (token.getValue() == "(") || i >= 1 && token.isUnaryOp)
 		{
 			opStack.push(token);
 		}
@@ -113,6 +128,8 @@ std::queue<Token> ExprEvaluator::shunt() {
 				opStack.pop();
 			}
 		}
+
+		i++;
 	}
 
 	while (opStack.size() > 0) {
@@ -157,7 +174,7 @@ int ExprEvaluator::getPrecedence(Token t) {
 	if (val == "(" || val == ")") {
 		return 7;
 	}
-	else if (val == "!") {
+	else if (val == "!" || val == "-" && t.isUnaryOp) {
 		return 6;
 	}
 	else if (val == "*" || val == "%") {

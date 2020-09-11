@@ -7,6 +7,7 @@
 Token::Token(std::string tokenVal, TokenType::TOKEN_TYPE tokenType) {
 	value = tokenVal;
 	type = tokenType;
+	isUnaryOp = false;
 }
 
 Token::Token(){}

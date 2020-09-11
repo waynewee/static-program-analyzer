@@ -10,6 +10,8 @@ public:
 	TokenType::TOKEN_TYPE type;
 	TokenType::TOKEN_TYPE_KEYW keywordType;
 
+	bool isUnaryOp;
+
 	void print();
 	std::string getTokenTypeStr(TokenType::TOKEN_TYPE tokenType);
 	TokenType::TOKEN_TYPE getTokenType();
