@@ -6,7 +6,7 @@ using namespace std;
 class PQLParser
 {
 public:
-	void parse(string s);
+	QueryInfo parse(string s);
 
 	string trimLeadingWhitespaces(const string& s);
 
