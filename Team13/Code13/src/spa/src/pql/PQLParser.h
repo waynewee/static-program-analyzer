@@ -1,6 +1,8 @@
 #include <string>
 using namespace std;
+#include "QueryInfo.h"
 
+#pragma once
 class PQLParser
 {
 public:
@@ -9,5 +11,6 @@ public:
 	string trimLeadingWhitespaces(const string& s);
 
 	string trimTrailingWhitespaces(const string& s);
+
 };
 

@@ -1,11 +1,11 @@
 #include "QueryInfo.h"
 
 /* getters */
-unordered_map<RELREF, vector<vector<VAR_NAME>>> QueryInfo::getRelRefMap() {
+unordered_map<string, vector<vector<VAR_NAME>>> QueryInfo::getRelRefMap() {
 	return this->relRef_map;
 }
 
-unordered_map<VAR_NAME, ENTITY> QueryInfo::getVarMap() {
+unordered_map<VAR_NAME, string> QueryInfo::getVarMap() {
 	return this->var_map;
 }
 
@@ -15,11 +15,11 @@ VAR_NAME QueryInfo::getOutputVar() {
 
 
 /* setters */
-void QueryInfo::setRelRefMap(unordered_map<RELREF, vector<vector<VAR_NAME>>> relRef_map) {
+void QueryInfo::setRelRefMap(unordered_map<string, vector<vector<VAR_NAME>>> relRef_map) {
 	this->relRef_map = relRef_map;
 }
 
-void QueryInfo::setVarMap(unordered_map<VAR_NAME, ENTITY> var_map) {
+void QueryInfo::setVarMap(unordered_map<VAR_NAME, string> var_map) {
 	this->var_map = var_map;
 }
 
