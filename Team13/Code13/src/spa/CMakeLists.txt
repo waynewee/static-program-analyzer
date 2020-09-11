@@ -1,13 +1,10 @@
 file(GLOB srcs "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*/*.cpp")
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.cpp")
 file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.hpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*/*.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*/*.hpp")
-add_library(spa ${srcs} ${headers})
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.hpp")
+add_library(spa ${srcs} ${headers} src/pkb/relation_manager.cpp src/pkb/relation_manager.h src/pkb/data_manager.cpp src/pkb/data_manager.h src/pkb/data_tables.cpp src/pkb/data_tables.h)
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/pkb")
 # this makes the headers accessible for other projects which uses spa lib
