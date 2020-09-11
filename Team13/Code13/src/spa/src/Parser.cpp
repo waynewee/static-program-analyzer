@@ -18,7 +18,6 @@ Parser::Parser() {
 int Parser::parse(std::string input) {
 
 	Tokenizer tokenizer(input);
-
 	tokenizer.tokenize();
 
 	tokenList = tokenizer.getTokenList();
