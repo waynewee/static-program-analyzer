@@ -9,7 +9,7 @@ using namespace std;
 #include <regex>
 #include "QueryInfo.h"
 
-void PQLParser::parse(string s) {
+QueryInfo PQLParser::parse(string s) {
     QuerySyntaxValidator query_syntax_validator;
     QueryInfo queryInfo;
 
