@@ -3,42 +3,42 @@
 #include "pkb/PKB.h"
 
 QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
-	
 	unordered_map<unordered_set<string>*, unordered_set<string>> interResults = unordered_map<unordered_set<string>*, unordered_set<string>>();
 	QueryResult finalResult = QueryResult();	
-	
-	unordered_map<string, ENTITY> varMap = queryInfo.getVarMap();
-	unordered_map<RELREF, vector<vector<string>>> relRefMap = queryInfo.getRelRefMap();
+
+	unordered_map<string, string> varMap = queryInfo.getVarMap();
+	unordered_map<string, vector<vector<string>>> relRefMap = queryInfo.getRelRefMap();
 	string outputVar = queryInfo.getOutputVar();
-	ENTITY outputVarEntity = varMap.at(outputVar);
-	
-	unordered_set<tuple<RELREF, string, string>*> boolSet = unordered_set<tuple<RELREF, string, string>*>();
-	unordered_set<tuple<RELREF, string, string>*> getSet = unordered_set<tuple<RELREF, string, string>*>();
+	string outputVarType = varMap.at(outputVar);
+
+	unordered_set<tuple<string, string, string>*> boolSet = unordered_set<tuple<string, string, string>*>();
+	unordered_set<tuple<string, string, string>*> getSet = unordered_set<tuple<string, string, string>*>();
 	
 	// Parse clauses conditions
 	for (auto f = relRefMap.cbegin(); f != relRefMap.cend(); f++) {
-		RELREF fCall = (*f).first;
+		string fCall = (*f).first;
 		vector<vector<string>> allParams = (*f).second;
 
 		for (vector<string> p : allParams) {
-			if (fCall == RELREF::pattern) {
+			if (fCall.compare(TYPE_COND_PATTERN) == 0) {
 				PKB pkb;
-
+				
 				unordered_set<string>* key = &unordered_set<string>();
 				(*key).insert(p[2]);
 
-				string* parsedParam1 = parsingEntRef(&p[0], varMap);
-				STATEMENT_TYPE patternType = ((STATEMENT*)&varMap.at(p[2]))->statement_type;
-				unordered_set<string> value = convertSet(pkb.GetPattern(&patternType, parsedParam1, &p[1]));
-
-				if (value.empty()) {
+				string parsedParam1 = parsingEntRef(p[0], varMap);
+				STATEMENT_TYPE type = assignStatement;
+				unordered_set<int>* value = pkb.GetPattern(&type, &parsedParam1, &p[1]);
+				if (value->empty()) {
 					finalResult.setResult({});
 					return finalResult;
 				}
 
-				interResults.insert({ key, value });
+				unordered_set<string> finalValue = convertSet(*value);
+
+				interResults.insert({ key, finalValue });
 			}
-			else if (outputVarEntity.type == ENTITY_TYPE::constant) {
+			else if (outputVarType.compare(TYPE_CONST) == 0) {
 				boolSet.insert(&make_tuple(fCall, p[0], p[1]));
 			}
 			else {
@@ -55,21 +55,21 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 			}
 		}
 	}
-
+	
 	// Evaluate boolean-type clauses
 	// FALSE -> return empty; ALL TRUE -> continue
-	for (tuple<RELREF, string, string>* func : boolSet) {
+	for (tuple<string, string, string>* func : boolSet) {
 		if (!evaluateBoolSet(*func)) {
 			finalResult.setResult({});
 			return finalResult;
 		}
 	}
 	
-
+	
 	// Evaluate get-type clauses
 	// Store in interResult: KEY = user declared param(s), VALUE = result set
 	// Break condition: VALUE = {} implies FALSE -> return empty
-	for (tuple<RELREF, string, string>* func : getSet) {
+	for (tuple<string, string, string>* func : getSet) {
 		unordered_set<string>* key = &unordered_set<string>();
 		if (varMap.find(get<1>(*func)) != varMap.end()) {
 			(*key).insert(get<1>(*func));
@@ -79,7 +79,7 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 			(*key).insert(get<2>(*func));
 		}
 
-		unordered_set<string> value = evaluateGetSet(*func, varMap, outputVarEntity);
+		unordered_set<string> value = evaluateGetSet(*func, varMap, outputVarType);
 
 		// Empty result set means the result is FALSE -> return empty
 		if (value.empty()) {
@@ -102,16 +102,22 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 	// Check if output variable is CONSTANT: 
 	// TRUE -> return output var
 	// FALSE -> AND the relevant result sets
-	if (outputVarEntity.type == ENTITY_TYPE::constant) {
-		finalResult.setResult({ outputVar });
+	if (outputVarType.compare(TYPE_CONST) == 0) {
+		PKB pkb;
+		//unordered_set<int> result = *(pkb.GetAllConst());
+		//finalResult.setResult(convertSet(result));
+
+		// dummy test data
+		finalResult.setResult({ "1", "2" });
 		return finalResult;
 	}
 	else {
 		// Include outputVar as KEY in interResult; VALUE = getAll<ENTITY_TYPE of outputVar>
-		unordered_set<string>* key = &unordered_set<string>();
-		(*key).insert(outputVar);
+		unordered_set<string> set = unordered_set<string>();
+		set.insert(outputVar);
+		unordered_set<string>* key = &set;
 
-		unordered_set<string> value = getAllSet(outputVarEntity);
+		unordered_set<string> value = getAllSet(outputVarType);
 		if (interResults.find(key) == interResults.end()) {
 			interResults.insert({ key, value });
 		}
@@ -126,7 +132,7 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 			if (isContainingVar(varToInclude, *key)) {
 
 				for (string p: *key) {
-					if (varMap.at(p).type == outputVarEntity.type) {
+					if (varMap.at(p).compare(outputVarType) == 0) {
 						varToInclude.insert(p);
 					}
 				}
@@ -146,36 +152,36 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 	return finalResult;
 }
 
-bool PQLEvaluator::evaluateBoolSet(tuple<RELREF, string, string> func) {
+bool PQLEvaluator::evaluateBoolSet(tuple<string, string, string> func) {
 	PKB pkb;
 
-	RELREF fCall = get<0>(func);
+	string fCall = get<0>(func);
 	string param1 = get<1>(func);
 	string param2 = get<2>(func);
 
-	if (fCall == RELREF::Follows) {
+	if (fCall.compare(TYPE_COND_FOLLOWS) == 0) {
 		return pkb.IsFollows(parsingStmtRef(param1), parsingStmtRef(param2));
 	}
-	else if (fCall == RELREF::FollowsT) {
+	else if (fCall.compare(TYPE_COND_FOLLOWS_T) == 0) {
 		return pkb.IsFollowsStar(parsingStmtRef(param1), parsingStmtRef(param2));
 	}
-	else if (fCall == RELREF::Parent) {
+	else if (fCall.compare(TYPE_COND_PARENT) == 0) {
 		return pkb.IsParent(parsingStmtRef(param1), parsingStmtRef(param2));
 	}
-	else if (fCall == RELREF::ParentT) {
+	else if (fCall.compare(TYPE_COND_PARENT_T) == 0) {
 		return pkb.IsParentStar(parsingStmtRef(param1), parsingStmtRef(param2));
 	}
-	else if (fCall == RELREF::UsesS) {
-		return pkb.IsStmtUses(parsingStmtRef(param1), parsingEntRef(&param2));
+	else if (fCall.compare(TYPE_COND_USES_S) == 0) {
+		return pkb.IsStmtUses(parsingStmtRef(param1), &parsingEntRef(param2));
 	}
-	else if (fCall == RELREF::UsesP) {
-		return pkb.IsProcUses(parsingEntRef(&param1), parsingEntRef(&param2));
+	else if (fCall.compare(TYPE_COND_USES_P) == 0) {
+		return pkb.IsProcUses(&parsingEntRef(param1), &parsingEntRef(param2));
 	}
-	else if (fCall == RELREF::ModifiesS) {
-		return pkb.IsStmtModifies(parsingStmtRef(param1), parsingEntRef(&param2));
+	else if (fCall.compare(TYPE_COND_MODIFIES_S) == 0) {
+		return pkb.IsStmtModifies(parsingStmtRef(param1), &parsingEntRef(param2));
 	}
-	else if (fCall == RELREF::ModifiesP) {
-		return pkb.IsProcModifies(parsingEntRef(&param1), parsingEntRef(&param2));
+	else if (fCall.compare(TYPE_COND_MODIFIES_P) == 0) {
+		return pkb.IsProcModifies(&parsingEntRef(param1), &parsingEntRef(param2));
 	}
 	else {
 		// error
@@ -183,7 +189,7 @@ bool PQLEvaluator::evaluateBoolSet(tuple<RELREF, string, string> func) {
 }
 
 int PQLEvaluator::parsingStmtRef(string param) {
-	if (param.compare("_")) {
+	if (param.compare("_") == 0) {
 		return 0;
 	}
 	else {
@@ -191,46 +197,49 @@ int PQLEvaluator::parsingStmtRef(string param) {
 	}
 }
 
-string* PQLEvaluator::parsingEntRef(string* param) {
-	if ((*param).compare("_")) {
-		return NULL;
+string PQLEvaluator::parsingEntRef(string param) {
+	if (param.compare("_") == 0) {
+		return "";
 	}
 	else {
 		return param;
 	}
 }
 
-unordered_set<string> PQLEvaluator::evaluateGetSet(tuple<RELREF, string, string> func, unordered_map<string, ENTITY> varMap, ENTITY outputVar) {
+unordered_set<string> PQLEvaluator::evaluateGetSet(tuple<string, string, string> func, unordered_map<string, string> varMap, string outputVarType) {
 	PKB pkb;
 
-	RELREF fCall = get<0>(func);
+	string fCall = get<0>(func);
 	string param1 = get<1>(func);
 	string param2 = get<2>(func);
 
-	if (fCall == RELREF::Follows) {
+	if (fCall.compare(TYPE_COND_FOLLOWS) == 0) {
 		unordered_set<int>* result = pkb.GetFollows(parsingStmtRef(param1, varMap), parsingStmtRef(param2, varMap));
-		return convertSet(result);
+		return convertSet(*result);
 	}
-	else if (fCall == RELREF::FollowsT) {
+	else if (fCall.compare(TYPE_COND_FOLLOWS_T) == 0) {
 		unordered_set<int>* result = pkb.GetFollowsStar(parsingStmtRef(param1, varMap), parsingStmtRef(param2, varMap));
-		return convertSet(result);
+		return convertSet(*result);
 	}
-	else if (fCall == RELREF::Parent) {
+	else if (fCall.compare(TYPE_COND_PARENT) == 0) {
 		unordered_set<int>* result = pkb.GetParent(parsingStmtRef(param1, varMap), parsingStmtRef(param2, varMap));
-		return convertSet(result);
+		return convertSet(*result);
 	}
-	else if (fCall == RELREF::ParentT) {
+	else if (fCall.compare(TYPE_COND_PARENT_T) == 0) {
 		unordered_set<int>* result = pkb.GetParentStar(parsingStmtRef(param1, varMap), parsingStmtRef(param2, varMap));
-		return convertSet(result);
+		return convertSet(*result);
 	}
-	else if (fCall == RELREF::UsesS) {
+	else if (fCall.compare(TYPE_COND_USES_S) == 0) {
 		int parsedParam1 = parsingStmtRef(param1, varMap);
-		string* parsedParam2 = parsingEntRef(&param2, varMap);
+		string parsedParam2 = parsingEntRef(param2, varMap);
 
 		if (isVar(param1, varMap) && isVar(param1, varMap)) {
 			// both user declared var
-			if (outputVar.type == ENTITY_TYPE::statement) {
-				unordered_set<string> result = convertSet(pkb.GetInverseStmtUses(parsedParam2));
+			if (outputVarType.compare(TYPE_STMT) == 0 || outputVarType.compare(TYPE_STMT_ASSIGN) == 0 ||
+					outputVarType.compare(TYPE_STMT_CALL) == 0 || outputVarType.compare(TYPE_STMT_IF) == 0 ||
+					outputVarType.compare(TYPE_STMT_WHILE) == 0 || outputVarType.compare(TYPE_STMT_PRINT) == 0 ||
+					outputVarType.compare(TYPE_STMT) == 0) {
+				unordered_set<string> result = convertSet(*(pkb.GetInverseStmtUses(&parsedParam2)));
 				return getANDResult(result, getAllSet(varMap.at(param1)));
 			}
 			else {
@@ -240,7 +249,7 @@ unordered_set<string> PQLEvaluator::evaluateGetSet(tuple<RELREF, string, string>
 		}
 		else if (isVar(param1, varMap) && !isVar(param1, varMap)) {
 			// First param = user declared var; Second param = string/wildcard
-			unordered_set<string> result = convertSet(pkb.GetInverseStmtUses(parsedParam2));
+			unordered_set<string> result = convertSet(*(pkb.GetInverseStmtUses(&parsedParam2)));
 			return getANDResult(result, getAllSet(varMap.at(param1)));
 		}
 		else if (!isVar(param1, varMap) && isVar(param1, varMap)) {
@@ -249,14 +258,17 @@ unordered_set<string> PQLEvaluator::evaluateGetSet(tuple<RELREF, string, string>
 			return convertSet(result);
 		}
 	}
-	else if (fCall == RELREF::ModifiesS) {
+	else if (fCall.compare(TYPE_COND_MODIFIES_S) == 0) {
 		int parsedParam1 = parsingStmtRef(param1, varMap);
-		string* parsedParam2 = parsingEntRef(&param2, varMap);
+		string parsedParam2 = parsingEntRef(param2, varMap);
 
 		if (isVar(param1, varMap) && isVar(param1, varMap)) {
 			// both user declared var
-			if (outputVar.type == ENTITY_TYPE::statement) {
-				unordered_set<string> result = convertSet(pkb.GetInverseStmtModifies(parsedParam2));
+			if (outputVarType.compare(TYPE_STMT) == 0 || outputVarType.compare(TYPE_STMT_ASSIGN) == 0 ||
+					outputVarType.compare(TYPE_STMT_CALL) == 0 || outputVarType.compare(TYPE_STMT_IF) == 0 ||
+					outputVarType.compare(TYPE_STMT_WHILE) == 0 || outputVarType.compare(TYPE_STMT_PRINT) == 0 ||
+					outputVarType.compare(TYPE_STMT) == 0) {
+				unordered_set<string> result = convertSet(*(pkb.GetInverseStmtModifies(&parsedParam2)));
 				return getANDResult(result, getAllSet(varMap.at(param1)));
 			}
 			else {
@@ -266,7 +278,7 @@ unordered_set<string> PQLEvaluator::evaluateGetSet(tuple<RELREF, string, string>
 		}
 		else if (isVar(param1, varMap) && !isVar(param1, varMap)) {
 			// First param = user declared var; Second param = string/wildcard
-			unordered_set<string> result = convertSet(pkb.GetInverseStmtModifies(parsedParam2));
+			unordered_set<string> result = convertSet(*(pkb.GetInverseStmtModifies(&parsedParam2)));
 			return getANDResult(result, getAllSet(varMap.at(param1)));
 		}
 		else if (!isVar(param1, varMap) && isVar(param1, varMap)) {
@@ -275,55 +287,61 @@ unordered_set<string> PQLEvaluator::evaluateGetSet(tuple<RELREF, string, string>
 			return convertSet(result);
 		}
 	}
-	else if (fCall == RELREF::UsesP) {
-		string* parsedParam1 = parsingEntRef(&param1, varMap);
-		string* parsedParam2 = parsingEntRef(&param2, varMap);
+	else if (fCall.compare(TYPE_COND_USES_P) == 0) {
+		string parsedParam1 = parsingEntRef(param1, varMap);
+		string parsedParam2 = parsingEntRef(param2, varMap);
 
 		if (isVar(param1, varMap) && isVar(param1, varMap)) {
 			// both user declared var
-			if (outputVar.type == ENTITY_TYPE::statement) {
-				unordered_set<string> result = convertSet(pkb.GetInverseProcUses(parsedParam2));
+			if (outputVarType.compare(TYPE_STMT) == 0 || outputVarType.compare(TYPE_STMT_ASSIGN) == 0 ||
+					outputVarType.compare(TYPE_STMT_CALL) == 0 || outputVarType.compare(TYPE_STMT_IF) == 0 ||
+					outputVarType.compare(TYPE_STMT_WHILE) == 0 || outputVarType.compare(TYPE_STMT_PRINT) == 0 ||
+					outputVarType.compare(TYPE_STMT) == 0) {
+				unordered_set<string> result = convertSet(*(pkb.GetInverseProcUses(&parsedParam2)));
 				return getANDResult(result, getAllSet(varMap.at(param1)));
 			}
 			else {
-				unordered_set<string*>* result = pkb.GetProcUses(parsedParam1);
+				unordered_set<string*>* result = pkb.GetProcUses(&parsedParam1);
 				return convertSet(result);
 			}
 		}
 		else if (isVar(param1, varMap) && !isVar(param1, varMap)) {
 			// First param = user declared var; Second param = string/wildcard
-			unordered_set<string> result = convertSet(pkb.GetInverseProcUses(parsedParam2));
+			unordered_set<string> result = convertSet(*(pkb.GetInverseProcUses(&parsedParam2)));
 			return getANDResult(result, getAllSet(varMap.at(param1)));
 		}
 		else if (!isVar(param1, varMap) && isVar(param1, varMap)) {
 			// First param = const; Second param = user declared var
-			unordered_set<string*>* result = pkb.GetProcUses(parsedParam1);
+			unordered_set<string*>* result = pkb.GetProcUses(&parsedParam1);
 			return convertSet(result);
 		}
 	}
-	else if (fCall == RELREF::ModifiesP) {
-		string* parsedParam1 = parsingEntRef(&param1, varMap);
-		string* parsedParam2 = parsingEntRef(&param2, varMap);
+	else if (fCall.compare(TYPE_COND_MODIFIES_P) == 0) {
+		string parsedParam1 = parsingEntRef(param1, varMap);
+		string parsedParam2 = parsingEntRef(param2, varMap);
 
 		if (isVar(param1, varMap) && isVar(param1, varMap)) {
 			// both user declared var
-			if (outputVar.type == ENTITY_TYPE::statement) {
-				unordered_set<string> result = convertSet(pkb.GetInverseProcModifies(parsedParam2));
+			if (outputVarType.compare(TYPE_STMT) == 0 || outputVarType.compare(TYPE_STMT_ASSIGN) == 0 ||
+					outputVarType.compare(TYPE_STMT_CALL) == 0 || outputVarType.compare(TYPE_STMT_IF) == 0 ||
+					outputVarType.compare(TYPE_STMT_WHILE) == 0 || outputVarType.compare(TYPE_STMT_PRINT) == 0 ||
+					outputVarType.compare(TYPE_STMT) == 0) {
+				unordered_set<string> result = convertSet(*(pkb.GetInverseProcModifies(&parsedParam2)));
 				return getANDResult(result, getAllSet(varMap.at(param1)));
 			}
 			else {
-				unordered_set<string*>* result = pkb.GetProcModifies(parsedParam1);
+				unordered_set<string*>* result = pkb.GetProcModifies(&parsedParam1);
 				return convertSet(result);
 			}
 		}
 		else if (isVar(param1, varMap) && !isVar(param1, varMap)) {
 			// First param = user declared var; Second param = string/wildcard
-			unordered_set<string> result = convertSet(pkb.GetInverseProcModifies(parsedParam2));
+			unordered_set<string> result = convertSet(*(pkb.GetInverseProcModifies(&parsedParam2)));
 			return getANDResult(result, getAllSet(varMap.at(param1)));
 		}
 		else if (!isVar(param1, varMap) && isVar(param1, varMap)) {
 			// First param = const; Second param = user declared var
-			unordered_set<string*>* result = pkb.GetProcModifies(parsedParam1);
+			unordered_set<string*>* result = pkb.GetProcModifies(&parsedParam1);
 			return convertSet(result);
 		}
 	}
@@ -332,8 +350,9 @@ unordered_set<string> PQLEvaluator::evaluateGetSet(tuple<RELREF, string, string>
 	}
 }
 
-int PQLEvaluator::parsingStmtRef(string param, unordered_map<string, ENTITY> varMap) {
-	if (param.compare("_") || varMap.find(param) != varMap.end()) {
+
+int PQLEvaluator::parsingStmtRef(string param, unordered_map<string, string> varMap) {
+	if (param.compare("_") == 0 || varMap.find(param) != varMap.end()) {
 		return 0;
 	}
 	else {
@@ -341,30 +360,33 @@ int PQLEvaluator::parsingStmtRef(string param, unordered_map<string, ENTITY> var
 	}
 }
 
-string* PQLEvaluator::parsingEntRef(string* param, unordered_map<string, ENTITY> varMap) {
-	if ((*param).compare("_") || varMap.find(*param) != varMap.end()) {
-		return NULL;
+string PQLEvaluator::parsingEntRef(string param, unordered_map<string, string> varMap) {
+	if (param.compare("_") == 0 || varMap.find(param) != varMap.end()) {
+		return "";
 	}
 	else {
 		return param;
 	}
 }
 
-unordered_set<string> PQLEvaluator::convertSet(unordered_set<int>* resultSet) {
-	unordered_set<string> finalResult;
-	for (int k : *resultSet) {
-		finalResult.insert(to_string(k));
-	}
+unordered_set<string> PQLEvaluator::convertSet(unordered_set<int> resultSet) {
+	unordered_set<string> finalResult = unordered_set<string>();
 
+	if (!resultSet.empty()) {
+		for (int k : resultSet) {
+			finalResult.insert(to_string(k));
+		}
+	}
 	return finalResult;
 }
 
 unordered_set<string> PQLEvaluator::convertSet(unordered_set<string*>* resultSet) {
-	unordered_set<string> finalResult;
-	for (string* k : *resultSet) {
-		finalResult.insert(*k);
+	unordered_set<string> finalResult = unordered_set<string>();
+	if (!(*resultSet).empty()) {
+		for (string* k : *resultSet) {
+			finalResult.insert(*k);
+		}
 	}
-
 	return finalResult;
 }
 
@@ -386,18 +408,44 @@ unordered_set<string> PQLEvaluator::getANDResult(unordered_set<string> existingV
 	return result;
 }
 
-unordered_set<string> PQLEvaluator::getAllSet(ENTITY entity) {
+unordered_set<string> PQLEvaluator::getAllSet(string outputVarType) {
 	PKB pkb;
-	if (entity.type == ENTITY_TYPE::statement) {
-		STATEMENT_TYPE stmtType = ((STATEMENT*)(&entity))->statement_type;
-		STMT_IDX_SET* result = pkb.GetAllStatements(stmtType);
+
+	if (outputVarType == TYPE_STMT) {
+		unordered_set<int> result = *(pkb.GetAllStatements());
 		return convertSet(result);
 	}
-	else if (entity.type == ENTITY_TYPE::variable) {
-		return convertSet(pkb.GetAllVariables());
+	else if (outputVarType == TYPE_STMT_ASSIGN) {
+		unordered_set<int> result = *(pkb.GetAllStatements(STATEMENT_TYPE::assignStatement));
+		return convertSet(result);
 	}
-	else if (entity.type == ENTITY_TYPE::proc) {
-		return convertSet(pkb.GetAllProcedures());
+	else if (outputVarType == TYPE_STMT_CALL) {
+		unordered_set<int> result = *(pkb.GetAllStatements(STATEMENT_TYPE::callStatement));
+		return convertSet(result);
+	}
+	else if (outputVarType == TYPE_STMT_IF) {
+		unordered_set<int> result = *(pkb.GetAllStatements(STATEMENT_TYPE::ifStatement));
+		return convertSet(result);
+	}
+	else if (outputVarType == TYPE_STMT_WHILE) {
+		unordered_set<int> result = *(pkb.GetAllStatements(STATEMENT_TYPE::whileStatement));
+		return convertSet(result);
+	}
+	else if (outputVarType == TYPE_STMT_PRINT) {
+		unordered_set<int> result = *(pkb.GetAllStatements(STATEMENT_TYPE::printStatement));
+		return convertSet(result);
+	}
+	else if (outputVarType == TYPE_STMT_READ) {
+		unordered_set<int> result = *(pkb.GetAllStatements(STATEMENT_TYPE::readStatement));
+		return convertSet(result);
+	}
+	else if (outputVarType == TYPE_VAR) {
+		unordered_set<string*>* result = pkb.GetAllVariables();
+		return convertSet(result);
+	}
+	else if (outputVarType == TYPE_PROC) {
+		unordered_set<string*>* result = pkb.GetAllProcedures();
+		return convertSet(result);
 	}
 	else {
 		// error
@@ -414,7 +462,7 @@ bool PQLEvaluator::isContainingVar(unordered_set<string> relatedVar, unordered_s
 	return false;
 }
 
-bool PQLEvaluator::isVar(string var, unordered_map<string, ENTITY> varMap) {
+bool PQLEvaluator::isVar(string var, unordered_map<string, string> varMap) {
 	if (varMap.find(var) == varMap.end()) {
 		return false;
 	}
