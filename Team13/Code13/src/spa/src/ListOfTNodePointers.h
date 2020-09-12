@@ -5,4 +5,4 @@
 #include <TNode.h>
 #include <vector>
 
-typedef std::vector<TNode*> LIST_OF_TNODE_PTR;
+typedef std::vector<TNode*> TNODE_PTR_LIST;
