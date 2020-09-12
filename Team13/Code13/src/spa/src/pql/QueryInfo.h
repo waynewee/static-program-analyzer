@@ -9,17 +9,17 @@ using namespace std;
 class QueryInfo
 {
 private:
-	unordered_map<RELREF, vector<vector<VAR_NAME>>> relRef_map;
-	unordered_map<VAR_NAME,ENTITY> var_map;
-	VAR_NAME output_var;
+	unordered_map<string, vector<vector<string>>> relRef_map;
+	unordered_map<string, string> var_map;
+	string output_var;
 public:
 	/* getters */
-	unordered_map<RELREF, vector<vector<VAR_NAME>>> getRelRefMap();
-	unordered_map<string, ENTITY> getVarMap();
-	VAR_NAME getOutputVar();
+	unordered_map<string, vector<vector<string>>> getRelRefMap();
+	unordered_map<string, string> getVarMap();
+	string getOutputVar();
 
 	/* setters */
-	void setRelRefMap(unordered_map<RELREF, vector<vector<VAR_NAME>>> relRef_map);
-	void setVarMap(unordered_map<string, ENTITY> var_map);
-	void setOutputVar(VAR_NAME output_var);
+	void setRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map);
+	void setVarMap(unordered_map<string, string> var_map);
+	void setOutputVar(string output_var);
 };
