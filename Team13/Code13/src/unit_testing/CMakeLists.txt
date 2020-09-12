@@ -4,7 +4,7 @@ file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.hpp")
-add_executable(unit_testing ${srcs} )
+add_executable(unit_testing ${srcs}  "src/TestPQLParser.cpp")
 
 target_link_libraries(unit_testing spa)
 

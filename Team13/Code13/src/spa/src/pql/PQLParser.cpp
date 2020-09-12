@@ -64,21 +64,6 @@ QueryInfo PQLParser::parse(string s) {
         }
     }
 
-    /*
-    for (auto const& pair : varMap) {
-        std::cout << "{" << pair.first << ": " << pair.second << "}\n";
-    }
-    */
-
-    // checking unordered map
-    /*
-    cout << "KEY\tELEMENT\n";
-    for (auto itr = differentiable_user_declared_var.begin(); itr != differentiable_user_declared_var.end(); itr++) {
-        cout << itr->first
-            << '\t' << itr->second << '\n';
-    }
-    */
-
 
     string select_clause = str;
     // cout << "select_clause : " << select_clause << endl;
@@ -107,20 +92,30 @@ QueryInfo PQLParser::parse(string s) {
     select_clause = trimLeadingWhitespaces(select_clause);
     select_clause = trimTrailingWhitespaces(select_clause);
 
+
+    // cout << "IS SELECT CLAUSE EMPTY : " << select_clause.empty() << endl;
+    // cout << "SELECT CLAUSE IS NOW : " << select_clause << endl;
+
     // didnt declare clause
+    /*
     if (next_word.compare(select_clause) == 0) {
         throw ("Error : 'Select' not found");
     }
+    */
 
     select_clause.erase(0, select_clause.find_first_of(" "));
     select_clause = trimLeadingWhitespaces(select_clause);
-
-
+    // cout << "IS SELECT CLAUSE EMPTY : " << select_clause.empty() << endl;
+    // cout << "SELECT CLAUSE IS NOW : " << select_clause << endl;
 
     // now, next word MUST BE either such OR pattern
     next_word = select_clause.substr(0, select_clause.find_first_of(" "));
     next_word = trimLeadingWhitespaces(next_word);
     next_word = trimTrailingWhitespaces(next_word);
+
+    if (select_clause.empty()) {
+        return queryInfo;
+    }
 
     // cout << "next_word : " << next_word << endl;
 

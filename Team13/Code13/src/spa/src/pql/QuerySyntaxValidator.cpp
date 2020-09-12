@@ -277,9 +277,11 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 			throw ("Error : Second argument is not declared or is invalid ");
 		}
 
+		/*
 		if (isInteger(second_argument)) {
 			throw ("Error : Second argument cannot be an Integer ");
 		}
+		*/
 
 		if (declaredVarNames.count(first_argument) == 1) {
 			if (declaredVarNames.at(first_argument) == 1) {
@@ -302,9 +304,11 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 		ModifiesP : ‘Modifies’ ‘(’ entRef ‘, ’ entRef ‘)’
 	*/
 
+	/*
 	if (isInteger(second_argument)) {
 		throw ("Error : Second argument cannot be an Integer ");
 	}
+	*/
 
 	// function name is Uses
 	if (declared_relRef.compare("Uses") == 0) {
@@ -352,6 +356,9 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 		if ((declaredVarNames.count(first_argument) != 1 && !isInteger(first_argument)) && !isUnderscore(first_argument)) {
 			// first argument wasnt defined by the user or is just invalid
 			throw ("Error : First argument is not declared or is invalid ");
+		}
+		if (isInteger(second_argument)) {
+			throw ("Error : Second argument cannot be an Integer ");
 		}
 		// second argument is an entity ref
 		string parsed_second_argument = second_argument;
@@ -403,6 +410,10 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 		if (!isEntRef(first_argument, declaredVarNames)) {
 			throw ("Error : First argument is not declared or is invalid ");
 
+		}
+
+		if (isInteger(second_argument)) {
+			throw ("Error : Second argument cannot be an Integer ");
 		}
 		//if (declaredVarNames.count(first_argument) != 1 || !isEntRef(first_argument)) {
 			// second argument wasnt defined by the SIMPLE program at frontend or is just invalid
