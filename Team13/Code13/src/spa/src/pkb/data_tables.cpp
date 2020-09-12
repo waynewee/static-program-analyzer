@@ -42,3 +42,9 @@ VAR_NAME_SET* VariableTable::GetAll() {
 bool VariableTable::Add(VAR_NAME *v) {
     return data->insert(v).second;
 }
+bool ConstTable::Add(CONST_VALUE cv) {
+    return data->insert(cv).second;
+}
+CONST_VALUE_SET *ConstTable::GetAll() {
+    return data;
+}
