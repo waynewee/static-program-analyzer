@@ -10,7 +10,7 @@ class QueryInfo
 {
 private:
 	unordered_map<string, vector<vector<string>>> relRef_map;
-	unordered_map<string,string> var_map;
+	unordered_map<string, string> var_map;
 	string output_var;
 public:
 	/* getters */
