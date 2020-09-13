@@ -8,8 +8,11 @@
 
 class ProcedureTable {
 private:
-    PROC_NAME_SET* data;
+    PROC_NAME_SET* data_;
 public:
+    ProcedureTable() {
+        data_ = new PROC_NAME_SET();
+    }
     bool Add(PROC_NAME *p);
     PROC_NAME_SET* GetAll();
 };
@@ -24,12 +27,12 @@ class StatementTable {
 #define _IF_ 6
 #define _size_ 7
 private:
-    std::vector<STMT_IDX_SET *> data;
+    std::vector<STMT_IDX_SET *> data_;
 public:
     StatementTable() {
         for (int i; i < _size_; i++) {
             STMT_IDX_SET stmtSet = STMT_IDX_SET();
-            data.push_back(&stmtSet);
+            data_.push_back(&stmtSet);
         }
     }
     bool Add(STATEMENT_TYPE t, STMT_IDX s);
@@ -39,16 +42,22 @@ public:
 
 class VariableTable {
 private:
-    VAR_NAME_SET* data;
+    VAR_NAME_SET* data_;
 public:
+    VariableTable() {
+        data_ = new VAR_NAME_SET();
+    }
     bool Add(VAR_NAME *v);
     VAR_NAME_SET* GetAll();
 };
 
 class ConstTable {
 private:
-    CONST_VALUE_SET* data;
+    CONST_VALUE_SET* data_;
 public:
+    ConstTable() {
+        data_ = new CONST_VALUE_SET();
+    }
     bool Add(CONST_VALUE cv);
     CONST_VALUE_SET* GetAll();
 };
