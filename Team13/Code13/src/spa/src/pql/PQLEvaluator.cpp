@@ -1,5 +1,5 @@
 #include "PQLEvaluator.h"
-
+#include <iostream>
 #include "pkb/PKB.h"
 
 QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
@@ -21,6 +21,7 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 
 		for (vector<string> p : allParams) {
 			if (fCall.compare(TYPE_COND_PATTERN) == 0) {
+				/*
 				PKB pkb;
 				
 				unordered_set<string>* key = &unordered_set<string>();
@@ -36,7 +37,7 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 
 				unordered_set<string> finalValue = convertSet(*value);
 
-				interResults.insert({ key, finalValue });
+				interResults.insert({ key, finalValue });*/
 			}
 			else if (outputVarType.compare(TYPE_CONST) == 0) {
 				boolSet.insert(&make_tuple(fCall, p[0], p[1]));
@@ -103,12 +104,11 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 	// TRUE -> return output var
 	// FALSE -> AND the relevant result sets
 	if (outputVarType.compare(TYPE_CONST) == 0) {
-		PKB pkb;
-		//unordered_set<int> result = *(pkb.GetAllConst());
-		//finalResult.setResult(convertSet(result));
+		PKB pkb = PKB();
+		
+		unordered_set<double>* result = pkb.GetDataManager()->GetAllConstants();
+		//finalResult.setResult(convertSet(*result));
 
-		// dummy test data
-		finalResult.setResult({ "1", "2" });
 		return finalResult;
 	}
 	else {
@@ -118,6 +118,10 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 		unordered_set<string>* key = &set;
 
 		unordered_set<string> value = getAllSet(outputVarType);
+		cout << value.size() << endl;
+		for (string i : value) {
+			cout << i << endl;
+		}
 		if (interResults.find(key) == interResults.end()) {
 			interResults.insert({ key, value });
 		}
@@ -153,35 +157,36 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 }
 
 bool PQLEvaluator::evaluateBoolSet(tuple<string, string, string> func) {
-	PKB pkb;
+	PKB pkb = PKB();
+	RelationManager* rm = pkb.GetRelationManager();
 
 	string fCall = get<0>(func);
 	string param1 = get<1>(func);
 	string param2 = get<2>(func);
 
 	if (fCall.compare(TYPE_COND_FOLLOWS) == 0) {
-		return pkb.IsFollows(parsingStmtRef(param1), parsingStmtRef(param2));
+		return rm->IsFollows(parsingStmtRef(param1), parsingStmtRef(param2));
 	}
 	else if (fCall.compare(TYPE_COND_FOLLOWS_T) == 0) {
-		return pkb.IsFollowsStar(parsingStmtRef(param1), parsingStmtRef(param2));
+		return rm->IsFollowsStar(parsingStmtRef(param1), parsingStmtRef(param2));
 	}
 	else if (fCall.compare(TYPE_COND_PARENT) == 0) {
-		return pkb.IsParent(parsingStmtRef(param1), parsingStmtRef(param2));
+		return rm->IsParent(parsingStmtRef(param1), parsingStmtRef(param2));
 	}
 	else if (fCall.compare(TYPE_COND_PARENT_T) == 0) {
-		return pkb.IsParentStar(parsingStmtRef(param1), parsingStmtRef(param2));
+		return rm->IsParentStar(parsingStmtRef(param1), parsingStmtRef(param2));
 	}
 	else if (fCall.compare(TYPE_COND_USES_S) == 0) {
-		return pkb.IsStmtUses(parsingStmtRef(param1), &parsingEntRef(param2));
+		return rm->IsStmtUses(parsingStmtRef(param1), &parsingEntRef(param2));
 	}
 	else if (fCall.compare(TYPE_COND_USES_P) == 0) {
-		return pkb.IsProcUses(&parsingEntRef(param1), &parsingEntRef(param2));
+		return rm->IsProcUses(&parsingEntRef(param1), &parsingEntRef(param2));
 	}
 	else if (fCall.compare(TYPE_COND_MODIFIES_S) == 0) {
-		return pkb.IsStmtModifies(parsingStmtRef(param1), &parsingEntRef(param2));
+		return rm->IsStmtModifies(parsingStmtRef(param1), &parsingEntRef(param2));
 	}
 	else if (fCall.compare(TYPE_COND_MODIFIES_P) == 0) {
-		return pkb.IsProcModifies(&parsingEntRef(param1), &parsingEntRef(param2));
+		return rm->IsProcModifies(&parsingEntRef(param1), &parsingEntRef(param2));
 	}
 	else {
 		// error
@@ -207,27 +212,31 @@ string PQLEvaluator::parsingEntRef(string param) {
 }
 
 unordered_set<string> PQLEvaluator::evaluateGetSet(tuple<string, string, string> func, unordered_map<string, string> varMap, string outputVarType) {
-	PKB pkb;
+	PKB pkb = PKB();
+	RelationManager* rm = pkb.GetRelationManager();
 
 	string fCall = get<0>(func);
 	string param1 = get<1>(func);
 	string param2 = get<2>(func);
 
 	if (fCall.compare(TYPE_COND_FOLLOWS) == 0) {
-		unordered_set<int>* result = pkb.GetFollows(parsingStmtRef(param1, varMap), parsingStmtRef(param2, varMap));
-		return convertSet(*result);
+		int parsedParam1 = parsingStmtRef(param1, varMap);
+		int parsedParam2 = parsingStmtRef(param2, varMap);
+
+		//unordered_set<int>* result = pkb->GetFollows(parsingStmtRef(param1, varMap), parsingStmtRef(param2, varMap));
+		//return convertSet(*result);
 	}
 	else if (fCall.compare(TYPE_COND_FOLLOWS_T) == 0) {
-		unordered_set<int>* result = pkb.GetFollowsStar(parsingStmtRef(param1, varMap), parsingStmtRef(param2, varMap));
-		return convertSet(*result);
+		//unordered_set<int>* result = pkb->GetFollowsStar(parsingStmtRef(param1, varMap), parsingStmtRef(param2, varMap));
+		//return convertSet(*result);
 	}
 	else if (fCall.compare(TYPE_COND_PARENT) == 0) {
-		unordered_set<int>* result = pkb.GetParent(parsingStmtRef(param1, varMap), parsingStmtRef(param2, varMap));
-		return convertSet(*result);
+		//unordered_set<int>* result = pkb->GetParent(parsingStmtRef(param1, varMap), parsingStmtRef(param2, varMap));
+		//return convertSet(*result);
 	}
 	else if (fCall.compare(TYPE_COND_PARENT_T) == 0) {
-		unordered_set<int>* result = pkb.GetParentStar(parsingStmtRef(param1, varMap), parsingStmtRef(param2, varMap));
-		return convertSet(*result);
+		//unordered_set<int>* result = pkb->GetParentStar(parsingStmtRef(param1, varMap), parsingStmtRef(param2, varMap));
+		//return convertSet(*result);
 	}
 	else if (fCall.compare(TYPE_COND_USES_S) == 0) {
 		int parsedParam1 = parsingStmtRef(param1, varMap);
@@ -239,22 +248,22 @@ unordered_set<string> PQLEvaluator::evaluateGetSet(tuple<string, string, string>
 					outputVarType.compare(TYPE_STMT_CALL) == 0 || outputVarType.compare(TYPE_STMT_IF) == 0 ||
 					outputVarType.compare(TYPE_STMT_WHILE) == 0 || outputVarType.compare(TYPE_STMT_PRINT) == 0 ||
 					outputVarType.compare(TYPE_STMT) == 0) {
-				unordered_set<string> result = convertSet(*(pkb.GetInverseStmtUses(&parsedParam2)));
+				unordered_set<string> result = convertSet(*(rm->GetInverseStmtUses(&parsedParam2)));
 				return getANDResult(result, getAllSet(varMap.at(param1)));
 			}
 			else {
-				unordered_set<string*>* result = pkb.GetStmtUses(parsedParam1);
+				unordered_set<string*>* result = rm->GetStmtUses(parsedParam1);
 				return convertSet(result);
 			}
 		}
 		else if (isVar(param1, varMap) && !isVar(param1, varMap)) {
 			// First param = user declared var; Second param = string/wildcard
-			unordered_set<string> result = convertSet(*(pkb.GetInverseStmtUses(&parsedParam2)));
+			unordered_set<string> result = convertSet(*(rm->GetInverseStmtUses(&parsedParam2)));
 			return getANDResult(result, getAllSet(varMap.at(param1)));
 		}
 		else if (!isVar(param1, varMap) && isVar(param1, varMap)) {
 			// First param = const; Second param = user declared var
-			unordered_set<string*>* result = pkb.GetStmtUses(parsedParam1);
+			unordered_set<string*>* result = rm->GetStmtUses(parsedParam1);
 			return convertSet(result);
 		}
 	}
@@ -268,22 +277,22 @@ unordered_set<string> PQLEvaluator::evaluateGetSet(tuple<string, string, string>
 					outputVarType.compare(TYPE_STMT_CALL) == 0 || outputVarType.compare(TYPE_STMT_IF) == 0 ||
 					outputVarType.compare(TYPE_STMT_WHILE) == 0 || outputVarType.compare(TYPE_STMT_PRINT) == 0 ||
 					outputVarType.compare(TYPE_STMT) == 0) {
-				unordered_set<string> result = convertSet(*(pkb.GetInverseStmtModifies(&parsedParam2)));
+				unordered_set<string> result = convertSet(*(rm->GetInverseStmtModifies(&parsedParam2)));
 				return getANDResult(result, getAllSet(varMap.at(param1)));
 			}
 			else {
-				unordered_set<string*>* result = pkb.GetStmtModifies(parsedParam1);
+				unordered_set<string*>* result = rm->GetStmtModifies(parsedParam1);
 				return convertSet(result);
 			}
 		}
 		else if (isVar(param1, varMap) && !isVar(param1, varMap)) {
 			// First param = user declared var; Second param = string/wildcard
-			unordered_set<string> result = convertSet(*(pkb.GetInverseStmtModifies(&parsedParam2)));
+			unordered_set<string> result = convertSet(*(rm->GetInverseStmtModifies(&parsedParam2)));
 			return getANDResult(result, getAllSet(varMap.at(param1)));
 		}
 		else if (!isVar(param1, varMap) && isVar(param1, varMap)) {
 			// First param = const; Second param = user declared var
-			unordered_set<string*>* result = pkb.GetStmtModifies(parsedParam1);
+			unordered_set<string*>* result = rm->GetStmtModifies(parsedParam1);
 			return convertSet(result);
 		}
 	}
@@ -297,22 +306,24 @@ unordered_set<string> PQLEvaluator::evaluateGetSet(tuple<string, string, string>
 					outputVarType.compare(TYPE_STMT_CALL) == 0 || outputVarType.compare(TYPE_STMT_IF) == 0 ||
 					outputVarType.compare(TYPE_STMT_WHILE) == 0 || outputVarType.compare(TYPE_STMT_PRINT) == 0 ||
 					outputVarType.compare(TYPE_STMT) == 0) {
-				unordered_set<string> result = convertSet(*(pkb.GetInverseProcUses(&parsedParam2)));
+				unordered_set<string*> interResult = *(rm->GetInverseProcUses(&parsedParam2));
+				unordered_set<string> result = convertSet(&interResult);
 				return getANDResult(result, getAllSet(varMap.at(param1)));
 			}
 			else {
-				unordered_set<string*>* result = pkb.GetProcUses(&parsedParam1);
+				unordered_set<string*>* result = rm->GetProcUses(&parsedParam1);
 				return convertSet(result);
 			}
 		}
 		else if (isVar(param1, varMap) && !isVar(param1, varMap)) {
 			// First param = user declared var; Second param = string/wildcard
-			unordered_set<string> result = convertSet(*(pkb.GetInverseProcUses(&parsedParam2)));
+			unordered_set<string*> interResult = *(rm->GetInverseProcUses(&parsedParam2));
+			unordered_set<string> result = convertSet(&interResult);
 			return getANDResult(result, getAllSet(varMap.at(param1)));
 		}
 		else if (!isVar(param1, varMap) && isVar(param1, varMap)) {
 			// First param = const; Second param = user declared var
-			unordered_set<string*>* result = pkb.GetProcUses(&parsedParam1);
+			unordered_set<string*>* result = rm->GetProcUses(&parsedParam1);
 			return convertSet(result);
 		}
 	}
@@ -326,22 +337,24 @@ unordered_set<string> PQLEvaluator::evaluateGetSet(tuple<string, string, string>
 					outputVarType.compare(TYPE_STMT_CALL) == 0 || outputVarType.compare(TYPE_STMT_IF) == 0 ||
 					outputVarType.compare(TYPE_STMT_WHILE) == 0 || outputVarType.compare(TYPE_STMT_PRINT) == 0 ||
 					outputVarType.compare(TYPE_STMT) == 0) {
-				unordered_set<string> result = convertSet(*(pkb.GetInverseProcModifies(&parsedParam2)));
+				unordered_set<string*> interResult = *(rm->GetInverseProcModifies(&parsedParam2));
+				unordered_set<string> result = convertSet(&interResult);
 				return getANDResult(result, getAllSet(varMap.at(param1)));
 			}
 			else {
-				unordered_set<string*>* result = pkb.GetProcModifies(&parsedParam1);
+				unordered_set<string*>* result = rm->GetProcModifies(&parsedParam1);
 				return convertSet(result);
 			}
 		}
 		else if (isVar(param1, varMap) && !isVar(param1, varMap)) {
 			// First param = user declared var; Second param = string/wildcard
-			unordered_set<string> result = convertSet(*(pkb.GetInverseProcModifies(&parsedParam2)));
+			unordered_set<string*> interResult = *(rm->GetInverseProcModifies(&parsedParam2));
+			unordered_set<string> result = convertSet(&interResult);
 			return getANDResult(result, getAllSet(varMap.at(param1)));
 		}
 		else if (!isVar(param1, varMap) && isVar(param1, varMap)) {
 			// First param = const; Second param = user declared var
-			unordered_set<string*>* result = pkb.GetProcModifies(&parsedParam1);
+			unordered_set<string*>* result = rm->GetProcModifies(&parsedParam1);
 			return convertSet(result);
 		}
 	}
@@ -409,42 +422,48 @@ unordered_set<string> PQLEvaluator::getANDResult(unordered_set<string> existingV
 }
 
 unordered_set<string> PQLEvaluator::getAllSet(string outputVarType) {
-	PKB pkb;
+	PKB pkb = PKB();
+	DataManager* dm = pkb.GetDataManager();
 
 	if (outputVarType == TYPE_STMT) {
-		unordered_set<int> result = *(pkb.GetAllStatements());
+		unordered_set<int> result = *(dm->GetAllStatements());
 		return convertSet(result);
 	}
 	else if (outputVarType == TYPE_STMT_ASSIGN) {
-		unordered_set<int> result = *(pkb.GetAllStatements(STATEMENT_TYPE::assignStatement));
+		unordered_set<int> result = *(dm->GetAllStatements(STATEMENT_TYPE::assignStatement));
 		return convertSet(result);
 	}
 	else if (outputVarType == TYPE_STMT_CALL) {
-		unordered_set<int> result = *(pkb.GetAllStatements(STATEMENT_TYPE::callStatement));
+		unordered_set<int> result = *(dm->GetAllStatements(STATEMENT_TYPE::callStatement));
 		return convertSet(result);
 	}
 	else if (outputVarType == TYPE_STMT_IF) {
-		unordered_set<int> result = *(pkb.GetAllStatements(STATEMENT_TYPE::ifStatement));
+		unordered_set<int> result = *(dm->GetAllStatements(STATEMENT_TYPE::ifStatement));
 		return convertSet(result);
 	}
 	else if (outputVarType == TYPE_STMT_WHILE) {
-		unordered_set<int> result = *(pkb.GetAllStatements(STATEMENT_TYPE::whileStatement));
+		unordered_set<int> result = *(dm->GetAllStatements(STATEMENT_TYPE::whileStatement));
 		return convertSet(result);
 	}
 	else if (outputVarType == TYPE_STMT_PRINT) {
-		unordered_set<int> result = *(pkb.GetAllStatements(STATEMENT_TYPE::printStatement));
+		unordered_set<int> result = *(dm->GetAllStatements(STATEMENT_TYPE::printStatement));
 		return convertSet(result);
 	}
 	else if (outputVarType == TYPE_STMT_READ) {
-		unordered_set<int> result = *(pkb.GetAllStatements(STATEMENT_TYPE::readStatement));
+		unordered_set<int> result = *(dm->GetAllStatements(STATEMENT_TYPE::readStatement));
 		return convertSet(result);
 	}
 	else if (outputVarType == TYPE_VAR) {
-		unordered_set<string*>* result = pkb.GetAllVariables();
+		cout << "reached" << endl;
+		unordered_set<string*>* result = dm->GetAllVariables();
+		cout << "size gotten:" << result->size() << endl;
+		for (string const* i : *result) {
+			cout << *i << endl;
+		}
 		return convertSet(result);
 	}
 	else if (outputVarType == TYPE_PROC) {
-		unordered_set<string*>* result = pkb.GetAllProcedures();
+		unordered_set<string*>* result = dm->GetAllProcedures();
 		return convertSet(result);
 	}
 	else {

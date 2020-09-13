@@ -83,7 +83,6 @@ enum STATEMENT_TYPE {
 	readStatement,
 	printStatement,
 	callStatement,
-	stmtStatement,
 };
 /*
 enum RELREF {

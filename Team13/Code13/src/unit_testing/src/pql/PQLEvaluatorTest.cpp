@@ -5,6 +5,89 @@
 
 PQLEvaluator evaluator;
 
+TEST_CASE("PQL checking if PKB works correctly || initialize the PKB") {
+	PKB pkb = PKB();
+	pkb.reset();
+
+	pkb.GetDataManager()->AddConstant(1);
+	pkb.GetDataManager()->AddConstant(2);
+	pkb.GetDataManager()->AddConstant(3);
+
+	string* v1 = new string("v1");
+	string* v2 = new string("v2");
+	string* v3 = new string("v3");
+	pkb.GetDataManager()->AddVariable(v1);
+	pkb.GetDataManager()->AddVariable(v2);
+	pkb.GetDataManager()->AddVariable(v3);
+
+	string* p1 = new string("p1");
+	string* p2 = new string("p2");
+	string* p3 = new string("p3");
+	pkb.GetDataManager()->AddProcedure(p1);
+	pkb.GetDataManager()->AddProcedure(p2);
+	pkb.GetDataManager()->AddProcedure(p3);
+
+	//pkb.GetDataManager()->AddStatement(assignStatement, 1);
+	//pkb.GetDataManager()->AddStatement(assignStatement, 1);
+	//pkb.GetDataManager()->AddStatement(assignStatement, 1);
+
+	//pkb.GetDataManager()->AddStatement(callStatement, 1);
+	//pkb.GetDataManager()->AddStatement(callStatement, 2);
+	//pkb.GetDataManager()->AddStatement(callStatement, 3);
+
+	//pkb.GetDataManager()->AddStatement(ifStatement, 4);
+	//pkb.GetDataManager()->AddStatement(ifStatement, 5);
+	//pkb.GetDataManager()->AddStatement(ifStatement, 6);
+
+	//pkb.GetDataManager()->AddStatement(whileStatement, 7);
+	//pkb.GetDataManager()->AddStatement(whileStatement, 8);
+	//pkb.GetDataManager()->AddStatement(whileStatement, 9);
+
+	//pkb.GetDataManager()->AddStatement(printStatement, 10);
+	//pkb.GetDataManager()->AddStatement(printStatement, 11);
+	//pkb.GetDataManager()->AddStatement(printStatement, 12);
+
+	//pkb.GetDataManager()->AddStatement(readStatement, 13);
+	//pkb.GetDataManager()->AddStatement(readStatement, 14);
+	//pkb.GetDataManager()->AddStatement(readStatement, 15);
+
+	REQUIRE((pkb.GetDataManager()->GetAllConstants())->size() == 3);
+	REQUIRE((pkb.GetDataManager()->GetAllVariables())->size() == 3);
+	REQUIRE((pkb.GetDataManager()->GetAllProcedures())->size() == 3);
+	/*REQUIRE((pkb.GetDataManager()->GetAllStatements())->size() == 15);
+
+	REQUIRE((pkb.GetDataManager()->GetAllStatements(assignStatement))->size() == 3);
+	REQUIRE((pkb.GetDataManager()->GetAllStatements(callStatement))->size() == 3);
+	REQUIRE((pkb.GetDataManager()->GetAllStatements(ifStatement))->size() == 3);
+	REQUIRE((pkb.GetDataManager()->GetAllStatements(whileStatement))->size() == 3);
+	REQUIRE((pkb.GetDataManager()->GetAllStatements(printStatement))->size() == 3);
+	REQUIRE((pkb.GetDataManager()->GetAllStatements(readStatement))->size() == 3);*/
+
+
+
+}
+/*
+TEST_CASE("1 UsesS clause || params: INT & IDENT || return variables") {
+	unordered_map<string, string> varMap;
+	varMap.insert({ "v", TYPE_VAR });
+
+	unordered_map<string, vector<vector<string>>> relRefMap;
+
+	vector<vector<string>> values = { { "1", "usedString" } };
+	relRefMap.insert({ "UseS", values });
+
+	QueryInfo queryInfo;
+	queryInfo.setOutputVar({ "v" });
+	queryInfo.setRelRefMap(relRefMap);
+	queryInfo.setVarMap(varMap);
+
+	QueryResult result = evaluator.evaluate(queryInfo);
+
+	unordered_set<string> expectedResult = { "v1", "v2", "v3" };
+
+	REQUIRE(result.getResult() == expectedResult);
+}
+*/
 TEST_CASE("no clauses || return variables") {	
 	unordered_map<string, string> varMap;
 	varMap.insert({ "v", TYPE_VAR });
@@ -18,7 +101,7 @@ TEST_CASE("no clauses || return variables") {
 
 	QueryResult result = evaluator.evaluate(queryInfo);
 
-	unordered_set<string> expectedResult = { "var1", "var2" };
+	unordered_set<string> expectedResult = { "v1", "v2", "v3" };	
 
 	REQUIRE(result.getResult() == expectedResult);
 }
@@ -36,12 +119,12 @@ TEST_CASE("no clauses || return procedures") {
 
 	QueryResult result = evaluator.evaluate(queryInfo);
 
-	unordered_set<string> expectedResult = { "proc1", "proc2" };
+	unordered_set<string> expectedResult = { "p1", "p2", "p3" };
 
 	REQUIRE(result.getResult() == expectedResult);
 }
 
-TEST_CASE("no clauses || return const || without API call (not done)") {
+TEST_CASE("no clauses || return const") {
 	unordered_map<string, string> varMap;
 	varMap.insert({ "c", TYPE_CONST });
 
@@ -54,11 +137,11 @@ TEST_CASE("no clauses || return const || without API call (not done)") {
 
 	QueryResult result = evaluator.evaluate(queryInfo);
 
-	unordered_set<string> expectedResult = { "1", "2" };
+	unordered_set<string> expectedResult = { "1", "2", "3"};
 
 	REQUIRE(result.getResult() == expectedResult);
 }
-
+/*
 TEST_CASE("no clauses || return stmt") {
 	unordered_map<string, string> varMap;
 	varMap.insert({ "s", TYPE_STMT });
@@ -185,7 +268,7 @@ TEST_CASE("no clauses || return call stmt") {
 
 	REQUIRE(result.getResult() == expectedResult);
 }
-
+*/
 
 TEST_CASE("Checking if pointer works correctly") {
 	// create set
@@ -197,10 +280,5 @@ TEST_CASE("Checking if pointer works correctly") {
 	REQUIRE(key->size() == 1);
 }
 
-TEST_CASE("Checking if PKB works correctly") {
-	PKB pkb;
-	unordered_set<string*>* key = pkb.GetAllVariables();
-	REQUIRE(key->size() == 2);
-}
 
 
