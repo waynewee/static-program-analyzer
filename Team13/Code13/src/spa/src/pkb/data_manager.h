@@ -12,6 +12,7 @@ private:
     StatementTable *stmt_table;
     VariableTable *var_table;
     ProcedureTable *proc_table;
+
 public:
     bool AddStatement(STATEMENT_TYPE t, STMT_IDX s);
     STMT_IDX_SET* GetAllStatements(STATEMENT_TYPE t);

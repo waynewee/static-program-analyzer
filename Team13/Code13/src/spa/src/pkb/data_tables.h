@@ -45,4 +45,12 @@ public:
     VAR_NAME_SET* GetAll();
 };
 
+class ConstTable {
+private:
+    CONST_VALUE_SET* data;
+public:
+    bool Add(CONST_VALUE cv);
+    CONST_VALUE_SET* GetAll();
+};
+
 #endif // DATA_TABLES_H
