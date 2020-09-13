@@ -97,30 +97,6 @@ public:
     PROC_VAR_PAIR_SET* GetAllProcModifies();
 
     RelationManager() {
-        follows_table_ = new FOLLOWS_TABLE();
-        inverse_follows_table_ = new INVERSE_FOLLOWS_TABLE();
-        follows_star_table_ = new FOLLOWS_STAR_TABLE();
-        inverse_follows_star_table_ = new INVERSE_FOLLOWS_STAR_TABLE();
-        parent_table_ = new PARENT_TABLE();
-        inverse_parent_table_ = new INVERSE_PARENT_TABLE();
-        parent_star_table_ = new PARENT_STAR_TABLE();
-        inverse_parent_star_table_ = new INVERSE_PARENT_STAR_TABLE();
-        stmt_uses_table_ = new STMT_USES_TABLE();
-        inverse_stmt_uses_table_ = new INVERSE_STMT_USES_TABLE();
-        proc_uses_table_ = new PROC_USES_TABLE();
-        inverse_proc_uses_table_ = new INVERSE_PROC_USES_TABLE();
-        stmt_modifies_table_ = new STMT_MODIFIES_TABLE();
-        inverse_stmt_modifies_table_ = new INVERSE_STMT_MODIFIES_TABLE();
-        proc_modifies_table_ = new PROC_MODIFIES_TABLE();
-        inverse_proc_modifies_table_ = new INVERSE_PROC_MODIFIES_TABLE();
-        all_follows_ = new STMT_STMT_PAIR_SET();
-        all_follows_star_ = new STMT_STMT_PAIR_SET();
-        all_parent_ = new STMT_STMT_PAIR_SET();
-        all_parent_star_ = new STMT_STMT_PAIR_SET();
-        all_stmt_uses_ = new STMT_VAR_PAIR_SET();
-        all_proc_uses_ = new PROC_VAR_PAIR_SET();
-        all_stmt_modifies_ = new STMT_VAR_PAIR_SET();
-        all_proc_modifies_ = new PROC_VAR_PAIR_SET();
     }
 };
 

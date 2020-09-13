@@ -21,8 +21,6 @@ class PKB {
     static TNode* ast_;
 public:
     PKB() {
-        data_manager_ = new DataManager();
-        relation_manager_ = new RelationManager();
     }
     DataManager* GetDataManager();
     RelationManager* GetRelationManager();
