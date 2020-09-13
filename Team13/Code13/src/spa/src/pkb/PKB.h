@@ -24,6 +24,11 @@ public:
     }
     DataManager* GetDataManager();
     RelationManager* GetRelationManager();
+
+    void reset() {
+        data_manager_ = new DataManager();
+        relation_manager_ = new RelationManager();
+    }
 };
 
 #endif

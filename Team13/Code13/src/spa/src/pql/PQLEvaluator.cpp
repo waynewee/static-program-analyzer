@@ -21,8 +21,7 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 
 		for (vector<string> p : allParams) {
 			if (fCall.compare(TYPE_COND_PATTERN) == 0) {
-				/*
-				PKB pkb;
+				/*PKB pkb;
 				
 				unordered_set<string>* key = &unordered_set<string>();
 				(*key).insert(p[2]);
@@ -107,7 +106,7 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 		PKB pkb = PKB();
 		
 		unordered_set<double>* result = pkb.GetDataManager()->GetAllConstants();
-		//finalResult.setResult(convertSet(*result));
+		finalResult.setResult(convertSet(result));
 
 		return finalResult;
 	}
@@ -118,10 +117,6 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 		unordered_set<string>* key = &set;
 
 		unordered_set<string> value = getAllSet(outputVarType);
-		cout << value.size() << endl;
-		for (string i : value) {
-			cout << i << endl;
-		}
 		if (interResults.find(key) == interResults.end()) {
 			interResults.insert({ key, value });
 		}
@@ -238,30 +233,27 @@ unordered_set<string> PQLEvaluator::evaluateGetSet(tuple<string, string, string>
 		//unordered_set<int>* result = pkb->GetParentStar(parsingStmtRef(param1, varMap), parsingStmtRef(param2, varMap));
 		//return convertSet(*result);
 	}
-	else if (fCall.compare(TYPE_COND_USES_S) == 0) {
+	/*else if (fCall.compare(TYPE_COND_USES_S) == 0 || fCall.compare(TYPE_COND_MODIFIES_S) == 0) {
 		int parsedParam1 = parsingStmtRef(param1, varMap);
 		string parsedParam2 = parsingEntRef(param2, varMap);
 
-		if (isVar(param1, varMap) && isVar(param1, varMap)) {
+		if ((isVar(param1, varMap) && isVar(param2, varMap)) || (isVar(param1, varMap) && !isVar(param2, varMap))) {
 			// both user declared var
-			if (outputVarType.compare(TYPE_STMT) == 0 || outputVarType.compare(TYPE_STMT_ASSIGN) == 0 ||
-					outputVarType.compare(TYPE_STMT_CALL) == 0 || outputVarType.compare(TYPE_STMT_IF) == 0 ||
-					outputVarType.compare(TYPE_STMT_WHILE) == 0 || outputVarType.compare(TYPE_STMT_PRINT) == 0 ||
-					outputVarType.compare(TYPE_STMT) == 0) {
-				unordered_set<string> result = convertSet(*(rm->GetInverseStmtUses(&parsedParam2)));
+			if (isStmtType(outputVarType)) {
+				unordered_set<string> result = convertSet(*(rm->GetAllInverseStmtUses()));
 				return getANDResult(result, getAllSet(varMap.at(param1)));
 			}
 			else {
-				unordered_set<string*>* result = rm->GetStmtUses(parsedParam1);
+				unordered_set<string*>* result = rm->GetAllStmtUses();
 				return convertSet(result);
 			}
 		}
-		else if (isVar(param1, varMap) && !isVar(param1, varMap)) {
+		else if (isVar(param1, varMap) && !isVar(param2, varMap)) {
 			// First param = user declared var; Second param = string/wildcard
 			unordered_set<string> result = convertSet(*(rm->GetInverseStmtUses(&parsedParam2)));
 			return getANDResult(result, getAllSet(varMap.at(param1)));
 		}
-		else if (!isVar(param1, varMap) && isVar(param1, varMap)) {
+		else if (!isVar(param1, varMap) && isVar(param2, varMap)) {
 			// First param = const; Second param = user declared var
 			unordered_set<string*>* result = rm->GetStmtUses(parsedParam1);
 			return convertSet(result);
@@ -357,12 +349,13 @@ unordered_set<string> PQLEvaluator::evaluateGetSet(tuple<string, string, string>
 			unordered_set<string*>* result = rm->GetProcModifies(&parsedParam1);
 			return convertSet(result);
 		}
-	}
+	}*/
 	else {
 		//error 
 	}
-}
 
+	return {};
+}
 
 int PQLEvaluator::parsingStmtRef(string param, unordered_map<string, string> varMap) {
 	if (param.compare("_") == 0 || varMap.find(param) != varMap.end()) {
@@ -398,6 +391,16 @@ unordered_set<string> PQLEvaluator::convertSet(unordered_set<string*>* resultSet
 	if (!(*resultSet).empty()) {
 		for (string* k : *resultSet) {
 			finalResult.insert(*k);
+		}
+	}
+	return finalResult;
+}
+
+unordered_set<string> PQLEvaluator::convertSet(unordered_set<double>* resultSet) {
+	unordered_set<string> finalResult = unordered_set<string>();
+	if (!(*resultSet).empty()) {
+		for (double k : *resultSet) {
+			finalResult.insert(to_string(((int)(k))));
 		}
 	}
 	return finalResult;
@@ -454,12 +457,7 @@ unordered_set<string> PQLEvaluator::getAllSet(string outputVarType) {
 		return convertSet(result);
 	}
 	else if (outputVarType == TYPE_VAR) {
-		cout << "reached" << endl;
 		unordered_set<string*>* result = dm->GetAllVariables();
-		cout << "size gotten:" << result->size() << endl;
-		for (string const* i : *result) {
-			cout << *i << endl;
-		}
 		return convertSet(result);
 	}
 	else if (outputVarType == TYPE_PROC) {
@@ -487,5 +485,17 @@ bool PQLEvaluator::isVar(string var, unordered_map<string, string> varMap) {
 	}
 	else {
 		return true;
+	}
+}
+
+bool PQLEvaluator::isStmtType(string type) {
+	if (type.compare(TYPE_STMT) == 0 || type.compare(TYPE_STMT_ASSIGN) == 0 ||
+		type.compare(TYPE_STMT_CALL) == 0 || type.compare(TYPE_STMT_IF) == 0 ||
+		type.compare(TYPE_STMT_WHILE) == 0 || type.compare(TYPE_STMT_PRINT) == 0 ||
+		type.compare(TYPE_STMT) == 0) {
+		return true;
+	}
+	else {
+		return false;
 	}
 }
