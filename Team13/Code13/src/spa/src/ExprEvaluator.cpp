@@ -1,7 +1,7 @@
 #include "ExprEvaluator.h"
 #include "Token.h"
 #include "TokenType.h"
-#include "TNode.h"
+#include "pkb/TNode.h"
 
 #include <iostream>
 #include <vector>
@@ -24,6 +24,7 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 
 	std::stack<Token> tStack;
 
+	TNode exprNode = TNode(TNode::NODE_TYPE::expr);
 	while (shuntedQ.size() > 0) {
 		Token token = shuntedQ.front();
 		shuntedQ.pop();
@@ -33,8 +34,56 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 		}
 		//guaranteed to be an operator
 		else {
-			//TNode node = createNode(token)
 
+			TNode::OPERATOR op;
+			std::string opVal = token.getValue();
+
+			if (opVal == "!") {
+				op = TNode::OPERATOR::notOp;
+			} else if (opVal == "&&") {
+				op = TNode::OPERATOR::andOp;
+			} else if (opVal == "||") {
+				op = TNode::OPERATOR::orOp;
+			}
+			else if (opVal == ">") {
+				op = TNode::OPERATOR::greater;
+			}
+			else if (opVal == ">=") {
+				op = TNode::OPERATOR::geq;
+			}
+			else if (opVal == "<") {
+				op = TNode::OPERATOR::lesser;
+			}
+			else if (opVal == "<=") {
+				op = TNode::OPERATOR::notOp;
+			}
+			else if (opVal == "==") {
+				op = TNode::OPERATOR::equal;
+			}
+			else if (opVal == "!=") {
+				op = TNode::OPERATOR::unequal;
+			}
+			else if (opVal == "+") {
+				op = TNode::OPERATOR::plus;
+			}
+			else if (opVal == "-") {
+				op = TNode::OPERATOR::minus;
+			}
+			else if (opVal == "*") {
+				op = TNode::OPERATOR::times;
+			}
+			else if (opVal == "/") {
+				op = TNode::OPERATOR::divide;
+			}
+			else if (opVal == "%") {
+				op = TNode::OPERATOR::mod;
+			}
+			else {
+				throw "Invlaid token";
+			}
+
+
+			TNode opNode = TNode(TNode::NODE_TYPE::term, op);
 			/**
 			* Check size of stack, if size == 1, then is unary
 			*/
@@ -44,6 +93,9 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 				*/
 				Token cToken = tStack.top();
 				tStack.pop();
+
+				TNode cNode = TNode(TNode::NODE_TYPE::constValue, &cToken.getValue());
+				opNode.AddChild(&cNode);
 
 				std::cout << cToken.getValue() + "___" + token.getValue() << std::endl;
 			}
@@ -57,6 +109,11 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 				Token lToken = tStack.top();
 				tStack.pop();
 
+				TNode rNode = TNode(TNode::NODE_TYPE::constValue, &rToken.getValue());
+				TNode lNode = TNode(TNode::NODE_TYPE::constValue, &lToken.getValue());
+				opNode.AddChild(&lNode);
+				opNode.AddChild(&rNode);
+
 				std::cout << lToken.getValue() + "___" + token.getValue() + "___" + rToken.getValue() << std::endl;
 
 			}
@@ -67,9 +124,8 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 		}
 
 	}
-
-	TNode emptyNode;
-	return emptyNode;
+	
+	return exprNode;
 
 }
 

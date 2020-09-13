@@ -10,7 +10,7 @@ add_library(spa ${srcs} ${headers}
 "src/PKB.cpp" "src/PKB.h"
 "src/Statement.cpp" "src/Statement.h"
 "src/StmtTable.cpp" "src/StmtTable.h"
-"src/TNode.cpp" "src/TNode.h"
+"src/pkb/TNode.cpp" "src/pkb/TNode.h"
 "src/Token.cpp" "src/Token.h"
 "src/Tokenizer.h" "src/Tokenizer.cpp" 
 "src/TokenType.cpp" "src/TokenType.h"

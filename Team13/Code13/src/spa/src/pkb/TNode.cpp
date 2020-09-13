@@ -1,5 +1,6 @@
 #include "TNode.h"
 
+
 TNode::TNode(TNode::NODE_TYPE _type, string *_name):
     type(_type), name(_name) {
     children = new vector<TNode*>;

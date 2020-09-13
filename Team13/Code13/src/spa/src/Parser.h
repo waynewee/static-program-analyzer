@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "Token.h"
-#include "TNode.h"
+#include "pkb/TNode.h"
 #include "Statement.h"
 
 class Parser {

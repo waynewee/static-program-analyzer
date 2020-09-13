@@ -9,6 +9,8 @@ using namespace std;
 
 
 class TNode {
+
+public:
     enum NODE_TYPE {
         program,
         procedure,
@@ -46,16 +48,8 @@ class TNode {
         divide,
         mod
     };
-private:
-    NODE_TYPE type;
-    TNode* parent;
-    vector<TNode*>* children;
-    CONST_VALUE value;
-    string *name;
-    OPERATOR op;
-    STMT_IDX index;
 
-public:
+    TNode();
 	TNode(NODE_TYPE _type);
 	TNode(NODE_TYPE _type, string *_name); //var name or proc name node
 	TNode(NODE_TYPE _type, CONST_VALUE _value); //const value node
@@ -66,6 +60,15 @@ public:
 	bool SetName(VAR_NAME *newName);
 	bool SetValue(CONST_VALUE newValue);
 	bool SetOp(OPERATOR newOp);
+
+private:
+    NODE_TYPE type;
+    TNode* parent;
+    vector<TNode*>* children;
+    CONST_VALUE value;
+    string* name;
+    OPERATOR op;
+    STMT_IDX index;
 };
 
 

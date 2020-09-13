@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <unordered_map>
-#include <TNode.h>
+#include <pkb/TNode.h>
 
 #ifndef CUSTOM_TYPE_HEADER
 #define CUSTOM_TYPE_HEADER
