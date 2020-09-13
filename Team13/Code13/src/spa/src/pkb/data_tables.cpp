@@ -14,7 +14,28 @@ bool ProcedureTable::Add(PROC_NAME *p) {
 }
 
 bool StatementTable::Add(STATEMENT_TYPE t, STMT_IDX s) {
-    return data_[t]->insert(s).second && data_[_ALL_]->insert(s).second;
+    bool insert_type = false;
+    switch (t) {
+        case assignStatement:
+            insert_type = data_[_ASSIGN_]->insert(s).second;
+            break;
+        case whileStatement:
+            insert_type = data_[_WHILE_]->insert(s).second;
+            break;
+        case readStatement:
+            insert_type = data_[_READ_]->insert(s).second;
+            break;
+        case printStatement:
+            insert_type = data_[_PRINT_]->insert(s).second;
+            break;
+        case ifStatement:
+            insert_type = data_[_IF_]->insert(s).second;
+            break;
+        case callStatement:
+            insert_type = data_[_CALL_]->insert(s).second;
+            break;
+    }
+    return insert_type && data_[_ALL_]->insert(s).second;
 }
 
 STMT_IDX_SET* StatementTable::GetAll(STATEMENT_TYPE t) {
