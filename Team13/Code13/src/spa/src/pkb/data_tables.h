@@ -30,7 +30,7 @@ private:
     std::vector<STMT_IDX_SET *> data_;
 public:
     StatementTable() {
-        for (int i; i < _size_; i++) {
+        for (int i = 0; i < _size_; i++) {
             STMT_IDX_SET stmtSet = STMT_IDX_SET();
             data_.push_back(&stmtSet);
         }

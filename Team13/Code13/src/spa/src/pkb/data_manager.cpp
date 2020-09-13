@@ -3,6 +3,11 @@
 //
 
 #include "data_manager.h"
+ConstTable* DataManager::const_table_ = new ConstTable();
+StatementTable* DataManager::stmt_table_ = new StatementTable();
+VariableTable* DataManager::var_table_ = new VariableTable();
+ProcedureTable* DataManager::proc_table_ = new ProcedureTable();
+
 bool DataManager::AddStatement(STATEMENT_TYPE t, STMT_IDX s) {
     return stmt_table_->Add(t, s);
 }
@@ -29,4 +34,16 @@ bool DataManager::AddConstant(CONST_VALUE c) {
 }
 CONST_VALUE_SET *DataManager::GetAllConstants() {
     return const_table_->GetAll();
+}
+ConstTable *DataManager::GetConstTable() {
+    return const_table_;
+}
+StatementTable *DataManager::GetStmtTable() {
+    return stmt_table_;
+}
+VariableTable *DataManager::GetVarTable() {
+    return var_table_;
+}
+ProcedureTable *DataManager::GetProcTable() {
+    return proc_table_;
 }
