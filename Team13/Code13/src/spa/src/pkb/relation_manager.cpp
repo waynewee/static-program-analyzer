@@ -4,6 +4,30 @@
 
 #include "relation_manager.h"
 
+FOLLOWS_TABLE* RelationManager::follows_table_;
+FOLLOWS_STAR_TABLE* RelationManager::follows_star_table_;
+INVERSE_FOLLOWS_TABLE* RelationManager::inverse_follows_table_;
+INVERSE_FOLLOWS_STAR_TABLE* RelationManager::inverse_follows_star_table_;
+PARENT_TABLE* RelationManager::parent_table_;
+PARENT_STAR_TABLE* RelationManager::parent_star_table_;
+INVERSE_PARENT_TABLE* RelationManager::inverse_parent_table_;
+INVERSE_PARENT_STAR_TABLE* RelationManager::inverse_parent_star_table_;
+STMT_USES_TABLE* RelationManager::stmt_uses_table_;
+PROC_USES_TABLE* RelationManager::proc_uses_table_;
+INVERSE_STMT_USES_TABLE* RelationManager::inverse_stmt_uses_table_;
+INVERSE_PROC_USES_TABLE* RelationManager::inverse_proc_uses_table_;
+STMT_MODIFIES_TABLE* RelationManager::stmt_modifies_table_;
+PROC_MODIFIES_TABLE* RelationManager::proc_modifies_table_;
+INVERSE_STMT_MODIFIES_TABLE* RelationManager::inverse_stmt_modifies_table_;
+INVERSE_PROC_MODIFIES_TABLE* RelationManager::inverse_proc_modifies_table_;
+STMT_STMT_PAIR_SET* RelationManager::all_follows_;
+STMT_STMT_PAIR_SET* RelationManager::all_follows_star_;
+STMT_STMT_PAIR_SET* RelationManager::all_parent_;
+STMT_STMT_PAIR_SET* RelationManager::all_parent_star_;
+STMT_VAR_PAIR_SET* RelationManager::all_stmt_uses_;
+PROC_VAR_PAIR_SET* RelationManager::all_proc_uses_;
+STMT_VAR_PAIR_SET* RelationManager::all_stmt_modifies_;
+PROC_VAR_PAIR_SET* RelationManager::all_proc_modifies_;
 bool RelationManager::AddFollows(STMT_IDX s1, STMT_IDX s2) {
 
     return InsertStmtStmtRelation(follows_table_, s1, s2)
