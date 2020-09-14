@@ -1,8 +1,10 @@
 //
 // Created by Xu Lin on 11/9/20.
 //
+#include <cstdio>
+#include<iostream>
+#include "RelationManager.h"
 
-#include "relation_manager.h"
 FOLLOWS_TABLE* RelationManager::follows_table_ = new FOLLOWS_TABLE();
 FOLLOWS_STAR_TABLE* RelationManager::follows_star_table_ = new FOLLOWS_STAR_TABLE();
 INVERSE_FOLLOWS_TABLE* RelationManager::inverse_follows_table_ = new INVERSE_FOLLOWS_TABLE();
@@ -28,13 +30,18 @@ PROC_VAR_PAIR_SET* RelationManager::all_proc_uses_ = new PROC_VAR_PAIR_SET();
 STMT_VAR_PAIR_SET* RelationManager::all_stmt_modifies_ = new STMT_VAR_PAIR_SET();
 PROC_VAR_PAIR_SET* RelationManager::all_proc_modifies_ = new PROC_VAR_PAIR_SET();
 bool RelationManager::AddFollows(STMT_IDX s1, STMT_IDX s2) {
-
-    return InsertStmtStmtRelation(follows_table_, s1, s2)
+    bool res = InsertStmtStmtRelation(follows_table_, s1, s2)
             && InsertStmtStmtRelation(inverse_follows_table_, s2, s1)
             && InsertStmtStmtRelation(follows_star_table_, s1, s2)
             && InsertStmtStmtRelation(inverse_follows_star_table_, s2, s1)
             && InsertStmtStmtTuple(all_follows_, s1, s2)
             && InsertStmtStmtTuple(all_follows_star_, s1, s2);
+    //debug
+    std::cout << "After insertion of everything, inside all_follows_: ";
+    for (STMT_STMT_PAIR* pair: *all_follows_) {
+        std::cout << pair->s1 << ", " << pair->s2 << std::endl;
+    }
+    return res;
 }
 
 bool RelationManager::AddFollowsStar(STMT_IDX s1, STMT_IDX s2) {
@@ -279,15 +286,27 @@ PROC_NAME_SET* RelationManager::GetVarProcRelationVal(VAR_PROC_RELATION_TABLE *s
     return new PROC_NAME_SET();
 }
 bool RelationManager::InsertStmtStmtTuple(STMT_STMT_PAIR_SET *set, STMT_IDX s1, STMT_IDX s2) {
-    STMT_STMT_PAIR tuple = std::make_tuple(s1, s2);
-    return set->insert(&tuple).second;
+    STMT_STMT_PAIR* pair = new STMT_STMT_PAIR;
+    *pair = {s1, s2};
+    //debug
+    std::cout <<"created tuple has value: ";
+    std::cout << pair->s1 << ", " << pair->s2 << std::endl;
+
+    bool res = set->insert(pair).second;
+    std::cout << "Check inside all_follows_: ";
+    for (STMT_STMT_PAIR* p: *all_follows_) {
+        std::cout << pair->s1 << ", " << pair->s2 << std::endl;
+    }
+    return res;
 }
 bool RelationManager::InsertStmtVarTuple(STMT_VAR_PAIR_SET *set, STMT_IDX s, VAR_NAME *v) {
-    STMT_VAR_PAIR tuple = std::make_tuple(s, v);
-    return set->insert(&tuple).second;
+    STMT_VAR_PAIR* pair = new STMT_VAR_PAIR;
+    *pair = {s, v};
+    return set->insert(pair).second;
 }
 bool RelationManager::InsertProcVarTuple(PROC_VAR_PAIR_SET *set, PROC_NAME *p, VAR_NAME *v) {
-    PROC_VAR_PAIR tuple = std::make_tuple(p, v);
-    return set->insert(&tuple).second;
+    PROC_VAR_PAIR* pair = new PROC_VAR_PAIR;
+    *pair = {p, v};
+    return set->insert(pair).second;
 }
 

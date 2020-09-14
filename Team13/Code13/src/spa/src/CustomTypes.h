@@ -41,9 +41,23 @@ typedef std::unordered_set<VAR_NAME*> VAR_NAME_SET;
 typedef std::unordered_set<PROC_NAME*> PROC_NAME_SET;
 typedef std::unordered_set<STMT_IDX> STMT_IDX_SET;
 typedef std::unordered_set<CONST_VALUE> CONST_VALUE_SET;
-typedef std::tuple<STMT_IDX, STMT_IDX> STMT_STMT_PAIR;
-typedef std::tuple<STMT_IDX, VAR_NAME*> STMT_VAR_PAIR;
-typedef std::tuple<PROC_NAME*, VAR_NAME*> PROC_VAR_PAIR;
+typedef struct {
+    STMT_IDX s1;
+    STMT_IDX s2;
+} STMT_STMT_PAIR;
+typedef struct {
+    STMT_IDX s;
+    VAR_NAME* v;
+} STMT_VAR_PAIR;
+typedef struct {
+    PROC_NAME* p;
+    VAR_NAME* v;
+}PROC_VAR_PAIR;
+//typedef std::tuple<STMT_IDX, STMT_IDX> STMT_STMT_PAIR;
+//typedef std::tuple<STMT_IDX, VAR_NAME*> STMT_VAR_PAIR;
+//typedef std::tuple<PROC_NAME*, VAR_NAME*> PROC_VAR_PAIR;
+
+
 typedef std::unordered_set<STMT_STMT_PAIR*> STMT_STMT_PAIR_SET;
 typedef std::unordered_set<STMT_VAR_PAIR*> STMT_VAR_PAIR_SET;
 typedef std::unordered_set<PROC_VAR_PAIR*> PROC_VAR_PAIR_SET;

@@ -31,8 +31,7 @@ private:
 public:
     StatementTable() {
         for (int i = 0; i < _size_; i++) {
-            STMT_IDX_SET stmtSet = STMT_IDX_SET();
-            data_.push_back(&stmtSet);
+            data_.push_back(new STMT_IDX_SET());
         }
     }
     bool Add(STATEMENT_TYPE t, STMT_IDX s);
