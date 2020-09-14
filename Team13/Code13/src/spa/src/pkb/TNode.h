@@ -52,7 +52,7 @@ public:
 private:
     NODE_TYPE type;
     TNode* parent;
-    list<TNode*> children;
+    vector<TNode*> children;
     CONST_VALUE value;
     string name;
     OPERATOR op;
@@ -70,7 +70,10 @@ public:
 	bool SetName(VAR_NAME *newName);
 	bool SetValue(CONST_VALUE newValue);
 	bool SetOp(OPERATOR newOp);
-    list<TNode*> getChildren();
+    NODE_TYPE GetNodeType();
+    list<TNode*> GetChildrenList();
+    vector<TNode*> GetChildrenVector();
+    STMT_IDX GetStmtIndex();
     string getData();
     void Print(TNode* root);
 };

@@ -10,6 +10,7 @@
 #include <CustomTypes.h>
 #include "data_manager.h"
 #include "relation_manager.h"
+#include "DesignExtractor.h"
 
 using namespace std;
 
