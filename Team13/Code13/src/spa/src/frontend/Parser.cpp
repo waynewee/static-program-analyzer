@@ -3,12 +3,12 @@
 #include <queue>
 #include <iostream>
 
-#include "Tokenizer.h"
+#include "frontend/Tokenizer.h"
 #include "Parser.h"
-#include "TokenType.h"
-#include "Token.h"
-#include "Statement.h"
-#include "ExprEvaluator.h"
+#include "frontend/TokenType.h"
+#include "frontend/Token.h"
+#include "frontend/Statement.h"
+#include "frontend/ExprEvaluator.h"
 
 #include "pkb/TNode.h"
 

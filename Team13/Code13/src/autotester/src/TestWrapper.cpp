@@ -1,8 +1,8 @@
 #include <fstream>
 #include <string>
 #include "TestWrapper.h"
-#include "Parser.h"
-#include "CodeExtractor.h"
+#include "frontend/Parser.h"
+#include "frontend/CodeExtractor.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;

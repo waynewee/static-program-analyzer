@@ -4,8 +4,8 @@
 #include <vector>
 
 #include "Tokenizer.h"
-#include "Token.h"
-#include "TokenType.h"
+#include "frontend/Token.h"
+#include "frontend/TokenType.h"
 
 Tokenizer::Tokenizer(std::string input) {
 	cache = {};

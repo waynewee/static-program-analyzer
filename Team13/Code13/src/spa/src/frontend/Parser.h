@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
 
-#include "Token.h"
+#include "frontend/Token.h"
 #include "pkb/TNode.h"
-#include "Statement.h"
+#include "frontend/Statement.h"
 
 class Parser {
 public:

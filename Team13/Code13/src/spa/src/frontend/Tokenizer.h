@@ -4,8 +4,8 @@
 #include <map>
 #include <vector>
 
-#include "Token.h"
-#include "TokenType.h"
+#include "frontend/Token.h"
+#include "frontend/TokenType.h"
 
 class Tokenizer {
 public:

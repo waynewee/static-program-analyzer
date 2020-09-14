@@ -1,7 +1,7 @@
 
-#include "ExprEvaluator.h"
-#include "Token.h"
-#include "Tokenizer.h"
+#include "frontend/ExprEvaluator.h"
+#include "frontend/Token.h"
+#include "frontend/Tokenizer.h"
 
 #include "catch.hpp"
 #include <vector>
