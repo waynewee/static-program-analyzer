@@ -2,7 +2,7 @@
 // Created by Xu Lin on 11/9/20.
 //
 
-#include "relation_manager.h"
+#include "RelationManager.h"
 FOLLOWS_TABLE* RelationManager::follows_table_ = new FOLLOWS_TABLE();
 FOLLOWS_STAR_TABLE* RelationManager::follows_star_table_ = new FOLLOWS_STAR_TABLE();
 INVERSE_FOLLOWS_TABLE* RelationManager::inverse_follows_table_ = new INVERSE_FOLLOWS_TABLE();

@@ -2,7 +2,7 @@
 // Created by Xu Lin on 12/9/20.
 //
 
-#include "data_manager.h"
+#include "DataManager.h"
 ConstTable* DataManager::const_table_ = new ConstTable();
 StatementTable* DataManager::stmt_table_ = new StatementTable();
 VariableTable* DataManager::var_table_ = new VariableTable();
