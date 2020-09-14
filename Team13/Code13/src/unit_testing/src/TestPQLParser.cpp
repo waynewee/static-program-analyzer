@@ -705,9 +705,640 @@ TEST_CASE("Test 17") {
 }
 
 /*
+
+First argument : stmt vs procedure
+while w; Select w such that Uses (w ,"x")
+
+*/
+
+TEST_CASE("Test 18") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "while w; Select w such that Uses (w ,\"x\")";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("w");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["w"] = "while";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("w");
+	arguments.push_back("\"x\"");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["UsesS"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+
+First argument : stmt vs procedure
+procedure p; Select p such that Uses (p ,"x")
+
+*/
+
+TEST_CASE("Test 19") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "procedure p; Select p such that Uses (p ,\"x\")";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("p");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["p"] = "procedure";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("p");
+	arguments.push_back("\"x\"");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["UsesP"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+
+First argument INTEGER vs “IDENT”
+assign a1; Select a1 such that Uses (5, “y”)
+
+*/
+
+TEST_CASE("Test 20") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "assign a1; Select a1 such that Uses (5, \"y\")";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("a1");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["a1"] = "assign";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("5");
+	arguments.push_back("\"y\"");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["UsesS"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+
+First argument INTEGER vs “IDENT”
+call c; Select c such that Uses ("x", "y")
+
+*/
+
+TEST_CASE("Test 21") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "call c; Select c such that Uses (\"x\", \"y\")";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("c");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["c"] = "call";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("\"x\"");
+	arguments.push_back("\"y\"");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["UsesP"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+
+Second argument declared as procedure
+procedure p1, p2; Select p1 such that Uses (p1, p2)
+
+*/
+
+TEST_CASE("Test 22") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "procedure p1, p2; Select p1 such that Uses (p1, p2)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("p1");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["p1"] = "procedure";
+	expected_var_map["p2"] = "procedure";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("p1");
+	arguments.push_back("p2");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["UsesP"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+
+Second argument declared as procedure
+stmt s; procedure p; Select s such that Uses (s, p)
+
+*/
+
+TEST_CASE("Test 23") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "stmt s; procedure p; Select s such that Uses (s, p)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("s");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["s"] = "stmt";
+	expected_var_map["p"] = "procedure";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("s");
+	arguments.push_back("p");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["UsesS"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+
+Second argument declared as procedure
+if i1; Select i1 such that Uses (i1, _)
+
+*/
+
+TEST_CASE("Test 24") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "if i1; Select i1 such that Uses (i1, _)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("i1");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["i1"] = "if";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("i1");
+	arguments.push_back("_");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["UsesS"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+
+Second argument declared as procedure
+procedure p; Select p such that Uses (p, _)
+
+*/
+
+TEST_CASE("Test 25") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "procedure p; Select p such that Uses (p, _)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("p");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["p"] = "procedure";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("p");
+	arguments.push_back("_");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["UsesP"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/* -------------- MODIFIES TEST CASES -------------------*/
+
+/*
+
+First argument stmt vs procedure
+stmt s; Select s such that Modifies (s ,"x")
+
+*/
+
+TEST_CASE("Test 26") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "stmt s; Select s such that Modifies (s ,\"x\")";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("s");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["s"] = "stmt";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("s");
+	arguments.push_back("\"x\"");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["ModifiesS"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+
+First argument stmt vs procedure
+procedure p; Select p such that Modifies (p ,"x")
+
+*/
+
+TEST_CASE("Test 27") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "procedure p; Select p such that Modifies (p ,\"x\")";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("p");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["p"] = "procedure";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("p");
+	arguments.push_back("\"x\"");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["ModifiesP"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+
+First argument INTEGER vs “IDENT”
+assign a1; Select a1 such that Modifies (5, "y")
+
+*/
+
+TEST_CASE("Test 28") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "assign a1; Select a1 such that Modifies (5, \"y\")";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("a1");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["a1"] = "assign";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("5");
+	arguments.push_back("\"y\"");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["ModifiesS"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+
+First argument INTEGER vs “IDENT”
+call c; Select c such that Modifies ("x", "y")
+
+*/
+
+TEST_CASE("Test 29") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "call c; Select c such that Modifies (\"x\", \"y\")";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("c");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["c"] = "call";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("\"x\"");
+	arguments.push_back("\"y\"");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["ModifiesP"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+
+/*
+
+Second argument declared as procedure
+procedure p1, p2; Select p1 such that Modifies (p1, p2)
+
+*/
+
+TEST_CASE("Test 30") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "procedure p1, p2; Select p1 such that Modifies (p1, p2)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("p1");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["p1"] = "procedure";
+	expected_var_map["p2"] = "procedure";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("p1");
+	arguments.push_back("p2");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["ModifiesP"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+
+Second argument declared as procedure
+stmt s; procedure p; Select s such that Modifies (s, p)
+
+*/
+
+TEST_CASE("Test 31") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "stmt s; procedure p; Select s such that Modifies (s, p)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("s");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["s"] = "stmt";
+	expected_var_map["p"] = "procedure";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("s");
+	arguments.push_back("p");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["ModifiesS"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+
+Underscore as second argument
+if i1; Select i1 such that Modifies (i1, _)
+
+*/
+
+TEST_CASE("Test 32") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "if i1; Select i1 such that Modifies (i1, _)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("i1");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["i1"] = "if";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("i1");
+	arguments.push_back("_");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["ModifiesS"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+
+Underscore as second argument
+procedure p; Select p such that Modifies (p, _)
+
+*/
+
+TEST_CASE("Test 33") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "procedure p; Select p such that Modifies (p, _)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("p");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["p"] = "procedure";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("p");
+	arguments.push_back("_");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["ModifiesP"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
 One clause, two different declaration types
 */
-TEST_CASE("nth Test") {
+TEST_CASE("Test 34") {
 	
 	PQLParser pql_parser;
 	QueryInfo query_info_actual;

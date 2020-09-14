@@ -312,6 +312,12 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 
 	// function name is Uses
 	if (declared_relRef.compare("Uses") == 0) {
+		// regardless, 2nd argument must be entRef
+		if (declaredVarNames.count(second_argument) == 1) {
+			if (declaredVarNames.at(second_argument) != 1) {
+				throw ("Error : 2nd argument must be of type procedure");
+			}
+		}
 		// FIRST ARGUMENT CANNOT BE UNDERSCORE
 		if (isUnderscore(first_argument)) {
 			throw ("Error : First argument cannot be underscore ");
@@ -331,6 +337,12 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 
 	// function name is Modifies
 	if (declared_relRef.compare("Modifies") == 0) {
+		// regardless, 2nd argument must be entRef
+		if (declaredVarNames.count(second_argument) == 1) {
+			if (declaredVarNames.at(second_argument) != 1) {
+				throw ("Error : 2nd argument must be of type procedure");
+			}
+		}
 		if (isUnderscore(first_argument)) {
 			throw ("Error : First argument cannot be underscore ");
 		}
@@ -367,8 +379,8 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 			// found second arg in declared var names
 			// if this second argument is NOT A VARIABLE declared by USER
 			// cout << "2nd arg here : " << second_argument << "with number : " << declaredVarNames.at(second_argument) << endl;
-			if (declaredVarNames.at(second_argument) != 2) {
-				throw ("Error : second argument is not of type variable declared by the user");
+			if (declaredVarNames.at(second_argument) == 0) {
+				throw ("Error : second argument is not of type variable/procedure declared by the user");
 			}
 		}
 
@@ -433,16 +445,18 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 		if (declaredVarNames.count(second_argument) == 1) {
 			// found second arg in declared var names
 			// if this second argument is NOT A VARIABLE declared by USER
-			if (declaredVarNames.at(second_argument) != 2) {
-				throw ("Error : second argument is not of type variable declared by the user");
+			if (declaredVarNames.at(second_argument) == 0) {
+				throw ("Error : second argument is not of type variable/procedure declared by the user");
 			}
 		}
 
 		//cout << "modifies 2nd arg :" << second_argument;
-		if (!isEntRef(second_argument, declaredVarNames)) {
+		if (!isUnderscore(second_argument)) {
+			if (!isEntRef(second_argument, declaredVarNames)) {
 
-			throw ("Error : Second argument is not declared or is invalid ");
-		
+				throw ("Error : Second argument is not declared or is invalid ");
+
+			}
 		}
 
 		if (assigned_relRef.compare("UsesP") == 0) {
