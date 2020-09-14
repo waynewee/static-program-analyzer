@@ -16,7 +16,7 @@ Parser::Parser() {
 	currentStatement = Statement();
 }
 
-int Parser::parse(std::string input) {
+std::vector<TNode> Parser::parse(std::string input) {
 
 	Tokenizer tokenizer(input);
 
@@ -28,7 +28,7 @@ int Parser::parse(std::string input) {
 
 	Parser::parseProgram();
 
-	return 0;
+	return Parser::procNodesList;
 }
 
 //NODE Node(NODE_TYPE type, NAME name, VALUE value, OPERATOR op, INDEX line_no, LIST<NODE> children
@@ -55,6 +55,7 @@ TNode Parser::parseStatement() {
 		switch (firstToken.getKeywordType()) {
 		case TokenType::TOKEN_TYPE_KEYW::PROC:
 			statementNode = Parser::parseProcStatement();
+			Parser::procNodesList.add(statementNode);
 			break;
 		case TokenType::TOKEN_TYPE_KEYW::READ:
 			statementNode = Parser::parseReadStatement();
