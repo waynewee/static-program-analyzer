@@ -4,8 +4,8 @@
 #include "catch.hpp"
 #include "PKB.h"
 #include "CustomTypes.h"
-#include "data_tables.h"
-#include "relation_manager.h"
+#include "DataTables.h"
+#include "RelationManager.h"
 
 using namespace std;
 void require(bool b) {

@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <unordered_set>
 #include <CustomTypes.h>
-#include "data_tables.h"
+#include "DataTables.h"
 
 class DataManager {
     static ConstTable *const_table_;
