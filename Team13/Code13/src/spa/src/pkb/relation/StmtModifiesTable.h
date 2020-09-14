@@ -1,6 +1,0 @@
-#ifndef STMTMODIFIESTABLE_H
-#define STMTMODIFIESTABLE_H
-
-// ...
-
-#endif // STMTMODIFIESTABLE_H

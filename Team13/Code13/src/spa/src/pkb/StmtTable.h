@@ -6,7 +6,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <unordered_map>
-#include "pkb/TNode.h"
+#include "TNode.h"
 #include <CustomTypes.h>
 
 typedef class StmtTable {
