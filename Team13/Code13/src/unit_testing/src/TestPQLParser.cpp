@@ -1373,6 +1373,125 @@ TEST_CASE("Test 34") {
 	
 }
 
+/* ------------ PATTERN TEST CASES ---------------- */
+
+/*
+First and second argument are underscores :
+assign a; variable v; Select a pattern a (_, _)
+*/
+TEST_CASE("Test 35") {
+
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "assign a; variable v; Select a pattern a (_, _)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("a");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["a"] = "assign";
+	expected_var_map["v"] = "variable";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("_");
+	arguments.push_back("_");
+	arguments.push_back("a");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["pattern"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+First argument underscore :
+assign a; variable v; Select a pattern a (_, "z  * y / s + x")
+*/
+TEST_CASE("Test 36") {
+
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "assign a; variable v; Select a pattern a (_, \"z * y / s + x\")";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("a");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["a"] = "assign";
+	expected_var_map["v"] = "variable";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("_");
+	arguments.push_back("\"z * y / s + x\"");
+	arguments.push_back("a");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["pattern"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+/*
+Second argument with leading and trailing underscores :
+assign a; variable v; Select a pattern a (v, _"z  * y / s + x"_)
+*/
+TEST_CASE("Test 37") {
+
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "assign a; variable v; Select a pattern a (v, _\"z * y / s + x\"_)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("a");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["a"] = "assign";
+	expected_var_map["v"] = "variable";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("v");
+	arguments.push_back("_\"z * y / s + x\"_");
+	arguments.push_back("a");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["pattern"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
 
 TEST_CASE("3rd Test") {
 
