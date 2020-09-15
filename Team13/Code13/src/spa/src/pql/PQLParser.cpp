@@ -12,12 +12,15 @@ using namespace std;
 QueryInfo PQLParser::parse(string s) {
     QuerySyntaxValidator query_syntax_validator;
     QueryInfo queryInfo;
-
     unordered_map<string, string> varMap;
     unordered_map<string, vector<vector<string>>> relRefMap;
 
+    string pattern_var_name;
+
 	vector<string> temp_storage;
     string str = s;
+
+
 
     unordered_map<string, int> differentiable_user_declared_var;
 
@@ -39,18 +42,18 @@ QueryInfo PQLParser::parse(string s) {
 
     str = trimLeadingWhitespaces(str);
     // remaining str is the select portion
-    cout << "SELECT CLAUSE : " << str << endl;
+    // cout << "SELECT CLAUSE : " << str << endl;
     
     query_syntax_validator.validateSelectClauseStartsWithSelect(str);
 
     // temp storage has all the declarations
 
     for (auto decl : temp_storage) {
-        cout << "decl: " << decl << endl;
+        // cout << "decl: " << decl << endl;
         decl = trimLeadingWhitespaces(decl);
         string entType = decl.substr(0, decl.find_first_of(" "));
 
-        cout << "decl_type : " << entType << endl;
+        // cout << "decl_type : " << entType << endl;
 
         unordered_map<string, int> vars_declared;
         vars_declared = query_syntax_validator.validateDeclaration(decl);
@@ -61,24 +64,9 @@ QueryInfo PQLParser::parse(string s) {
         }
     }
 
-    /*
-    for (auto const& pair : varMap) {
-        std::cout << "{" << pair.first << ": " << pair.second << "}\n";
-    }
-    */
-
-    // checking unordered map
-    /*
-    cout << "KEY\tELEMENT\n";
-    for (auto itr = differentiable_user_declared_var.begin(); itr != differentiable_user_declared_var.end(); itr++) {
-        cout << itr->first
-            << '\t' << itr->second << '\n';
-    }
-    */
-
 
     string select_clause = str;
-    cout << "select_clause : " << select_clause << endl;
+    // cout << "select_clause : " << select_clause << endl;
 
     std::istringstream iss(select_clause);
 
@@ -104,20 +92,30 @@ QueryInfo PQLParser::parse(string s) {
     select_clause = trimLeadingWhitespaces(select_clause);
     select_clause = trimTrailingWhitespaces(select_clause);
 
+
+    // cout << "IS SELECT CLAUSE EMPTY : " << select_clause.empty() << endl;
+    // cout << "SELECT CLAUSE IS NOW : " << select_clause << endl;
+
     // didnt declare clause
+    /*
     if (next_word.compare(select_clause) == 0) {
-        throw ("Error : Select clause not found! ");
+        throw ("Error : 'Select' not found");
     }
+    */
 
     select_clause.erase(0, select_clause.find_first_of(" "));
     select_clause = trimLeadingWhitespaces(select_clause);
-
-
+    // cout << "IS SELECT CLAUSE EMPTY : " << select_clause.empty() << endl;
+    // cout << "SELECT CLAUSE IS NOW : " << select_clause << endl;
 
     // now, next word MUST BE either such OR pattern
     next_word = select_clause.substr(0, select_clause.find_first_of(" "));
     next_word = trimLeadingWhitespaces(next_word);
     next_word = trimTrailingWhitespaces(next_word);
+
+    if (select_clause.empty()) {
+        return queryInfo;
+    }
 
     // cout << "next_word : " << next_word << endl;
 
@@ -185,6 +183,8 @@ QueryInfo PQLParser::parse(string s) {
         next_word = trimTrailingWhitespaces(next_word);
         cout << "varname in pattern : " << next_word << endl;
 
+        pattern_var_name = next_word;
+
         if (!query_syntax_validator.validateVariableExists(next_word, all_user_declared_var)) {
             throw "Error : Variable after pattern is undeclared!" ;
         }
@@ -229,15 +229,17 @@ QueryInfo PQLParser::parse(string s) {
 
         for (auto const& pair : patternClauseResult) {
             // already inside
+            vector<string> p = pair.second;
+            p.push_back(pattern_var_name);
             if (relRefMap.count(pair.first) == 1) {
                 vector<vector<string>> empty;
-                relRefMap.at(pair.first).push_back(pair.second);
+                relRefMap.at(pair.first).push_back(p);
             }
             else {
                 vector<vector<string>> empty;
                 relRefMap[pair.first] = empty;
                 // since second is a vector
-                relRefMap.at(pair.first).push_back(pair.second);
+                relRefMap.at(pair.first).push_back(p);
             }
         }
     
@@ -317,7 +319,9 @@ QueryInfo PQLParser::parse(string s) {
             next_word = select_clause.substr(0, select_clause.find_first_of(" "));
             next_word = trimLeadingWhitespaces(next_word);
             next_word = trimTrailingWhitespaces(next_word);
-            cout << "varname in pattern : " << next_word << endl;
+            // cout << "varname in pattern : " << next_word << endl;
+
+            pattern_var_name = next_word;
 
             if (!query_syntax_validator.validateVariableExists(next_word, all_user_declared_var)) {
                 throw "Error : Variable after pattern is undeclared!";
@@ -339,7 +343,7 @@ QueryInfo PQLParser::parse(string s) {
 
                     string pattern_clause = select_clause.substr(0, endOfPatternClause + distanceToClosedBracket);
 
-                    cout << "pattern clause : " << pattern_clause << endl;
+                    // cout << "pattern clause : " << pattern_clause << endl;
 
                     select_clause.erase(0, endOfPatternClause + distanceToClosedBracket);
 
@@ -351,7 +355,7 @@ QueryInfo PQLParser::parse(string s) {
 
                 string pattern_clause = select_clause.substr(0, endOfPatternClause);
 
-                cout << "pattern clause : " << pattern_clause << endl;
+                // cout << "pattern clause : " << pattern_clause << endl;
 
                 select_clause.erase(0, endOfPatternClause);
 
@@ -363,15 +367,21 @@ QueryInfo PQLParser::parse(string s) {
 
             for (auto const& pair : patternClauseResult) {
                 // already inside
+                vector<string> p = pair.second;
+                p.push_back(pattern_var_name);
+                for (auto i : p) {
+                    cout << i << " | ";
+                    cout << endl;
+                }
                 if (relRefMap.count(pair.first) == 1) {
                     vector<vector<string>> empty;
-                    relRefMap.at(pair.first).push_back(pair.second);
+                    relRefMap.at(pair.first).push_back(p);
                 }
                 else {
                     vector<vector<string>> empty;
                     relRefMap[pair.first] = empty;
                     // since second is a vector
-                    relRefMap.at(pair.first).push_back(pair.second);
+                    relRefMap.at(pair.first).push_back(p);
                 }
             }
 
