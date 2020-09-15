@@ -14,7 +14,7 @@ public:
 	int pos;
 	int len;
 	std::string tokenStr;
-	std::vector<std::string> keywords = { "procedure", "print", "read", "call", "while", "if", "then", "else" };
+	std::vector<std::string> stmtNames = { "procedure", "print", "read", "call", "while", "if", "then", "else" };
 	std::vector<Token> tokenList;
 
 	int tokenize();

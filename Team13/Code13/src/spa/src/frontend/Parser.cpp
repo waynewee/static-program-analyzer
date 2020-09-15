@@ -45,40 +45,41 @@ TNode Parser::parseStatement() {
 	TNode statementNode = TNode();
 
 	switch (firstToken.getTokenType()) {
-	case TokenType::TOKEN_TYPE::KEYW:
-		switch (firstToken.getKeywordType()) {
-		case TokenType::TOKEN_TYPE_KEYW::PROC:
+	case TokenType::TOKEN_TYPE::stmt:
+		switch (firstToken.getStmtType()) {
+		case TokenType::STMT_TYPE::_procedure:
 			statementNode = Parser::parseProcStatement();
 			Parser::currentStatement.print();
 			Parser::currentStatement = Statement();
 			Parser::procNodesList.push_back(statementNode);
 			break;
-		case TokenType::TOKEN_TYPE_KEYW::READ:
+		case TokenType::STMT_TYPE::_read:
 			statementNode = Parser::parseReadStatement();
 			break;
-		case TokenType::TOKEN_TYPE_KEYW::PRNT:
-			statementNode = Parser::parsePrntStatement();
+		case TokenType::STMT_TYPE::_print:
+			statementNode = Parser::parsePrintStatement();
 			break;
-		case TokenType::TOKEN_TYPE_KEYW::CALL:
+		case TokenType::STMT_TYPE::_call:
 			statementNode = Parser::parseCallStatement();
 			break;
-		case TokenType::TOKEN_TYPE_KEYW::IF:
+		case TokenType::STMT_TYPE::_if:
 			statementNode = Parser::parseIfStatement();
 			break;
-		case TokenType::TOKEN_TYPE_KEYW::WHLE:
-			statementNode = Parser::parseWhleStatement();
+		case TokenType::STMT_TYPE::_while:
+			statementNode = Parser::parseWhileStatement();
 			break;
 		default:
-			throw "Unhandled keyword";
+			throw "Unhandled statement name";
 			break;
 		}
 		break;
-	case TokenType::TOKEN_TYPE::NAME: // For assignment statements
+	case TokenType::TOKEN_TYPE::var: // For assignment statements
 		statementNode = Parser::parseAssgnStatement(firstToken);
 		break;
 	default:
 		throw "Unhandled Token: " + firstToken.getValue();
 	}
+
 	return statementNode;
 }
 
@@ -88,7 +89,7 @@ TNode Parser::parseStatement() {
 TNode Parser::parseProcStatement() {
 	//std::cout << "Parse ProcStatement Called" << std::endl;
 	Token nameToken = Parser::getNextToken();
-	if (nameToken.getTokenType() != TokenType::TOKEN_TYPE::NAME) {
+	if (nameToken.getTokenType() != TokenType::TOKEN_TYPE::var) {
 		throw "Invalid procedure name";
 	}
 	
@@ -112,7 +113,7 @@ TNode Parser::parseReadStatement() {
 	//std::cout << "Parse ReadStatement Called" << std::endl;
 	Token varToken = Parser::getNextToken();
 
-	if (varToken.getTokenType() != TokenType::TOKEN_TYPE::NAME) {
+	if (varToken.getTokenType() != TokenType::TOKEN_TYPE::var) {
 		throw "Invalid variable name for read statement";
 	}
 
@@ -133,10 +134,10 @@ TNode Parser::parseReadStatement() {
 	return readNode;
 }
 
-TNode Parser::parsePrntStatement() {
+TNode Parser::parsePrintStatement() {
 	//std::cout << "Parse PrintStatement Called" << std::endl;
 	Token varToken = Parser::getNextToken();
-	if (varToken.getTokenType() != TokenType::TOKEN_TYPE::NAME) {
+	if (varToken.getTokenType() != TokenType::TOKEN_TYPE::var) {
 		throw "Invalid variable name for print statement";
 	}
 
@@ -160,7 +161,7 @@ TNode Parser::parsePrntStatement() {
 TNode Parser::parseCallStatement() {
 	//std::cout << "Parse CallStatement Called" << std::endl;
 	Token procNameToken = Parser::getNextToken();
-	if (procNameToken.getTokenType() != TokenType::TOKEN_TYPE::NAME) {
+	if (procNameToken.getTokenType() != TokenType::TOKEN_TYPE::var) {
 		throw "Invalid procedure name for call statement";
 	}
 	
@@ -207,7 +208,7 @@ TNode Parser::parseIfStatement() {
 	return ifNode;
 }
 
-TNode Parser::parseWhleStatement() {
+TNode Parser::parseWhileStatement() {
 	TNode whleNode(TNode::NODE_TYPE::whileStmt, statementIndex);
 	TNode exprNode = Parser::parseExpressionStatement(Parser::expressionType::WHILE);
 	TNode stmtListNode = Parser::parseStatementList();
@@ -255,9 +256,10 @@ TNode Parser::parseStatementList() {
 			getNextToken();
 			continue;
 		}
-		Parser::parseStatement();
-		// stmtListNode.addChild(parseStatement());
+		//Parser::parseStatement();
+		 stmtListNode.AddChild(&parseStatement());
 	}
+
 
 	return stmtListNode;
 }

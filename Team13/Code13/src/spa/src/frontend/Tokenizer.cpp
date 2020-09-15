@@ -37,14 +37,14 @@ int Tokenizer::tokenize() {
 		}
 		else if (isPunc(c)) {
 			appendCharToTokenStr(c);
-			addToken(TokenType::TOKEN_TYPE::PUNC);
+			addToken(TokenType::TOKEN_TYPE::punc);
 			resetTokenStr();
 			//detect arithmetic operators
 		}
 		else if (isArop(c)) {
 			appendCharToTokenStr(c);
 			prevToken = tokenList.back();
-			currTokenPtr = addToken(TokenType::TOKEN_TYPE::AROP);
+			currTokenPtr = addToken(TokenType::TOKEN_TYPE::expr);
 			testAndSetUnary(currTokenPtr, prevToken);
 			resetTokenStr();
 		}
@@ -64,7 +64,7 @@ int Tokenizer::tokenize() {
 			}
 
 			prevToken = tokenList.back();
-			currTokenPtr = addToken(TokenType::TOKEN_TYPE::LGOP);
+			currTokenPtr = addToken(TokenType::TOKEN_TYPE::rel_expr);
 			testAndSetUnary(currTokenPtr, prevToken);
 			resetTokenStr();
 
@@ -107,27 +107,27 @@ int Tokenizer::tokenize() {
 			}
 
 			if (isInteger) {
-				addToken(TokenType::TOKEN_TYPE::INTR);
+				addToken(TokenType::TOKEN_TYPE::constant);
 			}
 			else {
 
-				bool isKeyword = false;
+				bool isStmtName = false;
 
 				//check if keyword
-				for (std::string keyword : keywords) {
-					if (tokenStr == keyword) {
-						isKeyword = true;
+				for (std::string stmtName: stmtNames) {
+					if (tokenStr == stmtName) {
+						isStmtName = true;
 						break;
 					}
 				}
 
-				if (isKeyword) {
-					Token* keywordToken = addToken(TokenType::TOKEN_TYPE::KEYW);
+				if (isStmtName) {
+					Token* stmtToken = addToken(TokenType::TOKEN_TYPE::stmt);
 
-					keywordToken->keywordType = TokenType::getTokenTypeKeyw(tokenStr);
+					stmtToken->stmtType = TokenType::getStmtType(tokenStr);
 				}
 				else {
-					addToken(TokenType::TOKEN_TYPE::NAME);
+					addToken(TokenType::TOKEN_TYPE::var);
 				}
 
 			}
@@ -184,7 +184,7 @@ void Tokenizer::testAndSetUnary(Token* currPtr, Token prev) {
 	Token curr = *currPtr;
 
 	if (curr.getValue() == "!" || curr.getValue() == "-") {
-		if (prev.getTokenType() == TokenType::TOKEN_TYPE::LGOP || prev.getTokenType() == TokenType::TOKEN_TYPE::AROP || prev.getValue() == "(") {
+		if (prev.getTokenType() == TokenType::TOKEN_TYPE::rel_expr || prev.getTokenType() == TokenType::TOKEN_TYPE::expr|| prev.getValue() == "(") {
 			currPtr->isUnaryOp = true;
 		}
 	}

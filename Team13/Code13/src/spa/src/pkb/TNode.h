@@ -54,9 +54,9 @@ private:
     TNode* parent;
     list<TNode*> children;
     CONST_VALUE value;
-    string name;
     OPERATOR op;
     STMT_IDX index;
+    string name;
 
 public:
     TNode(void);

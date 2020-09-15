@@ -24,66 +24,20 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 
 	std::stack<Token> tStack;
 
-	TNode exprNode = TNode(TNode::NODE_TYPE::expr);
+	TNode rootNode = convertTokenToNode(shuntedQ.front());
+
 	while (shuntedQ.size() > 0) {
 		Token token = shuntedQ.front();
 		shuntedQ.pop();
 				
-		if (token.getTokenType() == TokenType::TOKEN_TYPE::INTR || token.getTokenType() == TokenType::TOKEN_TYPE::NAME) {
+		if (token.getTokenType() == TokenType::TOKEN_TYPE::constant || token.getTokenType() == TokenType::TOKEN_TYPE::var) {
 			tStack.push(token);
 		}
-		//guaranteed to be an operator
+		//guaranteed to be an expr
 		else {
 
-			TNode::OPERATOR op;
-			std::string opVal = token.getValue();
-
-			if (opVal == "!") {
-				op = TNode::OPERATOR::notOp;
-			} else if (opVal == "&&") {
-				op = TNode::OPERATOR::andOp;
-			} else if (opVal == "||") {
-				op = TNode::OPERATOR::orOp;
-			}
-			else if (opVal == ">") {
-				op = TNode::OPERATOR::greater;
-			}
-			else if (opVal == ">=") {
-				op = TNode::OPERATOR::geq;
-			}
-			else if (opVal == "<") {
-				op = TNode::OPERATOR::lesser;
-			}
-			else if (opVal == "<=") {
-				op = TNode::OPERATOR::notOp;
-			}
-			else if (opVal == "==") {
-				op = TNode::OPERATOR::equal;
-			}
-			else if (opVal == "!=") {
-				op = TNode::OPERATOR::unequal;
-			}
-			else if (opVal == "+") {
-				op = TNode::OPERATOR::plus;
-			}
-			else if (opVal == "-") {
-				op = TNode::OPERATOR::minus;
-			}
-			else if (opVal == "*") {
-				op = TNode::OPERATOR::times;
-			}
-			else if (opVal == "/") {
-				op = TNode::OPERATOR::divide;
-			}
-			else if (opVal == "%") {
-				op = TNode::OPERATOR::mod;
-			}
-			else {
-				throw "Invlaid token";
-			}
-
-
-			TNode opNode = TNode(TNode::NODE_TYPE::term, op);
+			std::string opStr = token.getValue();
+			rootNode = convertTokenToNode(token);
 			/**
 			* Check size of stack, if size == 1, then is unary
 			*/
@@ -94,10 +48,10 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 				Token cToken = tStack.top();
 				tStack.pop();
 
-				TNode cNode(TNode::NODE_TYPE::constValue, cToken.getValue());
-				opNode.AddChild(&cNode);
+				TNode cNode = convertTokenToNode(cToken);
 
-				//std::cout << cToken.getValue() + "___" + token.getValue() << std::endl;
+				rootNode.AddChild(&cNode);
+
 			}
 			else {
 				/**
@@ -109,12 +63,11 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 				Token lToken = tStack.top();
 				tStack.pop();
 
-				TNode rNode(TNode::NODE_TYPE::constValue, rToken.getValue());
-				TNode lNode(TNode::NODE_TYPE::constValue, lToken.getValue());
-				opNode.AddChild(&lNode);
-				opNode.AddChild(&rNode);
+				TNode lNode = convertTokenToNode(lToken);
+				TNode rNode = convertTokenToNode(rToken);
 
-				//std::cout << lToken.getValue() + "___" + token.getValue() + "___" + rToken.getValue() << std::endl;
+				rootNode.AddChild(&lNode);
+				rootNode.AddChild(&rNode);
 
 			}
 
@@ -124,8 +77,8 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 		}
 
 	}
-	
-	return exprNode;
+
+	return rootNode;
 
 }
 
@@ -141,10 +94,10 @@ std::queue<Token> ExprEvaluator::shunt() {
 
 		TokenType::TOKEN_TYPE tokenType = token.getTokenType();
 
-		if (tokenType == TokenType::TOKEN_TYPE::INTR || tokenType == TokenType::TOKEN_TYPE::NAME) {
+		if (tokenType == TokenType::TOKEN_TYPE::constant || tokenType == TokenType::TOKEN_TYPE::var) {
 			outputQ.push(token);
 		}
-		else if (tokenType == TokenType::TOKEN_TYPE::AROP || tokenType == TokenType::TOKEN_TYPE::LGOP) {
+		else if (tokenType == TokenType::TOKEN_TYPE::expr|| tokenType == TokenType::TOKEN_TYPE::rel_expr) {
 
 			while (opStack.size() > 0
 				&& (
@@ -226,33 +179,81 @@ int ExprEvaluator::compareOpPrecedence(Token a, Token b) {
 
 int ExprEvaluator::getPrecedence(Token t) {
 	std::string val = t.getValue();
-
-	if (val == "(" || val == ")") {
-		return 7;
-	}
-	else if (val == "!" || val == "-" && t.isUnaryOp) {
-		return 6;
-	}
-	else if (val == "*" || val == "%") {
-		return 5;
-	}
-	else if (val == "+" || val == "-") {
-		return 4;
-	}
-	else if (val == "<" || val == ">" || val == "<=" || val == ">=") {
-		return 3;
-	}
-	else if (val == "==" || val == "!=") {
-		return 2;
-	}
-	else if (val == "&&") {
-		return 1;
-	}
-	else if (val == "||") {
-		return 0;
+	
+	if (t.isUnaryOp) {
+		return unaryOpPrecedence;
 	}
 
-	std::cout << "Invalid token" << std::endl;
-
-	throw "Invalid token";
+	return precedenceMap[val];
 }
+
+TNode::OPERATOR ExprEvaluator::getOperator(std::string opStr) {
+	if (opStr == "!") {
+		return TNode::OPERATOR::notOp;
+	}
+	else if (opStr == "&&") {
+		return TNode::OPERATOR::andOp;
+	}
+	else if (opStr == "||") {
+		return TNode::OPERATOR::orOp;
+	}
+	else if (opStr == ">") {
+		return TNode::OPERATOR::greater;
+	}
+	else if (opStr == ">=") {
+		return TNode::OPERATOR::geq;
+	}
+	else if (opStr == "<") {
+		return TNode::OPERATOR::lesser;
+	}
+	else if (opStr == "<=") {
+		return TNode::OPERATOR::notOp;
+	}
+	else if (opStr == "==") {
+		return TNode::OPERATOR::equal;
+	}
+	else if (opStr == "!=") {
+		return TNode::OPERATOR::unequal;
+	}
+	else if (opStr == "+") {
+		return TNode::OPERATOR::plus;
+	}
+	else if (opStr == "-") {
+		return TNode::OPERATOR::minus;
+	}
+	else if (opStr == "*") {
+		return TNode::OPERATOR::times;
+	}
+	else if (opStr == "/") {
+		return TNode::OPERATOR::divide;
+	}
+	else if (opStr == "%") {
+		return TNode::OPERATOR::mod;
+	}
+	else {
+		throw "Invlaid token";
+	}
+
+}
+
+TNode ExprEvaluator::convertTokenToNode(Token t) {
+
+	//token can only be expr (+, -, * etc), rel_expr (&&, || etc), variable, constant
+
+	if (t.getTokenType() == TokenType::TOKEN_TYPE::expr) {
+		return TNode(TNode::NODE_TYPE::expr, getOperator(t.getValue()));
+	}
+	else if (t.getTokenType() == TokenType::TOKEN_TYPE::rel_expr) {
+		return TNode(TNode::NODE_TYPE::relExpr, getOperator(t.getValue()));
+	}
+	else if (t.getTokenType() == TokenType::TOKEN_TYPE::var) {
+		return TNode(TNode::NODE_TYPE::varName, t.getValue());
+	}
+	else if (t.getTokenType() == TokenType::TOKEN_TYPE::constant) {
+		return TNode(TNode::NODE_TYPE::constValue, std::stod(t.getValue()));
+	}
+	else {
+		throw "Invalid token";
+	}
+
+};

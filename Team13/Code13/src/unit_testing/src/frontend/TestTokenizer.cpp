@@ -38,7 +38,7 @@ TEST_CASE("Tokenizer | Manipulates tokens correctly") {
 		Token token = tokenizer.getTokenList().at(0);
 
 		REQUIRE(token.getValue() == "procedure");
-		REQUIRE(TokenType::getTokenTypeKeyw(token.getValue()) == TokenType::TOKEN_TYPE_KEYW::PROC);
+		REQUIRE(TokenType::getStmtType(token.getValue()) == TokenType::STMT_TYPE::_procedure);
 	}
 
 	SECTION("Tokenizes string with all white spaces correctly") {
@@ -54,19 +54,19 @@ TEST_CASE("Tokenizer | Manipulates tokens correctly") {
 
 		int i = 0;
 		REQUIRE(tokenList.at(i).getValue() == "x");
-		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::NAME);
+		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::var);
 		i++;
 		REQUIRE(tokenList.at(i).getValue() == "=");
-		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::LGOP);
+		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::rel_expr);
 		i++;
 		REQUIRE(tokenList.at(i).getValue() == "a");
-		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::NAME);
+		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::var);
 		i++;
 		REQUIRE(tokenList.at(i).getValue() == "+");
-		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::AROP);
+		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::expr);
 		i++;
 		REQUIRE(tokenList.at(i).getValue() == "5");
-		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::INTR);
+		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::constant);
 
 	}
 
@@ -78,20 +78,20 @@ TEST_CASE("Tokenizer | Manipulates tokens correctly") {
 
 		int i = 0;
 		REQUIRE(tokenList.at(i).getValue() == "while");
-		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::KEYW);
-		REQUIRE(tokenList.at(i).getKeywordType() == TokenType::TOKEN_TYPE_KEYW::WHLE);
+		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::stmt);
+		REQUIRE(tokenList.at(i).getStmtType() == TokenType::STMT_TYPE::_while);
 		i++;
 		REQUIRE(tokenList.at(i).getValue() == "(");
-		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::PUNC);
+		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::punc);
 		i++;
 		REQUIRE(tokenList.at(i).getValue() == "1");
-		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::INTR);
+		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::constant);
 		i++;
 		REQUIRE(tokenList.at(i).getValue() == ")");
-		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::PUNC);
+		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::punc);
 		i++;
 		REQUIRE(tokenList.at(i).getValue() == "{");
-		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::PUNC);
+		REQUIRE(tokenList.at(i).getTokenType() == TokenType::TOKEN_TYPE::punc);
 
 
 	}
@@ -102,11 +102,11 @@ TEST_CASE("Tokenizer | Manipulates tokens correctly") {
 		std::vector<Token> tokenList = tokenizer.getTokenList();
 
 		REQUIRE(tokenList.at(0).getValue() == "print");
-		REQUIRE(tokenList.at(0).getTokenType() == TokenType::TOKEN_TYPE::KEYW);
-		REQUIRE(tokenList.at(0).getKeywordType() == TokenType::TOKEN_TYPE_KEYW::PRNT);
+		REQUIRE(tokenList.at(0).getTokenType() == TokenType::TOKEN_TYPE::stmt);
+		REQUIRE(tokenList.at(0).getStmtType() == TokenType::STMT_TYPE::_print);
 
 		REQUIRE(tokenList.at(1).getValue() == "x");
-		REQUIRE(tokenList.at(1).getTokenType() == TokenType::TOKEN_TYPE::NAME);
+		REQUIRE(tokenList.at(1).getTokenType() == TokenType::TOKEN_TYPE::var);
 	}
 
 }

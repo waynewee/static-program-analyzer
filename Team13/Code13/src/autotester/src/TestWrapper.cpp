@@ -3,6 +3,7 @@
 #include "TestWrapper.h"
 #include "frontend/Parser.h"
 #include "frontend/CodeExtractor.h"
+#include "testUtils/TreeTraverse.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -28,8 +29,11 @@ void TestWrapper::parse(std::string filename) {
 
 	Parser parser = Parser();
 
-	parser.parse(input);
+	std::cout << "hello" << std::endl;
+	std::vector<TNode> procNodes = parser.parse(input);
 
+	std::cout << "hello" << std::endl;
+	TreeTraverse::traverse(&procNodes.front());
 
 }
 

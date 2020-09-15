@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_map>
 #include <string>
 
 #include "TokenType.h"
@@ -8,14 +9,14 @@ class Token {
 public:
 
 	TokenType::TOKEN_TYPE type;
-	TokenType::TOKEN_TYPE_KEYW keywordType;
+	TokenType::STMT_TYPE stmtType;
 
 	bool isUnaryOp;
 
 	void print();
 	std::string getTokenTypeStr(TokenType::TOKEN_TYPE tokenType);
 	TokenType::TOKEN_TYPE getTokenType();
-	TokenType::TOKEN_TYPE_KEYW getKeywordType();
+	TokenType::STMT_TYPE getStmtType();
 
 	Token(std::string tokenVal, TokenType::TOKEN_TYPE tokenType);
 	Token();

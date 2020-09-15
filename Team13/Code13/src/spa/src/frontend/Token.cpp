@@ -30,25 +30,25 @@ TokenType::TOKEN_TYPE Token::getTokenType() {
 }
 
 
-TokenType::TOKEN_TYPE_KEYW Token::getKeywordType() {
-	return keywordType;
+TokenType::STMT_TYPE Token::getStmtType() {
+	return stmtType;
 }
 
 std::string Token::getTokenTypeStr(TokenType::TOKEN_TYPE tokenType) {
 
 	switch (tokenType) {
-	case TokenType::TOKEN_TYPE::AROP:
-		return "AROP";
-	case TokenType::TOKEN_TYPE::LGOP:
-		return "LGOP";
-	case TokenType::TOKEN_TYPE::PUNC:
-		return "PUNC";
-	case TokenType::TOKEN_TYPE::INTR:
-		return "INTR";
-	case TokenType::TOKEN_TYPE::NAME:
-		return "NAME";
-	case TokenType::TOKEN_TYPE::KEYW:
-		return "KEYW";
+	case TokenType::TOKEN_TYPE::expr:
+		return "expr";
+	case TokenType::TOKEN_TYPE::rel_expr:
+		return "rel_expr";
+	case TokenType::TOKEN_TYPE::punc:
+		return "punc";
+	case TokenType::TOKEN_TYPE::constant:
+		return "constant";
+	case TokenType::TOKEN_TYPE::var:
+		return "var";
+	case TokenType::TOKEN_TYPE::stmt:
+		return "stmt";
 	default:
 		return "";
 	}

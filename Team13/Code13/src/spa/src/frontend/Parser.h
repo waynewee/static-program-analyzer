@@ -22,9 +22,9 @@ private:
 	TNode parseStatement(); 
 	TNode parseProcStatement();
 	TNode parseReadStatement();
-	TNode parsePrntStatement();
+	TNode parsePrintStatement();
 	TNode parseIfStatement();
-	TNode parseWhleStatement();
+	TNode parseWhileStatement();
 	TNode parseCallStatement();
 	TNode parseAssgnStatement(Token nameToken);
 	TNode parseStatementList();

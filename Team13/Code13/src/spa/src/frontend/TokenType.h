@@ -4,9 +4,10 @@
 
 class TokenType{
 public:
-	enum class TOKEN_TYPE { KEYW, PUNC, LGOP, AROP, INTR, NAME, PROC };
+	
+	enum class TOKEN_TYPE { stmt, punc, rel_expr, expr, constant, var };
 
-	enum class TOKEN_TYPE_KEYW { PROC, CALL, READ, WHLE, PRNT, IF, THEN, ELSE };
+	enum class STMT_TYPE { _procedure, _call, _read, _while, _print, _if, _then, _else };
 
-	static TOKEN_TYPE_KEYW getTokenTypeKeyw(std::string tokenStr);
+	static STMT_TYPE getStmtType(std::string tokenStr);
 };
