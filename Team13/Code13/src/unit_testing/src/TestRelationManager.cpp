@@ -20,6 +20,29 @@ TEST_CASE("RelationManager::AddFollows(STMT_IDX s1, STMT_IDX s2) unit test") {
     REQUIRE(relation_manager->IsFollowsStar(1, 2));
 }
 
+TEST_CASE("RelationManager::IsFollows(STMT_IDX s1, STMT_IDX s2) unit test") {
+    PKB* pkb;
+    RelationManager* relation_manager = pkb->GetRelationManager();
+    relation_manager->AddFollows(1, 2);
+    REQUIRE(relation_manager->IsFollows(1, 2));
+    REQUIRE(relation_manager->IsFollows(-1, -1));
+    REQUIRE(relation_manager->IsFollows(-1, 2));
+    REQUIRE(relation_manager->IsFollows(1, -1));
+}
+
+TEST_CASE("RelationManager::IsFollowsStar(STMT_IDX s1, STMT_IDX s2) unit test") {
+    PKB* pkb;
+    RelationManager* relation_manager = pkb->GetRelationManager();
+    relation_manager->AddFollows(1, 10);
+    relation_manager->AddFollowsStar(1, 20);
+    REQUIRE(relation_manager->IsFollowsStar(-1, -1));
+    REQUIRE(relation_manager->IsFollowsStar(1, 10));
+    REQUIRE(relation_manager->IsFollowsStar(-1, 10));
+    REQUIRE(relation_manager->IsFollowsStar(1, -1));
+    REQUIRE(relation_manager->IsFollowsStar(1, 20));
+    REQUIRE(relation_manager->IsFollowsStar(-1, 20));
+}
+
 TEST_CASE("RelationManager::GetAllFollows() unit test") {
     PKB* pkb;
     RelationManager* relation_manager = pkb->GetRelationManager();
@@ -43,6 +66,7 @@ TEST_CASE("RelationManager::GetAllFollows() unit test") {
     }
     REQUIRE(res1);
     REQUIRE(res2);
+    REQUIRE(all_follows->size() == 2);
 }
 
 TEST_CASE("RelationManager::GetAllFollowsStar() unit test") {
@@ -91,7 +115,9 @@ TEST_CASE("RelationManager::GetInverseFollows(STMT_IDX s) unit test") {
     REQUIRE(set->find(3) != set->end());
     STMT_IDX_SET *set_wildcard = relation_manager->GetInverseFollows(-1);
     REQUIRE(!set_wildcard->empty());
-    //REQUIRE(set_wildcard->find(5) != set_wildcard->end());
+    REQUIRE(set_wildcard->find(5) == set_wildcard->end());
+    REQUIRE(set_wildcard->find(2) != set_wildcard->end());
+    REQUIRE(set_wildcard->find(3) != set_wildcard->end());
 }
 
 TEST_CASE("RelationManager::GetInverseFollowsStar(STMT_IDX s) unit test") {
@@ -106,5 +132,10 @@ TEST_CASE("RelationManager::GetInverseFollowsStar(STMT_IDX s) unit test") {
     REQUIRE(set->find(3) != set->end());
     REQUIRE(set->find(4) != set->end());
 }
+
+TEST_CASE("RelationManager::AddParent(STMT_IDX s1, STMT_IDX s2) unit test") {
+
+}
+
 
 
