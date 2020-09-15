@@ -20,8 +20,6 @@ QueryInfo PQLParser::parse(string s) {
 	vector<string> temp_storage;
     string str = s;
 
-
-
     unordered_map<string, int> differentiable_user_declared_var;
 
     unordered_set<string> all_user_declared_var;
@@ -123,7 +121,7 @@ QueryInfo PQLParser::parse(string s) {
     if (next_word.compare("such") != 0 && next_word.compare("pattern") != 0) {
         throw ("Error : cannot find 'such that' or 'pattern' clause");
     }
-
+    /*
     // FOUND SUCH THAT
     if (next_word.compare("such") == 0) {
         // next word is such
@@ -244,7 +242,7 @@ QueryInfo PQLParser::parse(string s) {
         }
     
     }
-
+    */
     // NOW next word can be such, pattern or and
     while (select_clause.find_first_not_of(' ') != string::npos && !select_clause.empty())
     {
