@@ -1,7 +1,8 @@
-#include "pql\PQLEvaluator.h"
+#include "pql/PQLEvaluator.h"
 #include "catch.hpp"
 #include <iostream>
 #include "pkb/PKB.h"
+#include "pql/PQLDriver.h"
 
 PQLEvaluator evaluator;
 
@@ -77,6 +78,12 @@ TEST_CASE("PQL checking if PKB works correctly || initialize the PKB") {
 	//REQUIRE((pkb.GetRelationManager()->GetAllFollows())->size() == 3);
 }
 
+TEST_CASE("test") {
+	PQLDriver main = PQLDriver();
+	main.query("stmt s1; Select s1 such that Follows(s1, 7)");
+}
+
+/*
 TEST_CASE("TTESTTING") {
 	unordered_map<string, string> varMap;
 	varMap.insert({ "s1", TYPE_STMT });
@@ -103,7 +110,7 @@ TEST_CASE("TTESTTING") {
 
 	REQUIRE(result.getResult() == expectedResult);
 }
-/*
+
 TEST_CASE(">1 clauses || Follows-Follows* || user-wildcard") {
 	unordered_map<string, string> varMap;
 	varMap.insert({ "s", TYPE_STMT });
