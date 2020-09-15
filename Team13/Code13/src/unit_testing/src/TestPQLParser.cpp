@@ -8,7 +8,7 @@ using namespace std;
 #include <map>
 #include <iostream>
 
-void require(bool b) {
+void requireBool(bool b) {
 	REQUIRE(b);
 }
 
@@ -58,7 +58,7 @@ TEST_CASE("Test 1") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 
@@ -102,7 +102,7 @@ TEST_CASE("Test 2") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -142,7 +142,7 @@ TEST_CASE("Test 3") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -182,7 +182,7 @@ TEST_CASE("Test 4") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -222,7 +222,7 @@ TEST_CASE("Test 5") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -261,7 +261,7 @@ TEST_CASE("Test 6") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -300,7 +300,7 @@ TEST_CASE("Test 7") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -340,7 +340,7 @@ TEST_CASE("Test 8") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -380,7 +380,7 @@ TEST_CASE("Test 9") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -423,7 +423,7 @@ TEST_CASE("Test 10") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -462,7 +462,7 @@ TEST_CASE("Test 11") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -501,7 +501,7 @@ TEST_CASE("Test 12") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -540,7 +540,7 @@ TEST_CASE("Test 13") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -580,7 +580,7 @@ TEST_CASE("Test 14") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -620,7 +620,7 @@ TEST_CASE("Test 15") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -661,7 +661,7 @@ TEST_CASE("Test 16") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -701,7 +701,7 @@ TEST_CASE("Test 17") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -740,7 +740,7 @@ TEST_CASE("Test 18") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -779,7 +779,7 @@ TEST_CASE("Test 19") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -818,7 +818,7 @@ TEST_CASE("Test 20") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -857,7 +857,7 @@ TEST_CASE("Test 21") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -897,7 +897,7 @@ TEST_CASE("Test 22") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -937,7 +937,7 @@ TEST_CASE("Test 23") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -976,7 +976,7 @@ TEST_CASE("Test 24") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -1015,7 +1015,7 @@ TEST_CASE("Test 25") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /* -------------- MODIFIES TEST CASES -------------------*/
@@ -1056,7 +1056,7 @@ TEST_CASE("Test 26") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -1095,7 +1095,7 @@ TEST_CASE("Test 27") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -1134,7 +1134,7 @@ TEST_CASE("Test 28") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -1173,7 +1173,7 @@ TEST_CASE("Test 29") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 
@@ -1214,7 +1214,7 @@ TEST_CASE("Test 30") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -1254,7 +1254,7 @@ TEST_CASE("Test 31") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -1293,7 +1293,7 @@ TEST_CASE("Test 32") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -1332,7 +1332,7 @@ TEST_CASE("Test 33") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -1369,7 +1369,7 @@ TEST_CASE("Test 34") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 	
 }
 
@@ -1411,7 +1411,7 @@ TEST_CASE("Test 35") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -1450,7 +1450,7 @@ TEST_CASE("Test 36") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -1489,7 +1489,7 @@ TEST_CASE("Test 37") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 /*
@@ -1544,7 +1544,45 @@ TEST_CASE("Test 38") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
+}
+
+/*
+Second argument with leading and trailing underscores :
+call c; variable v; Select c such that Uses (c, v)
+*/
+TEST_CASE("Test 39") {
+
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "call c; variable v; Select c such that Uses (c, v)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("c");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["c"] = "call";
+	expected_var_map["v"] = "variable";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("c");
+	arguments.push_back("v");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["UsesP"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	requireBool(are_similar);
 }
 
 
@@ -1555,6 +1593,6 @@ TEST_CASE("3rd Test") {
 
 
 
-	require(1 == 1);
+	requireBool(1 == 1);
 }
 

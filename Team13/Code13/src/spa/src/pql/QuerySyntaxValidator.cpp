@@ -76,7 +76,10 @@ unordered_map<string, int> QuerySyntaxValidator::validateDeclaration(string decl
 		// cout << "Insert variable name to set : " << var_name << endl;
 		// cout << "entity type is :" << entity_type << "|" << endl;
 		// inserts the variables into a set to later check if the user repeated the values
-		if (entity_type.compare("variable") == 0) {
+		if (entity_type.compare("call") == 0) {
+			variable_names_declared[var_name] = 3;
+		}
+		else if (entity_type.compare("variable") == 0) {
 			variable_names_declared[var_name] = 2;
 		}
 		else if (entity_type.compare("procedure") == 0) {
@@ -96,7 +99,10 @@ unordered_map<string, int> QuerySyntaxValidator::validateDeclaration(string decl
 			throw ("Error : Declared same variable name twice ");
 		}
 		// cout << "Insert variable name to set : " << first_stmt.back() << endl;
-		if (entity_type.compare("variable") == 0) {
+		if (entity_type.compare("call") == 0) {
+			variable_names_declared[first_stmt.back()] = 3;
+		}
+		else if (entity_type.compare("variable") == 0) {
 			variable_names_declared[first_stmt.back()] = 2;
 		}
 		else if (entity_type.compare("procedure") == 0) {
