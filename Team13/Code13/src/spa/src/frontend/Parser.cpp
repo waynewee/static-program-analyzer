@@ -31,8 +31,7 @@ std::vector<TNode> Parser::parse(std::string input) {
 	}
 
 	for (TNode n : Parser::procNodesList) {
-		std::cout << "Hello!" << std::endl;
-		//n.Print(&n);
+		n.Print(&n);
 	}
 
 	return Parser::procNodesList;
