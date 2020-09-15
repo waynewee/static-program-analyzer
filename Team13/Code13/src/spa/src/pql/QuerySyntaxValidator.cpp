@@ -158,7 +158,10 @@ bool QuerySyntaxValidator::validateVariableName(string s) {
 
 	regex expr("[A-Za-z][a-zA-Z_0-9]*");
 
-	if (!regex_match(s, expr)) {
+	string str = trimLeadingWhitespaces(s);
+	str = trimTrailingWhitespaces(str);
+
+	if (!regex_match(str, expr)) {
 		throw ("Error : Invalid variable name!");
 	}
 	return true;
