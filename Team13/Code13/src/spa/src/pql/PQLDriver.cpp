@@ -18,7 +18,7 @@ string PQLDriver::query(string queryString) {
 	cout << "Query: " << queryString << endl;
 	QueryInfo parsedInfo = parser.parse(queryString);
 	
-	if (parsedInfo.isQueryInfoValid() != 0) {
+	if (!parsedInfo.isQueryInfoValid()) {
 		// Invalid query
 		cout << "Query is invalid." << endl;
 		finalResult.assign("");

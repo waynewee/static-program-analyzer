@@ -7,21 +7,21 @@
 #include "CustomTypes.h"
 #include "RelationManager.h"
 TEST_CASE("PKB RelationManager initialisation check") {
-    PKB pkb = PKB();
-    RelationManager* relation_manager = pkb.GetRelationManager();
+    PKB* pkb = new PKB();
+    RelationManager* relation_manager = pkb->GetRelationManager();
     REQUIRE(relation_manager != nullptr);
 }
 
 TEST_CASE("RelationManager::AddFollows(STMT_IDX s1, STMT_IDX s2) unit test") {
-    PKB pkb = PKB();
-    RelationManager* relation_manager = pkb.GetRelationManager();
+    PKB* pkb = new PKB();
+    RelationManager* relation_manager = pkb->GetRelationManager();
     relation_manager->AddFollows(1, 2);
     REQUIRE(relation_manager->IsFollows(1, 2));
     REQUIRE(relation_manager->IsFollowsStar(1, 2));
 }
 
 TEST_CASE("RelationManager::IsFollows(STMT_IDX s1, STMT_IDX s2) unit test") {
-    PKB* pkb;
+    PKB* pkb = new PKB();
     RelationManager* relation_manager = pkb->GetRelationManager();
     relation_manager->AddFollows(1, 2);
     REQUIRE(relation_manager->IsFollows(1, 2));
@@ -31,7 +31,7 @@ TEST_CASE("RelationManager::IsFollows(STMT_IDX s1, STMT_IDX s2) unit test") {
 }
 
 TEST_CASE("RelationManager::IsFollowsStar(STMT_IDX s1, STMT_IDX s2) unit test") {
-    PKB* pkb;
+    PKB* pkb = new PKB();
     RelationManager* relation_manager = pkb->GetRelationManager();
     relation_manager->AddFollows(1, 10);
     relation_manager->AddFollowsStar(1, 20);
@@ -44,7 +44,7 @@ TEST_CASE("RelationManager::IsFollowsStar(STMT_IDX s1, STMT_IDX s2) unit test") 
 }
 
 TEST_CASE("RelationManager::GetAllFollows() unit test") {
-    PKB* pkb;
+    PKB* pkb = new PKB();
     RelationManager* relation_manager = pkb->GetRelationManager();
     STMT_STMT_PAIR *p1 = new STMT_STMT_PAIR, *p2 = new STMT_STMT_PAIR;
     *p1 = {1, 2}, *p2 = {2, 3};
@@ -70,7 +70,7 @@ TEST_CASE("RelationManager::GetAllFollows() unit test") {
 }
 
 TEST_CASE("RelationManager::GetAllFollowsStar() unit test") {
-    PKB* pkb;
+    PKB* pkb = new PKB();
     RelationManager* relation_manager = pkb->GetRelationManager();
     STMT_STMT_PAIR *p1 = new STMT_STMT_PAIR, *p2 = new STMT_STMT_PAIR, *p3 = new STMT_STMT_PAIR;
     *p1 = {1, 2};
@@ -86,7 +86,7 @@ TEST_CASE("RelationManager::GetAllFollowsStar() unit test") {
 }
 
 TEST_CASE("RelationManager::GetFollows(STMT_IDX s) unit test") {
-    PKB* pkb;
+    PKB* pkb = new PKB();
     RelationManager* relation_manager = pkb->GetRelationManager();
     relation_manager->AddFollows(1, 2);
     relation_manager->AddFollows(1, 5);
@@ -104,7 +104,7 @@ TEST_CASE("RelationManager::GetFollows(STMT_IDX s) unit test") {
 }
 
 TEST_CASE("RelationManager::GetInverseFollows(STMT_IDX s) unit test") {
-    PKB* pkb;
+    PKB* pkb = new PKB();
     RelationManager* relation_manager = pkb->GetRelationManager();
     STMT_STMT_PAIR *p1, *p2;
     relation_manager->AddFollows(2, 5);
@@ -121,7 +121,7 @@ TEST_CASE("RelationManager::GetInverseFollows(STMT_IDX s) unit test") {
 }
 
 TEST_CASE("RelationManager::GetInverseFollowsStar(STMT_IDX s) unit test") {
-    PKB* pkb;
+    PKB* pkb = new PKB();
     RelationManager* relation_manager = pkb->GetRelationManager();
     relation_manager->AddFollows(2, 5);
     relation_manager->AddFollows(3, 5);
