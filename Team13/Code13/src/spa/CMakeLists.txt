@@ -9,6 +9,6 @@ add_library(spa ${srcs} ${headers})
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/pkb" "${CMAKE_CURRENT_SOURCE_DIR}/pql")
 # this makes the headers accessible for other projects which uses spa lib
+
 target_include_directories(spa PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pkb ${CMAKE_CURRENT_SOURCE_DIR}/src/pql
         ${CMAKE_CURRENT_SOURCE_DIR}/src)
-
