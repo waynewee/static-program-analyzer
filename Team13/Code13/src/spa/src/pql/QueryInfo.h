@@ -1,7 +1,7 @@
 #pragma once
 
 #include <unordered_map>
-#include <iostream>
+
 #include "CustomTypes.h"
 
 using namespace std;
@@ -26,8 +26,8 @@ public:
 	void setOutputVar(string output_var);
 	void setValidToFalse();
 
-	/* prints */
-	void printRelRefMap();
-	void printVarMap();
+	/* printing */
 	void printOutputVar();
+	void printVarMap();
+	void printRelRefMap();
 };

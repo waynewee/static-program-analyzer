@@ -1,5 +1,7 @@
 #include "QueryInfo.h"
 
+#include <iostream>
+
 /* getters */
 unordered_map<string, vector<vector<string>>> QueryInfo::getRelRefMap() {
 	return this->relRef_map;
@@ -52,7 +54,6 @@ void QueryInfo::printRelRefMap() {
 }
 
 void QueryInfo::printVarMap() {
-
 	cout << "----- VAR MAP ----- " << endl;
 	for (auto const& pair : this->var_map) {
 		cout << " { " << pair.first << " , " << pair.second << " } " << endl;
@@ -61,7 +62,6 @@ void QueryInfo::printVarMap() {
 }
 
 void QueryInfo::printOutputVar() {
-
 	cout << "---- OUTPUT VAR ---- " << endl;
 	cout << "Output variable : " << this->output_var << endl;
 }
