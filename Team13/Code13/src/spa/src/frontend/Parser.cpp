@@ -26,36 +26,33 @@ std::vector<TNode> Parser::parse(std::string input) {
 	tokenIndx = -1;
 	statementIndex = 0;
 
-	Parser::parseProgram();
+	while (tokenIndx < (int)tokenList.size() - 1) {
+		Parser::parseStatement();
+	}
+
+	for (TNode n : Parser::procNodesList) {
+		std::cout << "Hello!" << std::endl;
+		//n.Print(&n);
+	}
 
 	return Parser::procNodesList;
 }
 
-//NODE Node(NODE_TYPE type, NAME name, VALUE value, OPERATOR op, INDEX line_no, LIST<NODE> children
-TNode Parser::parseProgram() {
-
-	while (tokenIndx < (int) tokenList.size() - 1) {
-		Parser::parseStatement();
-		//Parser::statementList.push_back(Parser::currentStatement);
-	}
-	TNode rootNode = TNode(TNode::NODE_TYPE::procedure);
-	return rootNode;
-}
-
 // Returns a statement node
 TNode Parser::parseStatement() {
-	std::cout << "Parse Statement Called" << std::endl;
+	//std::cout << "Parse Statement Called" << std::endl;
 	Token firstToken = Parser::getNextToken();
 	statementIndex++;
- 	// ADD INTO STATEMENT TABLE
-	TNode statementNode = TNode(TNode::NODE_TYPE::stmtList);
+	TNode statementNode = TNode();
 
 	switch (firstToken.getTokenType()) {
 	case TokenType::TOKEN_TYPE::KEYW:
 		switch (firstToken.getKeywordType()) {
 		case TokenType::TOKEN_TYPE_KEYW::PROC:
 			statementNode = Parser::parseProcStatement();
-			Parser::procNodesList.add(statementNode);
+			Parser::currentStatement.print();
+			Parser::currentStatement = Statement();
+			Parser::procNodesList.push_back(statementNode);
 			break;
 		case TokenType::TOKEN_TYPE_KEYW::READ:
 			statementNode = Parser::parseReadStatement();
@@ -90,14 +87,14 @@ TNode Parser::parseStatement() {
 //	TNode(NODE_TYPE _type, VAR_NAME _name, CONST_VALUE _value, OPERATOR _op, STMT_IDX _index);
 
 TNode Parser::parseProcStatement() {
-	std::cout << "Parse ProcStatement Called" << std::endl;
+	//std::cout << "Parse ProcStatement Called" << std::endl;
 	Token nameToken = Parser::getNextToken();
 	if (nameToken.getTokenType() != TokenType::TOKEN_TYPE::NAME) {
 		throw "Invalid procedure name";
 	}
 	
 	TNode procNode(TNode::NODE_TYPE::procedure);
-	TNode procNameNode(TNode::NODE_TYPE::procName, &nameToken.getValue());
+	TNode procNameNode(TNode::NODE_TYPE::procName, nameToken.getValue());
 	TNode stmtListNode = Parser::parseStatementList();
 
 	TNode* procNameNodePtr = &procNameNode;
@@ -113,7 +110,7 @@ TNode Parser::parseProcStatement() {
 }
 
 TNode Parser::parseReadStatement() {
-	std::cout << "Parse ReadStatement Called" << std::endl;
+	//std::cout << "Parse ReadStatement Called" << std::endl;
 	Token varToken = Parser::getNextToken();
 
 	if (varToken.getTokenType() != TokenType::TOKEN_TYPE::NAME) {
@@ -123,7 +120,7 @@ TNode Parser::parseReadStatement() {
 	// insert into VarTable
 	
 	TNode readNode(TNode::NODE_TYPE::readStmt, statementIndex);
-	TNode varNode(TNode::NODE_TYPE::varName, &varToken.getValue());
+	TNode varNode(TNode::NODE_TYPE::varName, varToken.getValue());
 	TNode* varNodePtr = &varNode;
 
 	if (Parser::getNextToken().getValue() != ";") {
@@ -138,14 +135,14 @@ TNode Parser::parseReadStatement() {
 }
 
 TNode Parser::parsePrntStatement() {
-	std::cout << "Parse PrintStatement Called" << std::endl;
+	//std::cout << "Parse PrintStatement Called" << std::endl;
 	Token varToken = Parser::getNextToken();
 	if (varToken.getTokenType() != TokenType::TOKEN_TYPE::NAME) {
 		throw "Invalid variable name for print statement";
 	}
 
 	TNode printNode(TNode::NODE_TYPE::printStmt, statementIndex);
-	TNode varNode(TNode::NODE_TYPE::varName, &varToken.getValue());
+	TNode varNode(TNode::NODE_TYPE::varName, varToken.getValue());
 	TNode* varNodePtr = &varNode;
 	// Set value of print node
 
@@ -162,7 +159,7 @@ TNode Parser::parsePrntStatement() {
 }
 
 TNode Parser::parseCallStatement() {
-	std::cout << "Parse CallStatement Called" << std::endl;
+	//std::cout << "Parse CallStatement Called" << std::endl;
 	Token procNameToken = Parser::getNextToken();
 	if (procNameToken.getTokenType() != TokenType::TOKEN_TYPE::NAME) {
 		throw "Invalid procedure name for call statement";
@@ -183,7 +180,7 @@ TNode Parser::parseCallStatement() {
 }
 
 TNode Parser::parseIfStatement() {
-	std::cout << "Parse IfStatement Called" << std::endl;
+	//std::cout << "Parse IfStatement Called" << std::endl;
 	TNode ifNode(TNode::NODE_TYPE::ifStmt, statementIndex);
 	TNode exprNode = Parser::parseExpressionStatement(Parser::expressionType::IF);
 
@@ -228,7 +225,7 @@ TNode Parser::parseWhleStatement() {
 
 
 TNode Parser::parseAssgnStatement(Token nameToken) {
-	std::cout << "Parse AssgnStatement Called" << std::endl;
+	//std::cout << "Parse AssgnStatement Called" << std::endl;
 	TNode assgnNode(TNode::NODE_TYPE::assignStmt,  statementIndex);
 	if (Parser::getNextToken().getValue() != "=") {
 		throw "Expected '=' token in line " + statementIndex;
@@ -249,7 +246,7 @@ TNode Parser::parseAssgnStatement(Token nameToken) {
 
 // Returns a stmtList node
 TNode Parser::parseStatementList() {
-	std::cout << "Parse StatementList Called" << std::endl;
+	//std::cout << "Parse StatementList Called" << std::endl;
 	int endIndex = Parser::getEndIndxOfStatementList();
 	TNode stmtListNode(TNode::NODE_TYPE::stmtList, statementIndex);
 	// Parse the whole statement block 
@@ -277,7 +274,7 @@ TNode Parser::parseExpressionStatement(Parser::expressionType exprType) {
 	Token nextToken;
 
 	if (exprType == Parser::expressionType::ASSIGN) {
-		std::cout << "Parsing ASSIGN expression" << std::endl;
+		//std::cout << "Parsing ASSIGN expression" << std::endl;
 
 		while (Parser::peekNextToken().getValue() != ";") {
 			nextToken = Parser::getNextToken();
@@ -286,7 +283,7 @@ TNode Parser::parseExpressionStatement(Parser::expressionType exprType) {
 	}
 	else if (exprType == Parser::expressionType::IF || exprType == Parser::expressionType::WHILE) {
 		
-		std::cout << "Parsing IF/WHILE expression" << std::endl;
+		//std::cout << "Parsing IF/WHILE expression" << std::endl;
 
 		if (Parser::peekNextToken().getValue() != "(") {
 			throw "Invalid IF/WHILE statement";
@@ -384,9 +381,9 @@ int compareOpPrecedence(Token a, Token b) {
 
 TNode Parser::parseExpression(std::vector<Token> exprList) {
 
-	for (Token t : exprList) {
+	/*for (Token t : exprList) {
 		t.print();
-	}
+	}*/
 
 	ExprEvaluator exprEvaluator(exprList);
 

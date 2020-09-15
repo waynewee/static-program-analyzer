@@ -19,9 +19,7 @@ public:
 	enum expressionType { IF, WHILE, ASSIGN };
 
 private:
-	TNode parseProgram();
 	TNode parseStatement(); 
-
 	TNode parseProcStatement();
 	TNode parseReadStatement();
 	TNode parsePrntStatement();

@@ -11,9 +11,9 @@
 ExprEvaluator::ExprEvaluator(std::vector<Token> exprList) {
 	tokenList = exprList;
 
-	for (Token t : exprList) {
+	/*for (Token t : exprList) {
 		t.print();
-	}
+	}*/
 }
 
 TNode ExprEvaluator::evaluate() {
@@ -94,10 +94,10 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 				Token cToken = tStack.top();
 				tStack.pop();
 
-				TNode cNode = TNode(TNode::NODE_TYPE::constValue, &cToken.getValue());
+				TNode cNode(TNode::NODE_TYPE::constValue, cToken.getValue());
 				opNode.AddChild(&cNode);
 
-				std::cout << cToken.getValue() + "___" + token.getValue() << std::endl;
+				//std::cout << cToken.getValue() + "___" + token.getValue() << std::endl;
 			}
 			else {
 				/**
@@ -109,12 +109,12 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 				Token lToken = tStack.top();
 				tStack.pop();
 
-				TNode rNode = TNode(TNode::NODE_TYPE::constValue, &rToken.getValue());
-				TNode lNode = TNode(TNode::NODE_TYPE::constValue, &lToken.getValue());
+				TNode rNode(TNode::NODE_TYPE::constValue, rToken.getValue());
+				TNode lNode(TNode::NODE_TYPE::constValue, lToken.getValue());
 				opNode.AddChild(&lNode);
 				opNode.AddChild(&rNode);
 
-				std::cout << lToken.getValue() + "___" + token.getValue() + "___" + rToken.getValue() << std::endl;
+				//std::cout << lToken.getValue() + "___" + token.getValue() + "___" + rToken.getValue() << std::endl;
 
 			}
 
