@@ -1,7 +1,7 @@
 //
 // Created by Xu Lin on 14/9/20.
 //
-
+/*
 #include "catch.hpp"
 #include "PKB.h"
 #include "CustomTypes.h"
@@ -136,3 +136,4 @@ TEST_CASE("RelationManager::GetInverseFollowsStar(STMT_IDX s) unit test") {
 TEST_CASE("RelationManager::AddParent(STMT_IDX s1, STMT_IDX s2) unit test") {
 
 }
+*/

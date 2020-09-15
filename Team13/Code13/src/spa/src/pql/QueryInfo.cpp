@@ -32,6 +32,7 @@ void QueryInfo::setOutputVar(string output_var) {
 
 void QueryInfo::setValidToFalse() {
 	this->isValid = false;
+}
 
 // test print functions
 void QueryInfo::printRelRefMap() {

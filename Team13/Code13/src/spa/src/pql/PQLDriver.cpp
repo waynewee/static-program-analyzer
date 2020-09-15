@@ -26,8 +26,12 @@ string PQLDriver::query(string queryString) {
 	}
 
 	// loop: check whats in query info
+	parsedInfo.printOutputVar();
+	parsedInfo.printRelRefMap();
+	parsedInfo.printVarMap();
 	
 	QueryResult result = evaluator.evaluate(parsedInfo);
+	cout << "SIZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZE: " << result.getResult().size() << endl;
 	if (result.isEmpty()) {
 		// Empty result
 		cout << "Result is empty." << endl;

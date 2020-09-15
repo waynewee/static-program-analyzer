@@ -12,7 +12,6 @@ void requireBool(bool b) {
 	REQUIRE(b);
 }
 
-
 /*
 Returns true if both Query Infos are equivalent, else false
 */
@@ -1544,7 +1543,7 @@ TEST_CASE("Test 38") {
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
-	require(are_similar);
+	requireBool(are_similar);
 }
 
 

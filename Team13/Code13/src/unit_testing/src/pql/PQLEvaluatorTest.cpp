@@ -68,22 +68,26 @@ TEST_CASE("PQL checking if PKB works correctly || initialize the PKB") {
 	pkb.GetRelationManager()->AddFollows(2, 3);
 	pkb.GetRelationManager()->AddFollows(3, 4);
 
-	/*unordered_set<tuple<int, int>*>* result = (pkb.GetRelationManager()->GetAllFollows());
-	for (tuple<int, int> const* t : *result) {
-		int firstParam = get<0>(*t);
-		int secondParam = get<1>(*t);
+	STMT_STMT_PAIR_SET* result = pkb.GetRelationManager()->GetAllFollows();
+	for (STMT_STMT_PAIR* t : *result) {
+		int firstParam = t->s1;
+		int secondParam = t->s2;
 		cout << firstParam << ", " << secondParam << endl;
-	}*/
+	}
 
-	//REQUIRE((pkb.GetRelationManager()->GetAllFollows())->size() == 3);
+	REQUIRE((pkb.GetRelationManager()->GetAllFollows())->size() == 3);
 }
-
+/*
 TEST_CASE("test") {
 	PQLDriver main = PQLDriver();
-	main.query("stmt s1; Select s1 such that Follows(s1, 7)");
+	main.query("stmt s1; Select s1;");
+	main.query("assign a1; Select a1;");
+	main.query("if ifs; Select ifs;");
+	main.query("stmt s1; Select s1;");
+	main.query("stmt s1; Select s1;");
 }
 
-/*
+
 TEST_CASE("TTESTTING") {
 	unordered_map<string, string> varMap;
 	varMap.insert({ "s1", TYPE_STMT });
@@ -434,7 +438,7 @@ TEST_CASE("1 clause || Follows || int-wildcard") {
 	REQUIRE(result.getResult() == expectedResult);
 }
 
-TEST_CASE("1 clause || Follows || int-int") {
+TEST_CASE("1 s.t. clause || Follows") {
 	unordered_map<string, string> varMap;
 	varMap.insert({ "s", TYPE_STMT });
 
@@ -510,131 +514,58 @@ TEST_CASE("no clauses || return const") {
 	REQUIRE(result.getResult() == expectedResult);
 }
 
-TEST_CASE("no clauses || return stmt") {
-	unordered_map<string, string> varMap;
-	varMap.insert({ "s", TYPE_STMT });
-
-	unordered_map<string, vector<vector<string>>> relRefMap = {};
-
+TEST_CASE("no clauses || return stmts") {
 	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "s" });
-	queryInfo.setRelRefMap(relRefMap);
+	QueryResult result;
+	unordered_set<string> expectedResult;
+
+	unordered_map<string, string> varMap;
+	varMap.insert({ "read", TYPE_STMT_READ });
+	varMap.insert({ "p", TYPE_STMT_PRINT });
+	varMap.insert({ "while", TYPE_STMT_WHILE });
+	varMap.insert({ "ifs", TYPE_STMT_IF });
+	varMap.insert({ "c", TYPE_STMT_CALL });
+	varMap.insert({ "a", TYPE_STMT_ASSIGN });
+	varMap.insert({ "s", TYPE_STMT });
 	queryInfo.setVarMap(varMap);
 
-	QueryResult result = evaluator.evaluate(queryInfo);
+	unordered_map<string, vector<vector<string>>> relRefMap = {};
+	queryInfo.setRelRefMap(relRefMap);
 
-	unordered_set<string> expectedResult =
-	{ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+	queryInfo.setOutputVar({ "read" });
+	result = evaluator.evaluate(queryInfo);
+	expectedResult = { "16", "17", "18" };
+	REQUIRE(result.getResult() == expectedResult);
+
+	queryInfo.setOutputVar({ "p" });
+	result = evaluator.evaluate(queryInfo);
+	expectedResult = { "13", "14", "15" };
+	REQUIRE(result.getResult() == expectedResult);
+
+	queryInfo.setOutputVar({ "while" });
+	result = evaluator.evaluate(queryInfo);
+	expectedResult = { "10", "11", "12" };
+	REQUIRE(result.getResult() == expectedResult);
+
+	queryInfo.setOutputVar({ "ifs" });
+	result = evaluator.evaluate(queryInfo);
+	expectedResult = { "7", "8", "9" };
+	REQUIRE(result.getResult() == expectedResult);
+
+	queryInfo.setOutputVar({ "c" });
+	result = evaluator.evaluate(queryInfo);
+	expectedResult = { "4", "5", "6" };
+	REQUIRE(result.getResult() == expectedResult);
+
+	queryInfo.setOutputVar({ "a" });
+	result = evaluator.evaluate(queryInfo);
+	expectedResult = { "1", "2", "3" };
+	REQUIRE(result.getResult() == expectedResult);
+
+	queryInfo.setOutputVar({ "s" });
+	result = evaluator.evaluate(queryInfo);
+	expectedResult = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
 		"11", "12", "13", "14", "15", "16", "17", "18" };
 
 	REQUIRE(result.getResult() == expectedResult);
-}
-
-TEST_CASE("no clauses || return assign stmt") {
-	unordered_map<string, string> varMap;
-	varMap.insert({ "a", TYPE_STMT_ASSIGN });
-
-	unordered_map<string, vector<vector<string>>> relRefMap = {};
-
-	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "a" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
-
-	QueryResult result = evaluator.evaluate(queryInfo);
-
-	unordered_set<string> expectedResult = { "1", "2", "3" };
-
-	REQUIRE(result.getResult() == expectedResult);
-}
-
-TEST_CASE("no clauses || return call stmt") {
-	unordered_map<string, string> varMap;
-	varMap.insert({ "c", TYPE_STMT_CALL });
-
-	unordered_map<string, vector<vector<string>>> relRefMap = {};
-
-	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "c" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
-
-	QueryResult result = evaluator.evaluate(queryInfo);
-
-	unordered_set<string> expectedResult = { "4", "5", "6" };
-
-	REQUIRE(result.getResult() == expectedResult);
-}
-
-TEST_CASE("no clauses || return if stmt") {
-	unordered_map<string, string> varMap;
-	varMap.insert({ "ifs", TYPE_STMT_IF });
-
-	unordered_map<string, vector<vector<string>>> relRefMap = {};
-
-	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "ifs" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
-
-	QueryResult result = evaluator.evaluate(queryInfo);
-
-	unordered_set<string> expectedResult = { "7", "8", "9" };
-
-	REQUIRE(result.getResult() == expectedResult);
-}
-
-TEST_CASE("no clauses || return while stmt") {
-	unordered_map<string, string> varMap;
-	varMap.insert({ "while", TYPE_STMT_WHILE });
-
-	unordered_map<string, vector<vector<string>>> relRefMap = {};
-
-	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "while" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
-
-	QueryResult result = evaluator.evaluate(queryInfo);
-
-	unordered_set<string> expectedResult = { "10", "11", "12" };
-
-	REQUIRE(result.getResult() == expectedResult);
-}
-
-TEST_CASE("no clauses || return print stmt") {
-	unordered_map<string, string> varMap;
-	varMap.insert({ "p", TYPE_STMT_PRINT });
-
-	unordered_map<string, vector<vector<string>>> relRefMap = {};
-
-	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "p" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
-
-	QueryResult result = evaluator.evaluate(queryInfo);
-
-	unordered_set<string> expectedResult = { "13", "14", "15" };
-
-	REQUIRE(result.getResult() == expectedResult);
-}
-
-TEST_CASE("no clauses || return read stmt") {
-	unordered_map<string, string> varMap;
-	varMap.insert({ "read", TYPE_STMT_READ });
-
-	unordered_map<string, vector<vector<string>>> relRefMap = {};
-
-	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "read" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
-
-	QueryResult result = evaluator.evaluate(queryInfo);
-
-	unordered_set<string> expectedResult = { "16", "17", "18" };
-
-	REQUIRE(result.getResult() == expectedResult);
-}
-*/
+}*/
