@@ -65,7 +65,7 @@ unordered_map<string, int> QuerySyntaxValidator::validateDeclaration(string decl
 	std::istringstream iss(variable_with_entity);
 	string entity_type = variable_with_entity.substr(0, variable_with_entity.find_first_of(" "));
 
-	cout << "Entity Type : " << entity_type << endl;
+	// cout << "Entity Type : " << entity_type << endl;
 
 	for (auto var_name : temp_results) {
 		validateVariableName(var_name);
@@ -74,7 +74,7 @@ unordered_map<string, int> QuerySyntaxValidator::validateDeclaration(string decl
 		}
 		// cout << "Does it continue? ";
 		// cout << "Insert variable name to set : " << var_name << endl;
-		cout << "entity type is :" << entity_type << "|" << endl;
+		// cout << "entity type is :" << entity_type << "|" << endl;
 		// inserts the variables into a set to later check if the user repeated the values
 		if (entity_type.compare("variable") == 0) {
 			variable_names_declared[var_name] = 2;
@@ -85,7 +85,7 @@ unordered_map<string, int> QuerySyntaxValidator::validateDeclaration(string decl
 		else {
 			variable_names_declared[var_name] = 0;
 		}
-		cout << "number put in :" << variable_names_declared.at(var_name) << endl;
+		// cout << "number put in :" << variable_names_declared.at(var_name) << endl;
 		final_results.push_back(var_name);
 	}
 
@@ -109,7 +109,7 @@ unordered_map<string, int> QuerySyntaxValidator::validateDeclaration(string decl
 	}
 
 	for (auto i : first_stmt) {
-		cout << "First stmt : " << i << endl;
+		// cout << "First stmt : " << i << endl;
 	}
 
 	if (first_stmt.size() !=  1) {
@@ -225,7 +225,7 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 	first_argument = trimLeadingWhitespaces(first_argument);
 	first_argument = trimTrailingWhitespaces(first_argument);
 
-	cout << "such that clause : First argument : " << first_argument << endl;
+	// cout << "such that clause : First argument : " << first_argument << endl;
 	// validateVariableName(first_argument);
 
 	temp.erase(0, pos_comma + comma_delimiter.length());
@@ -238,7 +238,7 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 	second_argument = trimTrailingWhitespaces(second_argument);
 	// validateVariableName(second_argument);
 
-	cout << "such that clause : Second argument : " << second_argument << endl;
+	// cout << "such that clause : Second argument : " << second_argument << endl;
 
 	unordered_map<string, vector<string>> relRef_map;
 	string assigned_relRef;
@@ -314,8 +314,8 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 	if (declared_relRef.compare("Uses") == 0) {
 		// regardless, 2nd argument must be entRef
 		if (declaredVarNames.count(second_argument) == 1) {
-			if (declaredVarNames.at(second_argument) != 1) {
-				throw ("Error : 2nd argument must be of type procedure");
+			if (declaredVarNames.at(second_argument) == 0) {
+				throw ("Error : 2nd argument must be of type entref");
 			}
 		}
 		// FIRST ARGUMENT CANNOT BE UNDERSCORE
@@ -339,8 +339,8 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 	if (declared_relRef.compare("Modifies") == 0) {
 		// regardless, 2nd argument must be entRef
 		if (declaredVarNames.count(second_argument) == 1) {
-			if (declaredVarNames.at(second_argument) != 1) {
-				throw ("Error : 2nd argument must be of type procedure");
+			if (declaredVarNames.at(second_argument) == 0) {
+				throw ("Error : 2nd argument must be of type entref");
 			}
 		}
 		if (isUnderscore(first_argument)) {
@@ -358,8 +358,8 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 		}
 	}
 
-	cout << "declared_relRef : " << declared_relRef << endl;
-	cout << "assigned_relRef : " << assigned_relRef << endl;
+	// cout << "declared_relRef : " << declared_relRef << endl;
+	// cout << "assigned_relRef : " << assigned_relRef << endl;
 
 
 	// regardless, first argument cannot be '_'
@@ -513,7 +513,7 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validatePatternClaus
 	first_argument = trimLeadingWhitespaces(first_argument);
 	first_argument = trimTrailingWhitespaces(first_argument);
 
-	cout << "pattern clause first arg : " << first_argument << endl;
+	// cout << "pattern clause first arg : " << first_argument << endl;
 	arguments.push_back(first_argument);
 
 	str.erase(0, pos_comma + comma.length());
@@ -525,7 +525,7 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validatePatternClaus
 	second_argument = trimTrailingWhitespaces(second_argument);
 
 
-	cout << "pattern second arg : " << second_argument << endl;
+	// cout << "pattern second arg : " << second_argument << endl;
 	arguments.push_back(second_argument);
 
 	// first arg in pattern can be in ""

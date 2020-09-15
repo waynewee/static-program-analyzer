@@ -1492,6 +1492,62 @@ TEST_CASE("Test 37") {
 	requireBool(are_similar);
 }
 
+/*
+Second argument with leading and trailing underscores :
+assign a; call c; variable v; Select a such that Uses (a, v) pattern a (v, _) pattern a (_ , _"x + y"_)
+*/
+TEST_CASE("Test 38") {
+
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "assign a; call c; variable v; Select a such that Uses (a, v) pattern a (v, _) pattern a (_ , _\"x + y\"_)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	query_info_expected.setOutputVar("a");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["a"] = "assign";
+	expected_var_map["c"] = "call";
+	expected_var_map["v"] = "variable";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments_first; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments_first; // for first clause : Uses (a, v)
+	arguments_first.push_back("a");
+	arguments_first.push_back("v");
+
+	all_arguments_first.push_back(arguments_first);
+
+	vector<vector<string>> all_arguments_second; //  pattern a (v, _) pattern a (_ , _\"x + y\"_)
+	vector<string> arguments_second; // for clause : pattern a (v, _)
+	arguments_second.push_back("v");
+	arguments_second.push_back("_");
+	arguments_second.push_back("a");
+
+	all_arguments_second.push_back(arguments_second);
+
+	vector<string> arguments_third; // for clause : pattern a (_ , _\"x + y\"_)
+	arguments_third.push_back("_");
+	arguments_third.push_back("_\"x + y\"_");
+	arguments_third.push_back("a");
+
+	all_arguments_second.push_back(arguments_third);
+
+	expected_relRef_map["UsesS"] = all_arguments_first;
+	expected_relRef_map["pattern"] = all_arguments_second;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	require(are_similar);
+}
+
+
 
 TEST_CASE("3rd Test") {
 

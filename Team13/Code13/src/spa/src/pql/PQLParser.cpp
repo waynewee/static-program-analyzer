@@ -20,8 +20,6 @@ QueryInfo PQLParser::parse(string s) {
 	vector<string> temp_storage;
     string str = s;
 
-
-
     unordered_map<string, int> differentiable_user_declared_var;
 
     unordered_set<string> all_user_declared_var;
@@ -79,7 +77,7 @@ QueryInfo PQLParser::parse(string s) {
     next_word = trimLeadingWhitespaces(next_word);
     next_word = trimTrailingWhitespaces(next_word);
 
-    cout << "variable user wants to select : " << next_word << endl;
+    // cout << "variable user wants to select : " << next_word << endl;
 
     // now, next word MUST BE a variable declared by the user
     // if he didnt declare
@@ -123,7 +121,7 @@ QueryInfo PQLParser::parse(string s) {
     if (next_word.compare("such") != 0 && next_word.compare("pattern") != 0) {
         throw ("Error : cannot find 'such that' or 'pattern' clause");
     }
-
+    /*
     // FOUND SUCH THAT
     if (next_word.compare("such") == 0) {
         // next word is such
@@ -146,7 +144,7 @@ QueryInfo PQLParser::parse(string s) {
 
             string such_that_clause = select_clause.substr(0, select_clause.find_first_of(")") + 1);
             select_clause.erase(0, select_clause.find_first_of(")") + 1);
-            cout << "such_that_clause : " << such_that_clause << endl;
+            // cout << "such_that_clause : " << such_that_clause << endl;
 
             suchThatClauseResult = query_syntax_validator.validateSuchThatClause(such_that_clause, differentiable_user_declared_var);
             // cout << "select clause now left with : " << select_clause << endl;
@@ -181,7 +179,7 @@ QueryInfo PQLParser::parse(string s) {
         next_word = select_clause.substr(0, select_clause.find_first_of(" "));
         next_word = trimLeadingWhitespaces(next_word);
         next_word = trimTrailingWhitespaces(next_word);
-        cout << "varname in pattern : " << next_word << endl;
+        // cout << "varname in pattern : " << next_word << endl;
 
         pattern_var_name = next_word;
 
@@ -206,7 +204,7 @@ QueryInfo PQLParser::parse(string s) {
 
             string pattern_clause = select_clause.substr(0, endOfPatternClause + distanceToClosedBracket);
 
-            cout << "pattern clause : " << pattern_clause << endl;
+            // cout << "pattern clause : " << pattern_clause << endl;
 
             select_clause.erase(0, endOfPatternClause + distanceToClosedBracket);
 
@@ -218,7 +216,7 @@ QueryInfo PQLParser::parse(string s) {
 
             string pattern_clause = select_clause.substr(0, endOfPatternClause + 1);
 
-            cout << "pattern clause : " << pattern_clause << endl;
+            // cout << "pattern clause : " << pattern_clause << endl;
 
             select_clause.erase(0, endOfPatternClause + 1);
 
@@ -244,7 +242,7 @@ QueryInfo PQLParser::parse(string s) {
         }
     
     }
-
+    */
     // NOW next word can be such, pattern or and
     while (select_clause.find_first_not_of(' ') != string::npos && !select_clause.empty())
     {
@@ -287,7 +285,7 @@ QueryInfo PQLParser::parse(string s) {
 
                 string such_that_clause = select_clause.substr(0, select_clause.find_first_of(")") + 1);
                 select_clause.erase(0, select_clause.find_first_of(")") + 1);
-                cout << "such_that_clause : " << such_that_clause << endl;
+                // cout << "such_that_clause : " << such_that_clause << endl;
 
                 suchThatClauseResult = query_syntax_validator.validateSuchThatClause(such_that_clause, differentiable_user_declared_var);
 
@@ -370,8 +368,8 @@ QueryInfo PQLParser::parse(string s) {
                 vector<string> p = pair.second;
                 p.push_back(pattern_var_name);
                 for (auto i : p) {
-                    cout << i << " | ";
-                    cout << endl;
+                    //cout << i << " | ";
+                    //cout << endl;
                 }
                 if (relRefMap.count(pair.first) == 1) {
                     vector<vector<string>> empty;
