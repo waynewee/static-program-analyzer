@@ -49,77 +49,80 @@ PROC_NAME_SET* RelationManager::all_proc_modifies_keys_ = new PROC_NAME_SET();
 VAR_NAME_SET* RelationManager::all_inverse_proc_modifies_keys_ = new VAR_NAME_SET();
 
 bool RelationManager::AddFollows(STMT_IDX s1, STMT_IDX s2) {
-   return InsertStmtStmtRelation(follows_table_, s1, s2)
+    bool res = InsertStmtStmtRelation(follows_table_, s1, s2)
             && InsertStmtStmtRelation(inverse_follows_table_, s2, s1)
             && InsertStmtStmtRelation(follows_star_table_, s1, s2)
             && InsertStmtStmtRelation(inverse_follows_star_table_, s2, s1)
             && InsertStmtStmtTuple(all_follows_, s1, s2)
-            && InsertStmtStmtTuple(all_follows_star_, s1, s2)
-            && InsertStmtKey(all_follows_keys_, s1)
-            && InsertStmtKey(all_inverse_follows_keys_, s2)
-            && InsertStmtKey(all_follows_star_keys_, s1)
-            && InsertStmtKey(all_inverse_follows_star_keys_, s2);
-    //debug
-//    std::cout << "After insertion of everything, inside all_follows_: ";
-//    for (STMT_STMT_PAIR* pair: *all_follows_) {
-//        std::cout << pair->s1 << ", " << pair->s2 << std::endl;
-//    }
+            && InsertStmtStmtTuple(all_follows_star_, s1, s2);
+    InsertStmtKey(all_follows_keys_, s1);
+    InsertStmtKey(all_inverse_follows_keys_, s2);
+    InsertStmtKey(all_follows_star_keys_, s1);
+    InsertStmtKey(all_inverse_follows_star_keys_, s2);
+    return res;
 }
 
 bool RelationManager::AddFollowsStar(STMT_IDX s1, STMT_IDX s2) {
-    return InsertStmtStmtRelation(follows_star_table_, s1, s2)
+    bool res = InsertStmtStmtRelation(follows_star_table_, s1, s2)
             && InsertStmtStmtRelation(inverse_follows_star_table_, s2, s1)
-            && InsertStmtStmtTuple(all_follows_star_, s1, s2)
-            && InsertStmtKey(all_follows_star_keys_, s1)
-            && InsertStmtKey(all_inverse_follows_star_keys_, s2);
+            && InsertStmtStmtTuple(all_follows_star_, s1, s2);
+    InsertStmtKey(all_follows_star_keys_, s1);
+    InsertStmtKey(all_inverse_follows_star_keys_, s2);
+    return res;
 }
 
 bool RelationManager::AddParent(STMT_IDX s1, STMT_IDX s2) {
-    return InsertStmtStmtRelation(parent_table_, s1, s2)
+    bool res = InsertStmtStmtRelation(parent_table_, s1, s2)
             && InsertStmtStmtRelation(inverse_parent_table_, s2, s1)
             && InsertStmtStmtRelation(parent_star_table_, s1, s2)
             && InsertStmtStmtRelation(inverse_parent_star_table_, s2, s1)
             && InsertStmtStmtTuple(all_parent_, s1, s2)
-            && InsertStmtStmtTuple(all_parent_star_, s1, s2)
-            && InsertStmtKey(all_parent_keys_, s1)
-            && InsertStmtKey(all_inverse_parent_keys_, s2)
-            && InsertStmtKey(all_parent_star_keys_, s1)
-            && InsertStmtKey(all_inverse_parent_star_keys_, s2);
+            && InsertStmtStmtTuple(all_parent_star_, s1, s2);
+    InsertStmtKey(all_parent_keys_, s1);
+    InsertStmtKey(all_inverse_parent_keys_, s2);
+    InsertStmtKey(all_parent_star_keys_, s1);
+    InsertStmtKey(all_inverse_parent_star_keys_, s2);
+    return res;
 }
 bool RelationManager::AddParentStar(STMT_IDX s1, STMT_IDX s2) {
-    return InsertStmtStmtRelation(parent_star_table_, s1, s2)
+    bool res = InsertStmtStmtRelation(parent_star_table_, s1, s2)
             && InsertStmtStmtRelation(inverse_parent_star_table_, s2, s1)
-            && InsertStmtStmtTuple(all_parent_star_, s1, s2)
-            && InsertStmtKey(all_parent_star_keys_, s1)
-            && InsertStmtKey(all_inverse_parent_star_keys_, s2);
+            && InsertStmtStmtTuple(all_parent_star_, s1, s2);
+    InsertStmtKey(all_parent_star_keys_, s1);
+    InsertStmtKey(all_inverse_parent_star_keys_, s2);
+    return res;
 }
 bool RelationManager::AddStmtUses(STMT_IDX s, VAR_NAME *v) {
-    return InsertStmtVarRelation(stmt_uses_table_, s, v)
+    bool res = InsertStmtVarRelation(stmt_uses_table_, s, v)
             && InsertVarStmtRelation(inverse_stmt_uses_table_, v, s)
-            && InsertStmtVarTuple(all_stmt_uses_, s, v)
-            && InsertStmtKey(all_stmt_uses_keys_, s)
-            && InsertVarKey(all_inverse_stmt_uses_keys_, v);
+            && InsertStmtVarTuple(all_stmt_uses_, s, v);
+    InsertStmtKey(all_stmt_uses_keys_, s);
+    InsertVarKey(all_inverse_stmt_uses_keys_, v);
+    return res;
 }
 bool RelationManager::AddProcUses(PROC_NAME *p, VAR_NAME *v) {
-    return InsertProcVarRelation(proc_uses_table_, p, v)
+    bool res = InsertProcVarRelation(proc_uses_table_, p, v)
             && InsertVarProcRelation(inverse_proc_uses_table_, v, p)
-            && InsertProcVarTuple(all_proc_uses_, p, v)
-            && InsertProcKey(all_proc_uses_keys_, p)
-            && InsertVarKey(all_inverse_proc_uses_keys_, v);
+            && InsertProcVarTuple(all_proc_uses_, p, v);
+    InsertProcKey(all_proc_uses_keys_, p);
+    InsertVarKey(all_inverse_proc_uses_keys_, v);
+    return res;
 }
 bool RelationManager::AddStmtModifies(STMT_IDX s, VAR_NAME *v) {
-    return InsertStmtVarRelation(stmt_modifies_table_, s, v)
+    bool res = InsertStmtVarRelation(stmt_modifies_table_, s, v)
             && InsertVarStmtRelation(inverse_stmt_modifies_table_, v, s)
-            && InsertStmtVarTuple(all_stmt_modifies_, s, v)
-            && InsertStmtKey(all_stmt_modifies_keys_, s)
-            && InsertVarKey(all_inverse_stmt_modifies_keys_, v);
+            && InsertStmtVarTuple(all_stmt_modifies_, s, v);
+    InsertStmtKey(all_stmt_modifies_keys_, s);
+    InsertVarKey(all_inverse_stmt_modifies_keys_, v);
+    return res;
 }
 bool RelationManager::AddProcModifies(PROC_NAME *p, VAR_NAME *v) {
-    return InsertProcVarRelation(proc_modifies_table_, p, v)
+    bool res = InsertProcVarRelation(proc_modifies_table_, p, v)
             && InsertVarProcRelation(inverse_proc_modifies_table_, v, p)
-            && InsertProcVarTuple(all_proc_modifies_, p, v)
-            && InsertProcKey(all_proc_modifies_keys_, p)
-            && InsertVarKey(all_inverse_proc_modifies_keys_, v);
+            && InsertProcVarTuple(all_proc_modifies_, p, v);
+    InsertProcKey(all_proc_modifies_keys_, p);
+    InsertVarKey(all_inverse_proc_modifies_keys_, v);
+    return res;
 }
 
 bool RelationManager::IsFollows(STMT_IDX s1, STMT_IDX s2) {

@@ -71,8 +71,12 @@ TEST_CASE("RelationManager::GetFollows(STMT_IDX s) unit test") {
     REQUIRE(set1->find(2) != set1->end());
     REQUIRE(set1->find(5) != set1->end());
     STMT_IDX_SET *set_wildcard = relation_manager->GetFollows(-1);
+    for (STMT_IDX s: *set_wildcard) {
+        std::cout << s << std::endl;
+    }
     REQUIRE(!set_wildcard->empty());
-    REQUIRE(set_wildcard->find(1) != set_wildcard->end());
+    REQUIRE(set_wildcard->find(1) == set_wildcard->end());
+    REQUIRE(set_wildcard->find(5) != set_wildcard->end());
 }
 
 TEST_CASE("RelationManager::GetInverseFollows(STMT_IDX s) unit test") {
@@ -85,6 +89,9 @@ TEST_CASE("RelationManager::GetInverseFollows(STMT_IDX s) unit test") {
     REQUIRE(set->size() == 2);
     REQUIRE(set->find(2) != set->end());
     REQUIRE(set->find(3) != set->end());
+    STMT_IDX_SET *set_wildcard = relation_manager->GetInverseFollows(-1);
+    REQUIRE(!set_wildcard->empty());
+    //REQUIRE(set_wildcard->find(5) != set_wildcard->end());
 }
 
 TEST_CASE("RelationManager::GetInverseFollowsStar(STMT_IDX s) unit test") {
