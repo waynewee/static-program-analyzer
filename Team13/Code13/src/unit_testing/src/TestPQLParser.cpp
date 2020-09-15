@@ -1585,14 +1585,317 @@ TEST_CASE("Test 39") {
 	requireBool(are_similar);
 }
 
+/* -------------- TEST CASES WITH MULTIPLE SPACEBAR ----------- */
+/*
 
+First argument stmt vs procedure
+stmt   s   ;   Select    s     such that         Modifies   (   s    ,  "  x  "  )  
 
-TEST_CASE("3rd Test") {
+*/
 
-	//TNode T;
+TEST_CASE("Test 40") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
 
+	string pql_query = "stmt   s   ;   Select    s     such that         Modifies   (   s    ,  \"  x  \"  )  ";
 
+	query_info_actual = pql_parser.parse(pql_query);
 
-	requireBool(1 == 1);
+	query_info_expected.setOutputVar("s");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["s"] = "stmt";
+	query_info_expected.setVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("s");
+	arguments.push_back("\"  x  \"");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["ModifiesS"] = all_arguments;
+
+	query_info_expected.setRelRefMap(expected_relRef_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	requireBool(are_similar);
 }
 
+/* -------------- INVALID TEST CASES ----------------- */
+
+/*
+
+Modifies first argument underscore : invalid as cannot tell between ModifiesS and ModifiesP
+stmt s; Select s such that Modifies (_ ,"x")
+
+*/
+
+TEST_CASE("Test 41") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "stmt s; Select s such that Modifies (_ ,\"x\")";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	bool isValid = query_info_actual.isQueryInfoValid();
+
+	requireBool(!isValid);
+}
+
+/*
+
+Invalid 2nd argument for pattern :
+assign a; variable v; Select a pattern a (v, _"z")
+
+*/
+
+TEST_CASE("Test 42") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "assign a; variable v; Select a pattern a (v, _\"z\")";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	bool isValid = query_info_actual.isQueryInfoValid();
+
+	requireBool(!isValid);
+}
+
+/*
+
+Invalid 2nd argument for pattern :
+assign a; variable v; Select a pattern a (v, "z"_)
+
+*/
+
+TEST_CASE("Test 43") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "assign a; variable v; Select a pattern a (v, \"z\"_)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	bool isValid = query_info_actual.isQueryInfoValid();
+
+	requireBool(!isValid);
+}
+
+/*
+
+Invalid 2nd argument for pattern :
+assign a; variable v; Select a pattern a (v, _"+ z  + y"_)
+
+*/
+
+TEST_CASE("Test 44") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "assign a; variable v; Select a pattern a (v, _\" + z + y\"_)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	bool isValid = query_info_actual.isQueryInfoValid();
+
+	requireBool(!isValid);
+}
+
+/*
+
+Invalid 2nd argument for pattern :
+assign a; variable v; Select a pattern a (v, _" ) z  + y ( "_)
+
+*/
+
+TEST_CASE("Test 45") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "assign a; variable v; Select a pattern a (v, _\" ) z + y(\"_)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	bool isValid = query_info_actual.isQueryInfoValid();
+
+	requireBool(!isValid);
+}
+
+/*
+
+Invalid variable name for 2nd argument :
+procedure p; Select p such that Uses (p ,"[")
+
+*/
+
+TEST_CASE("Test 46") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "procedure p; Select p such that Uses (p ,\"[\")";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	bool isValid = query_info_actual.isQueryInfoValid();
+
+	requireBool(!isValid);
+}
+
+/*
+
+Invalid synonym type :
+aszign a; variable v; Select a pattern a (_, _)
+
+*/
+
+TEST_CASE("Test 47") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "aszign a; variable v; Select a pattern a (_, _)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	bool isValid = query_info_actual.isQueryInfoValid();
+
+	requireBool(!isValid);
+}
+
+/*
+
+Select clause not found :
+procedure p1, p2; p1 such that Uses (p1, p2)
+
+*/
+
+TEST_CASE("Test 48") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "procedure p1, p2; p1 such that Uses (p1, p2)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	bool isValid = query_info_actual.isQueryInfoValid();
+
+	requireBool(!isValid);
+}
+
+/*
+
+Such that should be only separated by single spacing :
+stmt s1; Select s1 such  that Parent (3, s1)
+
+*/
+
+TEST_CASE("Test 49") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "stmt s1; Select s1 such  that Parent (3, s1)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	bool isValid = query_info_actual.isQueryInfoValid();
+
+	requireBool(!isValid);
+}
+
+/*
+
+Invalid variable name :
+stmt 0s; Select 0s
+
+*/
+
+TEST_CASE("Test 50") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "stmt 0s; Select 0s";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	bool isValid = query_info_actual.isQueryInfoValid();
+
+	requireBool(!isValid);
+}
+
+/*
+
+Invalid variable name :
+stmt [/v; Select [/v
+
+*/
+
+TEST_CASE("Test 51") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "stmt [/v; Select [/v";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	bool isValid = query_info_actual.isQueryInfoValid();
+
+	requireBool(!isValid);
+}
+
+/*
+
+Comma not found in arguments :
+call c1; if i1; Select c1 such that Parent* (c1 i1)
+
+*/
+
+TEST_CASE("Test 52") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "call c1; if i1; Select c1 such that Parent* (c1 i1)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	bool isValid = query_info_actual.isQueryInfoValid();
+
+	requireBool(!isValid);
+}
+
+/*
+
+Synonym undeclared by user :
+stmt s1; Select s such that Parent (3, s1)
+
+*/
+
+TEST_CASE("Test 53") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "stmt s1; Select s such that Parent (3, s1)";
+
+	query_info_actual = pql_parser.parse(pql_query);
+
+	bool isValid = query_info_actual.isQueryInfoValid();
+
+	requireBool(!isValid);
+}
