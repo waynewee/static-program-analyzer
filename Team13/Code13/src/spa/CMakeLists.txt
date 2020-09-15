@@ -4,7 +4,7 @@ file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.hpp")
-add_library(spa ${srcs} ${headers} src/pkb/RelationManager.cpp src/pkb/RelationManager.h src/pkb/DataManager.cpp src/pkb/DataManager.h src/pkb/DataTables.cpp src/pkb/DataTables.h src/pkb/BTNode.tpp src/pkb/BTNode.h)
+add_library(spa ${srcs} ${headers})
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/pkb")
 # this makes the headers accessible for other projects which uses spa lib
