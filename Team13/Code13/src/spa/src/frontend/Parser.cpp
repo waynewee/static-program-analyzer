@@ -95,17 +95,24 @@ TNode Parser::parseProcStatement() {
 	
 	TNode procNode(TNode::NODE_TYPE::procedure);
 	TNode procNameNode(TNode::NODE_TYPE::procName, nameToken.getValue());
-	TNode stmtListNode = Parser::parseStatementList();
 
 	TNode* procNameNodePtr = &procNameNode;
-	TNode* stmtListNodePtr = &stmtListNode;
 	
 	bool addedProcName = procNode.AddChild(procNameNodePtr);
-	bool addedStmtList = procNode.AddChild(stmtListNodePtr);
 
-	if (!addedProcName || !addedStmtList) {
+	int endIndex = Parser::getEndIndxOfStatementList();
+	if (!addedProcName) {
 		throw "Null node added as child of procedure node";
 	}
+	while ((tokenIndx) < endIndex) {
+		if (peekNextToken().getValue() == "{" ||
+			peekNextToken().getValue() == "}") {
+			getNextToken();
+			continue;
+		}
+		procNode.AddChild(&parseStatement());
+	}
+
 	return procNode;
 }
 
