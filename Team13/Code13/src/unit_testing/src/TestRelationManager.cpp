@@ -66,10 +66,13 @@ TEST_CASE("RelationManager::GetFollows(STMT_IDX s) unit test") {
     RelationManager* relation_manager = pkb->GetRelationManager();
     relation_manager->AddFollows(1, 2);
     relation_manager->AddFollows(1, 5);
-    STMT_IDX_SET *set = relation_manager->GetFollows(1);
-    REQUIRE(set->size() == 2);
-    REQUIRE(set->find(2) != set->end());
-    REQUIRE(set->find(5) != set->end());
+    STMT_IDX_SET *set1 = relation_manager->GetFollows(1);
+    REQUIRE(set1->size() == 2);
+    REQUIRE(set1->find(2) != set1->end());
+    REQUIRE(set1->find(5) != set1->end());
+    STMT_IDX_SET *set_wildcard = relation_manager->GetFollows(-1);
+    REQUIRE(!set_wildcard->empty());
+    REQUIRE(set_wildcard->find(1) != set_wildcard->end());
 }
 
 TEST_CASE("RelationManager::GetInverseFollows(STMT_IDX s) unit test") {
@@ -96,3 +99,5 @@ TEST_CASE("RelationManager::GetInverseFollowsStar(STMT_IDX s) unit test") {
     REQUIRE(set->find(3) != set->end());
     REQUIRE(set->find(4) != set->end());
 }
+
+

@@ -328,7 +328,7 @@ bool RelationManager::CheckVarProcRelation(VAR_PROC_RELATION_TABLE *set, VAR_NAM
 }
 
 STMT_IDX_SET* RelationManager::GetStmtStmtRelationVal(STMT_STMT_RELATION_TABLE *set, STMT_IDX_SET *stmt_keys, STMT_IDX s) {
-    if (!s) {
+    if (s < 0) {
         return stmt_keys;
     }
     auto iter = set->find(s);
@@ -339,7 +339,7 @@ STMT_IDX_SET* RelationManager::GetStmtStmtRelationVal(STMT_STMT_RELATION_TABLE *
 }
 
 VAR_NAME_SET* RelationManager::GetStmtVarRelationVal(STMT_VAR_RELATION_TABLE *set, VAR_NAME_SET *var_keys, STMT_IDX s) {
-    if (!s) {
+    if (s < 0) {
         return var_keys;
     }
     auto iter = set->find(s);
