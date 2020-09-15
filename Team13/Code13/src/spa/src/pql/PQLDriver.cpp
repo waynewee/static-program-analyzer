@@ -8,26 +8,40 @@
 #include "QueryInfo.h"
 #include "QueryResult.h"
 
-void PQLDriver::query(string queryString) {
+string PQLDriver::query(string queryString) {
 	PQLParser parser;
 	PQLEvaluator evaluator;
 	PQLProjector projector;
 
-	/*
-	string user_input;
-	cout << "           Enter your input : \n";
-	getline(cin, user_input);
-	// cout << "Your input is : " << user_input << endl;
-	return user_input;
-	*/
+	string finalResult = *(new string());
 
-
-	//QueryInfo parsedInfo;
+	cout << "Query: " << queryString << endl;
+	QueryInfo parsedInfo = parser.parse(queryString);
 	
-	//parsedInfo = parser.parse(queryString);
+	if (parsedInfo.isQueryInfoValid() != 0) {
+		// Invalid query
+		cout << "Query is invalid." << endl;
+		finalResult.assign("");
+		return finalResult;
+	}
 
-	//QueryResult result = evaluator.evaluate(parsedInfo);
+	// loop: check whats in query info
+	
+	QueryResult result = evaluator.evaluate(parsedInfo);
+	if (result.isEmpty()) {
+		// Empty result
+		cout << "Result is empty." << endl;
+		finalResult.assign("");
+		return finalResult;
+	}
 
-	//string finalResult = projector.project(result);
-	//cout << "Final Result: \"" << finalResult << "\"" << std::endl;
+	// loop: check whats in query result
+
+	finalResult = projector.project(result);
+	if (finalResult.empty()) {
+		cout << "Projecting result has errors. 'finalResult' should not be empty as it is already caught." << endl;
+	}
+
+	cout << "Final Result: \"" << finalResult << "\"" << std::endl;
+	return finalResult;
 }

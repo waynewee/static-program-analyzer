@@ -5,6 +5,6 @@ class PQLDriver
 {
 public:
 
-	void query(string queryString);
+	string query(string queryString);
 };
 
