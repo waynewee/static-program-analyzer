@@ -23,7 +23,6 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 
 	while (shuntedQ.size() > 0) {
 
-		//CREATE PARENT NODE
 		Token token = shuntedQ.front();
 		shuntedQ.pop();
 				
@@ -33,6 +32,10 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 		//guaranteed to be an expr
 		else {
 
+			//CREATE PARENT NODE
+			std::cout << &token;
+			std::cout << "\tparent\t" + token.getValue() << std::endl;
+
 			/**
 			* Check size of stack, if size == 1, then is unary
 			*/
@@ -41,6 +44,8 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 				//CREATE SINGLE CHILD NODE
 				Token cToken = tStack.top();
 				tStack.pop();
+				std::cout << &cToken;
+				std::cout << "\tleft\t" + cToken.getValue() << std::endl;
 
 				//LINK PARENT TO CHILD
 				std::cout << cToken.getValue() + "_____" +  token.getValue() << std::endl;
@@ -56,6 +61,12 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 				//CREATE LEFT CHILD NODE
 				Token lToken = tStack.top();
 				tStack.pop();
+
+
+				std::cout << &rToken;
+				std::cout << "\tright\t" + rToken.getValue() << std::endl;
+				std::cout << &lToken;
+				std::cout << "\tleft\t" + lToken.getValue() << std::endl;
 
 				//LINK PARENT TO CHILDREN
 				std::cout << lToken.getValue() + "______" + token.getValue() + "______" + rToken.getValue() << std::endl;
