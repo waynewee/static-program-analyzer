@@ -17,64 +17,69 @@ ExprEvaluator::ExprEvaluator(std::vector<Token> exprList) {
 }
 
 TNode ExprEvaluator::evaluate() {
+
 	return evaluateQueue(shunt());
 }
 
-TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
+TNode ExprEvaluator::evaluateQueue( std::queue<tuple<Token, TNode>> shuntedQ ) {
 
-	std::stack<Token> tStack;
+	std::stack<tuple<Token, TNode>*> tStack;
 
-	TNode rootNode = convertTokenToNode(shuntedQ.front());
+	TNode rootNode = std::get<1>(shuntedQ.front());
 
 	while (shuntedQ.size() > 0) {
-		Token token = shuntedQ.front();
+
+		tuple<Token, TNode>* tupPtr = &shuntedQ.front();
+		Token* tokenPtr = &std::get<0>(shuntedQ.front());
+		std::cout << tokenPtr->getValue() << std::endl;
+		TNode* nodePtr = &std::get<1>(shuntedQ.front());
+
 		shuntedQ.pop();
 				
-		if (token.getTokenType() == TokenType::TOKEN_TYPE::constant || token.getTokenType() == TokenType::TOKEN_TYPE::var) {
-			tStack.push(token);
+		if (tokenPtr->getTokenType() == TokenType::TOKEN_TYPE::constant || tokenPtr->getTokenType() == TokenType::TOKEN_TYPE::var) {
+			tStack.push(tupPtr);
 		}
 		//guaranteed to be an expr
 		else {
 
-			std::string opStr = token.getValue();
-			rootNode = convertTokenToNode(token);
 			/**
 			* Check size of stack, if size == 1, then is unary
 			*/
-			if (token.isUnaryOp) {
+			if (tokenPtr->isUnaryOp) {
 				/**
 				* Pop off one kid
 				*/
-				Token cToken = tStack.top();
+				tuple<Token, TNode>* cTup= tStack.top();
+				TNode* cNodePtr = &std::get<1>(*cTup);
+				nodePtr->AddChild(cNodePtr);
 				tStack.pop();
-
-				TNode cNode = convertTokenToNode(cToken);
-
-				rootNode.AddChild(&cNode);
 
 			}
 			else {
 				/**
 				* Pop off two kids
 				*/
-				Token rToken = tStack.top();
+				tuple<Token, TNode>* rTup = tStack.top();
+				TNode* rNodePtr = &std::get<1>(*rTup);
 				tStack.pop();
-
-				Token lToken = tStack.top();
+				tuple<Token, TNode>* lTup= tStack.top();
+				TNode* lNodePtr = &std::get<1>(*lTup);
 				tStack.pop();
+				
+				std::printf("Parent Address: %p\n", nodePtr);
+				std::printf("Left Child Address: %p\n", lNodePtr);
+				std::printf("Right Child Address: %p\n", rNodePtr);
 
-				TNode lNode = convertTokenToNode(lToken);
-				TNode rNode = convertTokenToNode(rToken);
-
-				rootNode.AddChild(&lNode);
-				rootNode.AddChild(&rNode);
+				nodePtr->AddChild(rNodePtr);
+				nodePtr->AddChild(lNodePtr);
 
 			}
 
-			tStack.push(token);
-
+			tStack.push(tupPtr);
 
 		}
+
+		std::cout << shuntedQ.size() << std::endl;
 
 	}
 
@@ -82,8 +87,8 @@ TNode ExprEvaluator::evaluateQueue( std::queue<Token> shuntedQ ) {
 
 }
 
-std::queue<Token> ExprEvaluator::shunt() {
-	std::queue<Token> outputQ;
+std::queue<tuple<Token, TNode>> ExprEvaluator::shunt() {
+	std::queue<tuple<Token, TNode>> outputQ;
 	std::stack<Token> opStack;
 
 	int i = 0;
@@ -91,11 +96,12 @@ std::queue<Token> ExprEvaluator::shunt() {
 	while( i < tokenList.size()){
 
 		Token token = tokenList.at(i);
+		TNode node = convertTokenToNode(token);
 
 		TokenType::TOKEN_TYPE tokenType = token.getTokenType();
 
 		if (tokenType == TokenType::TOKEN_TYPE::constant || tokenType == TokenType::TOKEN_TYPE::var) {
-			outputQ.push(token);
+			outputQ.push(make_tuple(token, node));
 		}
 		else if (tokenType == TokenType::TOKEN_TYPE::expr|| tokenType == TokenType::TOKEN_TYPE::rel_expr) {
 
@@ -110,8 +116,9 @@ std::queue<Token> ExprEvaluator::shunt() {
 				&& opStack.top().getValue() != "("
 				) {
 				Token opToken = opStack.top();
+				TNode opNode = convertTokenToNode(opToken);
 				opStack.pop();
-				outputQ.push(opToken);
+				outputQ.push(make_tuple(opToken, opNode));
 			}
 
 			opStack.push(token);
@@ -128,8 +135,9 @@ std::queue<Token> ExprEvaluator::shunt() {
 				}
 
 				Token opToken = opStack.top();
+				TNode opNode = convertTokenToNode(opToken);
 				opStack.pop();
-				outputQ.push(opToken);
+				outputQ.push(make_tuple(opToken, opNode));
 
 			}
 
@@ -143,8 +151,9 @@ std::queue<Token> ExprEvaluator::shunt() {
 
 	while (opStack.size() > 0) {
 		Token opToken = opStack.top();
+		TNode opNode = convertTokenToNode(opToken);
 		opStack.pop();
-		outputQ.push(opToken);
+		outputQ.push(make_tuple(opToken, opNode));
 	}
 
 	return outputQ;
@@ -240,6 +249,9 @@ TNode ExprEvaluator::convertTokenToNode(Token t) {
 
 	//token can only be expr (+, -, * etc), rel_expr (&&, || etc), variable, constant
 
+	if (t.getValue() == "(" || t.getValue() == ")") {
+		return TNode();
+	}
 	if (t.getTokenType() == TokenType::TOKEN_TYPE::expr) {
 		return TNode(TNode::NODE_TYPE::expr, getOperator(t.getValue()));
 	}
