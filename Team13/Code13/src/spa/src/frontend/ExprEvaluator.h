@@ -36,8 +36,8 @@ public:
 	};
 
 private:
-	std::queue<tuple<Token, TNode>> shunt();
-	TNode evaluateQueue(std::queue<tuple<Token, TNode>> shuntedQ);
+	std::queue<Token> shunt();
+	TNode evaluateQueue(std::queue<Token> shuntedQ);
 	bool isLeftAssoc(Token t);
 	int compareOpPrecedence(Token a, Token b);
 	int getPrecedence(Token t);
