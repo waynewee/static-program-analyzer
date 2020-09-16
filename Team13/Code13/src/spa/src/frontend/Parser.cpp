@@ -30,10 +30,6 @@ std::vector<TNode> Parser::parse(std::string input) {
 		Parser::parseStatement();
 	}
 
-	for (TNode n : Parser::procNodesList) {
-		n.Print(&n);
-	}
-
 	return Parser::procNodesList;
 }
 

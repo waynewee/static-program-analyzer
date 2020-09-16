@@ -2,6 +2,7 @@
 #include "Token.h"
 #include "TokenType.h"
 #include "pkb/TNode.h"
+#include "testUtils/TreeTraverse.h"
 
 #include <iostream>
 #include <vector>
@@ -75,8 +76,8 @@ TNode ExprEvaluator::evaluateQueue( std::queue<tuple<Token, TNode*>> shuntedQ ) 
 
 	if (rootNodePtr != NULL) {
 
-		std::cout << "EXPECTED ADDRESS\t";
-		std::cout << rootNodePtr << std::endl;
+		TreeTraverse::traverse(rootNodePtr);
+
 		return *rootNodePtr;
 	}
 
