@@ -36,13 +36,13 @@ public:
 	};
 
 private:
-	std::queue<Token> shunt();
-	TNode evaluateQueue(std::queue<Token> shuntedQ);
+	std::queue<tuple<Token, TNode*>> shunt();
+	TNode evaluateQueue(std::queue<tuple<Token, TNode*>> shuntedQ);
 	bool isLeftAssoc(Token t);
 	int compareOpPrecedence(Token a, Token b);
 	int getPrecedence(Token t);
 	bool isUnaryOp(Token curr, Token prev);
 	TNode::OPERATOR getOperator(std::string opStr);
-	TNode convertTokenToNode(Token t);
+	TNode* convertTokenToNode(Token t);
 	
 };

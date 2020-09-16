@@ -21,7 +21,7 @@ void TreeTraverse::traverse(TNode* root) {
 			q.push(child);
 			std::cout << child->getData() << std::endl;
 		}
-
+		std::cout << q.size() << std::endl;
 		TNode* nextNode = q.back();
 		q.pop();
 
