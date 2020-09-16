@@ -13,9 +13,9 @@
 
 typedef class VarTable {
 private:
-    std::unordered_map<VAR_NAME, LIST_OF_TNODE_PTR> data;
+    std::unordered_map<VAR_NAME, TNODE_PTR_LIST> data;
 public:
-    LIST_OF_TNODE_PTR Get(VAR_NAME var_name);
+    TNODE_PTR_LIST Get(VAR_NAME var_name);
     VAR_NAME_LIST GetAllVars();
     void* Add(VAR_NAME name, TNode* tnode);
 }VAR_TABLE;

@@ -5,9 +5,9 @@ unordered_set<string> QueryResult::getResult() {
 }
 
 void QueryResult::setResult(unordered_set<string> result) {
-	this->result = result;
+	this->result = *(new unordered_set<string>(result));
 }
 
 bool QueryResult::isEmpty() {
-	return result.empty();
+	return (this->result).empty();
 }
