@@ -95,7 +95,11 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 	// Evaluate noUserDeclaredSet -> T/F clauses
 	// FALSE -> return empty; ALL TRUE -> continue
 	for (const vector<string>* func : noUserDeclaredSet) {
-		if (!evaluateNoUserDeclaredSet(*func)) {
+		string fCall = (*func)[0];
+		string param1 = (*func)[1];
+		string param2 = (*func)[2];
+
+		if (!evaluateNoUserDeclaredSet(fCall, param1, param2)) {
 			finalResult.setResult({});
 			return finalResult;
 		}
@@ -239,13 +243,9 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 	return finalResult;
 }
 
-bool PQLEvaluator::evaluateNoUserDeclaredSet(vector<string> func) {
+bool PQLEvaluator::evaluateNoUserDeclaredSet(string fCall, string param1, string param2) {
 	PKB pkb = PKB();
 	RelationManager* rm = pkb.GetRelationManager();
-
-	string fCall = func[0];
-	string param1 = func[1];
-	string param2 = func[2];
 
 	cout << "in evaluateNoUserDeclaredSet" << endl;
 	cout << "fcall: " << fCall << "; param1: " << param1 << "; param2: " << param2 << endl;

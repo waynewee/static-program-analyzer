@@ -6,7 +6,7 @@ class PQLEvaluator
 public:
 	QueryResult evaluate(QueryInfo queryInfo);
 
-	bool evaluateNoUserDeclaredSet(vector<string> func);
+	bool evaluateNoUserDeclaredSet(string fCall, string param1, string param2);
 	unordered_set<string> evaluateOneDeclaredSet(string fCall, string param);
 	unordered_set<string> evaluateInverseOneDeclaredSet(string fCall, string param);
 	unordered_set<vector<string>*> evaluateTwoDeclaredSet(string outputVarType);
