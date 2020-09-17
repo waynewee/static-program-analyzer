@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "Statement.h"
-#include "Token.h"
+#include "frontend/Token.h"
 
 Statement::Statement() {}
 

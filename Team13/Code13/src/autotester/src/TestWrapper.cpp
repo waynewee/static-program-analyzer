@@ -4,6 +4,7 @@
 #include "TestWrapper.h"
 #include "frontend/Parser.h"
 #include "frontend/CodeExtractor.h"
+#include "testUtils/TreeTraverse.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -18,7 +19,7 @@ volatile bool AbstractWrapper::GlobalStop = false;
 TestWrapper::TestWrapper() {
   // create any objects here as instance variables of this class
   // as well as any initialization required for your spa program
-  PKB* pkb = new PKB();
+	pkb = new PKB();
 }
 
 // method for parsing the SIMPLE source
@@ -27,12 +28,8 @@ void TestWrapper::parse(std::string filename) {
 	CodeExtractor codeExtractor(filename);
 
 	std::string input = codeExtractor.extract();
-
 	Parser parser = Parser();
-
-	parser.parse(input);
-
-
+	TestWrapper::pkb->SetASTRoot(parser.parse(input));
 }
 
 // method to evaluating a query

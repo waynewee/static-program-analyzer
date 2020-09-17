@@ -2,8 +2,8 @@
 
 using namespace std;
 
-#include <pkb/PKB.h>
-#include <pkb/TNode.h>
+#include <PKB.h>
+#include <TNode.h>
 
 DataManager* PKB::data_manager_ = new DataManager();
 RelationManager* PKB::relation_manager_ = new RelationManager();

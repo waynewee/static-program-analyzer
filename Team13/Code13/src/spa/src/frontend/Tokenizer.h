@@ -4,8 +4,8 @@
 #include <map>
 #include <vector>
 
-#include "frontend/Token.h"
-#include "frontend/TokenType.h"
+#include "Token.h"
+#include "TokenType.h"
 
 class Tokenizer {
 public:
@@ -14,7 +14,7 @@ public:
 	int pos;
 	int len;
 	std::string tokenStr;
-	std::vector<std::string> keywords = { "procedure", "print", "read", "call", "while", "if", "then", "else" };
+	std::vector<std::string> stmtNames = { "procedure", "print", "read", "call", "while", "if", "then", "else" };
 	std::vector<Token> tokenList;
 
 	int tokenize();
