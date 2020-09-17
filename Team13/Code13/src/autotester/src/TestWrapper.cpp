@@ -28,7 +28,6 @@ void TestWrapper::parse(std::string filename) {
 	CodeExtractor codeExtractor(filename);
 
 	std::string input = codeExtractor.extract();
-	std::cout << "Input: " << input << std::endl;
 	Parser parser = Parser();
 	TestWrapper::pkb->SetASTRoot(parser.parse(input));
 }

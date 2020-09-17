@@ -37,8 +37,6 @@ TNode* Parser::parse(std::string input) {
 
 		TNode* procNode = Parser::parseProcStatement();
 		mainPrg->AddChild(procNode);
-		std::cout << "Hello4!" << std::endl;
-
 	}
 
 	for (TNode* node : mainPrg->GetChildrenVector()) {
