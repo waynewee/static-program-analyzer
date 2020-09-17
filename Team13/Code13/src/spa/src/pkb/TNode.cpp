@@ -127,3 +127,12 @@ TNode::NODE_TYPE TNode::GetNodeType() {
 STMT_IDX TNode::GetStmtIndex() {
 	return index;
 }
+TNode *TNode::GetParent() {
+    return parent;
+}
+CONST_VALUE TNode::GetConstValue() {
+    return value;
+}
+string TNode::GetName() {
+    return name;
+}

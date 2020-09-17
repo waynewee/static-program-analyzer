@@ -75,6 +75,9 @@ public:
     vector<TNode*> GetChildrenVector();
     STMT_IDX GetStmtIndex();
     string getData();
+    TNode* GetParent();
+    CONST_VALUE GetConstValue();
+    string GetName();
     void Print(TNode* root);
 };
 

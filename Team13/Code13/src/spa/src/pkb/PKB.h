@@ -25,6 +25,14 @@ public:
     }
     DataManager* GetDataManager();
     RelationManager* GetRelationManager();
+    void SetASTRoot(TNode* root);
+};
+
+class ASTRootTypeUnmatchException: public exception {
+    virtual const char* what() const throw()
+    {
+        return "AST root node type can only be program!";
+    }
 };
 
 #endif

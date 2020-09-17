@@ -1,5 +1,6 @@
 #include <fstream>
 #include <string>
+#include <PKB.h>
 #include "TestWrapper.h"
 #include "frontend/Parser.h"
 #include "frontend/CodeExtractor.h"
@@ -17,6 +18,7 @@ volatile bool AbstractWrapper::GlobalStop = false;
 TestWrapper::TestWrapper() {
   // create any objects here as instance variables of this class
   // as well as any initialization required for your spa program
+  PKB* pkb = new PKB();
 }
 
 // method for parsing the SIMPLE source

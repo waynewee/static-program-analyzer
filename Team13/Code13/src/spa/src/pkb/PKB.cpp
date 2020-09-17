@@ -1,7 +1,4 @@
-#include<stdio.h>
-#include <iostream>
 #include <string>
-#include <vector>
 
 using namespace std;
 
@@ -16,4 +13,10 @@ DataManager *PKB::GetDataManager() {
 }
 RelationManager* PKB::GetRelationManager() {
     return relation_manager_;
+}
+void PKB::SetASTRoot(TNode *root) {
+    if (root->GetNodeType() != TNode::NODE_TYPE::program) {
+        throw ASTRootTypeUnmatchException();
+    }
+    ast_ = root;
 }
