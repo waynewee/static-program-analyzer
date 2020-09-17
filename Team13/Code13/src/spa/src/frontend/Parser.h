@@ -10,9 +10,8 @@ public:
 	int tokenIndx;
 	int statementIndex;
 	std::vector<Token> tokenList;
-	std::vector<TNode*> procNodesList;
 
-	std:: vector<TNode*> parse(std::string input);
+	TNode* parse(std::string input);
 	enum expressionType { IF, WHILE, ASSIGN };
 
 private:

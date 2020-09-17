@@ -1,5 +1,6 @@
 #include <fstream>
 #include <string>
+#include <PKB.h>
 #include "TestWrapper.h"
 #include "frontend/Parser.h"
 #include "frontend/CodeExtractor.h"
@@ -18,6 +19,7 @@ volatile bool AbstractWrapper::GlobalStop = false;
 TestWrapper::TestWrapper() {
   // create any objects here as instance variables of this class
   // as well as any initialization required for your spa program
+	pkb = new PKB();
 }
 
 // method for parsing the SIMPLE source
@@ -26,10 +28,9 @@ void TestWrapper::parse(std::string filename) {
 	CodeExtractor codeExtractor(filename);
 
 	std::string input = codeExtractor.extract();
-
+	std::cout << "Input: " << input << std::endl;
 	Parser parser = Parser();
-
-	parser.parse(input);
+	TestWrapper::pkb->SetASTRoot(parser.parse(input));
 }
 
 // method to evaluating a query

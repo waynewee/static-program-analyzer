@@ -23,7 +23,7 @@ void TreeTraverse::traverse(TNode* root) {
 
 		std::cout << node->getData() << std::endl;
 
-		for (TNode* cNode : node->getChildren()) {
+		for (TNode* cNode : node->GetChildrenVector()) {
 			queue.push(cNode);
 		}
 	}

@@ -9,41 +9,47 @@
 #include "Token.h"
 #include "ExprEvaluator.h"
 
-#include "pkb/TNode.h"
+#include "TNode.h"
 
 Parser::Parser() {
 	std::cout << "Parser initialized" << std::endl;
 }
 
-std::vector<TNode*> Parser::parse(std::string input) {
+TNode* Parser::parse(std::string input) {
 	std::cout << "parse called" << std::endl;
 
 	Tokenizer tokenizer(input);
-
 	tokenizer.tokenize();
 
 	tokenList = tokenizer.getTokenList();
 	tokenIndx = -1;
 	statementIndex = 0;
 
-	while (tokenIndx < (int)tokenList.size() - 1) {
+	TNode* mainPrg = new TNode(TNode::NODE_TYPE::program);
+	
+	std::cout << tokenList.size() << std::endl;
+	while (tokenIndx < (int) tokenList.size() - 1) {
 		Token procToken = Parser::getNextToken();
+
 		if (procToken.getValue() != "procedure") {
 			throw "Missing procedure";
 		}
+
 		TNode* procNode = Parser::parseProcStatement();
-		Parser::procNodesList.push_back(procNode);
+		mainPrg->AddChild(procNode);
+		std::cout << "Hello4!" << std::endl;
+
 	}
 
-	/*for (TNode* node : Parser::procNodesList) {
+	for (TNode* node : mainPrg->GetChildrenVector()) {
 		node->Print(node);
-	}*/
-	return Parser::procNodesList;
+	}
+	return mainPrg;
 }
 
 // Returns a statement node
 TNode* Parser::parseStatement() {
-	//std::cout << "Parse Statement Called" << std::endl;
+	std::cout << "Parse Statement Called" << std::endl;
 	Token firstToken = Parser::getNextToken();
 	statementIndex++;
 
@@ -157,6 +163,10 @@ TNode* Parser::parseIfStatement() {
 	TNode* exprNode = Parser::parseExpressionStatement(Parser::expressionType::IF);
 	TNode* thenStmtListNode = Parser::parseStatementList();
 
+	for (TNode* child : thenStmtListNode->GetChildrenVector()) {
+		child->SetParent(ifNode);
+	}
+
 	if (!ifNode->AddChild(exprNode) || !ifNode->AddChild(thenStmtListNode)) {
 		throw "Null node added to child of if node";
 	}
@@ -168,9 +178,14 @@ TNode* Parser::parseIfStatement() {
 	getNextToken(); // Iterating through 'else' keyword
 	TNode * elseStmtListNode = Parser::parseStatementList();
 
+	for (TNode* child : elseStmtListNode->GetChildrenVector()) {
+		child->SetParent(ifNode);
+	}
+
 	if (!ifNode->AddChild(elseStmtListNode)) {
 		throw "Null node added to child of if node";
 	}
+
 	return ifNode;
 }
 
@@ -178,6 +193,10 @@ TNode* Parser::parseWhileStatement() {
 	TNode* whleNode = new TNode(TNode::NODE_TYPE::whileStmt, statementIndex);
 	TNode* exprNode = Parser::parseExpressionStatement(Parser::expressionType::WHILE);
 	TNode* stmtListNode = Parser::parseStatementList();
+
+	for (TNode* child : stmtListNode->GetChildrenVector()) {
+		child->SetParent(whleNode);
+	}
 
 	if (!whleNode->AddChild(exprNode) || !whleNode->AddChild(stmtListNode)) {
 		throw "Null node added to child of while node";
