@@ -31,7 +31,6 @@ string PQLDriver::query(string queryString) {
 	parsedInfo.printVarMap();
 	
 	QueryResult result = evaluator.evaluate(parsedInfo);
-	cout << "SIZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZE: " << result.getResult().size() << endl;
 	if (result.isEmpty()) {
 		// Empty result
 		cout << "Result is empty." << endl;
@@ -47,5 +46,6 @@ string PQLDriver::query(string queryString) {
 	}
 
 	cout << "Final Result: \"" << finalResult << "\"" << std::endl;
+	cout << "________________________________________________________" << endl;
 	return finalResult;
 }
