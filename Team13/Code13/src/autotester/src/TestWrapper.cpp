@@ -29,12 +29,7 @@ void TestWrapper::parse(std::string filename) {
 
 	Parser parser = Parser();
 
-	std::cout << "hello" << std::endl;
-	std::vector<TNode> procNodes = parser.parse(input);
-
-	std::cout << "hello" << std::endl;
-	TreeTraverse::traverse(&procNodes.front());
-
+	parser.parse(input);
 }
 
 // method to evaluating a query

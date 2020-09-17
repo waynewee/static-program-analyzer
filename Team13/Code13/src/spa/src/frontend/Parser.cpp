@@ -30,10 +30,6 @@ std::vector<TNode> Parser::parse(std::string input) {
 		Parser::parseStatement();
 	}
 
-	for (TNode n : Parser::procNodesList) {
-		n.Print(&n);
-	}
-
 	return Parser::procNodesList;
 }
 
@@ -69,6 +65,7 @@ TNode Parser::parseStatement() {
 			statementNode = Parser::parseWhileStatement();
 			break;
 		default:
+			
 			throw "Unhandled statement name";
 			break;
 		}
@@ -77,7 +74,8 @@ TNode Parser::parseStatement() {
 		statementNode = Parser::parseAssgnStatement(firstToken);
 		break;
 	default:
-		throw "Unhandled Token: " + firstToken.getValue();
+		
+throw "Unhandled Token: " + firstToken.getValue();
 	}
 
 	return statementNode;
@@ -90,7 +88,8 @@ TNode Parser::parseProcStatement() {
 	//std::cout << "Parse ProcStatement Called" << std::endl;
 	Token nameToken = Parser::getNextToken();
 	if (nameToken.getTokenType() != TokenType::TOKEN_TYPE::var) {
-		throw "Invalid procedure name";
+		
+throw "Invalid procedure name";
 	}
 	
 	TNode procNode(TNode::NODE_TYPE::procedure);
@@ -102,7 +101,8 @@ TNode Parser::parseProcStatement() {
 
 	int endIndex = Parser::getEndIndxOfStatementList();
 	if (!addedProcName) {
-		throw "Null node added as child of procedure node";
+		
+throw "Null node added as child of procedure node";
 	}
 	while ((tokenIndx) < endIndex) {
 		if (peekNextToken().getValue() == "{" ||
@@ -125,7 +125,8 @@ TNode Parser::parseReadStatement() {
 	Token varToken = Parser::getNextToken();
 
 	if (varToken.getTokenType() != TokenType::TOKEN_TYPE::var) {
-		throw "Invalid variable name for read statement";
+		
+throw "Invalid variable name for read statement";
 	}
 
 	// insert into VarTable
@@ -135,11 +136,13 @@ TNode Parser::parseReadStatement() {
 	TNode* varNodePtr = &varNode;
 
 	if (Parser::getNextToken().getValue() != ";") {
-		throw "Missing ';' in read statement" ;
+		
+throw "Missing ';' in read statement" ;
 	}
 
 	if (!readNode.AddChild(varNodePtr)) {
-		throw "Null node added as child of read node";
+		
+throw "Null node added as child of read node";
 	}
 
 	return readNode;
@@ -149,7 +152,8 @@ TNode Parser::parsePrintStatement() {
 	//std::cout << "Parse PrintStatement Called" << std::endl;
 	Token varToken = Parser::getNextToken();
 	if (varToken.getTokenType() != TokenType::TOKEN_TYPE::var) {
-		throw "Invalid variable name for print statement";
+		
+throw "Invalid variable name for print statement";
 	}
 
 	TNode printNode(TNode::NODE_TYPE::printStmt, statementIndex);

@@ -7,26 +7,25 @@
 
 void TreeTraverse::traverse(TNode* root) {
 
-	std::cout << "Traversing Tree" << std::endl;
+	if (root == NULL) {
+		return;
+	}
 
-	std::queue<TNode*> q;
+	std::queue<TNode*> queue;
 
-	TNode* tNode = root;
+	queue.push(root);
 
-	while (tNode != NULL) {
+	std::cout << "Printing Level Order Traversal" << std::endl;
 
-		list<TNode*> children = tNode->getChildren();
+	while (!queue.empty()) {
+		TNode* node = queue.front();
+		queue.pop();
 
-		for (TNode* child : children) {
-			q.push(child);
-			std::cout << child->getData() << std::endl;
+		std::cout << node->getData() << std::endl;
+
+		for (TNode* cNode : node->getChildren()) {
+			queue.push(cNode);
 		}
-
-		TNode* nextNode = q.back();
-		q.pop();
-
-		tNode = nextNode;
-
 	}
 
 }
