@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "Token.h"
+#include "frontend/Token.h"
 
 // temp class for testing
 class Statement {

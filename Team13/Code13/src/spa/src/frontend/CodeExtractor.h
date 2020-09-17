@@ -2,7 +2,6 @@
 #include <vector>
 
 #include "Token.h"
-#include "Statement.h"
 
 class CodeExtractor {
 public:

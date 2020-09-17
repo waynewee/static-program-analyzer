@@ -1,9 +1,8 @@
 #pragma once
 #include <vector>
 
-#include "frontend/Token.h"
-#include "pkb/TNode.h"
-#include "frontend/Statement.h"
+#include "Token.h"
+#include "TNode.h"
 
 class Parser {
 public:
@@ -11,9 +10,7 @@ public:
 	int tokenIndx;
 	int statementIndex;
 	std::vector<Token> tokenList;
-	std::vector<Statement> statementList;
 	std::vector<TNode*> procNodesList;
-	Statement currentStatement;
 
 	std:: vector<TNode*> parse(std::string input);
 	enum expressionType { IF, WHILE, ASSIGN };

@@ -3,19 +3,16 @@
 #include <queue>
 #include <iostream>
 
-#include "frontend/Tokenizer.h"
+#include "Tokenizer.h"
 #include "Parser.h"
-#include "frontend/TokenType.h"
-#include "frontend/Token.h"
-#include "frontend/Statement.h"
-#include "frontend/ExprEvaluator.h"
-#include "testUtils/TreeTraverse.h"
+#include "TokenType.h"
+#include "Token.h"
+#include "ExprEvaluator.h"
 
 #include "pkb/TNode.h"
 
 Parser::Parser() {
 	std::cout << "Parser initialized" << std::endl;
-	currentStatement = Statement();
 }
 
 std::vector<TNode*> Parser::parse(std::string input) {
@@ -372,7 +369,6 @@ int Parser::getEndIndxOfStatementList() {
 
 Token Parser::getNextToken() {
 	tokenIndx++;
-	Parser::currentStatement.addToken(tokenList[tokenIndx]);
 	return tokenList[tokenIndx];
 }
 
