@@ -13,7 +13,7 @@ public:
 
 	std::vector<Token> tokenList;
 	ExprEvaluator(std::vector<Token> exprList);
-	TNode evaluate();
+	TNode* evaluate();
 
 	int unaryOpPrecedence = 6;
 

@@ -76,7 +76,7 @@ TNode ExprEvaluator::evaluateQueue( std::queue<tuple<Token, TNode*>> shuntedQ ) 
 
 	if (rootNodePtr != NULL) {
 
-		TreeTraverse::traverse(rootNodePtr);
+		// TreeTraverse::traverse(rootNodePtr);
 
 		return *rootNodePtr;
 	}
