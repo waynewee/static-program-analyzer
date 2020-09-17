@@ -4,20 +4,20 @@ TNode::TNode() {
 
 }
 
-TNode::TNode(TNode::NODE_TYPE _type, string _name):
-    type(_type), name(_name) {
+TNode::TNode(TNode::NODE_TYPE _type, string _name) :
+	type(_type), name(_name) {
 }
 
-TNode::TNode(TNode::NODE_TYPE _type, CONST_VALUE _value):
-    type(_type), value(_value){
+TNode::TNode(TNode::NODE_TYPE _type, CONST_VALUE _value) :
+	type(_type), value(_value) {
 }
 
-TNode::TNode(TNode::NODE_TYPE _type, TNode::OPERATOR _op):
-    type(_type), op(_op) {
+TNode::TNode(TNode::NODE_TYPE _type, TNode::OPERATOR _op) :
+	type(_type), op(_op) {
 }
 
-TNode::TNode(TNode::NODE_TYPE _type, STMT_IDX _idx):
-    type(_type), index(_idx) {
+TNode::TNode(TNode::NODE_TYPE _type, STMT_IDX _idx) :
+	type(_type), index(_idx) {
 }
 
 bool TNode::AddChild(TNode* child) {
@@ -36,7 +36,7 @@ bool TNode::SetParent(TNode* newParent) {
 	return true;
 };
 
-bool TNode::SetName(VAR_NAME *newName) {
+bool TNode::SetName(VAR_NAME* newName) {
 	if (type != varName && type != procName) {
 		return false;
 	}
@@ -59,8 +59,8 @@ bool TNode::SetOp(OPERATOR newOp) {
 	op = newOp;
 	return true;
 }
-TNode::TNode(TNode::NODE_TYPE _type):
-    type(_type) {
+TNode::TNode(TNode::NODE_TYPE _type) :
+	type(_type) {
 }
 
 list<TNode*> TNode::GetChildrenList() {

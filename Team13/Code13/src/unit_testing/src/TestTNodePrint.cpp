@@ -1,7 +1,7 @@
 #include "TNode.h"
 #include "catch.hpp"
 #include "CustomTypes.h"
-#include "data_tables.h"
+#include "DataTables.h"
 
 using namespace std;
 

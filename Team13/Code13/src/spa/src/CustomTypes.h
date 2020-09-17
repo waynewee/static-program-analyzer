@@ -67,13 +67,13 @@ struct ENTITY {
 	ENTITY_TYPE type;
 };
 
-struct STATEMENT: ENTITY {
+struct STATEMENT : ENTITY {
 	ENTITY_TYPE type = ENTITY_TYPE::statement;
-	STATEMENT_TYPE statement_type; 
+	STATEMENT_TYPE statement_type;
 	STMT_IDX idx;
 };
 
-struct VARIABLE: ENTITY {
+struct VARIABLE : ENTITY {
 	ENTITY_TYPE type = ENTITY_TYPE::variable;
 	VAR_NAME name;
 };

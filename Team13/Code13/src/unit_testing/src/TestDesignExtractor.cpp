@@ -6,7 +6,6 @@
 
 using namespace std;
 
-// No comparison done. Need eyeballing.
 TEST_CASE("Test Add Follows") {
     TNode list = TNode::TNode(TNode::stmtList);
     TNode s1 = TNode::TNode(TNode::printStmt, 1);

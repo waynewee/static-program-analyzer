@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 #include <CustomTypes.h>
-#include "data_manager.h"
-#include "relation_manager.h"
+#include "DataManager.h"
+#include "RelationManager.h"
 #include "DesignExtractor.h"
 
 using namespace std;
