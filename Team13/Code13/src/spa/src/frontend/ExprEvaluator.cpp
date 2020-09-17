@@ -21,13 +21,15 @@ TNode* ExprEvaluator::evaluateQueue( std::queue<tuple<Token, TNode*>> shuntedQ )
 
 	std::stack<tuple<Token, TNode*>> tStack;
 
-	TNode* rootNodePtr = NULL;
+	tuple<Token, TNode*> tup = shuntedQ.front();
+	Token token = std::get<0>(tup);
+	TNode* rootNodePtr = std::get<1>(tup);
 
 	while (shuntedQ.size() > 0) {
 
-		tuple<Token, TNode*> tup = shuntedQ.front();
+		tup = shuntedQ.front();
 
-		Token token = std::get<0>(tup);
+		token = std::get<0>(tup);
 		shuntedQ.pop();
 
 		if (token.getTokenType() == TokenType::TOKEN_TYPE::constant || token.getTokenType() == TokenType::TOKEN_TYPE::var) {
@@ -74,9 +76,6 @@ TNode* ExprEvaluator::evaluateQueue( std::queue<tuple<Token, TNode*>> shuntedQ )
 	}
 
 	if (rootNodePtr != NULL) {
-
-		// TreeTraverse::traverse(rootNodePtr);
-
 		return rootNodePtr;
 	}
 	return NULL;
