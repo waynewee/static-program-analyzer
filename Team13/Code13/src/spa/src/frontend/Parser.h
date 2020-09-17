@@ -28,8 +28,8 @@ private:
 	TNode parseCallStatement();
 	TNode parseAssgnStatement(Token nameToken);
 	TNode parseStatementList();
-	TNode parseExpressionStatement(expressionType exprType);
-	TNode parseExpression(std::vector<Token> exprList);
+	TNode* parseExpressionStatement(expressionType exprType);
+	TNode* parseExpression(std::vector<Token> exprList);
 
 	Token getNextToken();
 	Token peekNextToken();

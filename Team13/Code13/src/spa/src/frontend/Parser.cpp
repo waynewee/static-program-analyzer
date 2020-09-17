@@ -30,6 +30,15 @@ std::vector<TNode> Parser::parse(std::string input) {
 		Parser::parseStatement();
 	}
 
+	for (TNode node : procNodesList) {
+		
+		for (TNode* child : node.getChildren()) {
+			std::cout << child->getData() << std::endl;
+		}
+	}
+
+
+
 	return Parser::procNodesList;
 }
 
@@ -88,8 +97,7 @@ TNode Parser::parseProcStatement() {
 	//std::cout << "Parse ProcStatement Called" << std::endl;
 	Token nameToken = Parser::getNextToken();
 	if (nameToken.getTokenType() != TokenType::TOKEN_TYPE::var) {
-		
-throw "Invalid procedure name";
+		throw "Invalid procedure name";
 	}
 	
 	TNode procNode(TNode::NODE_TYPE::procedure);
@@ -101,8 +109,7 @@ throw "Invalid procedure name";
 
 	int endIndex = Parser::getEndIndxOfStatementList();
 	if (!addedProcName) {
-		
-throw "Null node added as child of procedure node";
+		throw "Null node added as child of procedure node";
 	}
 	while ((tokenIndx) < endIndex) {
 		if (peekNextToken().getValue() == "{" ||
@@ -193,11 +200,10 @@ TNode Parser::parseCallStatement() {
 TNode Parser::parseIfStatement() {
 	//std::cout << "Parse IfStatement Called" << std::endl;
 	TNode ifNode(TNode::NODE_TYPE::ifStmt, statementIndex);
-	TNode exprNode = Parser::parseExpressionStatement(Parser::expressionType::IF);
 
 	TNode thenStmtListNode = Parser::parseStatementList();
 
-	TNode* exprNodePtr = &exprNode;
+	TNode* exprNodePtr = Parser::parseExpressionStatement(Parser::expressionType::IF);
 	TNode* thenStmtListNodePtr = &thenStmtListNode;
 
 	if (!ifNode.AddChild(exprNodePtr) || !ifNode.AddChild(thenStmtListNodePtr)) {
@@ -221,10 +227,9 @@ TNode Parser::parseIfStatement() {
 
 TNode Parser::parseWhileStatement() {
 	TNode whleNode(TNode::NODE_TYPE::whileStmt, statementIndex);
-	TNode exprNode = Parser::parseExpressionStatement(Parser::expressionType::WHILE);
 	TNode stmtListNode = Parser::parseStatementList();
 	
-	TNode* exprNodePtr = &exprNode;
+	TNode* exprNodePtr = Parser::parseExpressionStatement(Parser::expressionType::WHILE);
 	TNode* stmtListNodePtr = &stmtListNode;
 
 	if (!whleNode.AddChild(exprNodePtr) || !whleNode.AddChild(stmtListNodePtr)) {
@@ -241,12 +246,11 @@ TNode Parser::parseAssgnStatement(Token nameToken) {
 	if (Parser::getNextToken().getValue() != "=") {
 		throw "Expected '=' token in line " + statementIndex;
 	}
-	TNode exprNode = Parser::parseExpressionStatement(Parser::expressionType::ASSIGN);
 	if (Parser::getNextToken().getValue() != ";") {
 		throw "Missing ; in line: " + statementIndex;
 	}
-	TNode* exprNodePtr = &exprNode;
-
+	TNode* exprNodePtr = Parser::parseExpressionStatement(Parser::expressionType::ASSIGN);
+	
 	if (!assgnNode.AddChild(exprNodePtr)) {
 		throw "Null node added to child of assign node";
 	}
@@ -275,7 +279,7 @@ TNode Parser::parseStatementList() {
 	return stmtListNode;
 }
 
-TNode Parser::parseExpressionStatement(Parser::expressionType exprType) {
+TNode* Parser::parseExpressionStatement(Parser::expressionType exprType) {
 
 	/**
 	* An assign expression looks like
@@ -321,9 +325,9 @@ TNode Parser::parseExpressionStatement(Parser::expressionType exprType) {
 		}
 	}
 
-	TNode expressionNode = Parser::parseExpression(exprList);
+	TNode* exprNodePtr = Parser::parseExpression(exprList);
 
-	return expressionNode;
+	return exprNodePtr;
 	
 }
 
@@ -391,7 +395,7 @@ int compareOpPrecedence(Token a, Token b) {
 }
 
 
-TNode Parser::parseExpression(std::vector<Token> exprList) {
+TNode* Parser::parseExpression(std::vector<Token> exprList) {
 
 	/*for (Token t : exprList) {
 		t.print();
@@ -399,7 +403,7 @@ TNode Parser::parseExpression(std::vector<Token> exprList) {
 
 	ExprEvaluator exprEvaluator(exprList);
 
-	TNode rootNode = exprEvaluator.evaluate();
+	TNode* rootNode = exprEvaluator.evaluate();
 
 	return rootNode;
 

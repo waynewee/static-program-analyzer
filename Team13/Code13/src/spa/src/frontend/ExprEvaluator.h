@@ -13,7 +13,7 @@ public:
 
 	std::vector<Token> tokenList;
 	ExprEvaluator(std::vector<Token> exprList);
-	TNode evaluate();
+	TNode* evaluate();
 
 	int unaryOpPrecedence = 6;
 
@@ -37,7 +37,7 @@ public:
 
 private:
 	std::queue<tuple<Token, TNode*>> shunt();
-	TNode evaluateQueue(std::queue<tuple<Token, TNode*>> shuntedQ);
+	TNode* evaluateQueue(std::queue<tuple<Token, TNode*>> shuntedQ);
 	bool isLeftAssoc(Token t);
 	int compareOpPrecedence(Token a, Token b);
 	int getPrecedence(Token t);

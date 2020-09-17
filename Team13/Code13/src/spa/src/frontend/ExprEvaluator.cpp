@@ -13,12 +13,12 @@ ExprEvaluator::ExprEvaluator(std::vector<Token> exprList) {
 	tokenList = exprList;
 }
 
-TNode ExprEvaluator::evaluate() {
+TNode* ExprEvaluator::evaluate() {
 
 	return evaluateQueue(shunt());
 }
 
-TNode ExprEvaluator::evaluateQueue( std::queue<tuple<Token, TNode*>> shuntedQ ) {
+TNode* ExprEvaluator::evaluateQueue( std::queue<tuple<Token, TNode*>> shuntedQ ) {
 
 	std::stack<tuple<Token, TNode*>> tStack;
 
@@ -78,11 +78,10 @@ TNode ExprEvaluator::evaluateQueue( std::queue<tuple<Token, TNode*>> shuntedQ ) 
 
 		TreeTraverse::traverse(rootNodePtr);
 
-		return *rootNodePtr;
+		return rootNodePtr;
 	}
 
-	TNode rootNode;
-	return rootNode;
+	return NULL;
 
 }
 
