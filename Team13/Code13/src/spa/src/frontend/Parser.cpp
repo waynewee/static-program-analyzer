@@ -110,9 +110,13 @@ TNode Parser::parseProcStatement() {
 			getNextToken();
 			continue;
 		}
-		procNode.AddChild(&parseStatement());
+		TNode childNode = parseStatement();
+		std::cout << childNode.getData() << std::endl;
+		procNode.AddChild(&childNode);
 	}
-
+	/*for (TNode* child : procNode.getChildren()) {
+		std::cout << child->getData() << std::endl;
+	}*/
 	return procNode;
 }
 
@@ -266,6 +270,10 @@ TNode Parser::parseStatementList() {
 		//Parser::parseStatement();
 		 stmtListNode.AddChild(&parseStatement());
 	}
+
+	/*for (TNode* child : stmtListNode.getChildren()) {
+		std::cout << child->getData() << std::endl;
+	}*/
 
 
 	return stmtListNode;
