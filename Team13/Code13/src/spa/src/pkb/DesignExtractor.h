@@ -14,6 +14,7 @@ using namespace std;
 // class DesignExtractor {
 // public:
 bool ExtractFollows(RelationManager* manager, TNode* root);
+bool ExtractData(DataManager* manager, TNode* root);
 // };
 
 #endif

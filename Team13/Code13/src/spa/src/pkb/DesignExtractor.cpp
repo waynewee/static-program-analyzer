@@ -25,3 +25,42 @@ bool ExtractFollows(RelationManager* manager, TNode* root) {
     }
     return true;
 }
+
+bool ExtractData(DataManager* manager, TNode* root) {
+    vector<TNode*> children = root->GetChildrenVector();
+    switch (root->GetNodeType()) {
+    case TNode::procName:
+        manager->AddProcedure(&(root->GetName()));
+        break;
+    case TNode::assignStmt:
+        manager->AddStatement(assignStatement, root->GetStmtIndex());
+        break;
+    case TNode::readStmt:
+        manager->AddStatement(readStatement, root->GetStmtIndex());
+        break;
+    case TNode::callStmt:
+        manager->AddStatement(callStatement, root->GetStmtIndex());
+        break;
+    case TNode::ifStmt:
+        manager->AddStatement(ifStatement, root->GetStmtIndex());
+        break;
+    case TNode::whileStmt:
+        manager->AddStatement(whileStatement, root->GetStmtIndex());
+        break;
+    case TNode::printStmt:
+        manager->AddStatement(printStatement, root->GetStmtIndex());
+        break;
+    case TNode::varName:
+        manager->AddVariable(&(root->GetName()));
+        break;
+    case TNode::constValue:
+        manager->AddConstant(root->GetConstValue());
+        break;
+    default:
+        break;
+    }
+    for (TNode* child : children) {
+        ExtractData(manager, child);
+    }
+    return true;
+}
