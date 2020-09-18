@@ -29,7 +29,7 @@ public:
 	
 	int len;
 	int pos;
-	string text;
+	string* text;
 	string tokenStr;
 
 	STR_LIST expressions = {
@@ -89,7 +89,7 @@ public:
 
 	TOKEN_LIST tokenList;
 
-	Tokenizer(string input);
+	Tokenizer(string* input);
 	
 	int Tokenize();
 

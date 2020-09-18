@@ -8,7 +8,7 @@
 
 TEST_CASE("Tokenizer | Manipulates token string correctly") {
 
-	Tokenizer tokenizer("");
+	Tokenizer tokenizer(new string(""));
 
 	tokenizer.tokenStr = "procedure";
 
@@ -33,7 +33,7 @@ TEST_CASE("Tokenizer | Manipulates token string correctly") {
 TEST_CASE("Tokenizer | Manipulates tokens correctly") {
 
 	SECTION("Tokenizes string with one keyword token correctly") {
-		Tokenizer tokenizer("procedure");
+		Tokenizer tokenizer(new string("procedure"));
 		tokenizer.Tokenize();
 		Token token = tokenizer.GetTokenList().at(0);
 
@@ -42,13 +42,13 @@ TEST_CASE("Tokenizer | Manipulates tokens correctly") {
 	}
 
 	SECTION("Tokenizes string with all white spaces correctly") {
-		Tokenizer tokenizer("\n \t \r");
+		Tokenizer tokenizer(new string("\n \t \r"));
 		tokenizer.Tokenize();
 		REQUIRE(tokenizer.GetTokenList().size() == 0);
 	}
 
 	SECTION("Tokenizes arithmetic expression string correctly") {
-		Tokenizer tokenizer("x = a + 5");
+		Tokenizer tokenizer(new string("x = a + 5"));
 		tokenizer.Tokenize();
 		std::vector<Token> tokenList = tokenizer.GetTokenList();
 
@@ -72,7 +72,7 @@ TEST_CASE("Tokenizer | Manipulates tokens correctly") {
 
 	SECTION("Tokenizes while statement with one condition correctly") {
 
-		Tokenizer tokenizer("while ( 1 ) {");
+		Tokenizer tokenizer(new string("while ( 1 ) {"));
 		tokenizer.Tokenize();
 		std::vector<Token> tokenList = tokenizer.GetTokenList();
 
@@ -97,7 +97,7 @@ TEST_CASE("Tokenizer | Manipulates tokens correctly") {
 	}
 
 	SECTION("Tokenizes print statement correctly") {
-		Tokenizer tokenizer("print x");
+		Tokenizer tokenizer(new string("print x"));
 		tokenizer.Tokenize();
 		std::vector<Token> tokenList = tokenizer.GetTokenList();
 

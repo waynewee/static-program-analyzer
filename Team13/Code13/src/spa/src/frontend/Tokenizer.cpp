@@ -9,10 +9,10 @@
 
 using namespace std;
 
-Tokenizer::Tokenizer(string input) {
+Tokenizer::Tokenizer(string* input) {
 	pos = -1;
 	text = input;
-	len = text.length();
+	len = text->length();
 
 	tokenStr = "";
 
@@ -27,7 +27,7 @@ int Tokenizer::Tokenize() {
 	while (pos < len - 1) {
 		pos += 1;
 
-		char c = text.at(pos);
+		char c = text->at(pos);
 
 		//detect whitespace
 		if (IsWhiteSpace(c)) {
@@ -55,10 +55,10 @@ int Tokenizer::Tokenize() {
 			/** check if next char forms a logical op string with current char*/
 			string opStr = "";
 			opStr += c;
-			opStr += text.at(pos + 1);
+			opStr += text->at(pos + 1);
 
 			if (IsRelExpr(opStr)) {
-				AppendCharToTokenStr(text.at(pos + 1));
+				AppendCharToTokenStr(text->at(pos + 1));
 				pos += 1;
 			}
 
@@ -89,10 +89,10 @@ int Tokenizer::Tokenize() {
 			tokenStr.length() > 0
 			&& (pos + 1 >= len
 				|| ((
-					IsWhiteSpace(text.at(pos + 1))
-					|| IsPunc(text.at(pos + 1))
-					|| IsExpr(text.at(pos + 1))
-					|| IsRelExprPart(text.at(pos + 1))
+					IsWhiteSpace(text->at(pos + 1))
+					|| IsPunc(text->at(pos + 1))
+					|| IsExpr(text->at(pos + 1))
+					|| IsRelExprPart(text->at(pos + 1))
 					)))) {
 			//we encountered a whitespace!
 
@@ -201,7 +201,7 @@ void Tokenizer::TestAndSetUnary(Token* currPtr, Token prev) {
 	
 	Token curr = *currPtr;
 
-	if (curr.GetValue() == "!" || curr.GetValue() == "-") {
+	if (curr.GetValue() == TYPE_REL_EXPR_NOT || curr.GetValue() == "-") {
 		if (prev.GetTokenType() == TokenType::TOKEN_TYPE::rel_expr || prev.GetTokenType() == TokenType::TOKEN_TYPE::expr|| prev.GetValue() == "(") {
 			currPtr->isUnaryOp = true;
 		}

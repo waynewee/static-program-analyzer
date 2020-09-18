@@ -111,7 +111,7 @@ queue<tuple<Token, TNode*>> ExprEvaluator::Shunt() {
 						&& IsLeftAssoc(token)
 						)
 					)
-				&& opStack.top().GetValue() != "("
+				&& opStack.top().GetValue() != TYPE_PUNC_OPEN_PARAN
 				) {
 				Token opToken = opStack.top();
 				opStack.pop();
@@ -120,13 +120,13 @@ queue<tuple<Token, TNode*>> ExprEvaluator::Shunt() {
 
 			opStack.push(token);
 		}
-		else if ( (token.GetValue() == "(") || i >= 1 && token.isUnaryOp)
+		else if ( (token.GetValue() == TYPE_PUNC_OPEN_PARAN) || i >= 1 && token.isUnaryOp)
 		{
 			opStack.push(token);
 		}
-		else if (token.GetValue() == ")") {
+		else if (token.GetValue() == TYPE_PUNC_CLOSED_PARAN) {
 
-			while (opStack.top().GetValue() != "(") {
+			while (opStack.top().GetValue() != TYPE_PUNC_OPEN_PARAN) {
 				if (opStack.size() == 0) {
 					throw "mismatched parantheses!";
 				}
@@ -137,7 +137,7 @@ queue<tuple<Token, TNode*>> ExprEvaluator::Shunt() {
 
 			}
 
-			if (opStack.top().GetValue() == "(") {
+			if (opStack.top().GetValue() == TYPE_PUNC_OPEN_PARAN) {
 				opStack.pop();
 			}
 		}
@@ -245,7 +245,7 @@ TNode* ExprEvaluator::ConvertTokenToNode(Token t) {
 
 	//token can only be expr (+, -, * etc), rel_expr (&&, || etc), variable, constant
 
-	if (t.GetValue() == "(" || t.GetValue() == ")") {
+	if (t.GetValue() == TYPE_PUNC_OPEN_PARAN || t.GetValue() == TYPE_PUNC_CLOSED_PARAN) {
 		return new TNode();
 	}
 	if (t.GetTokenType() == TokenType::TOKEN_TYPE::expr) {

@@ -19,7 +19,7 @@ SimpleParser::SimpleParser() {
 TNode* SimpleParser::parse(string* input) {
 	cout << "parse called" << endl;
 
-	Tokenizer tokenizer(*input);
+	Tokenizer tokenizer(input);
 	tokenizer.Tokenize();
 
 	tokenList = tokenizer.GetTokenList();
@@ -301,7 +301,7 @@ int SimpleParser::GetEndIndxOfStatementList() {
 	Token firstToken = SimpleParser::PeekNextToken();
 	int counter = 1;
 
-	if (firstToken.GetValue() == "{") {
+	if (firstToken.GetValue() == TYPE_PUNC_OPEN_BRACKET) {
 		bracketMatcher.push(firstToken);
 		while (!bracketMatcher.empty()) {
 			if (tokenIndx + 1 + counter > (int) tokenList.size()) {
