@@ -1575,7 +1575,7 @@ TEST_CASE("Test 39") {
 
 	all_arguments.push_back(arguments);
 
-	expected_relRef_map["UsesP"] = all_arguments;
+	expected_relRef_map["UsesS"] = all_arguments;
 
 	query_info_expected.setRelRefMap(expected_relRef_map);
 

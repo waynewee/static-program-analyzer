@@ -14,7 +14,7 @@ const unordered_set<string> validRelrefNames = { "Follows" , "FollowsT" , "Follo
 	Returns an unordered map of the variables user declared.
 	Key -> value pair is varname -> 0 if var is a stmt, varname -> 1 if var is a proc
 */
-unordered_map<string, int> QuerySyntaxValidator::validateDeclaration(string decl) {
+unordered_map<string, string> QuerySyntaxValidator::validateDeclaration(string decl) {
 	// this one validates the declaration
 	// ie. assign a, b -> true, assijn a, b -> false, stmt s -> true
 	/*
@@ -26,7 +26,7 @@ unordered_map<string, int> QuerySyntaxValidator::validateDeclaration(string decl
 	string decl_clone = decl;
 	vector<string> temp_results;
 
-	unordered_map<string, int> variable_names_declared; 
+	unordered_map<string, string> variable_names_declared;
 	// if variable name is a PROCEEDURE, then <VAR_NAME, 1>
 	// if variable name is a STMT, then <VAR_NAME, 0>
 	// for each key-value pair.
@@ -76,17 +76,14 @@ unordered_map<string, int> QuerySyntaxValidator::validateDeclaration(string decl
 		// cout << "Insert variable name to set : " << var_name << endl;
 		// cout << "entity type is :" << entity_type << "|" << endl;
 		// inserts the variables into a set to later check if the user repeated the values
-		if (entity_type.compare("call") == 0) {
-			variable_names_declared[var_name] = 3;
-		}
-		else if (entity_type.compare("variable") == 0) {
-			variable_names_declared[var_name] = 2;
+		if (entity_type.compare("variable") == 0) {
+			variable_names_declared[var_name] = "variable";
 		}
 		else if (entity_type.compare("procedure") == 0) {
-			variable_names_declared[var_name] = 1;
+			variable_names_declared[var_name] = "procedure";
 		}
 		else {
-			variable_names_declared[var_name] = 0;
+			variable_names_declared[var_name] = "stmtType";
 		}
 		// cout << "number put in :" << variable_names_declared.at(var_name) << endl;
 		final_results.push_back(var_name);
@@ -94,22 +91,19 @@ unordered_map<string, int> QuerySyntaxValidator::validateDeclaration(string decl
 
 	iss >> variable_with_entity;
 	for (string variable_with_entity; iss >> variable_with_entity;) {
-		first_stmt.push_back(variable_with_entity);	
+		first_stmt.push_back(variable_with_entity);
 		if (variable_names_declared.count(first_stmt.back()) == 1) {
 			throw ("Error : Declared same variable name twice ");
 		}
 		// cout << "Insert variable name to set : " << first_stmt.back() << endl;
-		if (entity_type.compare("call") == 0) {
-			variable_names_declared[first_stmt.back()] = 3;
-		}
-		else if (entity_type.compare("variable") == 0) {
-			variable_names_declared[first_stmt.back()] = 2;
+		if (entity_type.compare("variable") == 0) {
+			variable_names_declared[first_stmt.back()] = "variable";
 		}
 		else if (entity_type.compare("procedure") == 0) {
-			variable_names_declared[first_stmt.back()] = 1;
+			variable_names_declared[first_stmt.back()] = "procedure";
 		}
 		else {
-			variable_names_declared[first_stmt.back()] = 0;
+			variable_names_declared[first_stmt.back()] = "stmtType";
 		}
 		final_results.push_back(first_stmt.back());
 	}
@@ -118,12 +112,12 @@ unordered_map<string, int> QuerySyntaxValidator::validateDeclaration(string decl
 		// cout << "First stmt : " << i << endl;
 	}
 
-	if (first_stmt.size() !=  1) {
+	if (first_stmt.size() != 1) {
 		throw ("Error : Invalid Design Entity Declarationsdfsdf!");
 	}
 
 	// checks if first word is a valid design entity
-	if (validDesignEntities.count(entity_type) != 1)  {
+	if (validDesignEntities.count(entity_type) != 1) {
 		throw ("Error : Invalid Design Entity Type declared!");
 	}
 
@@ -167,7 +161,7 @@ bool QuerySyntaxValidator::validateVariableName(string s) {
 	return true;
 }
 
-bool QuerySyntaxValidator::validateVariableExists(string s, unordered_set<string> varNames) {
+bool QuerySyntaxValidator::validateVariableExists(string s, unordered_map<string, string> varNames) {
 	/*
 		Just need to check if string s is in the set of varNames. Very simple
 	*/
@@ -179,10 +173,13 @@ bool QuerySyntaxValidator::validateVariableExists(string s, unordered_set<string
 	else {
 		res = true;
 	}
+	if (!res) {
+		throw ("Error : variable user wants to Select has not been declared! ");
+	}
 	return res;
 }
 
-unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClause(string s, unordered_map<string, int> declaredVarNames) {
+unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClause(string s, unordered_map<string, string> declaredVarNames) {
 	// validates if what's after such that is legit
 	/*
 		So if : select s such that Follows (s1, s2);
@@ -293,14 +290,14 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 		*/
 
 		if (declaredVarNames.count(first_argument) == 1) {
-			if (declaredVarNames.at(first_argument) == 1) {
-				throw ("Error : First argument cannot be of type 'procedure' in Follows/Parent clause");
+			if (declaredVarNames.at(first_argument).compare("stmtType") != 0) {
+				throw ("Error : First argument must be type Stmt in Follows/Parent clause ");
 			}
 		}
 
 		if (declaredVarNames.count(second_argument) == 1) {
-			if (declaredVarNames.at(second_argument) == 1) {
-				throw ("Error : Second argument cannot be of type 'procedure' in Follows/Parent clause");
+			if (declaredVarNames.at(second_argument).compare("stmtType") != 0) {
+				throw ("Error : First argument must be type Stmt in Follows/Parent clause ");
 			}
 		}
 
@@ -323,7 +320,7 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 	if (declared_relRef.compare("Uses") == 0) {
 		// regardless, 2nd argument must be entRef
 		if (declaredVarNames.count(second_argument) == 1) {
-			if (declaredVarNames.at(second_argument) == 0) {
+			if (declaredVarNames.at(second_argument).compare("stmtType") == 0) {
 				throw ("Error : 2nd argument must be of type entref");
 			}
 		}
@@ -336,7 +333,7 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 		if (isInteger(first_argument)) {
 			assigned_relRef = "UsesS";
 		}
-		else if ((declaredVarNames.count(first_argument) == 1) && declaredVarNames.at(first_argument) == 0) {
+		else if ((declaredVarNames.count(first_argument) == 1) && declaredVarNames.at(first_argument).compare("stmtType") == 0) {
 			assigned_relRef = "UsesS";
 		}
 		else {
@@ -348,7 +345,7 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 	if (declared_relRef.compare("Modifies") == 0) {
 		// regardless, 2nd argument must be entRef
 		if (declaredVarNames.count(second_argument) == 1) {
-			if (declaredVarNames.at(second_argument) == 0) {
+			if (declaredVarNames.at(second_argument).compare("stmtType") == 0) {
 				throw ("Error : 2nd argument must be of type entref");
 			}
 		}
@@ -359,7 +356,7 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 		if (isInteger(first_argument)) {
 			assigned_relRef = "ModifiesS";
 		}
-		else if ((declaredVarNames.count(first_argument) == 1) && declaredVarNames.at(first_argument) == 0) {
+		else if ((declaredVarNames.count(first_argument) == 1) && declaredVarNames.at(first_argument).compare("stmtType") == 0) {
 			assigned_relRef = "ModifiesS";
 		}
 		else {
@@ -388,7 +385,7 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 			// found second arg in declared var names
 			// if this second argument is NOT A VARIABLE declared by USER
 			// cout << "2nd arg here : " << second_argument << "with number : " << declaredVarNames.at(second_argument) << endl;
-			if (declaredVarNames.at(second_argument) == 0) {
+			if (declaredVarNames.at(second_argument).compare("stmtType") == 0) {
 				throw ("Error : second argument is not of type variable/procedure declared by the user");
 			}
 		}
@@ -427,7 +424,7 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 		// string parsed_first_argument = first_argument.substr(1, first_argument.length() - 2);
 		//cout << "such that clause :  1st arg : " << parsed_first_argument << endl;
 
-	    //cout << "FIRST ARG : " << first_argument;
+		//cout << "FIRST ARG : " << first_argument;
 		if (!isEntRef(first_argument, declaredVarNames)) {
 			throw ("Error : First argument is not declared or is invalid ");
 
@@ -436,25 +433,11 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 		if (isInteger(second_argument)) {
 			throw ("Error : Second argument cannot be an Integer ");
 		}
-		//if (declaredVarNames.count(first_argument) != 1 || !isEntRef(first_argument)) {
-			// second argument wasnt defined by the SIMPLE program at frontend or is just invalid
-		//	throw ("Error : First argument is not declared or is invalid ");
-		//}
-		// second argument is an entity ref
-		// string parsed_second_argument = second_argument.substr(1, second_argument.length() - 2);
-		// cout << "such that clause :  2nd arg : " << parsed_second_argument << endl;
-
-		/*
-		if (declaredVarNames.count(second_argument) != 1 || !isEntRef(second_argument)) {
-			// second argument wasnt defined by the SIMPLE program at frontend or is just invalid
-			throw ("Error : Second argument is not declared or is invalid ");
-		}
-		*/
 
 		if (declaredVarNames.count(second_argument) == 1) {
 			// found second arg in declared var names
 			// if this second argument is NOT A VARIABLE declared by USER
-			if (declaredVarNames.at(second_argument) == 0) {
+			if (declaredVarNames.at(second_argument).compare("stmtType") == 0) {
 				throw ("Error : second argument is not of type variable/procedure declared by the user");
 			}
 		}
@@ -484,7 +467,7 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validateSuchThatClau
 	return relRef_map;
 }
 
-unordered_map<string, vector<string>> QuerySyntaxValidator::validatePatternClause(string s, unordered_map<string, int> declaredVarNames) {
+unordered_map<string, vector<string>> QuerySyntaxValidator::validatePatternClause(string s, unordered_map<string, string> declaredVarNames) {
 	// validates what after pattern clause is legit
 	/*
 		Select a pattern a ( _ , _“v + x * y + z * t”_)
@@ -557,7 +540,7 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validatePatternClaus
 		}
 	}
 
-	if(!isUnderscore(second_argument)) {
+	if (!isUnderscore(second_argument)) {
 		if (second_argument.front() == '_') {
 			second_argument.erase(0, 1);
 			if (second_argument.back() == '_') {
@@ -585,7 +568,7 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::validatePatternClaus
 
 
 	result["pattern"] = arguments;
-	
+
 	return result;
 }
 
@@ -620,7 +603,7 @@ void QuerySyntaxValidator::validateExpression(const string& s) {
 				throw ("Error : Invalid pattern expression");
 			}
 			open_bracket_count--;
-		} 
+		}
 		else if (isOperator(c)) {
 			if (prev_was_operator || prev_was_open_bracket) {
 				throw ("Error : Invalid pattern expression");
@@ -633,7 +616,7 @@ void QuerySyntaxValidator::validateExpression(const string& s) {
 		}
 		prev_was_operator = false;
 		prev_was_open_bracket = false;
-	} 
+	}
 
 	if (prev_was_operator || prev_was_open_bracket) {
 		throw ("Error : Invalid pattern expression");
@@ -671,14 +654,14 @@ bool QuerySyntaxValidator::isInteger(string i) {
 	return res;
 }
 
-bool QuerySyntaxValidator::isEntRef(string s, unordered_map<string, int> declaredVars) {
+bool QuerySyntaxValidator::isEntRef(string s, unordered_map<string, string> declaredVars) {
 	bool res = false;
 	if (s.length() <= 0) {
 		throw ("Error : Invalid entRef Name");
 	}
 
 	// cout << "entref we checking : " << s << endl;;
-	if (s.at(0) == ('\"') && s.at(s.length()- 1) == ('\"')) {
+	if (s.at(0) == ('\"') && s.at(s.length() - 1) == ('\"')) {
 		// "this is also allowed" 
 		string substr = s.substr(1, (s.length() - 2));
 		// cout << "Checking inside the inverted commas : " << substr << endl;
@@ -688,14 +671,16 @@ bool QuerySyntaxValidator::isEntRef(string s, unordered_map<string, int> declare
 			res = true;
 		}
 		//	cout << "Yes s, is ent " << s << endl;
-	} else if (!isInteger(s)) {
+	}
+	else if (!isInteger(s)) {
 		// var name is valid
 		if (s.compare("_") != 0) {
 			if (validateVariableName(s) && declaredVars.count(s) == 1) {
 				res = true;
 			}
 		}
-	} else if (s.compare("_") == 0) {
+	}
+	else if (s.compare("_") == 0) {
 		res = true;
 	}
 
@@ -704,7 +689,7 @@ bool QuerySyntaxValidator::isEntRef(string s, unordered_map<string, int> declare
 
 bool QuerySyntaxValidator::isOperator(char c) {
 	bool res = false;
-	
+
 	switch (c) {
 	case '+':
 		res = true;
@@ -717,7 +702,7 @@ bool QuerySyntaxValidator::isOperator(char c) {
 	case '*':
 		res = true;
 	}
-	
+
 	return res;
 }
 
@@ -725,7 +710,7 @@ bool QuerySyntaxValidator::isUnderscore(string s) {
 	return s == "_";
 }
 
-int QuerySyntaxValidator::nthOccurrence(const string& str, const string& target, int nth)
+int QuerySyntaxValidator::nthOccurrence(string* str, const string& target, int nth)
 {
 	size_t  pos = 0;
 	int     cnt = 0;
@@ -733,7 +718,7 @@ int QuerySyntaxValidator::nthOccurrence(const string& str, const string& target,
 	while (cnt != nth)
 	{
 		pos += 1;
-		pos = str.find(target, pos);
+		pos = str->find(target, pos);
 		if (pos == string::npos)
 			return -1;
 		cnt++;
