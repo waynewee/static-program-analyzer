@@ -22,20 +22,20 @@ private:
 public:
 	PQLParserStorage();
 	/*Getters*/
-	unordered_map<string, vector<vector<string>>> getRelRefMap();
-	unordered_map<string, string> getVarMap();
-	string getPatternVarName();
-	vector<string> getAllDeclarations();
-	unordered_map<string, string> getAllUserDeclaredVar();
+	unordered_map<string, vector<vector<string>>> GetRelRefMap();
+	unordered_map<string, string> GetVarMap();
+	string GetPatternVarName();
+	vector<string> GetAllDeclarations();
+	unordered_map<string, string> GetAllUserDeclaredVar();
 
 	/*Setters*/
-	void setRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map);
-	void setVarMap(unordered_map<string, string> var_map);
-	void setPatternVarName(string pattern_var_name);
-	void setAllDeclarations(vector<string> all_declarations);
-	void setAllUserDeclaredVar(unordered_map<string, string> all_user_declared_var);
+	void SetRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map);
+	void SetVarMap(unordered_map<string, string> var_map);
+	void SetPatternVarName(string pattern_var_name);
+	void SetAllDeclarations(vector<string> all_declarations);
+	void SetAllUserDeclaredVar(unordered_map<string, string> all_user_declared_var);
 
-	void storeVariable(pair<string, string> var, string entType);
-	void storeSuchThatClauseResult(unordered_map <string, vector<string>> result);
-	void storePatternClauseResult(unordered_map <string, vector<string>> result, string pattern_var_name);
+	void StoreVariable(pair<string, string> var, string entType);
+	void StoreSuchThatClauseResult(unordered_map <string, vector<string>> result);
+	void StorePatternClauseResult(unordered_map <string, vector<string>> result, string pattern_var_name);
 };

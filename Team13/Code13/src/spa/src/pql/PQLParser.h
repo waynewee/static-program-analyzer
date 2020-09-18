@@ -8,23 +8,21 @@ using namespace std;
 class PQLParser
 {
 public:
-	QueryInfo* parse(string s);
+	QueryInfo* Parse(string s);
 
-	void buildQueryInfo(QueryInfo queryInfo, string s);
+	void TrimLeadingWhitespaces(string* s);
 
-	void trimLeadingWhitespaces(string* s);
+	void TrimTrailingWhitespaces(string* s);
 
-	void trimTrailingWhitespaces(string* s);
+	vector<string> SplitBySemicolons(string* query);
 
-	vector<string> splitBySemicolons(string* query);
+	string DeleteOneWordAndRetrieveIt(string* str);
 
-	string deleteOneWordAndRetrieveIt(string* str);
-
-	unordered_map<string, vector<string>> parsePatternClause(string* clause, unordered_map<string, string> all_user_declared_var, 
+	unordered_map<string, vector<string>> ParsePatternClause(string* clause, unordered_map<string, string> all_user_declared_var, 
 		QuerySyntaxValidator* query_syntax_validator);
 
-	STRING_STRING_MAP_PTR toPointerVarMap(unordered_map<string, string> strMap);
+	STRING_STRING_MAP_PTR ToPointerVarMap(unordered_map<string, string> strMap);
 
-	STRING_STRINGLISTLIST_MAP_PTR toPointerRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map);
+	STRING_STRINGLISTLIST_MAP_PTR ToPointerRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map);
 };
 

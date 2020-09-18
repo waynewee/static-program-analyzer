@@ -7,33 +7,33 @@ using namespace std;
 class QuerySyntaxValidator
 {
 public:
-	unordered_map<string, string> validateDeclaration(string decl);
+	unordered_map<string, string> ValidateDeclaration(string decl);
 
-	void validateSelectClauseStartsWithSelect(string s);
+	void ValidateSelectClauseStartsWithSelect(string s);
 
-	bool validateVariableName(string s);
+	bool ValidateVariableName(string s);
 
-	bool validateVariableExists(string s, unordered_map<string, string> varNames);
+	bool ValidateVariableExists(string s, unordered_map<string, string> varNames);
 
-	unordered_map<string, vector<string>> validateSuchThatClause(string s, unordered_map<string, string> declaredVarNames);
+	unordered_map<string, vector<string>> ValidateSuchThatClause(string s, unordered_map<string, string> declaredVarNames);
 
-	unordered_map<string, vector<string>> validatePatternClause(string s, unordered_map<string, string> declaredVarNames);
+	unordered_map<string, vector<string>> ValidatePatternClause(string s, unordered_map<string, string> declaredVarNames);
 
-	void validateExpression(const string& s);
+	void ValidateExpression(const string& s);
 
-	string trimLeadingWhitespaces(const string& s);
+	string TrimLeadingWhitespaces(const string& s);
 
-	string trimTrailingWhitespaces(const string& s);
+	string TrimTrailingWhitespaces(const string& s);
 
-	string trimAllWhitespaces(const string& s);
+	string TrimAllWhitespaces(const string& s);
 
-	bool isInteger(string i);
+	bool IsInteger(string i);
 
-	bool isEntRef(string s, unordered_map<string, string> declaredVars);
+	bool IsEntRef(string s, unordered_map<string, string> declaredVars);
 
-	bool isOperator(char c);
+	bool IsOperator(char c);
 
-	bool isUnderscore(string s);
+	bool IsUnderscore(string s);
 
 	int nthOccurrence(string* str, const string& target, int nth);
 

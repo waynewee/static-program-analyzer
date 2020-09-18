@@ -21,7 +21,7 @@ STRING_PTR PQLDriver::query(STRING_PTR query_string) {
 	
 	// PUTTING & AND * HERE BECAUSE PARSER NOT YET REFACTOR. 
 	// ONCE DONE, WILL CHANGE BACK.
-	QueryInfo* parsedInfo = parser->parse(*query_string);
+	QueryInfo* parsedInfo = parser->Parse(*query_string);
 	
 	if (!parsedInfo->IsQueryInfoValid()) {
 		// Invalid query

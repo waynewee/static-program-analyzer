@@ -45,9 +45,9 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results){
 	// ...code to evaluate query...
 	PQLDriver* main = new PQLDriver();
 	STRING_PTR query_ptr = new STRING(query);
-	//STRING_PTR evaluated_result = main->query(query_ptr);
+	STRING_PTR evaluated_result = main->query(query_ptr);
 
 	// store the answers to the query in the results list (it is initially empty)
 	// each result must be a string.
-	//results.push_back(*evaluated_result);
+	results.push_back(*evaluated_result);
 }

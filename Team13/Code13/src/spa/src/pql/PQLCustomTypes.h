@@ -31,7 +31,8 @@ using namespace std;
 #define TYPE_COND_USES_P "UsesP"
 #define TYPE_COND_MODIFIES_S "ModifiesS"
 #define TYPE_COND_MODIFIES_P "ModifiesP"
-#define TYPE_COND_PATTERN "pattern"
+#define TYPE_COND_PATTERN "pattern_p"                  
+#define TYPE_COND_PATTERN "pattern_f"
 
 typedef string STRING;
 typedef int INTEGER;
