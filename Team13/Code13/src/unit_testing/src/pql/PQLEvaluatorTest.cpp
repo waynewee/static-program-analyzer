@@ -6,7 +6,7 @@
 
 PQLEvaluator evaluator;
 PKB pkb = PKB();
-
+/*
 TEST_CASE("lazy testing") {
 	PQLDriver pql = PQLDriver();
 
@@ -419,4 +419,4 @@ TEST_CASE("no clauses || return stmts") {
 		"11", "12", "13", "14", "15", "16", "17", "18" };
 
 	REQUIRE(result.getResult() == expectedResult);
-}
+}*/

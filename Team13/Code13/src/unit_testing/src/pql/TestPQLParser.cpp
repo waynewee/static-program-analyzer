@@ -1,8 +1,8 @@
 
 #include "TNode.h"
-#include "pql\PQLParser.h"
-#include "pql\QuerySyntaxValidator.h"
-#include "pql\QueryInfo.h"
+#include "pql/PQLParser.h"
+#include "pql/QuerySyntaxValidator.h"
+#include "pql/QueryInfo.h"
 #include "catch.hpp"
 using namespace std;
 #include <map>
