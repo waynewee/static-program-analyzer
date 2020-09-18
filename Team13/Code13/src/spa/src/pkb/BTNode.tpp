@@ -1,5 +1,6 @@
 #include "BTNode.h"
 #include <climits>
+#include <algorithm>
 
 #define CALL_MEMBER_FN(object,ptrToMember)  ((object).*(ptrToMember))
 

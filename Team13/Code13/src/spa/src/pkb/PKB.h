@@ -26,6 +26,7 @@ public:
     DataManager* GetDataManager();
     RelationManager* GetRelationManager();
     void SetASTRoot(TNode* root);
+    TNode* GetASTRoot();
 };
 
 class ASTRootTypeUnmatchException: public exception {
@@ -34,5 +35,6 @@ class ASTRootTypeUnmatchException: public exception {
         return "AST root node type can only be program!";
     }
 };
+
 
 #endif
