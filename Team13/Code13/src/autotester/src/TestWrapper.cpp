@@ -5,6 +5,7 @@
 #include <PKB.h>
 #include "TestWrapper.h"
 #include "frontend/SimpleParser.h"
+#include "frontend/Tokenizer.h"
 #include "frontend/FileReader.h"
 #include "testUtils/TreeTraverse.h"
 #include "pql/PQLDriver.h"
@@ -38,9 +39,13 @@ void TestWrapper::parse(string filename) {
 
 		string* input = fileReader.ReadFile();
 
+		Tokenizer tokenizer(input);
+
+		TOKEN_LIST tokenList = tokenizer.GetTokenList();
+
 		SimpleParser parser = SimpleParser();
 	
-		TestWrapper::pkb->SetASTRoot(parser.parse(input));
+		TestWrapper::pkb->SetASTRoot(parser.parse(tokenList));
 
 		ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
 		ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());

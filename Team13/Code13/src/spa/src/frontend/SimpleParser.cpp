@@ -7,7 +7,6 @@
 #include <ExprEvaluator.h>
 #include <SimpleParser.h>
 #include <TNode.h>
-#include <Tokenizer.h>
 #include <TokenType.h>
 #include <Token.h>
 
@@ -15,12 +14,9 @@ using namespace std;
 
 SimpleParser::SimpleParser() {}
 
-TNode* SimpleParser::parse(string* input) {
+TNode* SimpleParser::parse(TOKEN_LIST _tokenList) {
 
-	Tokenizer tokenizer(input);
-	tokenizer.Tokenize();
-
-	tokenList = tokenizer.GetTokenList();
+	tokenList = _tokenList;
 	tokenIndx = -1;
 	statementIndex = 0;
 

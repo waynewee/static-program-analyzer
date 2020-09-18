@@ -10,13 +10,13 @@
 using namespace std;
 
 Tokenizer::Tokenizer(string* input) {
+	
 	pos = -1;
 	text = input;
 	len = text->length();
-
 	tokenStr = "";
 
-	vector<Token> tokenList;
+	Tokenize();
 }
 
 int Tokenizer::Tokenize() {

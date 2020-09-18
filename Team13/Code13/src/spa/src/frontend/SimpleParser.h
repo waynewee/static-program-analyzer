@@ -23,7 +23,7 @@ public:
 	int tokenIndx;
 	TOKEN_LIST tokenList;
 
-	TNode* parse(string* input);
+	TNode* parse(TOKEN_LIST _tokenList);
 
 private:
 	TNode* ParseStatement(); 
