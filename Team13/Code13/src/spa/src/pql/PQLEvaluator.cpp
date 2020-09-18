@@ -1,5 +1,7 @@
 #include "PQLEvaluator.h"
+
 #include <iostream>
+
 #include "pkb/PKB.h"
 
 QueryResult* PQLEvaluator::Evaluate(QueryInfo* query_info) {
@@ -10,9 +12,9 @@ QueryResult* PQLEvaluator::Evaluate(QueryInfo* query_info) {
 	STRINGLIST_STRINGLISTSET_MAP_PTR two_user_result_set = new STRINGLIST_STRINGLISTSET_MAP();
 	QueryResult* final_result = new QueryResult();
 
-	STRING_STRING_MAP_PTR var_map = query_info->getVarMap();
-	STRING_STRINGLISTLIST_MAP_PTR rel_ref_map = query_info->getRelRefMap();
-	STRING_PTR output_var = query_info->getOutputVar();
+	STRING_STRING_MAP_PTR var_map = query_info->GetVarMap();
+	STRING_STRINGLISTLIST_MAP_PTR rel_ref_map = query_info->GetRelRefMap();
+	STRING_PTR output_var = query_info->GetOutputVar();
 	STRING_PTR output_var_type = var_map->at(output_var);
 	
 	// Parse clauses conditions
@@ -32,7 +34,7 @@ QueryResult* PQLEvaluator::Evaluate(QueryInfo* query_info) {
 					cout << "PQLEvaluator - Parsing clauses: Error creating value for sets." << endl;
 				}
 
-				final_result->setResult({});
+				final_result->SetResult({});
 				return final_result;
 			}
 
@@ -46,7 +48,7 @@ QueryResult* PQLEvaluator::Evaluate(QueryInfo* query_info) {
 						cout << "PQLEvaluator - Parsing clauses: Error creating value for pattern sets." << endl;
 					}
 
-					final_result->setResult({});
+					final_result->SetResult({});
 					return final_result;
 				}
 
@@ -119,7 +121,7 @@ QueryResult* PQLEvaluator::Evaluate(QueryInfo* query_info) {
 			}
 
 			if (!is_insert_successful) {
-				final_result->setResult({});
+				final_result->SetResult({});
 				return final_result;
 			}
 		}
@@ -136,7 +138,7 @@ QueryResult* PQLEvaluator::Evaluate(QueryInfo* query_info) {
 			if (DEBUG) {
 				cout << "PQLEvaluator - Evaluating no user declared clauses: Empty result set received." << endl;
 			}
-			final_result->setResult({});
+			final_result->SetResult({});
 			return final_result;
 		}
 	}
@@ -181,7 +183,7 @@ QueryResult* PQLEvaluator::Evaluate(QueryInfo* query_info) {
 			if (DEBUG) {
 				cout << "PQLEvaluator - Evaluating one user declared clauses: No user declared variable." << endl;
 			}
-			final_result->setResult({});
+			final_result->SetResult({});
 			return final_result;
 		}
 
@@ -190,7 +192,7 @@ QueryResult* PQLEvaluator::Evaluate(QueryInfo* query_info) {
 				cout << "PQLEvaluator - Evaluating one user declared clauses: Empty result set." << endl;
 			}
 
-			final_result->setResult({});
+			final_result->SetResult({});
 			return final_result;
 		}
 
@@ -238,7 +240,7 @@ QueryResult* PQLEvaluator::Evaluate(QueryInfo* query_info) {
 				cout << "PQLEvaluator - Evaluating two user declared clauses: Empty result set." << endl;
 			}
 
-			final_result->setResult({});
+			final_result->SetResult({});
 			return final_result;
 		}
 
@@ -258,7 +260,7 @@ QueryResult* PQLEvaluator::Evaluate(QueryInfo* query_info) {
 	if (output_var_type->compare(TYPE_CONST) == 0) {
 		PKB pkb = PKB();
 
-		final_result->setResult(ConvertSet(pkb.GetDataManager()->GetAllConstants()));
+		final_result->SetResult(ConvertSet(pkb.GetDataManager()->GetAllConstants()));
 		return final_result;
 	}
 	
@@ -277,16 +279,15 @@ QueryResult* PQLEvaluator::Evaluate(QueryInfo* query_info) {
 	// Check if output_var is in consolidated_results
 	// YES -> return corresponding values; NO -> getALLXXX(output_var_type)
 	if (consolidated_results->find(output_var) != consolidated_results->end()) {
-		final_result->setResult(consolidated_results->at(output_var));
+		final_result->SetResult(consolidated_results->at(output_var));
 	}
 	else {
-		final_result->setResult(GetAllSet(output_var_type));
+		final_result->SetResult(GetAllSet(output_var_type));
 	}
 
 	// Return result as QueryResult
 	return final_result;
 }
-
 
 BOOLEAN PQLEvaluator::EvaluateNoUserDeclaredSet(STRING_PTR f_call, STRING_PTR param1, STRING_PTR param2) {
 	PKB* pkb = new PKB();
@@ -478,7 +479,6 @@ STRINGLIST_SET_PTR PQLEvaluator::EvaluateTwoDeclaredSet(STRING_PTR f_call) {
 
 	return result;
 }
-
 
 STRING_STRINGSET_MAP_PTR PQLEvaluator::ConsolidateResults(STRING_PTR curr_check, STRING_SET_PTR related_var,
 	STRING_STRINGSET_MAP_PTR consolidated_results, STRING_STRINGSET_MAP_PTR one_user_result_set,

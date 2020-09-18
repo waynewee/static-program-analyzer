@@ -4,7 +4,7 @@
 
 STRING_PTR PQLProjector::project(QueryResult* query_result) {
 	
-	STRING_SET_PTR result = query_result->getResult();
+	STRING_SET_PTR result = query_result->GetResult();
 
 	STRING_PTR final_result = new STRING();
 	for (STRING_PTR s : *result) {

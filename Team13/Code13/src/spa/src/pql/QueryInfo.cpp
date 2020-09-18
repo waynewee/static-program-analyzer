@@ -3,66 +3,71 @@
 #include <iostream>
 
 /* getters */
-STRING_STRINGLISTLIST_MAP_PTR QueryInfo::getRelRefMap() {
-	return this->relRef_map;
+STRING_STRINGLISTLIST_MAP_PTR QueryInfo::GetRelRefMap() {
+	return this->rel_ref_map;
 }
 
-STRING_STRING_MAP_PTR QueryInfo::getVarMap() {
+STRING_STRING_MAP_PTR QueryInfo::GetVarMap() {
 	return this->var_map;
 }
 
-STRING_PTR QueryInfo::getOutputVar() {
+STRING_PTR QueryInfo::GetOutputVar() {
 	return this->output_var;
 }
 
-BOOLEAN QueryInfo::isQueryInfoValid() {
-	return this->isValid;
+BOOLEAN QueryInfo::IsQueryInfoValid() {
+	return this->is_valid;
 }
 
 /* setters */
-void QueryInfo::setRelRefMap(STRING_STRINGLISTLIST_MAP_PTR relRef_map) {
-	this->relRef_map = relRef_map;
+void QueryInfo::SetRelRefMap(STRING_STRINGLISTLIST_MAP_PTR rel_ref_map) {
+	this->rel_ref_map = rel_ref_map;
 }
 
-void QueryInfo::setVarMap(STRING_STRING_MAP_PTR var_map) {
+void QueryInfo::SetVarMap(STRING_STRING_MAP_PTR var_map) {
 	this->var_map = var_map;
 }
 
-void QueryInfo::setOutputVar(STRING_PTR output_var) {
+void QueryInfo::SetOutputVar(STRING_PTR output_var) {
 	this->output_var = output_var;
 }
 
-void QueryInfo::setValidToFalse() {
-	this->isValid = false;
+void QueryInfo::SetValidToFalse() {
+	this->is_valid = false;
 }
 
 // test print functions
-void QueryInfo::printRelRefMap() {
+void QueryInfo::PrintRelRefMap() {
 	cout << "----- RELREF MAP ----- " << endl;
-	/*for (auto const& pair : this->relRef_map) {
-		cout << " { " << pair.first << " , ";
-		for (vector<string> v : pair.second) {
-			cout << " < ";
-			for (auto i : v) {
-				cout << i << ", ";
+	for (auto f = rel_ref_map->cbegin(); f != rel_ref_map->cend(); f++) {
+		STRING_PTR key = (*f).first;
+		STRINGLIST_LIST_PTR value = (*f).second;
+
+		cout << *key << ": ";
+		
+		for (STRING_LIST_PTR v : *value) {
+		
+			if (v->size() > 2) {
+				cout << "{ " << *(v->at(0)) << " " << *(v->at(1)) << " " << *(v->at(2)) << "} ";
 			}
-			cout << " > ";
+			else {
+				cout << "{ " << *(v->at(0)) << " " << *(v->at(1)) << "} ";
+			}			
 		}
-		cout << " } " << endl;
 
-	}*/
+	}
 }
 
-void QueryInfo::printVarMap() {
+void QueryInfo::PrintVarMap() {
 	cout << "----- VAR MAP ----- " << endl;
-	/*for (auto const& pair : this->var_map) {
-		cout << " { " << pair.first << " , " << pair.second << " } " << endl;
+	for (auto f = var_map->cbegin(); f != var_map->cend(); f++) {
+		cout << " { " << *((*f).first) << " , " << *((*f).second) << " } " << endl;
 
-	}*/
+	}
 }
 
-void QueryInfo::printOutputVar() {
+void QueryInfo::PrintOutputVar() {
 	cout << "---- OUTPUT VAR ---- " << endl;
-	//cout << "Output variable : " << this->output_var << endl;
+	cout << "Output variable : " << *output_var << endl;
 }
 

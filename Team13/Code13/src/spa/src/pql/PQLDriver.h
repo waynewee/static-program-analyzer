@@ -4,6 +4,6 @@ class PQLDriver
 {
 public:
 
-	STRING_PTR query(STRING_PTR queryString);
+	STRING_PTR query(STRING_PTR query_string);
 };
 

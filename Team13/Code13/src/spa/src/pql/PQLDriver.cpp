@@ -13,7 +13,7 @@ STRING_PTR PQLDriver::query(STRING_PTR query_string) {
 	PQLEvaluator* evaluator = new PQLEvaluator();
 	PQLProjector* projector = new PQLProjector();
 
-	STRING_PTR finalResult = new STRING();
+	STRING_PTR final_result = new STRING();
 
 	if (DEBUG) {
 		cout << "PQLDriver - Query: " << query_string << endl;
@@ -23,22 +23,22 @@ STRING_PTR PQLDriver::query(STRING_PTR query_string) {
 	// ONCE DONE, WILL CHANGE BACK.
 	QueryInfo* parsedInfo = parser->parse(*query_string);
 	
-	if (!parsedInfo->isQueryInfoValid()) {
+	if (!parsedInfo->IsQueryInfoValid()) {
 		// Invalid query
 		if (DEBUG) {
 			cout << "PQLDriver: Query is invalid." << endl;
 		}
 		
-		finalResult->assign("");
-		return finalResult;
+		final_result->assign("");
+		return final_result;
 	}
 
 	// loop: check whats in query info
 	if (DEBUG) {
 		cout << "-----------------PQLDriver: PRINTING QUERY INFO-------------------" << endl;
-		parsedInfo->printOutputVar();
-		parsedInfo->printRelRefMap();
-		parsedInfo->printVarMap();
+		parsedInfo->PrintOutputVar();
+		parsedInfo->PrintRelRefMap();
+		parsedInfo->PrintVarMap();
 	}
 	
 	QueryResult* result = evaluator->Evaluate(parsedInfo);
@@ -48,23 +48,23 @@ STRING_PTR PQLDriver::query(STRING_PTR query_string) {
 			cout << "PQLDriver: Result is empty." << endl;
 		}
 
-		finalResult->assign("");
-		return finalResult;
+		final_result->assign("");
+		return final_result;
 	}
 
 	// loop: check whats in query result
 
-	finalResult = projector->project(result);
-	if (finalResult->empty()) {
+	final_result = projector->project(result);
+	if (final_result->empty()) {
 		// error
 		if (DEBUG) {
-			cout << "PQLDriver: Projecting result has errors. 'finalResult' should not be empty as it is already caught." << endl;
+			cout << "PQLDriver: Projecting result has errors. 'final_result' should not be empty as it is already caught." << endl;
 		}
 	}
 
 	if (DEBUG) {
-		cout << "PQLDriver: Final Result = \"" << finalResult << "\"" << std::endl;
+		cout << "PQLDriver: Final Result = \"" << final_result << "\"" << std::endl;
 		cout << "________________________________________________________" << endl;
 	}
-	return finalResult;
+	return final_result;
 }

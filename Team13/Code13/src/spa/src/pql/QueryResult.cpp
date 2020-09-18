@@ -1,10 +1,10 @@
 #include "QueryResult.h"
 
-STRING_SET_PTR QueryResult::getResult() {
+STRING_SET_PTR QueryResult::GetResult() {
 	return this->result;
 }
 
-void QueryResult::setResult(STRING_SET_PTR result) {
+void QueryResult::SetResult(STRING_SET_PTR result) {
 	this->result = result;
 }
 
