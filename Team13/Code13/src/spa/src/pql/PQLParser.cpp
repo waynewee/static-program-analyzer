@@ -1,3 +1,4 @@
+#include "PQLCustomTypes.h"
 #include "PQLParser.h"
 #include "PQLParserStorage.h"
 #include "QueryInfo.h"
@@ -10,8 +11,8 @@
 #include <string>
 using namespace std;
 
-QueryInfo PQLParser::parse(string s) {
-	QueryInfo query_info;
+QueryInfo* PQLParser::parse(string s) {
+	QueryInfo* query_info = new QueryInfo();
 	QuerySyntaxValidator* query_syntax_validator = new QuerySyntaxValidator();
 	PQLParserStorage* PQL_parser_storage = new PQLParserStorage();
     string query = s;
@@ -49,13 +50,14 @@ QueryInfo PQLParser::parse(string s) {
 
         query_syntax_validator->validateVariableExists(user_select_var, PQL_parser_storage->getAllUserDeclaredVar());
 
-        query_info.setOutputVar(user_select_var);
+        STRING_PTR user_output_var = new string(user_select_var);
+        query_info->setOutputVar(user_output_var);
 
         trimLeadingWhitespaces(&query);
 
         if (query.empty()) {
             //cout << "query is empty already" << endl;
-            query_info.printOutputVar();
+            query_info->printOutputVar();
             return query_info;
         }
         while (query.find_first_not_of(' ') != string::npos && !query.empty()) {
@@ -97,16 +99,22 @@ QueryInfo PQLParser::parse(string s) {
         }
         // such OR pattern
         //string current_clause = deleteOneWordAndRetrieveIt(&query);
-        query_info.setRelRefMap(PQL_parser_storage->getRelRefMap());
-        query_info.setVarMap(PQL_parser_storage->getVarMap());
+
+        // unordered_map<string*, string*>* resultVarMap = new unordered_map<string*, string*>();
+        STRING_STRING_MAP_PTR resultVarMap = new STRING_STRING_MAP();
+        resultVarMap = toPointerVarMap(PQL_parser_storage->getVarMap());
+        // unordered_map<string*, vector<vector<string*>*>*>* resultRelRefMap = new unordered_map<string*, vector<vector<string*>*>*>();
+        STRING_STRINGLISTLIST_MAP_PTR resultRelRefMap = new STRING_STRINGLISTLIST_MAP();
+        resultRelRefMap = toPointerRelRefMap(PQL_parser_storage->getRelRefMap());
+
+        query_info->setVarMap(resultVarMap);
+        query_info->setRelRefMap(resultRelRefMap);
     } 
     catch (const char* msg) {
         cerr << msg << endl;
-        query_info.setValidToFalse();
+        query_info->setValidToFalse();
     }
-    query_info.printOutputVar();
-    query_info.printRelRefMap();
-    query_info.printVarMap();
+    query_info->printVarMap();
 	return query_info;
 }
 
@@ -180,4 +188,33 @@ unordered_map<string, vector<string>> PQLParser::parsePatternClause(string* clau
     }
     
     return patternClauseResult;
+}
+
+STRING_STRING_MAP_PTR PQLParser::toPointerVarMap(unordered_map<string, string> strMap) {
+    STRING_STRING_MAP_PTR result = new STRING_STRING_MAP();
+    for (pair<string, string> elems : strMap) {
+        string* first = new string(elems.first);
+        string* second = new string(elems.second);
+        result->insert({ first, second });
+    }
+    return result;
+}
+
+STRING_STRINGLISTLIST_MAP_PTR PQLParser::toPointerRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map) {
+    STRING_STRINGLISTLIST_MAP_PTR result = new STRING_STRINGLISTLIST_MAP();
+    for (pair<string, vector<vector<string>>> elems : relRef_map) {
+        STRING_PTR first = new string(elems.first);
+        STRINGLIST_LIST_PTR second = new STRINGLIST_LIST();
+        for (vector<string> all_args : elems.second) {
+
+            vector<string*>* all_args_ptr = new vector<string*>();
+            for (string s : all_args) {
+                STRING_PTR s_ptr = new string(s);
+                all_args_ptr->push_back(s_ptr);
+            }
+            second->push_back(all_args_ptr);
+        }
+        result->insert({ first, second });
+    }
+    return result;
 }

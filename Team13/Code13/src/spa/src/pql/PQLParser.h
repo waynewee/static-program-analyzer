@@ -1,13 +1,14 @@
-#include <string>
-using namespace std;
+#include "PQLCustomTypes.h"
 #include "QueryInfo.h"
 #include "QuerySyntaxValidator.h"
+#include <string>
+using namespace std;
 
 #pragma once
 class PQLParser
 {
 public:
-	QueryInfo parse(string s);
+	QueryInfo* parse(string s);
 
 	void buildQueryInfo(QueryInfo queryInfo, string s);
 
@@ -21,5 +22,9 @@ public:
 
 	unordered_map<string, vector<string>> parsePatternClause(string* clause, unordered_map<string, string> all_user_declared_var, 
 		QuerySyntaxValidator* query_syntax_validator);
+
+	STRING_STRING_MAP_PTR toPointerVarMap(unordered_map<string, string> strMap);
+
+	STRING_STRINGLISTLIST_MAP_PTR toPointerRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map);
 };
 
