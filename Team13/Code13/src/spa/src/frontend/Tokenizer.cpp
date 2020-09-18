@@ -201,7 +201,7 @@ void Tokenizer::TestAndSetUnary(Token* currPtr, Token prev) {
 	
 	Token curr = *currPtr;
 
-	if (curr.GetValue() == TYPE_REL_EXPR_NOT || curr.GetValue() == "-") {
+	if (curr.GetValue() == TYPE_REL_EXPR_NOT || curr.GetValue() == TYPE_EXPR_MINUS) {
 		if (prev.GetTokenType() == TokenType::TOKEN_TYPE::rel_expr || prev.GetTokenType() == TokenType::TOKEN_TYPE::expr|| prev.GetValue() == "(") {
 			currPtr->isUnaryOp = true;
 		}
