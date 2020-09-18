@@ -16,8 +16,6 @@ Parser::Parser() {
 }
 
 TNode* Parser::parse(std::string input) {
-	std::cout << "parse called" << std::endl;
-
 	Tokenizer tokenizer(input);
 	tokenizer.tokenize();
 
@@ -27,7 +25,6 @@ TNode* Parser::parse(std::string input) {
 
 	TNode* mainPrg = new TNode(TNode::NODE_TYPE::program);
 	
-	std::cout << tokenList.size() << std::endl;
 	while (tokenIndx < (int) tokenList.size() - 1) {
 		Token procToken = Parser::getNextToken();
 
@@ -42,12 +39,13 @@ TNode* Parser::parse(std::string input) {
 	for (TNode* node : mainPrg->GetChildrenVector()) {
 		node->Print(node);
 	}
+
 	return mainPrg;
 }
 
 // Returns a statement node
 TNode* Parser::parseStatement() {
-	std::cout << "Parse Statement Called" << std::endl;
+	//std::cout << "Parse Statement Called" << std::endl;
 	Token firstToken = Parser::getNextToken();
 	statementIndex++;
 
@@ -82,6 +80,7 @@ TNode* Parser::parseProcStatement() {
 	}
 	
 	TNode * procNode = new TNode(TNode::NODE_TYPE::procedure);
+	//std::cout << "name token: " << nameToken.getValue() << std::endl;		
 	TNode * procNameNode = new TNode(TNode::NODE_TYPE::procName, nameToken.getValue());
 	TNode * stmtListNode = Parser::parseStatementList();
 
@@ -144,7 +143,7 @@ TNode* Parser::parseCallStatement() {
 	}
 	
 	TNode * callNode = new TNode(TNode::NODE_TYPE::callStmt, statementIndex);
-	TNode * procNameNode = new TNode(TNode::NODE_TYPE::procName, statementIndex);
+	TNode * procNameNode = new TNode(TNode::NODE_TYPE::procName, procNameToken.getValue());
 
 	if (Parser::getNextToken().getValue() != ";") {
 		throw "Missing ; in line: " + statementIndex;
