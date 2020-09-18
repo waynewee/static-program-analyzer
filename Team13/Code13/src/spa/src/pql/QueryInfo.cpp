@@ -3,39 +3,39 @@
 #include <iostream>
 
 /* getters */
-unordered_map<string, vector<vector<string>>> QueryInfo::getRelRefMap() {
+STRING_STRINGLISTLIST_MAP_PTR QueryInfo::getRelRefMap() {
 	return this->relRef_map;
 }
 
-unordered_map<VAR_NAME, string> QueryInfo::getVarMap() {
+STRING_STRING_MAP_PTR QueryInfo::getVarMap() {
 	return this->var_map;
 }
 
-string QueryInfo::getOutputVar() {
+STRING_PTR QueryInfo::getOutputVar() {
 	return this->output_var;
 }
 
-bool QueryInfo::isQueryInfoValid() {
+BOOLEAN QueryInfo::isQueryInfoValid() {
 	return this->isValid;
 }
 
 /* setters */
-void QueryInfo::setRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map) {
+void QueryInfo::setRelRefMap(STRING_STRINGLISTLIST_MAP_PTR relRef_map) {
 	this->relRef_map = relRef_map;
 }
 
-void QueryInfo::setVarMap(unordered_map<string, string> var_map) {
+void QueryInfo::setVarMap(STRING_STRING_MAP_PTR var_map) {
 	this->var_map = var_map;
 }
 
-void QueryInfo::setOutputVar(string output_var) {
+void QueryInfo::setOutputVar(STRING_PTR output_var) {
 	this->output_var = output_var;
 }
 
 void QueryInfo::setValidToFalse() {
 	this->isValid = false;
 }
-
+/*
 // test print functions
 void QueryInfo::printRelRefMap() {
 	cout << "----- RELREF MAP ----- " << endl;
@@ -65,3 +65,4 @@ void QueryInfo::printOutputVar() {
 	cout << "---- OUTPUT VAR ---- " << endl;
 	cout << "Output variable : " << this->output_var << endl;
 }
+*/

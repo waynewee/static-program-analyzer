@@ -9,7 +9,7 @@
 #include "QueryResult.h"
 
 string PQLDriver::query(string queryString) {
-	PQLParser parser;
+	/*PQLParser parser;
 	PQLEvaluator evaluator;
 	PQLProjector projector;
 
@@ -47,5 +47,5 @@ string PQLDriver::query(string queryString) {
 
 	cout << "Final Result: \"" << finalResult << "\"" << std::endl;
 	cout << "________________________________________________________" << endl;
-	return finalResult;
+	return finalResult;*/ return "";
 }

@@ -2,19 +2,19 @@
 #include <iostream>
 #include "pkb/PKB.h"
 
-QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
-	unordered_set<vector<string>*> noUserDeclaredSet = unordered_set<vector<string>*>();
-	unordered_set<vector<string>*> oneUserDeclaredSet = unordered_set<vector<string>*>();
-	unordered_set<vector<string>*> twoUserDeclaredSet = unordered_set<vector<string>*>();
-	unordered_map<string, unordered_set<string>> oneUserResultSet = unordered_map<string, unordered_set<string>>();
-	unordered_map<vector<string>*, unordered_set<vector<string>*>> twoUserResultSet = unordered_map<vector<string>*, unordered_set<vector<string>*>>();
-	QueryResult finalResult = QueryResult();
+QueryResult* PQLEvaluator::evaluate(QueryInfo* queryInfo) {
+	STRINGLIST_SET_PTR noUserDeclaredSet = new STRINGLIST_SET();
+	STRINGLIST_SET_PTR oneUserDeclaredSet = new STRINGLIST_SET();
+	STRINGLIST_SET_PTR twoUserDeclaredSet = new STRINGLIST_SET();
+	STRING_STRINGSET_MAP_PTR oneUserResultSet = new STRING_STRINGSET_MAP();
+	STRINGLIST_STRINGLISTSET_MAP_PTR twoUserResultSet = new STRINGLIST_STRINGLISTSET_MAP();
+	QueryResult* finalResult = new QueryResult();
 
-	unordered_map<string, string> varMap = queryInfo.getVarMap();
-	unordered_map<string, vector<vector<string>>> relRefMap = queryInfo.getRelRefMap();
-	string outputVar = queryInfo.getOutputVar();
-	string outputVarType = varMap.at(outputVar);
-
+	STRING_STRING_MAP_PTR varMap = queryInfo->getVarMap();
+	STRING_STRINGLISTLIST_MAP_PTR relRefMap = queryInfo->getRelRefMap();
+	STRING_PTR outputVar = queryInfo->getOutputVar();
+	STRING_PTR outputVarType = varMap->at(outputVar);
+	/*
 	// Parse clauses conditions
 	for (auto f = relRefMap.cbegin(); f != relRefMap.cend(); f++) {
 		string fCall = *(new string((*f).first));
@@ -127,12 +127,12 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 		string param2 = (*func)[2];
 
 		if (fCall.compare(TYPE_COND_PATTERN) == 0) {
-			/*string param3 = (*func)[3];
-			key.assign(param3);
+			// string param3 = (*func)[3];
+			// key.assign(param3);
 
-			PKB pkb = PKB();
-			STATEMENT_TYPE stmtType = getStmtType(outputVarType);
-			value = pkb.GetRelationManager().GetPattern(stmtType, parsingEntRef(param1), param2);*/
+			// PKB pkb = PKB();
+			// STATEMENT_TYPE stmtType = getStmtType(outputVarType);
+			value = pkb.GetRelationManager().GetPattern(stmtType, parsingEntRef(param1), param2);
 			cout << "pattern not implemented" << endl;
 		} else if (isVar(param1, varMap)) {
 			// getInverseXXX() branch
@@ -185,13 +185,13 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 		(*key).push_back(param2);
 
 		if (fCall.compare(TYPE_COND_PATTERN) == 0) {
-			/*string param3 = (*func)[3];
-			(*key).push_back(param3);
-			(*key).push_back(param1);
+			// string param3 = (*func)[3];
+			// (*key).push_back(param3);
+			// (*key).push_back(param1);
 
-			PKB pkb = PKB();
-			STATEMENT_TYPE stmtType = getStmtType(outputVarType);
-			value = pkb.GetRelationManager().GetPattern(stmtType, nullptr, param2);*/
+			// PKB pkb = PKB();
+			// STATEMENT_TYPE stmtType = getStmtType(outputVarType);
+			// value = pkb.GetRelationManager().GetPattern(stmtType, nullptr, param2);
 			cout << "pattern not implemented" << endl;
 		}
 		else {
@@ -237,17 +237,13 @@ QueryResult PQLEvaluator::evaluate(QueryInfo queryInfo) {
 		value = getAllSet(outputVarType);
 		finalResult.setResult(value);
 	}
-
+	*/
 
 	// Return result as QueryResult
-	/*cout << finalResult.getResult().size() << endl;
-	for (string const s : finalResult.getResult()) {
-		cout << s << endl;
-	}
-	*/
 	return finalResult;
 }
 
+/*
 bool PQLEvaluator::evaluateNoUserDeclaredSet(string fCall, string param1, string param2) {
 	PKB pkb = PKB();
 	RelationManager* rm = pkb.GetRelationManager();
@@ -304,6 +300,7 @@ unordered_set<string> PQLEvaluator::evaluateOneDeclaredSet(string fCall, string 
 	if (fCall.compare(TYPE_COND_FOLLOWS) == 0) {
 		cout << "in follows" << endl;
 		unordered_set<int> result = *(rm->GetFollows(parsingStmtRef(param)));
+		cout << "SIZE OF PKB RESULT: " << result.size() << endl;
 		return convertSet(result);
 	}
 	else if (fCall.compare(TYPE_COND_FOLLOWS_T) == 0) {
@@ -351,6 +348,7 @@ unordered_set<string> PQLEvaluator::evaluateInverseOneDeclaredSet(string fCall, 
 	if (fCall.compare(TYPE_COND_FOLLOWS) == 0) {
 		cout << "in inverse follows" << endl;
 		unordered_set<int> result = *(rm->GetInverseFollows(parsingStmtRef(param)));
+		cout << "SIZE OF PKB RESULT: " << result.size() << endl;
 		return convertSet(result);
 	}
 	else if (fCall.compare(TYPE_COND_FOLLOWS_T) == 0) {
@@ -824,3 +822,5 @@ string* PQLEvaluator::parsingEntRef(string param) {
 		return newParam;
 	}
 }
+
+*/
