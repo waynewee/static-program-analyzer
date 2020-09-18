@@ -114,7 +114,6 @@ QueryInfo* PQLParser::parse(string s) {
         cerr << msg << endl;
         query_info->setValidToFalse();
     }
-    query_info->printVarMap();
 	return query_info;
 }
 
