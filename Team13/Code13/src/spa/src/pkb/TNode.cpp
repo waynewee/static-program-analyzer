@@ -4,8 +4,9 @@ TNode::TNode() {
 
 }
 
-TNode::TNode(TNode::NODE_TYPE _type, string _name) :
-	type(_type), name(_name) {
+TNode::TNode(TNode::NODE_TYPE _type, string _name) {
+    type = _type;
+    name = new string(_name);
 }
 
 TNode::TNode(TNode::NODE_TYPE _type, CONST_VALUE _value) :
@@ -40,7 +41,7 @@ bool TNode::SetName(VAR_NAME* newName) {
 	if (type != varName && type != procName) {
 		return false;
 	}
-	name = string(*newName);
+	name = newName;
 	return true;
 };
 
@@ -105,9 +106,9 @@ string TNode::getData() {
 	case TNode::factor:
 		return "Factor";
 	case TNode::varName:
-		return "VarName:" + name;
+		return "VarName:" + (*name);
 	case TNode::procName:
-		return "ProcName:" + name;
+		return "ProcName:" + (*name);
 	case TNode::constValue:
 		return "ConstValue:" + to_string(int(value));
 	default:
@@ -133,6 +134,6 @@ TNode *TNode::GetParent() {
 CONST_VALUE TNode::GetConstValue() {
     return value;
 }
-string TNode::GetName() {
+string* TNode::GetName() {
     return name;
 }

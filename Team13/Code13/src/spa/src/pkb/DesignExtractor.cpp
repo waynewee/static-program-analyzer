@@ -30,7 +30,7 @@ bool ExtractData(DataManager* manager, TNode* root) {
     vector<TNode*> children = root->GetChildrenVector();
     switch (root->GetNodeType()) {
     case TNode::procName:
-        manager->AddProcedure(&(root->GetName()));
+        manager->AddProcedure(root->GetName());
         break;
     case TNode::assignStmt:
         manager->AddStatement(assignStatement, root->GetStmtIndex());
@@ -51,7 +51,7 @@ bool ExtractData(DataManager* manager, TNode* root) {
         manager->AddStatement(printStatement, root->GetStmtIndex());
         break;
     case TNode::varName:
-        manager->AddVariable(&(root->GetName()));
+        manager->AddVariable(root->GetName());
         break;
     case TNode::constValue:
         manager->AddConstant(root->GetConstValue());

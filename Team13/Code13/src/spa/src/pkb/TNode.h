@@ -56,7 +56,7 @@ private:
     CONST_VALUE value;
     OPERATOR op;
     STMT_IDX index;
-    string name;
+    string* name;
 
 public:
     TNode(void);
@@ -77,7 +77,7 @@ public:
     string getData();
     TNode* GetParent();
     CONST_VALUE GetConstValue();
-    string GetName();
+    string* GetName();
     void Print(TNode* root);
 };
 
