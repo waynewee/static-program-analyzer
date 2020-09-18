@@ -33,6 +33,7 @@ void TestWrapper::parse(std::string filename) {
 	std::string input = codeExtractor.extract();
 	Parser parser = Parser();
 	TestWrapper::pkb->SetASTRoot(parser.parse(input));
+	ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
 }
 
 // method to evaluating a query

@@ -19,7 +19,6 @@ void PKB::SetASTRoot(TNode *root) {
         throw ASTRootTypeUnmatchException();
     }
     ast_ = root;
-    ExtractFollows(relation_manager_, root);
 }
 
 TNode* PKB::GetASTRoot() {

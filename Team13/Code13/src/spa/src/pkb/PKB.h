@@ -26,7 +26,7 @@ public:
     DataManager* GetDataManager();
     RelationManager* GetRelationManager();
     void SetASTRoot(TNode* root);
-    TNode* PKB::GetASTRoot();
+    TNode* GetASTRoot();
 };
 
 class ASTRootTypeUnmatchException: public exception {
