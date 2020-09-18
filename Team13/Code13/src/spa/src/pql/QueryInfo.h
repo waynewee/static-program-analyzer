@@ -23,7 +23,7 @@ public:
 	void setValidToFalse();
 
 	/* printing */
-	// void printOutputVar();
-	// void printVarMap();
-	// void printRelRefMap();
+	void printOutputVar();
+	void printVarMap();
+	void printRelRefMap();
 };

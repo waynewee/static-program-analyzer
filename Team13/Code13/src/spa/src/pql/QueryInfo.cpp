@@ -35,11 +35,11 @@ void QueryInfo::setOutputVar(STRING_PTR output_var) {
 void QueryInfo::setValidToFalse() {
 	this->isValid = false;
 }
-/*
+
 // test print functions
 void QueryInfo::printRelRefMap() {
 	cout << "----- RELREF MAP ----- " << endl;
-	for (auto const& pair : this->relRef_map) {
+	/*for (auto const& pair : this->relRef_map) {
 		cout << " { " << pair.first << " , ";
 		for (vector<string> v : pair.second) {
 			cout << " < ";
@@ -50,19 +50,19 @@ void QueryInfo::printRelRefMap() {
 		}
 		cout << " } " << endl;
 
-	}
+	}*/
 }
 
 void QueryInfo::printVarMap() {
 	cout << "----- VAR MAP ----- " << endl;
-	for (auto const& pair : this->var_map) {
+	/*for (auto const& pair : this->var_map) {
 		cout << " { " << pair.first << " , " << pair.second << " } " << endl;
 
-	}
+	}*/
 }
 
 void QueryInfo::printOutputVar() {
 	cout << "---- OUTPUT VAR ---- " << endl;
-	cout << "Output variable : " << this->output_var << endl;
+	//cout << "Output variable : " << this->output_var << endl;
 }
-*/
+
