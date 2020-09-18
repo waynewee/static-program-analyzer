@@ -28,6 +28,7 @@ int Tokenizer::Tokenize() {
 		pos += 1;
 
 		char c = text->at(pos);
+		int nextPos = pos + 1;
 
 		//detect whitespace
 		if (IsWhiteSpace(c)) {
@@ -55,10 +56,10 @@ int Tokenizer::Tokenize() {
 			/** check if next char forms a logical op string with current char*/
 			string opStr = "";
 			opStr += c;
-			opStr += text->at(pos + 1);
+			opStr += text->at(nextPos);
 
 			if (IsRelExpr(opStr)) {
-				AppendCharToTokenStr(text->at(pos + 1));
+				AppendCharToTokenStr(text->at(nextPos));
 				pos += 1;
 			}
 
@@ -85,16 +86,16 @@ int Tokenizer::Tokenize() {
 		/**
 		* If we encounter a whitespace on the next char, we evaluate the token
 		*/
+		
 		if (
 			tokenStr.length() > 0
-			&& (pos + 1 >= len
+			&& (nextPos >= len
 				|| ((
-					IsWhiteSpace(text->at(pos + 1))
-					|| IsPunc(text->at(pos + 1))
-					|| IsExpr(text->at(pos + 1))
-					|| IsRelExprPart(text->at(pos + 1))
+					IsWhiteSpace(text->at(nextPos))
+					|| IsPunc(text->at(nextPos))
+					|| IsExpr(text->at(nextPos))
+					|| IsRelExprPart(text->at(nextPos))
 					)))) {
-			//we encountered a whitespace!
 
 			bool isInteger = true;
 
@@ -199,10 +200,8 @@ void Tokenizer::PrintToken(string type) {
 
 void Tokenizer::TestAndSetUnary(Token* currPtr, Token prev) {
 	
-	Token curr = *currPtr;
-
-	if (curr.GetValue() == TYPE_REL_EXPR_NOT || curr.GetValue() == TYPE_EXPR_MINUS) {
-		if (prev.GetTokenType() == TokenType::TOKEN_TYPE::rel_expr || prev.GetTokenType() == TokenType::TOKEN_TYPE::expr|| prev.GetValue() == "(") {
+	if (currPtr->GetValue() == TYPE_REL_EXPR_NOT || currPtr->GetValue() == TYPE_EXPR_MINUS) {
+		if (prev.GetTokenType() == TokenType::TOKEN_TYPE::rel_expr || prev.GetTokenType() == TokenType::TOKEN_TYPE::expr|| prev.GetValue() == TYPE_PUNC_OPEN_PARAN) {
 			currPtr->isUnaryOp = true;
 		}
 	}

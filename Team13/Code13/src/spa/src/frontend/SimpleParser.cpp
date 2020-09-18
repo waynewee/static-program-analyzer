@@ -12,12 +12,9 @@
 
 using namespace std;
 
-SimpleParser::SimpleParser() {
-	cout << "SimpleParser initialized" << endl;
-}
+SimpleParser::SimpleParser() {}
 
 TNode* SimpleParser::parse(string* input) {
-	cout << "parse called" << endl;
 
 	Tokenizer tokenizer(input);
 	tokenizer.Tokenize();
@@ -28,7 +25,6 @@ TNode* SimpleParser::parse(string* input) {
 
 	TNode* mainPrg = new TNode(TNode::NODE_TYPE::program);
 	
-	cout << tokenList.size() << endl;
 	while (tokenIndx < (int) tokenList.size() - 1) {
 		Token procToken = SimpleParser::GetNextToken();
 
@@ -48,7 +44,6 @@ TNode* SimpleParser::parse(string* input) {
 
 // Returns a statement node
 TNode* SimpleParser::ParseStatement() {
-	cout << "Parse Statement Called" << endl;
 	Token firstToken = SimpleParser::GetNextToken();
 	statementIndex++;
 
@@ -76,7 +71,6 @@ TNode* SimpleParser::ParseStatement() {
 }
 
 TNode* SimpleParser::ParseProcStatement() {
-	//cout << "Parse ProcStatement Called" << endl;
 	Token nameToken = SimpleParser::GetNextToken();
 	if (nameToken.GetTokenType() != TokenType::TOKEN_TYPE::var) {
 		throw "Invalid procedure name";
@@ -94,7 +88,6 @@ TNode* SimpleParser::ParseProcStatement() {
 }
 
 TNode* SimpleParser::ParseReadStatement() {
-	//cout << "Read called" << endl;
 
 	Token varToken = SimpleParser::GetNextToken();
 
@@ -252,7 +245,6 @@ TNode* SimpleParser::ParseExpressionStatement(SimpleParser::expressionType exprT
 	Token nextToken;
 
 	if (exprType == SimpleParser::expressionType::_assign) {
-		//cout << "Parsing ASSIGN expression" << endl;
 
 		while (SimpleParser::PeekNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
 			nextToken = SimpleParser::GetNextToken();
@@ -260,8 +252,6 @@ TNode* SimpleParser::ParseExpressionStatement(SimpleParser::expressionType exprT
 		}
 	}
 	else if (exprType == SimpleParser::expressionType::_if || exprType == SimpleParser::expressionType::_while) {
-		
-		//cout << "Parsing IF/WHILE expression" << endl;
 
 		if (SimpleParser::PeekNextToken().GetValue() != TYPE_PUNC_OPEN_PARAN) {
 			throw "Invalid IF/WHILE statement";
@@ -306,7 +296,7 @@ int SimpleParser::GetEndIndxOfStatementList() {
 		while (!bracketMatcher.empty()) {
 			if (tokenIndx + 1 + counter > (int) tokenList.size()) {
 				// throw Exception for incomplete statement block
-				cout << "Incomplete statement block" << endl;
+				throw "Incomplete statement block";
 			}
 			Token nextToken = tokenList[tokenIndx + 1 + counter];
 			if (nextToken.GetValue() == TYPE_PUNC_OPEN_BRACKET) {
