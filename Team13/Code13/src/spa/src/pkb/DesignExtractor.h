@@ -13,7 +13,7 @@ using namespace std;
 
 // class DesignExtractor {
 // public:
-	bool ExtractFollows(RelationManager* manager, TNode* root);
+bool ExtractFollows(RelationManager* manager, TNode* root);
 // };
 
 #endif
