@@ -8,6 +8,8 @@ class PQLParser
 public:
 	QueryInfo parse(string s);
 
+	void buildQueryInfo(QueryInfo queryInfo, string s);
+
 	string trimLeadingWhitespaces(const string& s);
 
 	string trimTrailingWhitespaces(const string& s);
