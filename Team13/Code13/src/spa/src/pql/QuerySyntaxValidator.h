@@ -7,17 +7,17 @@ using namespace std;
 class QuerySyntaxValidator
 {
 public:
-	unordered_map<string, int> validateDeclaration(string decl);
+	unordered_map<string, string> validateDeclaration(string decl);
 
 	void validateSelectClauseStartsWithSelect(string s);
 
 	bool validateVariableName(string s);
 
-	bool validateVariableExists(string s, unordered_set<string> varNames);
+	bool validateVariableExists(string s, unordered_map<string, string> varNames);
 
-	unordered_map<string, vector<string>> validateSuchThatClause(string s, unordered_map<string, int> declaredVarNames);
+	unordered_map<string, vector<string>> validateSuchThatClause(string s, unordered_map<string, string> declaredVarNames);
 
-	unordered_map<string, vector<string>> validatePatternClause(string s, unordered_map<string, int> declaredVarNames);
+	unordered_map<string, vector<string>> validatePatternClause(string s, unordered_map<string, string> declaredVarNames);
 
 	void validateExpression(const string& s);
 
@@ -29,13 +29,13 @@ public:
 
 	bool isInteger(string i);
 
-	bool isEntRef(string s, unordered_map<string, int> declaredVars);
+	bool isEntRef(string s, unordered_map<string, string> declaredVars);
 
 	bool isOperator(char c);
 
 	bool isUnderscore(string s);
 
-	int nthOccurrence(const string& str, const string& target, int nth);
+	int nthOccurrence(string* str, const string& target, int nth);
 
 };
 

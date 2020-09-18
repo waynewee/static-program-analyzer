@@ -2,8 +2,6 @@
 
 #include <unordered_map>
 
-#include "CustomTypes.h"
-
 using namespace std;
 
 class QueryInfo

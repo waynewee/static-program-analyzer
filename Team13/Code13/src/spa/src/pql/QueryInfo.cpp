@@ -7,7 +7,7 @@ unordered_map<string, vector<vector<string>>> QueryInfo::getRelRefMap() {
 	return this->relRef_map;
 }
 
-unordered_map<VAR_NAME, string> QueryInfo::getVarMap() {
+unordered_map<string, string> QueryInfo::getVarMap() {
 	return this->var_map;
 }
 
