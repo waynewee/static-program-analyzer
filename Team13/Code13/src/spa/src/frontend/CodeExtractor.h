@@ -9,9 +9,11 @@ using namespace std;
 
 class CodeExtractor {
 public:
-	string filename;
 	CodeExtractor(string file_n);
-	string extract();
+	
+	string filename;
+	
+	string* Extract();
 };
 
 #endif

@@ -8,7 +8,7 @@
 Statement::Statement() {}
 
 void printToken(Token t) {
-	std::cout << t.getValue() << " ";
+	std::cout << t.GetValue() << " ";
 }
 
 void Statement::addToken(Token token) {

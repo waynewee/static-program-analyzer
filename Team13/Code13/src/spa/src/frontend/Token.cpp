@@ -14,43 +14,43 @@ Token::Token(string tokenVal, TokenType::TOKEN_TYPE tokenType) {
 
 Token::Token(){}
 
-void Token::print() {
+void Token::Print() {
 
 	string output = "";
 
-	output += getTokenTypeStr(type) + "\t" + value;
+	output += GetTokenTypeStr(type) + "\t" + value;
 
 	cout << output << endl;
 }
 
-string Token::getValue() {
+string Token::GetValue() {
 	return value;
 }
 
-TokenType::TOKEN_TYPE Token::getTokenType() {
+TokenType::TOKEN_TYPE Token::GetTokenType() {
 	return type;
 }
 
 
-TokenType::STMT_TYPE Token::getStmtType() {
+TokenType::STMT_TYPE Token::GetStmtType() {
 	return stmtType;
 }
 
-string Token::getTokenTypeStr(TokenType::TOKEN_TYPE tokenType) {
+string Token::GetTokenTypeStr(TokenType::TOKEN_TYPE tokenType) {
 
 	switch (tokenType) {
 	case TokenType::TOKEN_TYPE::expr:
-		return "expr";
+		return TOKEN_TYPE_EXPR;
 	case TokenType::TOKEN_TYPE::rel_expr:
-		return "rel_expr";
+		return TOKEN_TYPE_REL_EXPR;
 	case TokenType::TOKEN_TYPE::punc:
-		return "punc";
+		return TOKEN_TYPE_PUNC;
 	case TokenType::TOKEN_TYPE::constant:
-		return "constant";
+		return TOKEN_TYPE_CONSTANT;
 	case TokenType::TOKEN_TYPE::var:
-		return "var";
+		return TOKEN_TYPE_VAR;
 	case TokenType::TOKEN_TYPE::stmt:
-		return "stmt";
+		return TOKEN_TYPE_STMT;
 	default:
 		return "";
 	}

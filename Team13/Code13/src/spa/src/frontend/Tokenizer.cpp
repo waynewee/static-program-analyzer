@@ -10,7 +10,6 @@
 using namespace std;
 
 Tokenizer::Tokenizer(string input) {
-	cache = {};
 	pos = -1;
 	text = input;
 	len = text.length();
@@ -20,7 +19,7 @@ Tokenizer::Tokenizer(string input) {
 	vector<Token> tokenList;
 }
 
-int Tokenizer::tokenize() {
+int Tokenizer::Tokenize() {
 
 	Token prevToken;
 	Token* currTokenPtr;
@@ -31,47 +30,47 @@ int Tokenizer::tokenize() {
 		char c = text.at(pos);
 
 		//detect whitespace
-		if (isWhiteSpace(c)) {
+		if (IsWhiteSpace(c)) {
 			continue;
 			//detect punctuation
 		}
-		else if (isPunc(c)) {
-			appendCharToTokenStr(c);
-			addToken(TokenType::TOKEN_TYPE::punc);
-			resetTokenStr();
+		else if (IsPunc(c)) {
+			AppendCharToTokenStr(c);
+			AddToken(TokenType::TOKEN_TYPE::punc);
+			ResetTokenStr();
 			//detect arithmetic operators
 		}
-		else if (isArop(c)) {
-			appendCharToTokenStr(c);
+		else if (IsExpr(c)) {
+			AppendCharToTokenStr(c);
 			prevToken = tokenList.back();
-			currTokenPtr = addToken(TokenType::TOKEN_TYPE::expr);
-			testAndSetUnary(currTokenPtr, prevToken);
-			resetTokenStr();
+			currTokenPtr = AddToken(TokenType::TOKEN_TYPE::expr);
+			TestAndSetUnary(currTokenPtr, prevToken);
+			ResetTokenStr();
 		}
 		//detect logical operators
-		else if (isLgopPart(c)) {
+		else if (IsRelExprPart(c)) {
 
-			appendCharToTokenStr(c);
+			AppendCharToTokenStr(c);
 
 			/** check if next char forms a logical op string with current char*/
 			string opStr = "";
 			opStr += c;
 			opStr += text.at(pos + 1);
 
-			if (isLgop(opStr)) {
-				appendCharToTokenStr(text.at(pos + 1));
+			if (IsRelExpr(opStr)) {
+				AppendCharToTokenStr(text.at(pos + 1));
 				pos += 1;
 			}
 
 			prevToken = tokenList.back();
-			currTokenPtr = addToken(TokenType::TOKEN_TYPE::rel_expr);
-			testAndSetUnary(currTokenPtr, prevToken);
-			resetTokenStr();
+			currTokenPtr = AddToken(TokenType::TOKEN_TYPE::rel_expr);
+			TestAndSetUnary(currTokenPtr, prevToken);
+			ResetTokenStr();
 
 
 		}
 		else {
-			appendCharToTokenStr(c);
+			AppendCharToTokenStr(c);
 		}
 
 
@@ -90,10 +89,10 @@ int Tokenizer::tokenize() {
 			tokenStr.length() > 0
 			&& (pos + 1 >= len
 				|| ((
-					isWhiteSpace(text.at(pos + 1))
-					|| isPunc(text.at(pos + 1))
-					|| isArop(text.at(pos + 1))
-					|| isLgopPart(text.at(pos + 1))
+					IsWhiteSpace(text.at(pos + 1))
+					|| IsPunc(text.at(pos + 1))
+					|| IsExpr(text.at(pos + 1))
+					|| IsRelExprPart(text.at(pos + 1))
 					)))) {
 			//we encountered a whitespace!
 
@@ -107,7 +106,7 @@ int Tokenizer::tokenize() {
 			}
 
 			if (isInteger) {
-				addToken(TokenType::TOKEN_TYPE::constant);
+				AddToken(TokenType::TOKEN_TYPE::constant);
 			}
 			else {
 
@@ -122,69 +121,88 @@ int Tokenizer::tokenize() {
 				}
 
 				if (isStmtName) {
-					Token* stmtToken = addToken(TokenType::TOKEN_TYPE::stmt);
+					Token* stmtToken = AddToken(TokenType::TOKEN_TYPE::stmt);
 
-					stmtToken->stmtType = TokenType::getStmtType(tokenStr);
+					stmtToken->stmtType = TokenType::GetStmtType(tokenStr);
 				}
 				else {
-					addToken(TokenType::TOKEN_TYPE::var);
+					AddToken(TokenType::TOKEN_TYPE::var);
 				}
 
 			}
 
-			resetTokenStr();
+			ResetTokenStr();
 
 		}
 
 	}
 
-	//printTokenList();
+	//PrintTokenList();
 
 	return 0;
 
 }
 
-bool Tokenizer::isWhiteSpace(char c) {
-	return (c == ' ' || c == '\n' || c == '\r' || c == '\t');
+bool Tokenizer::IsWhiteSpace(char c) {
+
+	string s = string(1, c);
+
+	return CheckMatch(s, whiteSpaces);
 }
 
-bool Tokenizer::isPunc(char c) {
-	return (c == '{' || c == '}' || c == ';' || c == '(' || c == ')');
+bool Tokenizer::IsPunc(char c) {
+	string s = string(1, c);
+
+	return CheckMatch(s, punctuations);
 }
 
-bool Tokenizer::isArop(char c) {
-	return (c == '+' || c == '-' || c == '*' || c == '/' || c == '%');
+bool Tokenizer::IsExpr(char c) {
+	string s = string(1, c);
+
+	return CheckMatch(s, expressions);
 }
 
-bool Tokenizer::isLgopPart(char c) {
-	return (c == '&' || c == '|' || c == '<' || c == '>' || c == '=' || c == '!');
+bool Tokenizer::IsRelExprPart(char c) {
+	string s = string(1, c);
+	return CheckMatch(s, rel_expressions_part);
 }
 
-bool Tokenizer::isLgop(string str) {
-	return (str == "&&" || str == "||" || str == "<=" || str == ">=" || str == "==" || str == "!=");
+bool Tokenizer::IsRelExpr(string str) {
+	return CheckMatch(str, rel_expressions);
 }
 
-void Tokenizer::appendCharToTokenStr(char c) {
+bool Tokenizer::CheckMatch(string s, STR_LIST v) {
+
+	for (string str : v) {
+		if (s == str) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void Tokenizer::AppendCharToTokenStr(char c) {
 	string str = "";
 	str += c;
 
-	appendStrToTokenStr(str);
+	AppendStrToTokenStr(str);
 }
 
-void Tokenizer::appendStrToTokenStr(string str) {
+void Tokenizer::AppendStrToTokenStr(string str) {
 	tokenStr += str;
 }
 
-void Tokenizer::printToken(string type) {
+void Tokenizer::PrintToken(string type) {
 //	cout << type + "\t" + token << endl;
 }
 
-void Tokenizer::testAndSetUnary(Token* currPtr, Token prev) {
+void Tokenizer::TestAndSetUnary(Token* currPtr, Token prev) {
 	
 	Token curr = *currPtr;
 
-	if (curr.getValue() == "!" || curr.getValue() == "-") {
-		if (prev.getTokenType() == TokenType::TOKEN_TYPE::rel_expr || prev.getTokenType() == TokenType::TOKEN_TYPE::expr|| prev.getValue() == "(") {
+	if (curr.GetValue() == "!" || curr.GetValue() == "-") {
+		if (prev.GetTokenType() == TokenType::TOKEN_TYPE::rel_expr || prev.GetTokenType() == TokenType::TOKEN_TYPE::expr|| prev.GetValue() == "(") {
 			currPtr->isUnaryOp = true;
 		}
 	}
@@ -192,7 +210,7 @@ void Tokenizer::testAndSetUnary(Token* currPtr, Token prev) {
 	return;
 }
 
-Token* Tokenizer::addToken(TokenType::TOKEN_TYPE tokenType) {
+Token* Tokenizer::AddToken(TokenType::TOKEN_TYPE tokenType) {
 	Token token_obj = Token(tokenStr, tokenType);
 
 	tokenList.push_back(token_obj);
@@ -200,18 +218,18 @@ Token* Tokenizer::addToken(TokenType::TOKEN_TYPE tokenType) {
 	return &tokenList.at(tokenList.size()-1);
 }
 
-void Tokenizer::resetTokenStr() {
+void Tokenizer::ResetTokenStr() {
 	tokenStr = "";
 }
 
-void Tokenizer::printTokenList() {
+void Tokenizer::PrintTokenList() {
 
 	for (Token token : tokenList) {
-		token.print();
+		token.Print();
 	}
 
 }
 
-vector<Token> Tokenizer::getTokenList() {
+vector<Token> Tokenizer::GetTokenList() {
 	return tokenList;
 }

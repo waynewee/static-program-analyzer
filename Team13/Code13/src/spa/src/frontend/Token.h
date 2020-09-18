@@ -8,23 +8,27 @@
 
 using namespace std;
 
+#define TOKEN_TYPE_EXPR "expr"
+#define TOKEN_TYPE_REL_EXPR "rel_expr"
+#define TOKEN_TYPE_PUNC "punc"
+#define TOKEN_TYPE_CONSTANT "constant"
+#define TOKEN_TYPE_VAR "var"
+#define TOKEN_TYPE_STMT "stmt"
+
 class Token {
 public:
-
-	TokenType::TOKEN_TYPE type;
-	TokenType::STMT_TYPE stmtType;
-
-	bool isUnaryOp;
-
-	void print();
-	string getTokenTypeStr(TokenType::TOKEN_TYPE tokenType);
-	TokenType::TOKEN_TYPE getTokenType();
-	TokenType::STMT_TYPE getStmtType();
-
-	Token(string tokenVal, TokenType::TOKEN_TYPE tokenType);
 	Token();
+	Token(string tokenVal, TokenType::TOKEN_TYPE tokenType);
+	
+	bool isUnaryOp;
+	TokenType::STMT_TYPE stmtType;
+	TokenType::TOKEN_TYPE type;
 
-	string getValue();
+	void Print();
+	TokenType::STMT_TYPE GetStmtType();
+	TokenType::TOKEN_TYPE GetTokenType();
+	string GetTokenTypeStr(TokenType::TOKEN_TYPE tokenType);
+	string GetValue();
 
 private:
 	string value;

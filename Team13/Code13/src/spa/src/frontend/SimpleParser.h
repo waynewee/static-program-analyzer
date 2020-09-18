@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include <FrontendTypes.h>
 #include <TNode.h>
 #include <Token.h>
 
@@ -10,30 +11,36 @@ using namespace std;
 
 class SimpleParser {
 public:
-	SimpleParser();
-	int tokenIndx;
-	int statementIndex;
-	vector<Token> tokenList;
+	enum expressionType { 
+		_if, 
+		_while, 
+		_assign 
+	};
 
-	TNode* parse(string input);
-	enum expressionType { IF, WHILE, ASSIGN };
+	SimpleParser();
+
+	int statementIndex;
+	int tokenIndx;
+	TOKEN_LIST tokenList;
+
+	TNode* parse(string* input);
 
 private:
-	TNode* parseStatement(); 
-	TNode* parseProcStatement();
-	TNode* parseReadStatement();
-	TNode* parsePrintStatement();
-	TNode* parseIfStatement();
-	TNode* parseWhileStatement();
-	TNode* parseCallStatement();
-	TNode* parseAssgnStatement(Token nameToken);
-	TNode* parseStatementList();
-	TNode* parseExpressionStatement(expressionType exprType);
-	TNode* parseExpression(vector<Token> exprList);
+	TNode* ParseStatement(); 
+	TNode* ParseProcStatement();
+	TNode* ParseReadStatement();
+	TNode* ParsePrintStatement();
+	TNode* ParseIfStatement();
+	TNode* ParseWhileStatement();
+	TNode* ParseCallStatement();
+	TNode* ParseAssignStatement(Token nameToken);
+	TNode* ParseStatementList();
+	TNode* ParseExpressionStatement(expressionType exprType);
+	TNode* ParseExpression(TOKEN_LIST exprList);
 
-	Token getNextToken();
-	Token peekNextToken();
-	int getEndIndxOfStatementList();
+	Token GetNextToken();
+	Token PeekNextToken();
+	int GetEndIndxOfStatementList();
 };
 
 #endif

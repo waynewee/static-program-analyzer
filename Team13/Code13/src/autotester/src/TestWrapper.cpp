@@ -9,6 +9,8 @@
 #include "pql/PQLDriver.h"
 #include "pkb/DesignExtractor.h"
 
+using namespace std;
+
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
 
@@ -28,19 +30,22 @@ TestWrapper::TestWrapper() {
 }
 
 // method for parsing the SIMPLE source
-void TestWrapper::parse(std::string filename) {
+void TestWrapper::parse(string filename) {
 
 	CodeExtractor codeExtractor(filename);
 
-	std::string input = codeExtractor.extract();
+	string* input = codeExtractor.Extract();
+
 	SimpleParser parser = SimpleParser();
+	
 	TestWrapper::pkb->SetASTRoot(parser.parse(input));
+
 	ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
 	ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
 }
 
 // method to evaluating a query
-void TestWrapper::evaluate(std::string query, std::list<std::string>& results){
+void TestWrapper::evaluate(string query, list<string>& results){
 	// call your evaluator to evaluate the query here
 	// ...code to evaluate query...
 	PQLDriver main = PQLDriver();
