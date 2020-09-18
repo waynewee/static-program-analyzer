@@ -5,7 +5,7 @@
 #include <PKB.h>
 #include "TestWrapper.h"
 #include "frontend/SimpleParser.h"
-#include "frontend/CodeExtractor.h"
+#include "frontend/FileReader.h"
 #include "testUtils/TreeTraverse.h"
 #include "pql/PQLDriver.h"
 #include "pkb/DesignExtractor.h"
@@ -34,9 +34,9 @@ TestWrapper::TestWrapper() {
 void TestWrapper::parse(string filename) {
 
 	try {
-		CodeExtractor codeExtractor(filename);
+		FileReader fileReader(filename);
 
-		string* input = codeExtractor.Extract();
+		string* input = fileReader.ReadFile();
 
 		SimpleParser parser = SimpleParser();
 	

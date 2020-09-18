@@ -1,15 +1,15 @@
 #include <fstream>
 #include <iostream>
 
-#include <CodeExtractor.h>
+#include <FileReader.h>
 
 using namespace std;
 
-CodeExtractor::CodeExtractor(string file_n) {
+FileReader::FileReader(string file_n) {
 	filename = file_n;
 }
 
-string* CodeExtractor::Extract() {
+string* FileReader::ReadFile() {
 
 	ifstream ifs(filename);
 	string* input = new string();
