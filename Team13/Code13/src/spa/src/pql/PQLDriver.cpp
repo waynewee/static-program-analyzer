@@ -8,7 +8,7 @@
 #include "QueryInfo.h"
 #include "QueryResult.h"
 
-STRING_PTR PQLDriver::query(STRING_PTR queryString) {
+STRING_PTR PQLDriver::query(STRING_PTR query_string) {
 	PQLParser* parser = new PQLParser();
 	PQLEvaluator* evaluator = new PQLEvaluator();
 	PQLProjector* projector = new PQLProjector();
@@ -16,12 +16,12 @@ STRING_PTR PQLDriver::query(STRING_PTR queryString) {
 	STRING_PTR finalResult = new STRING();
 
 	if (DEBUG) {
-		cout << "PQLDriver - Query: " << queryString << endl;
+		cout << "PQLDriver - Query: " << query_string << endl;
 	}
 	
 	// PUTTING & AND * HERE BECAUSE PARSER NOT YET REFACTOR. 
 	// ONCE DONE, WILL CHANGE BACK.
-	QueryInfo* parsedInfo = &(parser->parse(*queryString));
+	QueryInfo* parsedInfo = parser->parse(*query_string);
 	
 	if (!parsedInfo->isQueryInfoValid()) {
 		// Invalid query
