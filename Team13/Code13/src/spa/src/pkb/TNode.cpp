@@ -63,7 +63,12 @@ TNode::TNode(TNode::NODE_TYPE _type) :
 	type(_type) {
 }
 
-list<TNode*> TNode::getChildren() {
+list<TNode*> TNode::GetChildrenList() {
+	list<TNode*> result(children.begin(), children.end());
+	return result;
+}
+
+vector<TNode*> TNode::GetChildrenVector() {
 	return children;
 }
 
@@ -111,6 +116,23 @@ string TNode::getData() {
 }
 
 void TNode::Print(TNode* root) {
-	BTTree<TNode> printer(root, &TNode::getChildren, &TNode::getData);
+	BTTree<TNode> printer(root, &TNode::GetChildrenList, &TNode::getData);
 	printer.print();
+}
+
+TNode::NODE_TYPE TNode::GetNodeType() {
+	return type;
+}
+
+STMT_IDX TNode::GetStmtIndex() {
+	return index;
+}
+TNode *TNode::GetParent() {
+    return parent;
+}
+CONST_VALUE TNode::GetConstValue() {
+    return value;
+}
+string TNode::GetName() {
+    return name;
 }

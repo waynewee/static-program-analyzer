@@ -3,38 +3,38 @@
 #include "TokenType.h"
 
 
-TokenType::TOKEN_TYPE_KEYW TokenType::getTokenTypeKeyw(std::string tokenStr) {
+TokenType::STMT_TYPE TokenType::getStmtType(std::string tokenStr) {
 
 	if (tokenStr == "procedure") {
-		return TokenType::TOKEN_TYPE_KEYW::PROC;
+		return TokenType::STMT_TYPE::_procedure;
 	}
 
 	if (tokenStr == "call") {
-		return TokenType::TOKEN_TYPE_KEYW::CALL;
+		return TokenType::STMT_TYPE::_call;
 	}
 
 	if (tokenStr == "read") {
-		return TokenType::TOKEN_TYPE_KEYW::READ;
+		return TokenType::STMT_TYPE::_read;
 	}
 
 	if (tokenStr == "while") {
-		return TokenType::TOKEN_TYPE_KEYW::WHLE;
+		return TokenType::STMT_TYPE::_while;
 	}
 
 	if (tokenStr == "print") {
-		return TokenType::TOKEN_TYPE_KEYW::PRNT;
+		return TokenType::STMT_TYPE::_print;
 	}
 
 	if (tokenStr == "if") {
-		return TokenType::TOKEN_TYPE_KEYW::IF;
+		return TokenType::STMT_TYPE::_if;
 	}
 
 	if (tokenStr == "then") {
-		return TokenType::TOKEN_TYPE_KEYW::THEN;
+		return TokenType::STMT_TYPE::_then;
 	}
 
 	if (tokenStr == "else") {
-		return TokenType::TOKEN_TYPE_KEYW::ELSE;
+		return TokenType::STMT_TYPE::_else;
 	}
 
 	throw "No such token type!";

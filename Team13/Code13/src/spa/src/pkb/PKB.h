@@ -10,6 +10,7 @@
 #include <CustomTypes.h>
 #include "DataManager.h"
 #include "RelationManager.h"
+#include "DesignExtractor.h"
 
 using namespace std;
 
@@ -24,10 +25,13 @@ public:
     }
     DataManager* GetDataManager();
     RelationManager* GetRelationManager();
+    void SetASTRoot(TNode* root);
+};
 
-    void reset() {
-        data_manager_ = new DataManager();
-        relation_manager_ = new RelationManager();
+class ASTRootTypeUnmatchException: public exception {
+    virtual const char* what() const throw()
+    {
+        return "AST root node type can only be program!";
     }
 };
 

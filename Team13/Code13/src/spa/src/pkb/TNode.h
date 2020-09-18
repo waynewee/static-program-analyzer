@@ -52,26 +52,32 @@ public:
 private:
     NODE_TYPE type;
     TNode* parent;
-    list<TNode*> children;
+    vector<TNode*> children;
     CONST_VALUE value;
-    string name;
     OPERATOR op;
     STMT_IDX index;
+    string name;
 
 public:
     TNode(void);
-    TNode(NODE_TYPE _type);
-    TNode(NODE_TYPE _type, string _name); //var name or proc name node
-    TNode(NODE_TYPE _type, CONST_VALUE _value); //const value node
-    TNode(NODE_TYPE _type, OPERATOR _op); //operator node
-    TNode(NODE_TYPE _type, STMT_IDX _idx); //statement node
-    bool AddChild(TNode* child);
-    bool SetParent(TNode* newParent);
-    bool SetName(VAR_NAME* newName);
-    bool SetValue(CONST_VALUE newValue);
-    bool SetOp(OPERATOR newOp);
-    list<TNode*> getChildren();
+	TNode(NODE_TYPE _type);
+	TNode(NODE_TYPE _type, string _name); //var name or proc name node
+	TNode(NODE_TYPE _type, CONST_VALUE _value); //const value node
+	TNode(NODE_TYPE _type, OPERATOR _op); //operator node
+	TNode(NODE_TYPE _type, STMT_IDX _idx); //statement node
+	bool AddChild(TNode* child);
+	bool SetParent(TNode* newParent);
+	bool SetName(VAR_NAME *newName);
+	bool SetValue(CONST_VALUE newValue);
+	bool SetOp(OPERATOR newOp);
+    NODE_TYPE GetNodeType();
+    list<TNode*> GetChildrenList();
+    vector<TNode*> GetChildrenVector();
+    STMT_IDX GetStmtIndex();
     string getData();
+    TNode* GetParent();
+    CONST_VALUE GetConstValue();
+    string GetName();
     void Print(TNode* root);
 };
 
