@@ -9,6 +9,8 @@
 
 using namespace std;
 
+#define DEBUG true
+
 #define TYPE_CONST "constant"
 #define TYPE_PROC "procedure"
 #define TYPE_VAR "variable"

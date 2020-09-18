@@ -1,42 +1,43 @@
 #include "QueryInfo.h"
 #include "QueryResult.h"
-#include "pql/PQLCustomTypes.h"
+#include "PQLCustomTypes.h"
 #include "CustomTypes.h"
 
 class PQLEvaluator
 {
 public:
-	QueryResult* evaluate(QueryInfo* queryInfo);
+	QueryResult* Evaluate(QueryInfo* query_info);
 
-	BOOLEAN evaluateNoUserDeclaredSet(STRING_PTR fCall, STRING_PTR param1, STRING_PTR param2);
-	STRING_SET_PTR evaluateOneDeclaredSet(STRING_PTR fCall, STRING_PTR param);
-	STRING_SET_PTR evaluateInverseOneDeclaredSet(STRING_PTR fCall, STRING_PTR param);
-	STRINGLIST_SET_PTR evaluateTwoDeclaredSet(STRING_PTR outputVarType);
-	STRING_STRINGSET_MAP_PTR consolidateResults(STRING_PTR currCheck, STRING_SET_PTR relatedVar, 
-		STRING_STRINGSET_MAP_PTR consolidatedResults,	STRING_STRINGSET_MAP_PTR oneUserResultSet, 
-		STRINGLIST_STRINGLISTSET_MAP_PTR twoUserResultSet);
+	BOOLEAN EvaluateNoUserDeclaredSet(STRING_PTR f_call, STRING_PTR param1, STRING_PTR param2);
+	STRING_SET_PTR EvaluateOneDeclaredSet(STRING_PTR f_call, STRING_PTR param);
+	STRING_SET_PTR EvaluateInverseOneDeclaredSet(STRING_PTR f_call, STRING_PTR param);
+	STRINGLIST_SET_PTR EvaluateTwoDeclaredSet(STRING_PTR f_call);
+	STRING_STRINGSET_MAP_PTR ConsolidateResults(STRING_PTR curr_check, STRING_SET_PTR related_var, 
+		STRING_STRINGSET_MAP_PTR consolidated_results,	STRING_STRINGSET_MAP_PTR one_user_result_set, 
+		STRINGLIST_STRINGLISTSET_MAP_PTR two_user_result_set);
 
-	STRING_SET_PTR getNewResult(STRINGLIST_SET_PTR value, INTEGER positionToCheck);
-	STRING_SET_PTR getANDResult(STRING_SET_PTR existingVal, STRING_SET_PTR newVal);
-	STRINGLIST_SET_PTR getANDResult(STRINGLIST_SET_PTR existingVal, STRINGLIST_SET_PTR newVal);
-	STRING_SET_PTR getANDResult(STRING_SET_PTR r1, STRINGLIST_SET_PTR r2, INTEGER positionToCheck);
-	STRING_SET_PTR getAllSet(STRING_PTR outputVarType);
-	STATEMENT_TYPE getStmtType(STRING_PTR outputVarType);
+	STRING_SET_PTR GetAllSet(STRING_PTR output_var_type);
+	STATEMENT_TYPE GetStmtType(STRING_PTR output_var_type);
 
-	BOOLEAN removeIrrelevant(STRING_SET_PTR value, STRING_SET_PTR tmp);
-	BOOLEAN removeIrrelevant(STRINGLIST_SET_PTR value, STRING_SET_PTR tmp, INTEGER positionToCheck);
+	STRING_SET_PTR GetIntersectResult(STRING_SET_PTR r1, STRINGLIST_SET_PTR r2, INTEGER pos_to_check);
+	STRING_SET_PTR GetIntersectResult(STRING_SET_PTR existing_val, STRING_SET_PTR new_val);
+	STRINGLIST_SET_PTR GetIntersectResult(STRINGLIST_SET_PTR existing_val, STRINGLIST_SET_PTR new_val);
+	STRING_SET_PTR GetNewResult(STRINGLIST_SET_PTR value, INTEGER pos_to_check);
 
-	STRING_SET_PTR convertSet(INTEGER_SET_PTR resultSet);
-	STRING_SET_PTR convertSet(STRING_SET_PTR resultSet);
-	STRING_SET_PTR convertSet(DOUBLE_SET_PTR resultSet);
-	STRINGLIST_SET_PTR convertSet(STMT_STMT_PAIR_SET resultSet);
-	STRINGLIST_SET_PTR convertSet(STMT_VAR_PAIR_SET resultSet);
-	STRINGLIST_SET_PTR convertSet(PROC_VAR_PAIR_SET resultSet);
+	BOOLEAN RemoveIrrelevant(STRING_SET_PTR value, STRING_SET_PTR tmp);
+	BOOLEAN RemoveIrrelevant(STRINGLIST_SET_PTR value, STRING_SET_PTR tmp, INTEGER pos_to_check);
 
-	BOOLEAN isWildCard(STRING_PTR var);
-	BOOLEAN isVar(STRING_PTR var, STRING_STRING_MAP_PTR varMap);
-	STRING_LIST_PTR isKey(STRING_LIST_PTR key, STRINGLIST_STRINGLIST_MAP_PTR twoUserResultSet);
+	STRING_SET_PTR ConvertSet(INTEGER_SET_PTR result_set);
+	STRING_SET_PTR ConvertSet(STRING_SET_PTR result_set);
+	STRING_SET_PTR ConvertSet(DOUBLE_SET_PTR result_set);
+	STRINGLIST_SET_PTR ConvertSet(STMT_STMT_PAIR_SET* result_set);
+	STRINGLIST_SET_PTR ConvertSet(STMT_VAR_PAIR_SET* result_set);
+	STRINGLIST_SET_PTR ConvertSet(PROC_VAR_PAIR_SET* result_set);
 
-	INTEGER parsingStmtRef(STRING_PTR param);
-	STRING_PTR parsingEntRef(STRING_PTR param);
+	BOOLEAN IsWildCard(STRING_PTR var);
+	BOOLEAN IsVar(STRING_PTR var, STRING_STRING_MAP_PTR var_map);
+	STRING_LIST_PTR IsKey(STRING_LIST_PTR key, STRINGLIST_STRINGLISTSET_MAP_PTR two_user_result_set);
+
+	INTEGER ParsingStmtRef(STRING_PTR param);
+	STRING_PTR ParsingEntRef(STRING_PTR param);
 };

@@ -2,16 +2,19 @@
 
 #include <sstream>
 
-string PQLProjector::project(QueryResult queryResult) {
-	unordered_set<string> result = queryResult.getResult();
-
-	stringstream interResult;
-	copy(result.begin(), result.end(), ostream_iterator<string>(interResult, " "));
+STRING_PTR PQLProjector::project(QueryResult* query_result) {
 	
-	string finalResult = interResult.str();
-	if (!finalResult.empty()) {
-		finalResult.resize(finalResult.length() - 1); // trim trailing space
+	STRING_SET_PTR result = query_result->getResult();
+
+	STRING_PTR final_result = new STRING();
+	for (STRING_PTR s : *result) {
+		final_result->append(*s);
+		final_result->append(" ");
+	}
+
+	if (!final_result->empty()) {
+		final_result->resize(final_result->length() - 1); // trim trailing space
 	}
 	
-	return finalResult;
+	return final_result;
 }
