@@ -7,6 +7,7 @@
 #include "frontend/CodeExtractor.h"
 #include "testUtils/TreeTraverse.h"
 #include "pql/PQLDriver.h"
+#include "pkb/DesignExtractor.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -32,6 +33,8 @@ void TestWrapper::parse(std::string filename) {
 	std::string input = codeExtractor.extract();
 	Parser parser = Parser();
 	TestWrapper::pkb->SetASTRoot(parser.parse(input));
+	RelationManager* manager = pkb->GetRelationManager();
+	ExtractFollows(manager, pkb->GetASTRoot());
 }
 
 // method to evaluating a query

@@ -1,0 +1,16 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>autotester</name><parsing_time_taken>1630.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" Follows="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">2</id><querystr><![CDATA[if ifs; Select ifs such that Follows(5, ifs)]]></querystr>
+<timeout/>
+</query>
+<query>
+<id ReturnTuple="1" Followsstar="1" SuchThat="1" CondNum="3" RelNum="1" >0</id><querystr><![CDATA[Select c such that Follows*(1, c) 12]]></querystr>
+<timeout/>
+</query>
+</queries>
+</test_results>

@@ -20,3 +20,7 @@ void PKB::SetASTRoot(TNode *root) {
     }
     ast_ = root;
 }
+
+TNode* PKB::GetASTRoot() {
+    return ast_;
+}
