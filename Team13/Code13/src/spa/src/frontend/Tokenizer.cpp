@@ -1,13 +1,15 @@
-#include <map>
 #include <iostream>
+#include <map>
 #include <string>
 #include <vector>
 
-#include "Tokenizer.h"
 #include "frontend/Token.h"
 #include "frontend/TokenType.h"
+#include "Tokenizer.h"
 
-Tokenizer::Tokenizer(std::string input) {
+using namespace std;
+
+Tokenizer::Tokenizer(string input) {
 	cache = {};
 	pos = -1;
 	text = input;
@@ -15,12 +17,10 @@ Tokenizer::Tokenizer(std::string input) {
 
 	tokenStr = "";
 
-	std::vector<Token> tokenList;
+	vector<Token> tokenList;
 }
 
 int Tokenizer::tokenize() {
-
-//	std::cout << "Begin Parse" << std::endl;
 
 	Token prevToken;
 	Token* currTokenPtr;
@@ -54,7 +54,7 @@ int Tokenizer::tokenize() {
 			appendCharToTokenStr(c);
 
 			/** check if next char forms a logical op string with current char*/
-			std::string opStr = "";
+			string opStr = "";
 			opStr += c;
 			opStr += text.at(pos + 1);
 
@@ -114,7 +114,7 @@ int Tokenizer::tokenize() {
 				bool isStmtName = false;
 
 				//check if keyword
-				for (std::string stmtName: stmtNames) {
+				for (string stmtName: stmtNames) {
 					if (tokenStr == stmtName) {
 						isStmtName = true;
 						break;
@@ -160,23 +160,23 @@ bool Tokenizer::isLgopPart(char c) {
 	return (c == '&' || c == '|' || c == '<' || c == '>' || c == '=' || c == '!');
 }
 
-bool Tokenizer::isLgop(std::string str) {
+bool Tokenizer::isLgop(string str) {
 	return (str == "&&" || str == "||" || str == "<=" || str == ">=" || str == "==" || str == "!=");
 }
 
 void Tokenizer::appendCharToTokenStr(char c) {
-	std::string str = "";
+	string str = "";
 	str += c;
 
 	appendStrToTokenStr(str);
 }
 
-void Tokenizer::appendStrToTokenStr(std::string str) {
+void Tokenizer::appendStrToTokenStr(string str) {
 	tokenStr += str;
 }
 
-void Tokenizer::printToken(std::string type) {
-//	std::cout << type + "\t" + token << std::endl;
+void Tokenizer::printToken(string type) {
+//	cout << type + "\t" + token << endl;
 }
 
 void Tokenizer::testAndSetUnary(Token* currPtr, Token prev) {
@@ -212,6 +212,6 @@ void Tokenizer::printTokenList() {
 
 }
 
-std::vector<Token> Tokenizer::getTokenList() {
+vector<Token> Tokenizer::getTokenList() {
 	return tokenList;
 }

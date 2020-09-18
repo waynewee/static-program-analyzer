@@ -1,22 +1,25 @@
-#pragma once
-#include <vector>
+#ifndef _EXPREVALUATOR_H_
+#define _EXPREVALUATOR_H_
+
 #include <queue>
 #include <unordered_map>
 #include <vector>
 
-#include "Token.h"
-#include "pkb/TNode.h"
+#include <pkb/TNode.h>
+#include <Token.h>
+
+using namespace std;
 
 class ExprEvaluator {
 public:
 
-	std::vector<Token> tokenList;
-	ExprEvaluator(std::vector<Token> exprList);
+	vector<Token> tokenList;
+	ExprEvaluator(vector<Token> exprList);
 	TNode* evaluate();
 
 	int unaryOpPrecedence = 6;
 
-	std::unordered_map<std::string, int> precedenceMap = {
+	unordered_map<string, int> precedenceMap = {
 	{"(", 7},
 	{")", 7},
 	{"!", 6},
@@ -35,13 +38,15 @@ public:
 	};
 
 private:
-	std::queue<tuple<Token, TNode*>> shunt();
-	TNode* evaluateQueue(std::queue<tuple<Token, TNode*>> shuntedQ);
+	queue<tuple<Token, TNode*>> shunt();
+	TNode* evaluateQueue(queue<tuple<Token, TNode*>> shuntedQ);
 	bool isLeftAssoc(Token t);
 	int compareOpPrecedence(Token a, Token b);
 	int getPrecedence(Token t);
 	bool isUnaryOp(Token curr, Token prev);
-	TNode::OPERATOR getOperator(std::string opStr);
+	TNode::OPERATOR getOperator(string opStr);
 	TNode* convertTokenToNode(Token t);
 	
 };
+
+#endif

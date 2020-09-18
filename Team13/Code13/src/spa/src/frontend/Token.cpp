@@ -1,10 +1,12 @@
-#include <string>
 #include <iostream>
+#include <string>
 
-#include "Token.h"
-#include "TokenType.h"
+#include <Token.h>
+#include <TokenType.h>
 
-Token::Token(std::string tokenVal, TokenType::TOKEN_TYPE tokenType) {
+using namespace std;
+
+Token::Token(string tokenVal, TokenType::TOKEN_TYPE tokenType) {
 	value = tokenVal;
 	type = tokenType;
 	isUnaryOp = false;
@@ -14,14 +16,14 @@ Token::Token(){}
 
 void Token::print() {
 
-	std::string output = "";
+	string output = "";
 
 	output += getTokenTypeStr(type) + "\t" + value;
 
-	std::cout << output << std::endl;
+	cout << output << endl;
 }
 
-std::string Token::getValue() {
+string Token::getValue() {
 	return value;
 }
 
@@ -34,7 +36,7 @@ TokenType::STMT_TYPE Token::getStmtType() {
 	return stmtType;
 }
 
-std::string Token::getTokenTypeStr(TokenType::TOKEN_TYPE tokenType) {
+string Token::getTokenTypeStr(TokenType::TOKEN_TYPE tokenType) {
 
 	switch (tokenType) {
 	case TokenType::TOKEN_TYPE::expr:

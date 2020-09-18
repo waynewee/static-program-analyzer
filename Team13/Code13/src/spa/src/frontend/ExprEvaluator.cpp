@@ -1,15 +1,17 @@
-#include "ExprEvaluator.h"
-#include "Token.h"
-#include "TokenType.h"
-#include "pkb/TNode.h"
-#include "testUtils/TreeTraverse.h"
-
 #include <iostream>
-#include <vector>
 #include <queue>
 #include <stack>
+#include <vector>
 
-ExprEvaluator::ExprEvaluator(std::vector<Token> exprList) {
+#include <ExprEvaluator.h>
+#include <pkb/TNode.h>
+#include <testUtils/TreeTraverse.h>
+#include <Token.h>
+#include <TokenType.h>
+
+using namespace std;
+
+ExprEvaluator::ExprEvaluator(vector<Token> exprList) {
 	tokenList = exprList;
 }
 
@@ -17,19 +19,19 @@ TNode* ExprEvaluator::evaluate() {
 	return evaluateQueue(shunt());
 }
 
-TNode* ExprEvaluator::evaluateQueue( std::queue<tuple<Token, TNode*>> shuntedQ ) {
+TNode* ExprEvaluator::evaluateQueue( queue<tuple<Token, TNode*>> shuntedQ ) {
 
-	std::stack<tuple<Token, TNode*>> tStack;
+	stack<tuple<Token, TNode*>> tStack;
 
 	tuple<Token, TNode*> tup = shuntedQ.front();
-	Token token = std::get<0>(tup);
-	TNode* rootNodePtr = std::get<1>(tup);
+	Token token = get<0>(tup);
+	TNode* rootNodePtr = get<1>(tup);
 
 	while (shuntedQ.size() > 0) {
 
 		tup = shuntedQ.front();
 
-		token = std::get<0>(tup);
+		token = get<0>(tup);
 		shuntedQ.pop();
 
 		if (token.getTokenType() == TokenType::TOKEN_TYPE::constant || token.getTokenType() == TokenType::TOKEN_TYPE::var) {
@@ -39,7 +41,7 @@ TNode* ExprEvaluator::evaluateQueue( std::queue<tuple<Token, TNode*>> shuntedQ )
 		else {
 
 			//CREATE PARENT NODE
-			TNode* parentNodePtr = std::get<1>(tup);
+			TNode* parentNodePtr = get<1>(tup);
 			rootNodePtr = parentNodePtr;
 
 			/**
@@ -48,7 +50,7 @@ TNode* ExprEvaluator::evaluateQueue( std::queue<tuple<Token, TNode*>> shuntedQ )
 			if (token.isUnaryOp) {
 
 				//CREATE SINGLE CHILD NODE
-				TNode* cNodePtr = std::get<1>(tStack.top());
+				TNode* cNodePtr = get<1>(tStack.top());
 				tStack.pop();
 				
 				//LINK PARENT TO CHILD
@@ -58,11 +60,11 @@ TNode* ExprEvaluator::evaluateQueue( std::queue<tuple<Token, TNode*>> shuntedQ )
 			else {
 
 				//CREATE RIGHT CHILD NODE
-				TNode* rNodePtr = std::get<1>(tStack.top());
+				TNode* rNodePtr = get<1>(tStack.top());
 				tStack.pop();
 				
 				//CREATE LEFT CHILD NODE
-				TNode* lNodePtr = std::get<1>(tStack.top());
+				TNode* lNodePtr = get<1>(tStack.top());
 				tStack.pop();
 
 				parentNodePtr->AddChild(lNodePtr);
@@ -82,9 +84,9 @@ TNode* ExprEvaluator::evaluateQueue( std::queue<tuple<Token, TNode*>> shuntedQ )
 
 }
 
-std::queue<tuple<Token, TNode*>> ExprEvaluator::shunt() {
-	std::queue<tuple<Token, TNode*>> outputQ;
-	std::stack<Token> opStack;
+queue<tuple<Token, TNode*>> ExprEvaluator::shunt() {
+	queue<tuple<Token, TNode*>> outputQ;
+	stack<Token> opStack;
 
 	int i = 0;
 
@@ -152,7 +154,7 @@ std::queue<tuple<Token, TNode*>> ExprEvaluator::shunt() {
 
 bool ExprEvaluator::isLeftAssoc(Token t) {
 
-	std::string val = t.getValue();
+	string val = t.getValue();
 
 	if (val == "(" || val == ")" || val == "<" || val == ">" || val == "<=" || val == ">=") {
 		return false;
@@ -178,7 +180,7 @@ int ExprEvaluator::compareOpPrecedence(Token a, Token b) {
 }
 
 int ExprEvaluator::getPrecedence(Token t) {
-	std::string val = t.getValue();
+	string val = t.getValue();
 	
 	if (t.isUnaryOp) {
 		return unaryOpPrecedence;
@@ -187,7 +189,7 @@ int ExprEvaluator::getPrecedence(Token t) {
 	return precedenceMap[val];
 }
 
-TNode::OPERATOR ExprEvaluator::getOperator(std::string opStr) {
+TNode::OPERATOR ExprEvaluator::getOperator(string opStr) {
 	if (opStr == "!") {
 		return TNode::OPERATOR::notOp;
 	}
@@ -253,7 +255,7 @@ TNode* ExprEvaluator::convertTokenToNode(Token t) {
 		return new TNode(TNode::NODE_TYPE::varName, t.getValue());
 	}
 	else if (t.getTokenType() == TokenType::TOKEN_TYPE::constant) {
-		return new TNode(TNode::NODE_TYPE::constValue, std::stod(t.getValue()));
+		return new TNode(TNode::NODE_TYPE::constValue, stod(t.getValue()));
 	}
 	else {
 		throw "Invalid token";

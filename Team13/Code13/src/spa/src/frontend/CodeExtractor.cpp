@@ -1,19 +1,21 @@
 #include <fstream>
 #include <iostream>
 
-#include "CodeExtractor.h"
+#include <CodeExtractor.h>
 
-CodeExtractor::CodeExtractor(std::string file_n) {
+using namespace std;
+
+CodeExtractor::CodeExtractor(string file_n) {
 	filename = file_n;
 }
 
-std::string CodeExtractor::extract() {
+string CodeExtractor::extract() {
 
-	std::ifstream ifs(filename);
-	std::string input;
+	ifstream ifs(filename);
+	string input;
 
-	input.assign((std::istreambuf_iterator<char>(ifs)),
-		(std::istreambuf_iterator<char>()));
+	input.assign((istreambuf_iterator<char>(ifs)),
+		(istreambuf_iterator<char>()));
 
 	return input;
 }

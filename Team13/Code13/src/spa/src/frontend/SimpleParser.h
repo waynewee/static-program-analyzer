@@ -1,17 +1,21 @@
-#pragma once
+#ifndef _SIMPLEPARSER_H_
+#define _SIMPLEPARSER_H_
+
 #include <vector>
 
-#include "Token.h"
-#include "TNode.h"
+#include <TNode.h>
+#include <Token.h>
 
-class Parser {
+using namespace std;
+
+class SimpleParser {
 public:
-	Parser();
+	SimpleParser();
 	int tokenIndx;
 	int statementIndex;
-	std::vector<Token> tokenList;
+	vector<Token> tokenList;
 
-	TNode* parse(std::string input);
+	TNode* parse(string input);
 	enum expressionType { IF, WHILE, ASSIGN };
 
 private:
@@ -25,9 +29,11 @@ private:
 	TNode* parseAssgnStatement(Token nameToken);
 	TNode* parseStatementList();
 	TNode* parseExpressionStatement(expressionType exprType);
-	TNode* parseExpression(std::vector<Token> exprList);
+	TNode* parseExpression(vector<Token> exprList);
 
 	Token getNextToken();
 	Token peekNextToken();
 	int getEndIndxOfStatementList();
 };
+
+#endif

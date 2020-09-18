@@ -1,9 +1,10 @@
 #include <string>
 
-#include "TokenType.h"
+#include <TokenType.h>
 
+using namespace std;
 
-TokenType::STMT_TYPE TokenType::getStmtType(std::string tokenStr) {
+TokenType::STMT_TYPE TokenType::getStmtType(string tokenStr) {
 
 	if (tokenStr == "procedure") {
 		return TokenType::STMT_TYPE::_procedure;

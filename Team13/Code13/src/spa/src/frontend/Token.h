@@ -1,9 +1,12 @@
-#pragma once
+#ifndef _TOKEN_H_
+#define _TOKEN_H_
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
-#include "TokenType.h"
+#include <TokenType.h>
+
+using namespace std;
 
 class Token {
 public:
@@ -14,15 +17,17 @@ public:
 	bool isUnaryOp;
 
 	void print();
-	std::string getTokenTypeStr(TokenType::TOKEN_TYPE tokenType);
+	string getTokenTypeStr(TokenType::TOKEN_TYPE tokenType);
 	TokenType::TOKEN_TYPE getTokenType();
 	TokenType::STMT_TYPE getStmtType();
 
-	Token(std::string tokenVal, TokenType::TOKEN_TYPE tokenType);
+	Token(string tokenVal, TokenType::TOKEN_TYPE tokenType);
 	Token();
 
-	std::string getValue();
+	string getValue();
 
 private:
-	std::string value;
+	string value;
 };
+
+#endif

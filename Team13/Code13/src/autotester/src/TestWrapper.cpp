@@ -3,7 +3,7 @@
 #include <PKB.h>
 #include "TestWrapper.h"
 
-#include "frontend/Parser.h"
+#include "frontend/SimpleParser.h"
 #include "frontend/CodeExtractor.h"
 #include "testUtils/TreeTraverse.h"
 #include "pql/PQLDriver.h"
@@ -33,7 +33,7 @@ void TestWrapper::parse(std::string filename) {
 	CodeExtractor codeExtractor(filename);
 
 	std::string input = codeExtractor.extract();
-	Parser parser = Parser();
+	SimpleParser parser = SimpleParser();
 	TestWrapper::pkb->SetASTRoot(parser.parse(input));
 	ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
 	ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());

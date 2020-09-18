@@ -1,11 +1,17 @@
-#pragma once
+#ifndef _CODEEXTRACTOR_H_
+#define _CODEEXTRACTOR_H_
+
 #include <vector>
 
-#include "Token.h"
+#include <Token.h>
+
+using namespace std;
 
 class CodeExtractor {
 public:
-	std::string filename;
-	CodeExtractor(std::string file_n);
-	std::string extract();
+	string filename;
+	CodeExtractor(string file_n);
+	string extract();
 };
+
+#endif
