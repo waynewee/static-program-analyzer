@@ -1,8 +1,9 @@
 #include <fstream>
 #include <string>
+#include <stdexcept>
+
 #include <PKB.h>
 #include "TestWrapper.h"
-
 #include "frontend/SimpleParser.h"
 #include "frontend/CodeExtractor.h"
 #include "testUtils/TreeTraverse.h"
@@ -32,16 +33,22 @@ TestWrapper::TestWrapper() {
 // method for parsing the SIMPLE source
 void TestWrapper::parse(string filename) {
 
-	CodeExtractor codeExtractor(filename);
+	try {
+		CodeExtractor codeExtractor(filename);
 
-	string* input = codeExtractor.Extract();
+		string* input = codeExtractor.Extract();
 
-	SimpleParser parser = SimpleParser();
+		SimpleParser parser = SimpleParser();
 	
-	TestWrapper::pkb->SetASTRoot(parser.parse(input));
+		TestWrapper::pkb->SetASTRoot(parser.parse(input));
 
-	ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
-	ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
+		ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
+		ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
+	}
+	catch (logic_error& e) {
+		cout << e.what() << endl;
+	}
+
 }
 
 // method to evaluating a query

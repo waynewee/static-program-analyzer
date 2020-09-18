@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <string>
 
 #include <FrontendTypes.h>
@@ -40,7 +41,7 @@ TokenType::STMT_TYPE TokenType::GetStmtType(string tokenStr) {
 		return TokenType::STMT_TYPE::_else;
 	}
 
-	throw "No such token type!";
+	throw logic_error("No such token type!");
 
 }
 

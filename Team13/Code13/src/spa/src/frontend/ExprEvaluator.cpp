@@ -128,7 +128,7 @@ queue<tuple<Token, TNode*>> ExprEvaluator::Shunt() {
 
 			while (opStack.top().GetValue() != TYPE_PUNC_OPEN_PARAN) {
 				if (opStack.size() == 0) {
-					throw "mismatched parantheses!";
+					throw logic_error("Mismatched parantheses!");
 				}
 
 				Token opToken = opStack.top();
@@ -236,7 +236,7 @@ TNode::OPERATOR ExprEvaluator::GetOperator(string opStr) {
 		return TNode::OPERATOR::mod;
 	}
 	else {
-		throw "Invlaid token";
+		throw logic_error("Invalid token");
 	}
 
 }
@@ -261,7 +261,7 @@ TNode* ExprEvaluator::ConvertTokenToNode(Token t) {
 		return new TNode(TNode::NODE_TYPE::constValue, stod(t.GetValue()));
 	}
 	else {
-		throw "Invalid token";
+		throw logic_error("Invalid token");
 	}
 
 };
