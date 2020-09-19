@@ -45,7 +45,7 @@ void TestWrapper::parse(string filename) {
 
 		SimpleParser parser = SimpleParser();
 	
-		TestWrapper::pkb->SetASTRoot(parser.parse(tokenList));
+		TestWrapper::pkb->SetASTRoot(parser.Parse(tokenList));
 
 		ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
 		ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());

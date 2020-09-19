@@ -14,7 +14,7 @@ using namespace std;
 
 SimpleParser::SimpleParser() {}
 
-TNode* SimpleParser::parse(TOKEN_LIST _tokenList) {
+TNode* SimpleParser::Parse(TOKEN_LIST _tokenList) {
 
 	tokenList = _tokenList;
 	tokenIndx = -1;
