@@ -1,10 +1,9 @@
-#include <string>
-using namespace std;
+#include "PQLCustomTypes.h"
 
 class PQLDriver
 {
 public:
 
-	string query(string queryString);
+	STRING_PTR query(STRING_PTR query_string);
 };
 

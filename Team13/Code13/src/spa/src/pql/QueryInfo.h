@@ -1,33 +1,29 @@
 #pragma once
 
-#include <unordered_map>
-
-#include "CustomTypes.h"
-
-using namespace std;
+#include "PQLCustomTypes.h"
 
 class QueryInfo
 {
 private:
-	unordered_map<string, vector<vector<string>>> relRef_map;
-	unordered_map<string, string> var_map;
-	string output_var;
-	bool isValid = true;
+	STRING_STRINGLISTLIST_MAP_PTR rel_ref_map;
+	STRING_STRING_MAP_PTR var_map;
+	STRING_PTR output_var;
+	BOOLEAN is_valid = true;
 public:
 	/* getters */
-	unordered_map<string, vector<vector<string>>> getRelRefMap();
-	unordered_map<string, string> getVarMap();
-	string getOutputVar();
-	bool isQueryInfoValid();
+	STRING_STRINGLISTLIST_MAP_PTR GetRelRefMap();
+	STRING_STRING_MAP_PTR GetVarMap();
+	STRING_PTR GetOutputVar();
+	BOOLEAN IsQueryInfoValid();
 
 	/* setters */
-	void setRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map);
-	void setVarMap(unordered_map<string, string> var_map);
-	void setOutputVar(string output_var);
-	void setValidToFalse();
+	void SetRelRefMap(STRING_STRINGLISTLIST_MAP_PTR rel_ref_map);
+	void SetVarMap(STRING_STRING_MAP_PTR var_map);
+	void SetOutputVar(STRING_PTR output_var);
+	void SetValidToFalse();
 
 	/* printing */
-	void printOutputVar();
-	void printVarMap();
-	void printRelRefMap();
+	void PrintOutputVar();
+	void PrintVarMap();
+	void PrintRelRefMap();
 };

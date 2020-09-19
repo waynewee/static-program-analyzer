@@ -1,284 +1,219 @@
-#include <string>
-using namespace std;
+#include "PQLCustomTypes.h"
 #include "PQLParser.h"
+#include "PQLParserStorage.h"
+#include "QueryInfo.h"
+#include "QuerySyntaxValidator.h"
 #include <vector>
 #include <unordered_set>
 #include <sstream>
 #include <iostream>
-#include "QuerySyntaxValidator.h"
 #include <regex>
-#include "QueryInfo.h"
+#include <string>
+using namespace std;
 
-QueryInfo PQLParser::parse(string s) {
-    QueryInfo queryInfo;
-    QuerySyntaxValidator query_syntax_validator;
-    unordered_map<string, string> varMap;
-    unordered_map<string, vector<vector<string>>> relRefMap;
+QueryInfo* PQLParser::Parse(string s) {
+	QueryInfo* query_info = new QueryInfo();
+	QuerySyntaxValidator* query_syntax_validator = new QuerySyntaxValidator();
+	PQLParserStorage* PQL_parser_storage = new PQLParserStorage();
+    string query = s;
 
-    string pattern_var_name;
-
-    vector<string> temp_storage;
-    string str = s;
-
-    unordered_map<string, int> differentiable_user_declared_var;
-
-    unordered_set<string> all_user_declared_var;
-    string delimiter = ";";
-    size_t pos = 0;
-    string token;
     try {
-        if ((pos = str.find(delimiter)) == string::npos) {
-            throw "Error : Invalid format, ';' not found";
-        }
+        // get all the user declarations
+        vector<string> all_declarations = SplitBySemicolons(&query);
+        PQL_parser_storage->SetAllDeclarations(all_declarations);
+        
+        TrimLeadingWhitespaces(&query);
 
-        while ((pos = str.find(delimiter)) != string::npos) {
-            token = str.substr(0, pos);
-            temp_storage.push_back(token);
-            str.erase(0, pos + delimiter.length());
-        }
-
-        str = trimLeadingWhitespaces(str);
-        // remaining str is the select portion
-        // cout << "SELECT CLAUSE : " << str << endl;
-
-        query_syntax_validator.validateSelectClauseStartsWithSelect(str);
-
-        // temp storage has all the declarations
-
-        for (auto decl : temp_storage) {
-            // cout << "decl: " << decl << endl;
-            decl = trimLeadingWhitespaces(decl);
+        for (auto decl : all_declarations) {
+            TrimLeadingWhitespaces(&decl);
             string entType = decl.substr(0, decl.find_first_of(" "));
 
-            // cout << "decl_type : " << entType << endl;
+            unordered_map<string, string> vars_declared = query_syntax_validator->ValidateDeclaration(decl);
 
-            unordered_map<string, int> vars_declared;
-            vars_declared = query_syntax_validator.validateDeclaration(decl);
-            for (pair<string, int> var : vars_declared) {
-                query_syntax_validator.validateVariableName(var.first);
-                differentiable_user_declared_var.insert(var);
-                all_user_declared_var.insert(var.first);
-                varMap[var.first] = entType;
+            for (pair<string, string> var : vars_declared) {
+                query_syntax_validator->ValidateVariableName(var.first);
+                //cout << "1st : " << var.first << "2nd : " << entType << endl;
+                PQL_parser_storage->StoreVariable(var, entType);
             }
         }
 
+        query_syntax_validator->ValidateSelectClauseStartsWithSelect(query);
+        // LEFT WITH select clause
+        //cout << "query is now :" << query << endl;
 
-        string select_clause = str;
-        // cout << "select_clause : " << select_clause << endl;
+        DeleteOneWordAndRetrieveIt(&query);
+        //cout << "query is now :" << query << endl;
 
-        std::istringstream iss(select_clause);
+        string user_select_var = DeleteOneWordAndRetrieveIt(&query);
+        cout << "user_select var is :" << user_select_var << endl;
+        cout << "query is now :" << query << endl;
 
-        // get next word, remove current
-        select_clause = trimLeadingWhitespaces(select_clause);
-        select_clause.erase(0, select_clause.find_first_of(" "));
-        select_clause = trimLeadingWhitespaces(select_clause);
+        query_syntax_validator->ValidateVariableExists(user_select_var, PQL_parser_storage->GetAllUserDeclaredVar());
 
-        string next_word = select_clause.substr(0, select_clause.find_first_of(" "));
-        next_word = trimLeadingWhitespaces(next_word);
-        next_word = trimTrailingWhitespaces(next_word);
+        STRING_PTR user_output_var = new string(user_select_var);
+        query_info->SetOutputVar(user_output_var);
 
-        // cout << "variable user wants to select : " << next_word << endl;
+        TrimLeadingWhitespaces(&query);
 
-        // now, next word MUST BE a variable declared by the user
-        // if he didnt declare
-        if (!query_syntax_validator.validateVariableExists(next_word, all_user_declared_var)) {
-            throw "Error : variable after 'Select' is undeclared";
+        if (query.empty()) {
+            //cout << "query is empty already" << endl;
+            query_info->PrintOutputVar();
+            return query_info;
         }
-
-        queryInfo.setOutputVar(next_word);
-
-        select_clause = trimLeadingWhitespaces(select_clause);
-        select_clause = trimTrailingWhitespaces(select_clause);
-
-
-        // cout << "IS SELECT CLAUSE EMPTY : " << select_clause.empty() << endl;
-        // cout << "SELECT CLAUSE IS NOW : " << select_clause << endl;
-
-        // didnt declare clause
-        /*
-        if (next_word.compare(select_clause) == 0) {
-            throw ("Error : 'Select' not found");
-        }
-        */
-
-        select_clause.erase(0, select_clause.find_first_of(" "));
-        select_clause = trimLeadingWhitespaces(select_clause);
-        // cout << "IS SELECT CLAUSE EMPTY : " << select_clause.empty() << endl;
-        // cout << "SELECT CLAUSE IS NOW : " << select_clause << endl;
-
-        // now, next word MUST BE either such OR pattern
-        next_word = select_clause.substr(0, select_clause.find_first_of(" "));
-        next_word = trimLeadingWhitespaces(next_word);
-        next_word = trimTrailingWhitespaces(next_word);
-
-        if (select_clause.empty()) {
-            return queryInfo;
-        }
-
-        // cout << "next_word : " << next_word << endl;
-
-        // if NEITHER such NOR pattern is found
-        if (next_word.compare("such") != 0 && next_word.compare("pattern") != 0) {
-            throw ("Error : cannot find 'such that' or 'pattern' clause");
-        }
-
-        // NOW next word can be such, pattern or and
-        while (select_clause.find_first_not_of(' ') != string::npos && !select_clause.empty())
-        {
-            // String still not empty, continue
-            select_clause = trimLeadingWhitespaces(select_clause);
-
-            // now, next word MUST BE either such OR pattern
-            next_word = select_clause.substr(0, select_clause.find_first_of(" "));
-            next_word = trimLeadingWhitespaces(next_word);
-            next_word = trimTrailingWhitespaces(next_word);
-
-            // cout << "next_word in while loop : " << next_word << endl;
-
-            // if NEITHER such NOR pattern NOR and is found
-            if (next_word.compare("such") != 0 && next_word.compare("pattern") != 0 && next_word.compare("and")) {
+        while (query.find_first_not_of(' ') != string::npos && !query.empty()) {
+            TrimLeadingWhitespaces(&query);
+            string suchThatWithOneSpacing = query.substr(0, 9);
+            // cout << suchThatWithOneSpacing << endl;
+            // SUCH OR PATTERN
+            string current_clause = DeleteOneWordAndRetrieveIt(&query);
+            cout << "curr clause : " << current_clause << endl;
+            if (current_clause.compare("such") != 0 && current_clause.compare("pattern") != 0) {
                 throw ("Error : cannot find 'such that' or 'pattern' clause");
             }
 
-            if (next_word.compare("such") == 0) {
-                // next word is such
-                // the next word now should be 'that', if not error
-                // MUST only have one spacing between such that, e.g. such   that -> NOT ALLOWED
-                select_clause.erase(0, select_clause.find_first_of(" ") + 1);
-                // select_clause = trimLeadingWhitespaces(select_clause);
-
-
-                next_word = select_clause.substr(0, select_clause.find_first_of(" "));
-                next_word = trimLeadingWhitespaces(next_word);
-                next_word = trimTrailingWhitespaces(next_word);
-
-                unordered_map<string, vector<string>> suchThatClauseResult;
-
-                // cout << "next_word : " << next_word << endl;
-                if (next_word.compare("that") == 0) {
-                    // we found such that clause
-                    // MUST only have one spacing between such that, e.g. such   that -> NOT ALLOWED
-                    // select_clause = trimLeadingWhitespaces(select_clause);
-                    select_clause.erase(0, select_clause.find_first_of(" "));
-                    select_clause = trimLeadingWhitespaces(select_clause);
-
-                    string such_that_clause = select_clause.substr(0, select_clause.find_first_of(")") + 1);
-                    select_clause.erase(0, select_clause.find_first_of(")") + 1);
-                    // cout << "such_that_clause : " << such_that_clause << endl;
-
-                    suchThatClauseResult = query_syntax_validator.validateSuchThatClause(such_that_clause, differentiable_user_declared_var);
-
-                    // cout << "select clause now left with : " << select_clause << endl;
+            if (current_clause.compare("such") == 0) {
+                if (suchThatWithOneSpacing.compare("such that") != 0) {
+                    throw ("Error : Invalid 'such that' clause");
                 }
+                string that_word = DeleteOneWordAndRetrieveIt(&query);
+                unordered_map<string, vector<string>> suchThatClauseResult;
+                if (that_word.compare("that") == 0) {
+                    cout << "such that in query is now : " << query << endl;
+                    string such_that_clause = query.substr(0, query.find_first_of(")") + 1);
+                    query.erase(0, query.find_first_of(")") + 1);
+                    suchThatClauseResult = query_syntax_validator->ValidateSuchThatClause(such_that_clause, PQL_parser_storage->GetAllUserDeclaredVar());
 
-                for (auto const& pair : suchThatClauseResult) {
-                    // already inside
-                    if (relRefMap.count(pair.first) == 1) {
-                        vector<vector<string>> empty;
-                        relRefMap.at(pair.first).push_back(pair.second);
-                    }
-                    else {
-                        vector<vector<string>> empty;
-                        relRefMap[pair.first] = empty;
-                        // since second is a vector
-                        relRefMap.at(pair.first).push_back(pair.second);
-                    }
+                    PQL_parser_storage->StoreSuchThatClauseResult(suchThatClauseResult);
                 }
             }
 
-            if (next_word.compare("pattern") == 0) {
+            if (current_clause.compare("pattern") == 0) {
                 unordered_map<string, vector<string>> patternClauseResult;
-                // next word is var name
-                // the next word now should be user declared var, if not error
-                select_clause.erase(0, select_clause.find_first_of(" "));
-                select_clause = trimLeadingWhitespaces(select_clause);
+                string pattern_var_name = DeleteOneWordAndRetrieveIt(&query);
+                cout << "pattern var name : " << pattern_var_name << endl;
+                cout << "QUERY PATTERN : " << query << endl;
+                patternClauseResult = ParsePatternClause(&query, PQL_parser_storage->GetAllUserDeclaredVar(), query_syntax_validator);
 
-                next_word = select_clause.substr(0, select_clause.find_first_of(" "));
-                next_word = trimLeadingWhitespaces(next_word);
-                next_word = trimTrailingWhitespaces(next_word);
-                // cout << "varname in pattern : " << next_word << endl;
-
-                pattern_var_name = next_word;
-
-                if (!query_syntax_validator.validateVariableExists(next_word, all_user_declared_var)) {
-                    throw "Error : Variable after pattern is undeclared!";
-                }
-
-                next_word = select_clause.substr(0, select_clause.find_first_of(" "));
-                next_word = trimLeadingWhitespaces(next_word);
-                next_word = trimTrailingWhitespaces(next_word);
-
-                select_clause = trimLeadingWhitespaces(select_clause);
-                select_clause.erase(0, select_clause.find_first_of(" "));
-
-                if (select_clause.find("\"") != string::npos && select_clause.find("\"") < select_clause.find_first_of(")")) {
-                    int endOfPatternClause = query_syntax_validator.nthOccurrence(select_clause, "\"", 2);
-
-                    string temp = select_clause.substr(endOfPatternClause, select_clause.length());
-
-                    int distanceToClosedBracket = temp.find_first_of(")") + 1;
-
-                    string pattern_clause = select_clause.substr(0, endOfPatternClause + distanceToClosedBracket);
-
-                    // cout << "pattern clause : " << pattern_clause << endl;
-
-                    select_clause.erase(0, endOfPatternClause + distanceToClosedBracket);
-
-                    patternClauseResult = query_syntax_validator.validatePatternClause(pattern_clause, differentiable_user_declared_var);
-                }
-                else {
-                    // cannot find ", so pattern variables are blank. we can find by next closing bracket
-                    int endOfPatternClause = select_clause.find_first_of(")") + 1;
-
-                    string pattern_clause = select_clause.substr(0, endOfPatternClause);
-
-                    // cout << "pattern clause : " << pattern_clause << endl;
-
-                    select_clause.erase(0, endOfPatternClause);
-
-                    patternClauseResult = query_syntax_validator.validatePatternClause(pattern_clause, differentiable_user_declared_var);
-                }
-
-
-                // cout << "select clause now left with : " << select_clause << endl;
-
-                for (auto const& pair : patternClauseResult) {
-                    // already inside
-                    vector<string> p = pair.second;
-                    p.push_back(pattern_var_name);
-                    for (auto i : p) {
-                        //cout << i << " | ";
-                        //cout << endl;
-                    }
-                    if (relRefMap.count(pair.first) == 1) {
-                        vector<vector<string>> empty;
-                        relRefMap.at(pair.first).push_back(p);
-                    }
-                    else {
-                        vector<vector<string>> empty;
-                        relRefMap[pair.first] = empty;
-                        // since second is a vector
-                        relRefMap.at(pair.first).push_back(p);
-                    }
-                }
-
+                PQL_parser_storage->StorePatternClauseResult(patternClauseResult, pattern_var_name);
             }
         }
-        // PRINTING HERE  
-        queryInfo.setRelRefMap(relRefMap);
-        queryInfo.setVarMap(varMap);
-    }
+        // such OR pattern
+        //string current_clause = deleteOneWordAndRetrieveIt(&query);
+
+        // unordered_map<string*, string*>* resultVarMap = new unordered_map<string*, string*>();
+        STRING_STRING_MAP_PTR resultVarMap = new STRING_STRING_MAP();
+        resultVarMap = ToPointerVarMap(PQL_parser_storage->GetVarMap());
+        // unordered_map<string*, vector<vector<string*>*>*>* resultRelRefMap = new unordered_map<string*, vector<vector<string*>*>*>();
+        STRING_STRINGLISTLIST_MAP_PTR resultRelRefMap = new STRING_STRINGLISTLIST_MAP();
+        resultRelRefMap = ToPointerRelRefMap(PQL_parser_storage->GetRelRefMap());
+
+        query_info->SetVarMap(resultVarMap);
+        query_info->SetRelRefMap(resultRelRefMap);
+    } 
     catch (const char* msg) {
         cerr << msg << endl;
-        queryInfo.setValidToFalse();
+        query_info->SetValidToFalse();
     }
-    return queryInfo;
+	return query_info;
 }
 
-string PQLParser::trimLeadingWhitespaces(const string& s) {
-    return regex_replace(s, regex("^\\s+"), string(""));
+void PQLParser::TrimLeadingWhitespaces(string* s) {
+    int last_leading_space = s->find_first_not_of(" ");
+    s->erase(0, last_leading_space);
 }
 
-string PQLParser::trimTrailingWhitespaces(const string& s) {
-    return std::regex_replace(s, regex("\\s+$"), string(""));
+void PQLParser::TrimTrailingWhitespaces(string* s) {
+    int first_trailing_space = s->find_last_not_of(" ") + 1;
+    s->erase(first_trailing_space, s->length());
+}
+
+vector<string> PQLParser::SplitBySemicolons(string* query) {
+    string delimiter = ";";
+    size_t pos = 0;
+    string token;
+    vector<string> all_declarations;
+    if ((pos = query->find(delimiter)) == string::npos) {
+        throw "Error : Invalid format, ';' not found";
+    }
+
+    while ((pos = query->find(delimiter)) != string::npos) {
+        token = query->substr(0, pos);
+        all_declarations.push_back(token);
+        query->erase(0, pos + delimiter.length());
+    }
+    return all_declarations;
+}
+
+string PQLParser::DeleteOneWordAndRetrieveIt(string* str) {
+    TrimLeadingWhitespaces(str);
+    string next_word = str->substr(0, str->find_first_of(" "));
+    str->erase(0, str->find_first_of(" "));
+    TrimLeadingWhitespaces(str);
+
+    TrimLeadingWhitespaces(&next_word);
+    TrimTrailingWhitespaces(&next_word);
+    return next_word;
+}
+
+unordered_map<string, vector<string>> PQLParser::ParsePatternClause(string* clause, unordered_map<string, string> all_user_declared_var,
+    QuerySyntaxValidator* query_syntax_validator) {
+    unordered_map<string, vector<string>> patternClauseResult;
+    if (clause->find("\"") != string::npos && clause->find("\"") < clause->find_first_of(")")) {
+        int endOfPatternClause = query_syntax_validator->nthOccurrence(clause, "\"", 2);
+
+        string temp = clause->substr(endOfPatternClause, clause->length());
+
+        int distanceToClosedBracket = temp.find_first_of(")") + 1;
+
+        string pattern_clause = clause->substr(0, endOfPatternClause + distanceToClosedBracket);
+
+        // cout << "pattern clause : " << pattern_clause << endl;
+
+        clause->erase(0, endOfPatternClause + distanceToClosedBracket);
+
+        patternClauseResult = query_syntax_validator->ValidatePatternClause(pattern_clause, all_user_declared_var);
+    }
+    else {
+        // cannot find ", so pattern variables are blank. we can find by next closing bracket
+        int endOfPatternClause = clause->find_first_of(")") + 1;
+
+        string pattern_clause = clause->substr(0, endOfPatternClause);
+
+        // cout << "pattern clause : " << pattern_clause << endl;
+
+        clause->erase(0, endOfPatternClause);
+
+        patternClauseResult = query_syntax_validator->ValidatePatternClause(pattern_clause, all_user_declared_var);
+    }
+    
+    return patternClauseResult;
+}
+
+STRING_STRING_MAP_PTR PQLParser::ToPointerVarMap(unordered_map<string, string> strMap) {
+    STRING_STRING_MAP_PTR result = new STRING_STRING_MAP();
+    for (pair<string, string> elems : strMap) {
+        string* first = new string(elems.first);
+        string* second = new string(elems.second);
+        result->insert({ first, second });
+    }
+    return result;
+}
+
+STRING_STRINGLISTLIST_MAP_PTR PQLParser::ToPointerRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map) {
+    STRING_STRINGLISTLIST_MAP_PTR result = new STRING_STRINGLISTLIST_MAP();
+    for (pair<string, vector<vector<string>>> elems : relRef_map) {
+        STRING_PTR first = new string(elems.first);
+        STRINGLIST_LIST_PTR second = new STRINGLIST_LIST();
+        for (vector<string> all_args : elems.second) {
+
+            vector<string*>* all_args_ptr = new vector<string*>();
+            for (string s : all_args) {
+                STRING_PTR s_ptr = new string(s);
+                all_args_ptr->push_back(s_ptr);
+            }
+            second->push_back(all_args_ptr);
+        }
+        result->insert({ first, second });
+    }
+    return result;
 }
