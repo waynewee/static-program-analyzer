@@ -1,40 +1,43 @@
 #include "QueryInfo.h"
 #include "QueryResult.h"
+#include "PQLCustomTypes.h"
+#include "CustomTypes.h"
 
 class PQLEvaluator
 {
 public:
-	QueryResult evaluate(QueryInfo queryInfo);
+	QueryResult* Evaluate(QueryInfo* query_info);
 
-	bool evaluateNoUserDeclaredSet(string fCall, string param1, string param2);
-	unordered_set<string> evaluateOneDeclaredSet(string fCall, string param);
-	unordered_set<string> evaluateInverseOneDeclaredSet(string fCall, string param);
-	unordered_set<vector<string>*> evaluateTwoDeclaredSet(string outputVarType);
-	unordered_map<string, unordered_set<string>> consolidateResults(string currCheck, unordered_set<string> relatedVar, unordered_map<string, 
-		unordered_set<string>> consolidatedResults, unordered_map<string, unordered_set<string>> oneUserResultSet, unordered_map<vector<string>*, 
-		unordered_set<vector<string>*>> twoUserResultSet);
+	BOOLEAN EvaluateNoUserDeclaredSet(STRING_PTR f_call, STRING_PTR param1, STRING_PTR param2);
+	STRING_SET_PTR EvaluateOneDeclaredSet(STRING_PTR f_call, STRING_PTR param);
+	STRING_SET_PTR EvaluateInverseOneDeclaredSet(STRING_PTR f_call, STRING_PTR param);
+	STRINGLIST_SET_PTR EvaluateTwoDeclaredSet(STRING_PTR f_call);
+	STRING_STRINGSET_MAP_PTR ConsolidateResults(STRING_PTR curr_check, STRING_SET_PTR related_var, 
+		STRING_STRINGSET_MAP_PTR consolidated_results,	STRING_STRINGSET_MAP_PTR one_user_result_set, 
+		STRINGLIST_STRINGLISTSET_MAP_PTR two_user_result_set);
 
-	unordered_set<string> getNewResult(unordered_set<vector<string>*> value, int positionToCheck);
-	unordered_set<string> getANDResult(unordered_set<string> existingVal, unordered_set<string> newVal);
-	unordered_set<vector<string>*> getANDResult(unordered_set<vector<string>*> existingVal, unordered_set<vector<string>*> newVal);
-	unordered_set<string> getANDResult(unordered_set<string> r1, unordered_set<vector<string>*> r2, int positionToCheck);
-	unordered_set<string> getAllSet(string outputVarType);
-	STATEMENT_TYPE getStmtType(string outputVarType);
+	STRING_SET_PTR GetAllSet(STRING_PTR output_var_type);
+	STATEMENT_TYPE GetStmtType(STRING_PTR output_var_type);
 
-	bool removeIrrelevant(unordered_set<string>* value, unordered_set<string> tmp);
-	bool removeIrrelevant(unordered_set<vector<string>*>* value, unordered_set<string> tmp, int positionToCheck);
+	STRING_SET_PTR GetIntersectResult(STRING_SET_PTR r1, STRINGLIST_SET_PTR r2, INTEGER pos_to_check);
+	STRING_SET_PTR GetIntersectResult(STRING_SET_PTR existing_val, STRING_SET_PTR new_val);
+	STRINGLIST_SET_PTR GetIntersectResult(STRINGLIST_SET_PTR existing_val, STRINGLIST_SET_PTR new_val);
+	STRING_SET_PTR GetNewResult(STRINGLIST_SET_PTR value, INTEGER pos_to_check);
 
-	unordered_set<string> convertSet(unordered_set<int> resultSet);
-	unordered_set<string> convertSet(unordered_set<string*>* resultSet);
-	unordered_set<string> convertSet(unordered_set<double>* resultSet);
-	unordered_set<vector<string>*> convertSet(STMT_STMT_PAIR_SET resultSet);
-	unordered_set<vector<string>*> convertSet(STMT_VAR_PAIR_SET resultSet);
-	unordered_set<vector<string>*> convertSet(PROC_VAR_PAIR_SET resultSet);
+	BOOLEAN RemoveIrrelevant(STRING_SET_PTR value, STRING_SET_PTR tmp);
+	BOOLEAN RemoveIrrelevant(STRINGLIST_SET_PTR value, STRING_SET_PTR tmp, INTEGER pos_to_check);
 
-	bool isWildCard(string var);
-	bool isVar(string var, unordered_map<string, string> varMap);
-	vector<string>* isKey(vector<string> key, unordered_map<vector<string>*, unordered_set<vector<string>*>> twoUserResultSet);
+	STRING_SET_PTR ConvertSet(INTEGER_SET_PTR result_set);
+	STRING_SET_PTR ConvertSet(STRING_SET_PTR result_set);
+	STRING_SET_PTR ConvertSet(DOUBLE_SET_PTR result_set);
+	STRINGLIST_SET_PTR ConvertSet(STMT_STMT_PAIR_SET* result_set);
+	STRINGLIST_SET_PTR ConvertSet(STMT_VAR_PAIR_SET* result_set);
+	STRINGLIST_SET_PTR ConvertSet(PROC_VAR_PAIR_SET* result_set);
 
-	int parsingStmtRef(string param);
-	string* parsingEntRef(string param);
+	BOOLEAN IsWildCard(STRING_PTR var);
+	BOOLEAN IsVar(STRING_PTR var, STRING_STRING_MAP_PTR var_map);
+	STRING_LIST_PTR IsKey(STRING_LIST_PTR key, STRINGLIST_STRINGLISTSET_MAP_PTR two_user_result_set);
+
+	INTEGER ParsingStmtRef(STRING_PTR param);
+	STRING_PTR ParsingEntRef(STRING_PTR param);
 };

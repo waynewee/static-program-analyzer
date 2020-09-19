@@ -60,10 +60,11 @@ void TestWrapper::parse(string filename) {
 void TestWrapper::evaluate(string query, list<string>& results){
 	// call your evaluator to evaluate the query here
 	// ...code to evaluate query...
-	PQLDriver main = PQLDriver();
-	string evaluatedResult = main.query(query);
+	PQLDriver* main = new PQLDriver();
+	STRING_PTR query_ptr = new STRING(query);
+	STRING_PTR evaluated_result = main->query(query_ptr);
 
 	// store the answers to the query in the results list (it is initially empty)
 	// each result must be a string.
-	results.push_back(evaluatedResult);
+	results.push_back(*evaluated_result);
 }
