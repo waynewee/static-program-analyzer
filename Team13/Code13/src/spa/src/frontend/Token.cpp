@@ -12,6 +12,12 @@ Token::Token(string tokenVal, TokenType::TOKEN_TYPE token_type) {
 	is_unary_op_ = false;
 }
 
+Token::Token(string tokenVal, TokenType::TOKEN_TYPE token_type, bool is_unary_op ) {
+	value_ = tokenVal;
+	type_ = token_type;
+	is_unary_op_ = is_unary_op;
+}
+
 Token::Token(){}
 
 void Token::Print() {

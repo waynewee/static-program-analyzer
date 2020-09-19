@@ -1,7 +1,7 @@
 
-#include "frontend/Tokenizer.h"
-#include "frontend/Token.h"
-#include "frontend/TokenType.h"
+#include <frontend/Tokenizer.h>
+#include <frontend/Token.h>
+#include <frontend/TokenType.h>
 
 #include "catch.hpp"
 #include <vector>

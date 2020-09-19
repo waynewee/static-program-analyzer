@@ -9,5 +9,5 @@
 **/
 class TreeTraverse {
 public:
-	static void traverse(TNode* root);
+	static string traverse(TNode* root);
 };
