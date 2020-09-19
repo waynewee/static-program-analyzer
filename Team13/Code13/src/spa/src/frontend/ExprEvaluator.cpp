@@ -13,152 +13,152 @@
 
 using namespace std;
 
-ExprEvaluator::ExprEvaluator(TOKEN_LIST exprList) {
-	tokenList = exprList;
+ExprEvaluator::ExprEvaluator(TOKEN_LIST expr_list) {
+	token_list_ = expr_list;
 }
 
 TNode* ExprEvaluator::Evaluate() {
 	return EvaluateQueue(Shunt());
 }
 
-TNode* ExprEvaluator::EvaluateQueue( queue<tuple<Token, TNode*>> shuntedQ ) {
+TNode* ExprEvaluator::EvaluateQueue( queue<tuple<Token, TNode*>> shunted_queue ) {
 
-	stack<tuple<Token, TNode*>> tStack;
+	stack<tuple<Token, TNode*>> t_stack;
 
-	tuple<Token, TNode*> tup = shuntedQ.front();
+	tuple<Token, TNode*> tup = shunted_queue.front();
 	Token token = get<0>(tup);
-	TNode* rootNodePtr = get<1>(tup);
+	TNode* root_node_ptr = get<1>(tup);
 
-	while (shuntedQ.size() > 0) {
+	while (shunted_queue.size() > 0) {
 
-		tup = shuntedQ.front();
+		tup = shunted_queue.front();
 
 		token = get<0>(tup);
-		shuntedQ.pop();
+		shunted_queue.pop();
 
 		if (token.GetTokenType() == TokenType::TOKEN_TYPE::constant || token.GetTokenType() == TokenType::TOKEN_TYPE::var) {
-			tStack.push(tup);
+			t_stack.push(tup);
 		}
 		//guaranteed to be an expr
 		else {
 
 			//CREATE PARENT NODE
-			TNode* parentNodePtr = get<1>(tup);
-			rootNodePtr = parentNodePtr;
+			TNode* parent_node_ptr = get<1>(tup);
+			root_node_ptr = parent_node_ptr;
 
 			/**
 			* Check size of stack, if size == 1, then is unary
 			*/
-			if (token.isUnaryOp) {
+			if (token.is_unary_op_) {
 
 				//CREATE SINGLE CHILD NODE
-				TNode* cNodePtr = get<1>(tStack.top());
-				tStack.pop();
+				TNode* c_node_ptr = get<1>(t_stack.top());
+				t_stack.pop();
 				
 				//LINK PARENT TO CHILD
-				parentNodePtr->AddChild(cNodePtr);
+				parent_node_ptr->AddChild(c_node_ptr);
 
 			}
 			else {
 
 				//CREATE RIGHT CHILD NODE
-				TNode* rNodePtr = get<1>(tStack.top());
-				tStack.pop();
+				TNode* r_node_ptr = get<1>(t_stack.top());
+				t_stack.pop();
 				
 				//CREATE LEFT CHILD NODE
-				TNode* lNodePtr = get<1>(tStack.top());
-				tStack.pop();
+				TNode* l_node_ptr = get<1>(t_stack.top());
+				t_stack.pop();
 
-				parentNodePtr->AddChild(lNodePtr);
-				parentNodePtr->AddChild(rNodePtr);
+				parent_node_ptr->AddChild(l_node_ptr);
+				parent_node_ptr->AddChild(r_node_ptr);
 			}
 
-			tStack.push(tup);
+			t_stack.push(tup);
 
 		}
 
 	}
 
-	if (rootNodePtr != NULL) {
-		return rootNodePtr;
+	if (root_node_ptr != NULL) {
+		return root_node_ptr;
 	}
 	return NULL;
 
 }
 
 queue<tuple<Token, TNode*>> ExprEvaluator::Shunt() {
-	queue<tuple<Token, TNode*>> outputQ;
-	stack<Token> opStack;
+	queue<tuple<Token, TNode*>> output_queue;
+	stack<Token> op_stack;
 
 	int i = 0;
 
-	while( i < tokenList.size()){
+	while( i < token_list_.size()){
 
-		Token token = tokenList.at(i);
+		Token token = token_list_.at(i);
 		
-		TokenType::TOKEN_TYPE tokenType = token.GetTokenType();
+		TokenType::TOKEN_TYPE token_type = token.GetTokenType();
 
-		if (tokenType == TokenType::TOKEN_TYPE::constant || tokenType == TokenType::TOKEN_TYPE::var) {
-			outputQ.push(make_tuple(token, ConvertTokenToNode(token)));
+		if (token_type == TokenType::TOKEN_TYPE::constant || token_type == TokenType::TOKEN_TYPE::var) {
+			output_queue.push(make_tuple(token, ConvertTokenToNode(token)));
 		}
-		else if (tokenType == TokenType::TOKEN_TYPE::expr|| tokenType == TokenType::TOKEN_TYPE::rel_expr) {
+		else if (token_type == TokenType::TOKEN_TYPE::expr|| token_type == TokenType::TOKEN_TYPE::rel_expr) {
 
-			while (opStack.size() > 0
+			while (op_stack.size() > 0
 				&& (
-					CompareOpPrecedence(token, opStack.top()) == -1
+					CompareOpPrecedence(token, op_stack.top()) == -1
 					|| (
-						CompareOpPrecedence(token, opStack.top()) == 0
+						CompareOpPrecedence(token, op_stack.top()) == 0
 						&& IsLeftAssoc(token)
 						)
 					)
-				&& opStack.top().GetValue() != TYPE_PUNC_OPEN_PARAN
+				&& op_stack.top().GetValue() != TYPE_PUNC_OPEN_PARAN
 				) {
-				Token opToken = opStack.top();
-				opStack.pop();
-				outputQ.push(make_tuple(opToken, ConvertTokenToNode(opToken)));
+				Token op_token = op_stack.top();
+				op_stack.pop();
+				output_queue.push(make_tuple(op_token, ConvertTokenToNode(op_token)));
 			}
 
-			opStack.push(token);
+			op_stack.push(token);
 		}
-		else if ( (token.GetValue() == TYPE_PUNC_OPEN_PARAN) || i >= 1 && token.isUnaryOp)
+		else if ( (token.GetValue() == TYPE_PUNC_OPEN_PARAN) || i >= 1 && token.is_unary_op_)
 		{
-			opStack.push(token);
+			op_stack.push(token);
 		}
 		else if (token.GetValue() == TYPE_PUNC_CLOSED_PARAN) {
 
-			while (opStack.top().GetValue() != TYPE_PUNC_OPEN_PARAN) {
-				if (opStack.size() == 0) {
+			while (op_stack.top().GetValue() != TYPE_PUNC_OPEN_PARAN) {
+				if (op_stack.size() == 0) {
 					throw logic_error("Mismatched parantheses!");
 				}
 
-				Token opToken = opStack.top();
-				opStack.pop();
-				outputQ.push(make_tuple(opToken, ConvertTokenToNode(opToken)));
+				Token op_token = op_stack.top();
+				op_stack.pop();
+				output_queue.push(make_tuple(op_token, ConvertTokenToNode(op_token)));
 
 			}
 
-			if (opStack.top().GetValue() == TYPE_PUNC_OPEN_PARAN) {
-				opStack.pop();
+			if (op_stack.top().GetValue() == TYPE_PUNC_OPEN_PARAN) {
+				op_stack.pop();
 			}
 		}
 
 		i++;
 	}
 
-	while (opStack.size() > 0) {
-		Token opToken = opStack.top();
-		opStack.pop();
-		outputQ.push(make_tuple(opToken, ConvertTokenToNode(opToken)));
+	while (op_stack.size() > 0) {
+		Token op_token = op_stack.top();
+		op_stack.pop();
+		output_queue.push(make_tuple(op_token, ConvertTokenToNode(op_token)));
 	}
 
-	return outputQ;
+	return output_queue;
 }
 
 bool ExprEvaluator::IsLeftAssoc(Token t) {
 
 	string val = t.GetValue();
 
-	for (string s : rightAssocList) {
+	for (string s : right_assoc_list_) {
 		if (s == val) {
 			return false;
 		}
@@ -168,13 +168,13 @@ bool ExprEvaluator::IsLeftAssoc(Token t) {
 
 int ExprEvaluator::CompareOpPrecedence(Token a, Token b) {
 
-	int aPrecedence = GetPrecedence(a);
-	int bPrecedence = GetPrecedence(b);
+	int a_precedence = GetPrecedence(a);
+	int b_precedence = GetPrecedence(b);
 
-	if (aPrecedence == bPrecedence) {
+	if (a_precedence == b_precedence) {
 		return 0;
 	}
-	else if (aPrecedence < bPrecedence) {
+	else if (a_precedence < b_precedence) {
 		return -1;
 	}
 	else {
@@ -185,54 +185,54 @@ int ExprEvaluator::CompareOpPrecedence(Token a, Token b) {
 int ExprEvaluator::GetPrecedence(Token t) {
 	string val = t.GetValue();
 	
-	if (t.isUnaryOp) {
+	if (t.is_unary_op_) {
 		return PRECEDENCE_UNARY;
 	}
 
-	return precedenceMap[val];
+	return precedence_map_[val];
 }
 
-TNode::OPERATOR ExprEvaluator::GetOperator(string opStr) {
-	if (opStr == TYPE_REL_EXPR_NOT) {
+TNode::OPERATOR ExprEvaluator::GetOperator(string op_str) {
+	if (op_str == TYPE_REL_EXPR_NOT) {
 		return TNode::OPERATOR::notOp;
 	}
-	else if (opStr == TYPE_REL_EXPR_AND) {
+	else if (op_str == TYPE_REL_EXPR_AND) {
 		return TNode::OPERATOR::andOp;
 	}
-	else if (opStr == TYPE_REL_EXPR_OR) {
+	else if (op_str == TYPE_REL_EXPR_OR) {
 		return TNode::OPERATOR::orOp;
 	}
-	else if (opStr == TYPE_REL_EXPR_GT) {
+	else if (op_str == TYPE_REL_EXPR_GT) {
 		return TNode::OPERATOR::greater;
 	}
-	else if (opStr == TYPE_REL_EXPR_GTE) {
+	else if (op_str == TYPE_REL_EXPR_GTE) {
 		return TNode::OPERATOR::geq;
 	}
-	else if (opStr == TYPE_REL_EXPR_LT) {
+	else if (op_str == TYPE_REL_EXPR_LT) {
 		return TNode::OPERATOR::lesser;
 	}
-	else if (opStr == TYPE_REL_EXPR_LTE) {
+	else if (op_str == TYPE_REL_EXPR_LTE) {
 		return TNode::OPERATOR::notOp;
 	}
-	else if (opStr == TYPE_REL_EXPR_EQ) {
+	else if (op_str == TYPE_REL_EXPR_EQ) {
 		return TNode::OPERATOR::equal;
 	}
-	else if (opStr == TYPE_REL_EXPR_NEQ) {
+	else if (op_str == TYPE_REL_EXPR_NEQ) {
 		return TNode::OPERATOR::unequal;
 	}
-	else if (opStr == TYPE_EXPR_PLUS) {
+	else if (op_str == TYPE_EXPR_PLUS) {
 		return TNode::OPERATOR::plus;
 	}
-	else if (opStr == TYPE_EXPR_MINUS) {
+	else if (op_str == TYPE_EXPR_MINUS) {
 		return TNode::OPERATOR::minus;
 	}
-	else if (opStr == TYPE_EXPR_TIMES) {
+	else if (op_str == TYPE_EXPR_TIMES) {
 		return TNode::OPERATOR::times;
 	}
-	else if (opStr == TYPE_EXPR_DIVIDE) {
+	else if (op_str == TYPE_EXPR_DIVIDE) {
 		return TNode::OPERATOR::divide;
 	}
-	else if (opStr == TYPE_EXPR_MOD) {
+	else if (op_str == TYPE_EXPR_MOD) {
 		return TNode::OPERATOR::mod;
 	}
 	else {

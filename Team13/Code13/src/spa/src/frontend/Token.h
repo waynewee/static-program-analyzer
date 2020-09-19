@@ -18,20 +18,20 @@ using namespace std;
 class Token {
 public:
 	Token();
-	Token(string tokenVal, TokenType::TOKEN_TYPE tokenType);
+	Token(string token_val, TokenType::TOKEN_TYPE token_type);
 	
-	bool isUnaryOp;
-	TokenType::STMT_TYPE stmtType;
-	TokenType::TOKEN_TYPE type;
+	bool is_unary_op_;
+	TokenType::STMT_TYPE stmt_type_;
+	TokenType::TOKEN_TYPE type_;
 
 	void Print();
 	TokenType::STMT_TYPE GetStmtType();
 	TokenType::TOKEN_TYPE GetTokenType();
-	string GetTokenTypeStr(TokenType::TOKEN_TYPE tokenType);
+	string GetTokenTypeStr(TokenType::TOKEN_TYPE token_type);
 	string GetValue();
 
 private:
-	string value;
+	string value_;
 };
 
 #endif

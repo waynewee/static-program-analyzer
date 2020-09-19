@@ -28,7 +28,7 @@ public:
 		var 
 	};
 
-	static STMT_TYPE GetStmtType(string tokenStr);
+	static STMT_TYPE GetStmtType(string token_str);
 };
 
 #endif

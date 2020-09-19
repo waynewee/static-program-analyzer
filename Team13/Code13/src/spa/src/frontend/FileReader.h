@@ -9,9 +9,9 @@ using namespace std;
 
 class FileReader {
 public:
-	FileReader(string file_n);
+	FileReader(string file_name);
 	
-	string filename;
+	string file_name_;
 	
 	string* ReadFile();
 };

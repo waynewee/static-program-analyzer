@@ -19,11 +19,11 @@ public:
 
 	SimpleParser();
 
-	int statementIndex;
-	int tokenIndx;
-	TOKEN_LIST tokenList;
+	int statement_index_;
+	int token_index_;
+	TOKEN_LIST token_list_;
 
-	TNode* Parse(TOKEN_LIST _tokenList);
+	TNode* Parse(TOKEN_LIST token_list);
 
 private:
 	TNode* ParseStatement(); 
@@ -33,10 +33,10 @@ private:
 	TNode* ParseIfStatement();
 	TNode* ParseWhileStatement();
 	TNode* ParseCallStatement();
-	TNode* ParseAssignStatement(Token nameToken);
+	TNode* ParseAssignStatement(Token name_token);
 	TNode* ParseStatementList();
-	TNode* ParseExpressionStatement(expressionType exprType);
-	TNode* ParseExpression(TOKEN_LIST exprList);
+	TNode* ParseExpressionStatement(expressionType expr_type);
+	TNode* ParseExpression(TOKEN_LIST expr_list);
 
 	Token GetNextToken();
 	Token PeekNextToken();

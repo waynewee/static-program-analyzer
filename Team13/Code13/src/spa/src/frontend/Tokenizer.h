@@ -30,9 +30,9 @@ public:
 	int len;
 	int pos;
 	string* text;
-	string tokenStr;
+	string token_str_;
 
-	STR_LIST expressions = {
+	STR_LIST expressions_ = {
 		TYPE_EXPR_MOD,
 		TYPE_EXPR_PLUS,
 		TYPE_EXPR_MINUS,
@@ -40,7 +40,7 @@ public:
 		TYPE_EXPR_DIVIDE
 	};
 
-	STR_LIST punctuations = {
+	STR_LIST punctuations_ = {
 		TYPE_PUNC_CLOSED_BRACKET,
 		TYPE_PUNC_CLOSED_PARAN,
 		TYPE_PUNC_OPEN_BRACKET,
@@ -48,7 +48,7 @@ public:
 		TYPE_PUNC_SEMICOLON
 	};
 	
-	STR_LIST rel_expressions = {
+	STR_LIST rel_expressions_ = {
 		TYPE_REL_EXPR_GT,
 		TYPE_REL_EXPR_GTE,
 		TYPE_REL_EXPR_LT,
@@ -60,7 +60,7 @@ public:
 		TYPE_REL_EXPR_NOT
 	};
 
-	STR_LIST rel_expressions_part = {
+	STR_LIST rel_expressions_part_ = {
 		TYPE_REL_EXPR_GT_PART ,
 		TYPE_REL_EXPR_LT_PART ,
 		TYPE_REL_EXPR_EQ_PART ,
@@ -69,7 +69,7 @@ public:
 		TYPE_REL_EXPR_NEQ_PART
 	};
 
-	STMT_NAME_LIST stmtNames = { 
+	STMT_NAME_LIST stmt_names_ = { 
 		TYPE_PROC, 
 		TYPE_STMT_PRINT,
 		TYPE_STMT_READ,
@@ -80,27 +80,25 @@ public:
 		TYPE_STMT_IF_ELSE
 	};
 
-	STR_LIST whiteSpaces = {
+	STR_LIST white_spaces_ = {
 		WHITESPACE_NEWLINE,
 		WHITESPACE_RETURN,
 		WHITESPACE_SPACE,
 		WHITESPACE_TAB
 	};
 
-	TOKEN_LIST tokenList;
+	TOKEN_LIST token_list_;
 
 	Tokenizer(string* input);
 	
 	int Tokenize();
 
-	Token* AddToken(TokenType::TOKEN_TYPE tokenType);
+	Token* AddToken(TokenType::TOKEN_TYPE token_type);
 	void AppendStrToTokenStr(string str);
 	void AppendCharToTokenStr(char c);
 	vector<Token> GetTokenList();
-	void PrintToken(string type);
-	void PrintTokenList();
 	void ResetTokenStr();
-	void TestAndSetUnary(Token* currPtr, Token prev);
+	void TestAndSetUnary(Token* curr_ptr, Token prev);
 
 	bool CheckMatch(string s, STR_LIST v);
 	bool IsExpr(char c);

@@ -13,7 +13,7 @@ TEST_CASE("Expression Evaluator | Evaluates conditional expressions correctly") 
 	Tokenizer tokenizer(expr);
 	tokenizer.Tokenize();
 
-	ExprEvaluator evaluator(tokenizer.tokenList);
+	ExprEvaluator evaluator(tokenizer.token_list_);
 
 	evaluator.Evaluate();
 }

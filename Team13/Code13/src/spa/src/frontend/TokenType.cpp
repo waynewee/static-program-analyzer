@@ -7,37 +7,37 @@
 
 using namespace std;
 
-TokenType::STMT_TYPE TokenType::GetStmtType(string tokenStr) {
+TokenType::STMT_TYPE TokenType::GetStmtType(string token_str) {
 
-	if (tokenStr == TYPE_PROC) {
+	if (token_str == TYPE_PROC) {
 		return TokenType::STMT_TYPE::_procedure;
 	}
 
-	if (tokenStr == TYPE_STMT_CALL) {
+	if (token_str == TYPE_STMT_CALL) {
 		return TokenType::STMT_TYPE::_call;
 	}
 
-	if (tokenStr == TYPE_STMT_READ) {
+	if (token_str == TYPE_STMT_READ) {
 		return TokenType::STMT_TYPE::_read;
 	}
 
-	if (tokenStr == TYPE_STMT_WHILE) {
+	if (token_str == TYPE_STMT_WHILE) {
 		return TokenType::STMT_TYPE::_while;
 	}
 
-	if (tokenStr == TYPE_STMT_PRINT) {
+	if (token_str == TYPE_STMT_PRINT) {
 		return TokenType::STMT_TYPE::_print;
 	}
 
-	if (tokenStr == TYPE_STMT_IF) {
+	if (token_str == TYPE_STMT_IF) {
 		return TokenType::STMT_TYPE::_if;
 	}
 
-	if (tokenStr == TYPE_STMT_IF_THEN) {
+	if (token_str == TYPE_STMT_IF_THEN) {
 		return TokenType::STMT_TYPE::_then;
 	}
 
-	if (tokenStr == TYPE_STMT_IF_ELSE) {
+	if (token_str == TYPE_STMT_IF_ELSE) {
 		return TokenType::STMT_TYPE::_else;
 	}
 

@@ -25,11 +25,11 @@ typedef queue<tuple<Token, TNode*>> SHUNTING_QUEUE;
 
 class ExprEvaluator {
 public:
-	ExprEvaluator(TOKEN_LIST exprList);
+	ExprEvaluator(TOKEN_LIST expr_list);
 
 	TNode* Evaluate();
 
-	PRECEDENCE_MAP precedenceMap = {
+	PRECEDENCE_MAP precedence_map_ = {
 	{TYPE_PUNC_OPEN_PARAN, PRECEDENCE_PARAN},
 	{TYPE_PUNC_CLOSED_PARAN, PRECEDENCE_PARAN},
 	{TYPE_REL_EXPR_NOT, PRECEDENCE_UNARY},
@@ -48,7 +48,7 @@ public:
 	{TYPE_REL_EXPR_OR, PRECEDENCE_OR},
 	};
 
-	STR_LIST rightAssocList = {
+	STR_LIST right_assoc_list_ = {
 		TYPE_PUNC_OPEN_PARAN,
 		TYPE_PUNC_CLOSED_PARAN,
 		TYPE_REL_EXPR_GT,
@@ -58,16 +58,16 @@ public:
 	};
 
 private:
-	TOKEN_LIST tokenList;
+	TOKEN_LIST token_list_;
 	
-	SHUNTING_QUEUE Shunt();
-	TNode* EvaluateQueue(SHUNTING_QUEUE shuntedQ);
-	bool IsLeftAssoc(Token t);
 	int CompareOpPrecedence(Token a, Token b);
-	int GetPrecedence(Token t);
-	bool IsUnaryOp(Token curr, Token prev);
-	TNode::OPERATOR GetOperator(string opStr);
 	TNode* ConvertTokenToNode(Token t);
+	TNode* EvaluateQueue(SHUNTING_QUEUE shunted_queue);
+	TNode::OPERATOR GetOperator(string op_str);
+	int GetPrecedence(Token t);
+	bool IsLeftAssoc(Token t);
+	bool IsUnaryOp(Token curr, Token prev);
+	SHUNTING_QUEUE Shunt();
 };
 
 #endif

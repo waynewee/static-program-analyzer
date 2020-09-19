@@ -5,13 +5,13 @@
 
 using namespace std;
 
-FileReader::FileReader(string file_n) {
-	filename = file_n;
+FileReader::FileReader(string file_name) {
+	file_name_ = file_name;
 }
 
 string* FileReader::ReadFile() {
 
-	ifstream ifs(filename);
+	ifstream ifs(file_name_);
 	string* input = new string();
 
 	input->assign((istreambuf_iterator<char>(ifs)),

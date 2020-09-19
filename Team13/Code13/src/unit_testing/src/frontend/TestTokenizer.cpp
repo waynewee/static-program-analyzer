@@ -10,23 +10,23 @@ TEST_CASE("Tokenizer | Manipulates token string correctly") {
 
 	Tokenizer tokenizer(new string(""));
 
-	tokenizer.tokenStr = "procedure";
+	tokenizer.token_str_ = "procedure";
 
 	SECTION("Resets token string") {
 		tokenizer.ResetTokenStr();
-		REQUIRE(tokenizer.tokenStr.length() == 0);
+		REQUIRE(tokenizer.token_str_.length() == 0);
 	}
 
 	SECTION("Adds character to token string") {
 		tokenizer.ResetTokenStr();
 		tokenizer.AppendCharToTokenStr('x');
-		REQUIRE(tokenizer.tokenStr == "x");
+		REQUIRE(tokenizer.token_str_ == "x");
 	}
 
 	SECTION("Adds string to token string") {
 		tokenizer.ResetTokenStr();
 		tokenizer.AppendStrToTokenStr("x = a + b");
-		REQUIRE(tokenizer.tokenStr == "x = a + b");
+		REQUIRE(tokenizer.token_str_ == "x = a + b");
 	}
 }
 

@@ -6,10 +6,10 @@
 
 using namespace std;
 
-Token::Token(string tokenVal, TokenType::TOKEN_TYPE tokenType) {
-	value = tokenVal;
-	type = tokenType;
-	isUnaryOp = false;
+Token::Token(string tokenVal, TokenType::TOKEN_TYPE token_type) {
+	value_ = tokenVal;
+	type_ = token_type;
+	is_unary_op_ = false;
 }
 
 Token::Token(){}
@@ -18,27 +18,27 @@ void Token::Print() {
 
 	string output = "";
 
-	output += GetTokenTypeStr(type) + "\t" + value;
+	output += GetTokenTypeStr(type_) + "\t" + value_;
 
 	cout << output << endl;
 }
 
 string Token::GetValue() {
-	return value;
+	return value_;
 }
 
 TokenType::TOKEN_TYPE Token::GetTokenType() {
-	return type;
+	return type_;
 }
 
 
 TokenType::STMT_TYPE Token::GetStmtType() {
-	return stmtType;
+	return stmt_type_;
 }
 
-string Token::GetTokenTypeStr(TokenType::TOKEN_TYPE tokenType) {
+string Token::GetTokenTypeStr(TokenType::TOKEN_TYPE token_type) {
 
-	switch (tokenType) {
+	switch (token_type) {
 	case TokenType::TOKEN_TYPE::expr:
 		return TOKEN_TYPE_EXPR;
 	case TokenType::TOKEN_TYPE::rel_expr:
