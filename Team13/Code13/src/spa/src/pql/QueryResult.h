@@ -1,16 +1,13 @@
 #pragma once
 
-#include <string>
-#include <unordered_set>
-
-using namespace std;
+#include "PQLCustomTypes.h"
 
 class QueryResult
 {
 public:
-	unordered_set<string> result;
+	STRING_SET_PTR result;
 
-	unordered_set<string> getResult();
-	void setResult(unordered_set<string> result);
-	bool isEmpty();
+	STRING_SET_PTR GetResult();
+	void SetResult(STRING_SET_PTR result);
+	BOOLEAN isEmpty();
 };

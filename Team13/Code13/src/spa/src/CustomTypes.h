@@ -29,6 +29,21 @@
 #define TYPE_COND_MODIFIES_P "ModifiesP"
 #define TYPE_COND_PATTERN "pattern"
 
+#define TYPE_REL_EXPR_GT ">"
+#define TYPE_REL_EXPR_GTE ">="
+#define TYPE_REL_EXPR_LT "<"
+#define TYPE_REL_EXPR_LTE "<="
+#define TYPE_REL_EXPR_EQ "=="
+#define TYPE_REL_EXPR_AND "&&"
+#define TYPE_REL_EXPR_OR "||"
+#define TYPE_REL_EXPR_NEQ "!="
+#define TYPE_REL_EXPR_NOT "!"
+#define TYPE_EXPR_MOD "%"
+#define TYPE_EXPR_PLUS "+"
+#define TYPE_EXPR_MINUS "-"
+#define TYPE_EXPR_TIMES "*"
+#define TYPE_EXPR_DIVIDE "/"
+
 typedef std::string VAR_NAME;
 typedef std::string PROC_NAME;
 typedef int STMT_IDX;
@@ -53,10 +68,6 @@ typedef struct {
     PROC_NAME* p;
     VAR_NAME* v;
 }PROC_VAR_PAIR;
-//typedef std::tuple<STMT_IDX, STMT_IDX> STMT_STMT_PAIR;
-//typedef std::tuple<STMT_IDX, VAR_NAME*> STMT_VAR_PAIR;
-//typedef std::tuple<PROC_NAME*, VAR_NAME*> PROC_VAR_PAIR;
-
 
 typedef std::unordered_set<STMT_STMT_PAIR*> STMT_STMT_PAIR_SET;
 typedef std::unordered_set<STMT_VAR_PAIR*> STMT_VAR_PAIR_SET;
@@ -98,47 +109,5 @@ enum STATEMENT_TYPE {
 	printStatement,
 	callStatement,
 };
-/*
-enum RELREF {
-	Follows,
-	FollowsT,
-	Parent,
-	ParentT,
-	UsesS, 
-	UsesP,
-	ModifiesS,
-	ModifiesP,
-	pattern,
-};
-
-struct ENTITY {
-	ENTITY_TYPE type;
-};
-
-struct STATEMENT : ENTITY {
-	ENTITY_TYPE type = ENTITY_TYPE::statement;
-	STATEMENT_TYPE statement_type;
-	STMT_IDX idx;
-};
-
-struct VARIABLE : ENTITY {
-	ENTITY_TYPE type = ENTITY_TYPE::variable;
-	VAR_NAME name;
-};
-
-struct PROCEDURE : ENTITY {
-	ENTITY_TYPE type = ENTITY_TYPE::proc;
-	PROC_NAME name;
-};
-
-struct CONSTANT : ENTITY {
-	ENTITY_TYPE type = ENTITY_TYPE::constant;
-	CONST_VALUE value;
-};
-*/
-//typedef std::vector<STATEMENT> STMT_LIST;
-//typedef std::vector<VARIABLE> VARIABLE_LIST;
-//typedef std::vector<PROCEDURE> PROCEDURE_LIST;
-//typedef std::vector<ENTITY> ENTITY_LIST;
 
 #endif
