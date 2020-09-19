@@ -1,77 +1,76 @@
-#include <map>
 #include <iostream>
+#include <map>
 #include <string>
 #include <vector>
 
-#include "Tokenizer.h"
 #include "frontend/Token.h"
 #include "frontend/TokenType.h"
+#include "Tokenizer.h"
 
-Tokenizer::Tokenizer(std::string input) {
-	cache = {};
+using namespace std;
+
+Tokenizer::Tokenizer(string* input) {
+	
 	pos = -1;
 	text = input;
-	len = text.length();
+	len = text->length();
+	token_str_ = "";
 
-	tokenStr = "";
-
-	std::vector<Token> tokenList;
+	Tokenize();
 }
 
-int Tokenizer::tokenize() {
+int Tokenizer::Tokenize() {
 
-//	std::cout << "Begin Parse" << std::endl;
-
-	Token prevToken;
-	Token* currTokenPtr;
+	Token prev_token;
+	Token* curr_token_ptr;
 
 	while (pos < len - 1) {
 		pos += 1;
 
-		char c = text.at(pos);
+		char c = text->at(pos);
+		int next_post = pos + 1;
 
 		//detect whitespace
-		if (isWhiteSpace(c)) {
+		if (IsWhiteSpace(c)) {
 			continue;
 			//detect punctuation
 		}
-		else if (isPunc(c)) {
-			appendCharToTokenStr(c);
-			addToken(TokenType::TOKEN_TYPE::punc);
-			resetTokenStr();
+		else if (IsPunc(c)) {
+			AppendCharToTokenStr(c);
+			AddToken(TokenType::TOKEN_TYPE::punc);
+			ResetTokenStr();
 			//detect arithmetic operators
 		}
-		else if (isArop(c)) {
-			appendCharToTokenStr(c);
-			prevToken = tokenList.back();
-			currTokenPtr = addToken(TokenType::TOKEN_TYPE::expr);
-			testAndSetUnary(currTokenPtr, prevToken);
-			resetTokenStr();
+		else if (IsExpr(c)) {
+			AppendCharToTokenStr(c);
+			prev_token = token_list_.back();
+			curr_token_ptr = AddToken(TokenType::TOKEN_TYPE::expr);
+			TestAndSetUnary(curr_token_ptr, prev_token);
+			ResetTokenStr();
 		}
 		//detect logical operators
-		else if (isLgopPart(c)) {
+		else if (IsRelExprPart(c)) {
 
-			appendCharToTokenStr(c);
+			AppendCharToTokenStr(c);
+			
+			string op_str = "";
+			op_str += c;
+			op_str += text->at(next_post);
 
-			/** check if next char forms a logical op string with current char*/
-			std::string opStr = "";
-			opStr += c;
-			opStr += text.at(pos + 1);
-
-			if (isLgop(opStr)) {
-				appendCharToTokenStr(text.at(pos + 1));
+			if (IsRelExpr(op_str)) {
+				AppendCharToTokenStr(text->at(next_post));
 				pos += 1;
 			}
 
-			prevToken = tokenList.back();
-			currTokenPtr = addToken(TokenType::TOKEN_TYPE::rel_expr);
-			testAndSetUnary(currTokenPtr, prevToken);
-			resetTokenStr();
+			prev_token = token_list_.back();
+			curr_token_ptr = AddToken(TokenType::TOKEN_TYPE::rel_expr);
+			TestAndSetUnary(curr_token_ptr, prev_token);
+			ResetTokenStr();
 
 
 		}
 		else {
-			appendCharToTokenStr(c);
+			AppendCharToTokenStr(c);
 		}
 
 
@@ -83,135 +82,139 @@ int Tokenizer::tokenize() {
 		where DIGIT: 0-9 && LETTER: A-Z | a-z
 		*/
 
-		/**
+		/**	
 		* If we encounter a whitespace on the next char, we evaluate the token
 		*/
+		
 		if (
-			tokenStr.length() > 0
-			&& (pos + 1 >= len
+			token_str_.length() > 0
+			&& (next_post >= len
 				|| ((
-					isWhiteSpace(text.at(pos + 1))
-					|| isPunc(text.at(pos + 1))
-					|| isArop(text.at(pos + 1))
-					|| isLgopPart(text.at(pos + 1))
+					IsWhiteSpace(text->at(next_post))
+					|| IsPunc(text->at(next_post))
+					|| IsExpr(text->at(next_post))
+					|| IsRelExprPart(text->at(next_post))
 					)))) {
-			//we encountered a whitespace!
 
-			bool isInteger = true;
+			bool is_integer = true;
 
 			//check if integer
-			for (char _c : tokenStr) {
+			for (char _c : token_str_) {
 				if (!isdigit(_c)) {
-					isInteger = false;
+					is_integer = false;
 				}
 			}
 
-			if (isInteger) {
-				addToken(TokenType::TOKEN_TYPE::constant);
+			if (is_integer) {
+				AddToken(TokenType::TOKEN_TYPE::constant);
 			}
 			else {
 
-				bool isStmtName = false;
+				bool is_stmt_name = false;
 
 				//check if keyword
-				for (std::string stmtName: stmtNames) {
-					if (tokenStr == stmtName) {
-						isStmtName = true;
+				for (string stmt_name: stmt_names_) {
+					if (token_str_ == stmt_name) {
+						is_stmt_name = true;
 						break;
 					}
 				}
 
-				if (isStmtName) {
-					Token* stmtToken = addToken(TokenType::TOKEN_TYPE::stmt);
+				if (is_stmt_name) {
+					Token* stmtToken = AddToken(TokenType::TOKEN_TYPE::stmt);
 
-					stmtToken->stmtType = TokenType::getStmtType(tokenStr);
+					stmtToken->stmt_type_ = TokenType::GetStmtType(token_str_);
 				}
 				else {
-					addToken(TokenType::TOKEN_TYPE::var);
+					AddToken(TokenType::TOKEN_TYPE::var);
 				}
 
 			}
 
-			resetTokenStr();
+			ResetTokenStr();
 
 		}
 
 	}
 
-	//printTokenList();
-
 	return 0;
 
 }
 
-bool Tokenizer::isWhiteSpace(char c) {
-	return (c == ' ' || c == '\n' || c == '\r' || c == '\t');
+bool Tokenizer::IsWhiteSpace(char c) {
+
+	string s = string(1, c);
+
+	return CheckMatch(s, white_spaces_);
 }
 
-bool Tokenizer::isPunc(char c) {
-	return (c == '{' || c == '}' || c == ';' || c == '(' || c == ')');
+bool Tokenizer::IsPunc(char c) {
+	string s = string(1, c);
+
+	return CheckMatch(s, punctuations_);
 }
 
-bool Tokenizer::isArop(char c) {
-	return (c == '+' || c == '-' || c == '*' || c == '/' || c == '%');
+bool Tokenizer::IsExpr(char c) {
+	string s = string(1, c);
+
+	return CheckMatch(s, expressions_);
 }
 
-bool Tokenizer::isLgopPart(char c) {
-	return (c == '&' || c == '|' || c == '<' || c == '>' || c == '=' || c == '!');
+bool Tokenizer::IsRelExprPart(char c) {
+	string s = string(1, c);
+	return CheckMatch(s, rel_expressions_part_);
 }
 
-bool Tokenizer::isLgop(std::string str) {
-	return (str == "&&" || str == "||" || str == "<=" || str == ">=" || str == "==" || str == "!=");
+bool Tokenizer::IsRelExpr(string str) {
+	return CheckMatch(str, rel_expressions_);
 }
 
-void Tokenizer::appendCharToTokenStr(char c) {
-	std::string str = "";
+bool Tokenizer::CheckMatch(string s, STR_LIST v) {
+
+	for (string str : v) {
+		if (s == str) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void Tokenizer::AppendCharToTokenStr(char c) {
+	string str = "";
 	str += c;
 
-	appendStrToTokenStr(str);
+	AppendStrToTokenStr(str);
 }
 
-void Tokenizer::appendStrToTokenStr(std::string str) {
-	tokenStr += str;
+void Tokenizer::AppendStrToTokenStr(string str) {
+	token_str_ += str;
 }
 
-void Tokenizer::printToken(std::string type) {
-//	std::cout << type + "\t" + token << std::endl;
-}
 
-void Tokenizer::testAndSetUnary(Token* currPtr, Token prev) {
+void Tokenizer::TestAndSetUnary(Token* curr_ptr, Token prev) {
 	
-	Token curr = *currPtr;
-
-	if (curr.getValue() == "!" || curr.getValue() == "-") {
-		if (prev.getTokenType() == TokenType::TOKEN_TYPE::rel_expr || prev.getTokenType() == TokenType::TOKEN_TYPE::expr|| prev.getValue() == "(") {
-			currPtr->isUnaryOp = true;
+	if (curr_ptr->GetValue() == TYPE_REL_EXPR_NOT || curr_ptr->GetValue() == TYPE_EXPR_MINUS) {
+		if (prev.GetTokenType() == TokenType::TOKEN_TYPE::rel_expr || prev.GetTokenType() == TokenType::TOKEN_TYPE::expr|| prev.GetValue() == TYPE_PUNC_OPEN_PARAN) {
+			curr_ptr->is_unary_op_ = true;
 		}
 	}
 
 	return;
 }
 
-Token* Tokenizer::addToken(TokenType::TOKEN_TYPE tokenType) {
-	Token token_obj = Token(tokenStr, tokenType);
+Token* Tokenizer::AddToken(TokenType::TOKEN_TYPE token_type) {
+	Token token_obj = Token(token_str_, token_type);
 
-	tokenList.push_back(token_obj);
+	token_list_.push_back(token_obj);
 
-	return &tokenList.at(tokenList.size()-1);
+	return &token_list_.at(token_list_.size()-1);
 }
 
-void Tokenizer::resetTokenStr() {
-	tokenStr = "";
+void Tokenizer::ResetTokenStr() {
+	token_str_ = "";
 }
 
-void Tokenizer::printTokenList() {
-
-	for (Token token : tokenList) {
-		token.print();
-	}
-
-}
-
-std::vector<Token> Tokenizer::getTokenList() {
-	return tokenList;
+vector<Token> Tokenizer::GetTokenList() {
+	return token_list_;
 }

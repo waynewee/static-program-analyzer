@@ -8,12 +8,12 @@
 
 TEST_CASE("Expression Evaluator | Evaluates conditional expressions correctly") {
 
-	std::string expr = "(!(x==0) && (x >= -2) || (y<3))";
+	std::string* expr = new string("(!(x==0) && (x >= -2) || (y<3))");
 
 	Tokenizer tokenizer(expr);
-	tokenizer.tokenize();
+	tokenizer.Tokenize();
 
-	ExprEvaluator evaluator(tokenizer.tokenList);
+	ExprEvaluator evaluator(tokenizer.token_list_);
 
-	evaluator.evaluate();
+	evaluator.Evaluate();
 }

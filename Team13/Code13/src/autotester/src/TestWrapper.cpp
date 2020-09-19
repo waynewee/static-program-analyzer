@@ -1,13 +1,17 @@
 #include <fstream>
 #include <string>
+#include <stdexcept>
+
 #include <PKB.h>
 #include "TestWrapper.h"
-
-#include "frontend/Parser.h"
-#include "frontend/CodeExtractor.h"
+#include "frontend/SimpleParser.h"
+#include "frontend/Tokenizer.h"
+#include "frontend/FileReader.h"
 #include "testUtils/TreeTraverse.h"
 #include "pql/PQLDriver.h"
 #include "pkb/DesignExtractor.h"
+
+using namespace std;
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -28,19 +32,32 @@ TestWrapper::TestWrapper() {
 }
 
 // method for parsing the SIMPLE source
-void TestWrapper::parse(std::string filename) {
+void TestWrapper::parse(string filename) {
 
-	CodeExtractor codeExtractor(filename);
+	try {
+		FileReader fileReader(filename);
 
-	std::string input = codeExtractor.extract();
-	Parser parser = Parser();
-	TestWrapper::pkb->SetASTRoot(parser.parse(input));
-	ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
-	ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
+		string* input = fileReader.ReadFile();
+
+		Tokenizer tokenizer(input);
+
+		TOKEN_LIST tokenList = tokenizer.GetTokenList();
+
+		SimpleParser parser = SimpleParser();
+	
+		TestWrapper::pkb->SetASTRoot(parser.Parse(tokenList));
+
+		ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
+		ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
+	}
+	catch (logic_error& e) {
+		cout << e.what() << endl;
+	}
+
 }
 
 // method to evaluating a query
-void TestWrapper::evaluate(std::string query, std::list<std::string>& results){
+void TestWrapper::evaluate(string query, list<string>& results){
 	// call your evaluator to evaluate the query here
 	// ...code to evaluate query...
 	PQLDriver* main = new PQLDriver();
