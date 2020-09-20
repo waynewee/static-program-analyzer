@@ -14,6 +14,8 @@ using namespace std;
 #define TOKEN_TYPE_CONSTANT "constant"
 #define TOKEN_TYPE_VAR "var"
 #define TOKEN_TYPE_STMT "stmt"
+#define TOKEN_TYPE_COND_EXPR "cond_expr"
+#define TOKEN_TYPE_ASSIGN "assign"
 
 class Token {
 public:
@@ -25,10 +27,9 @@ public:
 	TokenType::STMT_TYPE stmt_type_;
 	TokenType::TOKEN_TYPE type_;
 
-	void Print();
 	TokenType::STMT_TYPE GetStmtType();
 	TokenType::TOKEN_TYPE GetTokenType();
-	string GetTokenTypeStr(TokenType::TOKEN_TYPE token_type);
+	string GetTokenTypeStr();
 	string GetValue();
 
 private:

@@ -22,13 +22,13 @@ Token token_expr_divide = Token(TYPE_EXPR_DIVIDE, TokenType::TOKEN_TYPE::expr);
 Token token_rel_expr_eq = Token(TYPE_REL_EXPR_EQ, TokenType::TOKEN_TYPE::rel_expr);
 Token token_rel_expr_lt = Token(TYPE_REL_EXPR_LT, TokenType::TOKEN_TYPE::rel_expr);
 Token token_rel_expr_gte = Token(TYPE_REL_EXPR_GTE, TokenType::TOKEN_TYPE::rel_expr);
-Token token_rel_expr_and = Token(TYPE_REL_EXPR_AND, TokenType::TOKEN_TYPE::rel_expr);
-Token token_rel_expr_or = Token(TYPE_REL_EXPR_OR, TokenType::TOKEN_TYPE::rel_expr);
+Token token_rel_expr_and = Token(TYPE_COND_EXPR_AND, TokenType::TOKEN_TYPE::rel_expr);
+Token token_rel_expr_or = Token(TYPE_COND_EXPR_OR, TokenType::TOKEN_TYPE::rel_expr);
 
 Token token_punc_open_paran = Token(TYPE_PUNC_OPEN_PARAN, TokenType::TOKEN_TYPE::punc);
 Token token_punc_closed_paran = Token(TYPE_PUNC_CLOSED_PARAN, TokenType::TOKEN_TYPE::punc);
 
-Token token_unary_not = Token(TYPE_REL_EXPR_NOT, TokenType::TOKEN_TYPE::rel_expr, true);
+Token token_unary_not = Token(TYPE_COND_EXPR_NOT, TokenType::TOKEN_TYPE::rel_expr, true);
 Token token_unary_minus = Token(TYPE_EXPR_MINUS, TokenType::TOKEN_TYPE::expr, true);
 
 TEST_CASE("Expression evaluator | Evaluates rel expression") {

@@ -13,7 +13,7 @@ public:
 	
 	string file_name_;
 	
-	string* ReadFile();
+	string ReadFile();
 };
 
 #endif

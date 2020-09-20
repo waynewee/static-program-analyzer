@@ -22,10 +22,12 @@ public:
 	enum class TOKEN_TYPE { 
 		stmt, 
 		punc, 
+		cond_expr,
 		rel_expr, 
 		expr, 
 		constant, 
-		var 
+		var,
+		assign
 	};
 
 	static STMT_TYPE GetStmtType(string token_str);
