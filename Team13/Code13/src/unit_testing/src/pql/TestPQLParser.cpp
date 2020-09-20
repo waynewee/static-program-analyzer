@@ -11,7 +11,7 @@ void requireBool(bool b) {
 	REQUIRE(b);
 }
 
-TEST_CASE("Test 2") {
+TEST_CASE("Multiple Clause testcase") {
 	PQLParser* pql_parser = new PQLParser();
 	QueryInfo* query_info_actual = new QueryInfo();
 	QueryInfo* query_info_expected = new QueryInfo();
@@ -25,5 +25,24 @@ TEST_CASE("Test 2") {
 	query_info_actual->PrintOutputVar();
 
 	REQUIRE(1 == 1);
+
+}
+
+/*INVALID TESTCASES*/
+
+TEST_CASE("Invalid testcase : Modifies first argument underscore ") {
+	PQLParser* pql_parser = new PQLParser();
+	QueryInfo* query_info_actual = new QueryInfo();
+	QueryInfo* query_info_expected = new QueryInfo();
+
+	string pql_query = "stmt s; Select s such that Modifies (_ ,\"x\")";
+
+	query_info_actual = pql_parser->Parse(pql_query);
+
+	//query_info_actual->PrintRelRefMap();
+	//query_info_actual->PrintVarMap();
+	//query_info_actual->PrintOutputVar();
+
+	REQUIRE(!query_info_actual->IsQueryInfoValid());
 
 }

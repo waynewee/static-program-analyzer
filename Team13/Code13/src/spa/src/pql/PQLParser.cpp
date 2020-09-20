@@ -66,7 +66,7 @@ QueryInfo* PQLParser::Parse(string s) {
             // cout << suchThatWithOneSpacing << endl;
             // SUCH OR PATTERN
             string current_clause = DeleteOneWordAndRetrieveIt(&query);
-            cout << "curr clause : " << current_clause << endl;
+            //cout << "curr clause : " << current_clause << endl;
             if (current_clause.compare("such") != 0 && current_clause.compare("pattern") != 0) {
                 throw ("Error : cannot find 'such that' or 'pattern' clause");
             }
@@ -78,7 +78,7 @@ QueryInfo* PQLParser::Parse(string s) {
                 string that_word = DeleteOneWordAndRetrieveIt(&query);
                 STANDARD_STRING_STRINGLIST_MAP such_that_clause_result;
                 if (that_word.compare("that") == 0) {
-                    cout << "such that in query is now : " << query << endl;
+                    //cout << "such that in query is now : " << query << endl;
                     string such_that_clause = query.substr(0, query.find_first_of(")") + 1);
                     query.erase(0, query.find_first_of(")") + 1);
                     such_that_clause_result = query_syntax_validator->ValidateSuchThatClause(such_that_clause, PQL_parser_storage->GetAllUserDeclaredVar());
@@ -90,8 +90,8 @@ QueryInfo* PQLParser::Parse(string s) {
             if (current_clause.compare("pattern") == 0) {
                 STANDARD_STRING_STRINGLIST_MAP pattern_clause_result;
                 string pattern_var_name = DeleteOneWordAndRetrieveIt(&query);
-                cout << "pattern var name : " << pattern_var_name << endl;
-                cout << "QUERY PATTERN : " << query << endl;
+                //cout << "pattern var name : " << pattern_var_name << endl;
+                //cout << "QUERY PATTERN : " << query << endl;
                 pattern_clause_result = ParsePatternClause(&query, PQL_parser_storage->GetAllUserDeclaredVar(), query_syntax_validator);
 
                 PQL_parser_storage->StorePatternClauseResult(pattern_clause_result, pattern_var_name);
