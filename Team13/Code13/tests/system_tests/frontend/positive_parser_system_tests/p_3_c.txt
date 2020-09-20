@@ -1,0 +1,11 @@
+procedure IfWhileNest {
+	if(x==1) then{
+		while(y<10){
+			print x;
+		}
+	} else {
+    while(y<10){
+      print x;
+    }
+  }
+}

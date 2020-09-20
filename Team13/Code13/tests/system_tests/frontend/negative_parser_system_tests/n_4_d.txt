@@ -1,0 +1,7 @@
+procedure SpellPrintWrong {
+  if (x ==5) then {
+    prnt x;
+  } else {
+    prnt y;
+  }
+}
