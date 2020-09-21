@@ -1,32 +1,56 @@
-procedure Example {
-  x = 2;
-  z = 3;
-  i = 5;
-  while (i!=0) {
-    x = x - 1;
-    if (x==1) then {
-      z = x + 1; }
-    else {
-      y = z + x; }
-    z = z + x + i;
-    call q;
-    i = i - 1; }
-  call p; }
+procedure ifInsideIf {
+    a = 1;
+    if (b == 2) then {
+        c = 3;
+        if (d == 4) then {
+            e = 5;
+        } else {
+            f = 6;
+        }
+        g = 7;
+    } else {
+        h = 8;
+    }
+    i = 9;
+}
 
-procedure p {
-  if (x<0) then {
-    while (i>0) {
-      x = z * 3 + 2 * y;
-      call q;
-      i = i - 1; }
-    x = x + 1;
-    z = x + z; }
-  else {
-    z = 1; }
-  z = z + x + i; }
+procedure whileInsideIf {
+    j = 10;
+    if (k == 11) then {
+        l = 12;
+        while (m == 13) {
+            n = 14;
+        }
+        o = 15;
+    } else {
+        p = 16;
+    }
+    q = 17;
+}
 
-procedure q {
-  if (x==1) then {
-    z = x + 1; }
-  else {
-    x = z + x; } }
+procedure ifInsideWhile {
+    r = 18;
+    while (s == 19) {
+        t = 20;
+        if (u == 21) then {
+            v = 22;
+        } else {
+            w = 23;
+        }
+        x = 24;
+    }
+    y = 25;
+}
+
+procedure whileInsideWhile {
+    z = 26;
+    while (aa == 27) {
+        ab = 28;
+        while (ac == 29) {
+            ad = 30;
+        }
+        ae = 31;
+    }
+    af = 32;
+}
+
