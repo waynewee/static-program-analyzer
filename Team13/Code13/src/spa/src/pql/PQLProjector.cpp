@@ -2,16 +2,16 @@
 
 #include <sstream>
 
-string PQLProjector::project(QueryResult queryResult) {
-	unordered_set<string> result = queryResult.getResult();
+STRING PQLProjector::Project(QueryResult query_result) {
+	STRING_SET result = query_result.GetResult();
 
-	stringstream interResult;
-	copy(result.begin(), result.end(), ostream_iterator<string>(interResult, " "));
+	stringstream inter_result;
+	copy(result.begin(), result.end(), ostream_iterator<STRING>(inter_result, " "));
 	
-	string finalResult = interResult.str();
-	if (!finalResult.empty()) {
-		finalResult.resize(finalResult.length() - 1); // trim trailing space
+	STRING final_result = inter_result.str();
+	if (!final_result.empty()) {
+		final_result.resize(final_result.length() - 1); // trim trailing space
 	}
 	
-	return finalResult;
+	return final_result;
 }

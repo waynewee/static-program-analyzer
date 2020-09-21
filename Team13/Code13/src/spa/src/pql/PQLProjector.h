@@ -3,5 +3,5 @@
 class PQLProjector
 {
 public:
-	string project(QueryResult queryResult);
+	STRING Project(QueryResult query_result);
 };

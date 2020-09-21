@@ -2,32 +2,32 @@
 
 #include <unordered_map>
 
-#include "CustomTypes.h"
+#include "PQLCustomTypes.h"
 
 using namespace std;
 
 class QueryInfo
 {
 private:
-	unordered_map<string, vector<vector<string>>> relRef_map;
-	unordered_map<string, string> var_map;
-	string output_var;
-	bool isValid = true;
+	STRING_STRINGLISTLIST_MAP rel_ref_map;
+	STRING_STRING_MAP var_map;
+	STRING output_var;
+	BOOLEAN is_valid = true;
 public:
 	/* getters */
-	unordered_map<string, vector<vector<string>>> getRelRefMap();
-	unordered_map<string, string> getVarMap();
-	string getOutputVar();
-	bool isQueryInfoValid();
+	STRING_STRINGLISTLIST_MAP GetRelRefMap();
+	STRING_STRING_MAP GetVarMap();
+	STRING GetOutputVar();
+	BOOLEAN IsQueryInfoValid();
 
 	/* setters */
-	void setRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map);
-	void setVarMap(unordered_map<string, string> var_map);
-	void setOutputVar(string output_var);
-	void setValidToFalse();
+	VOID SetRelRefMap(STRING_STRINGLISTLIST_MAP rel_ref_map);
+	VOID SetVarMap(STRING_STRING_MAP var_map);
+	VOID SetOutputVar(STRING output_var);
+	VOID SetValidToFalse();
 
 	/* printing */
-	void printOutputVar();
-	void printVarMap();
-	void printRelRefMap();
+	VOID PrintOutputVar();
+	VOID PrintVarMap();
+	VOID PrintRelRefMap();
 };

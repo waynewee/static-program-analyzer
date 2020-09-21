@@ -1,40 +1,40 @@
-#include "QueryInfo.h"
+#include "QueryInfo.h"new_val
 #include "QueryResult.h"
 
 class PQLEvaluator
 {
 public:
-	QueryResult evaluate(QueryInfo queryInfo);
+	QueryResult Evaluate(QueryInfo query_info);
 
-	bool evaluateNoUserDeclaredSet(string fCall, string param1, string param2);
-	unordered_set<string> evaluateOneDeclaredSet(string fCall, string param);
-	unordered_set<string> evaluateInverseOneDeclaredSet(string fCall, string param);
-	unordered_set<vector<string>*> evaluateTwoDeclaredSet(string outputVarType);
-	unordered_map<string, unordered_set<string>> consolidateResults(string currCheck, unordered_set<string> relatedVar, unordered_map<string, 
-		unordered_set<string>> consolidatedResults, unordered_map<string, unordered_set<string>> oneUserResultSet, unordered_map<vector<string>*, 
-		unordered_set<vector<string>*>> twoUserResultSet);
+	BOOLEAN EvaluateNoUserDeclaredSet(STRING f_call, STRING param1, STRING param2);
+	STRING_SET EvaluateOneDeclaredSet(STRING f_call, STRING param);
+	STRING_SET EvaluateInverseOneDeclaredSet(STRING f_call, STRING param);
+	STRINGLIST_SET EvaluateTwoDeclaredSet(STRING output_var_type);
+	STRING_STRINGSET_MAP ConsolidateResults(STRING curr_check, STRING_SET related_var, 
+		STRING_STRINGSET_MAP consolidated_results, STRING_STRINGSET_MAP one_user_result_set, 
+		STRINGLIST_STRINGLISTSET_MAP two_user_result_set);
 
-	unordered_set<string> getNewResult(unordered_set<vector<string>*> value, int positionToCheck);
-	unordered_set<string> getANDResult(unordered_set<string> existingVal, unordered_set<string> newVal);
-	unordered_set<vector<string>*> getANDResult(unordered_set<vector<string>*> existingVal, unordered_set<vector<string>*> newVal);
-	unordered_set<string> getANDResult(unordered_set<string> r1, unordered_set<vector<string>*> r2, int positionToCheck);
-	unordered_set<string> getAllSet(string outputVarType);
-	STATEMENT_TYPE getStmtType(string outputVarType);
+	STRING_SET GetNewResult(STRINGLIST_SET value, INTEGER pos_to_check);
+	STRING_SET GetIntersectResult(STRING_SET existing_val, STRING_SET new_val);
+	STRINGLIST_SET GetIntersectResult(STRINGLIST_SET existing_val, STRINGLIST_SET new_val);
+	STRING_SET GetIntersectResult(STRING_SET r1, STRINGLIST_SET r2, INTEGER pos_to_check);
+	STRING_SET GetAllSet(STRING output_var_type);
+	STATEMENT_TYPE GetStmtType(STRING output_var_type);
 
-	bool removeIrrelevant(unordered_set<string>* value, unordered_set<string> tmp);
-	bool removeIrrelevant(unordered_set<vector<string>*>* value, unordered_set<string> tmp, int positionToCheck);
+	BOOLEAN RemoveIrrelevant(STRING_SET value, STRING_SET tmp);
+	BOOLEAN RemoveIrrelevant(STRINGLIST_SET value, STRING_SET tmp, INTEGER pos_to_check);
 
-	unordered_set<string> convertSet(unordered_set<int> resultSet);
-	unordered_set<string> convertSet(unordered_set<string*>* resultSet);
-	unordered_set<string> convertSet(unordered_set<double>* resultSet);
-	unordered_set<vector<string>*> convertSet(STMT_STMT_PAIR_SET resultSet);
-	unordered_set<vector<string>*> convertSet(STMT_VAR_PAIR_SET resultSet);
-	unordered_set<vector<string>*> convertSet(PROC_VAR_PAIR_SET resultSet);
+	STRING_SET ConvertSet(INTEGER_SET result_set);
+	STRING_SET ConvertSet(unordered_set<string*>* result_set); // DO I STILL NEED IT??
+	STRING_SET ConvertSet(DOUBLE_SET result_set);
+	STRINGLIST_SET ConvertSet(STMT_STMT_PAIR_SET result_set);
+	STRINGLIST_SET ConvertSet(STMT_VAR_PAIR_SET result_set);
+	STRINGLIST_SET ConvertSet(PROC_VAR_PAIR_SET result_set);
 
-	bool isWildCard(string var);
-	bool isVar(string var, unordered_map<string, string> varMap);
-	vector<string>* isKey(vector<string> key, unordered_map<vector<string>*, unordered_set<vector<string>*>> twoUserResultSet);
+	BOOLEAN IsWildCard(STRING var);
+	BOOLEAN IsVar(STRING var, STRING_STRING_MAP var_map);
+	STRING_LIST* IsKey(STRING_LIST key, STRINGLIST_STRINGLISTSET_MAP two_user_result_set);
 
-	int parsingStmtRef(string param);
-	string* parsingEntRef(string param);
+	INTEGER ParsingStmtRef(STRING param);
+	STRING ParsingEntRef(STRING param);
 };

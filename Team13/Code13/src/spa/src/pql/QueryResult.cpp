@@ -1,13 +1,13 @@
 #include "QueryResult.h"
 
-unordered_set<string> QueryResult::getResult() {
+STRING_SET QueryResult::GetResult() {
 	return this->result;
 }
 
-void QueryResult::setResult(unordered_set<string> result) {
-	this->result = *(new unordered_set<string>(result));
+VOID QueryResult::SetResult(STRING_SET result) {
+	this->result = *(new STRING_SET(result));
 }
 
-bool QueryResult::isEmpty() {
+BOOLEAN QueryResult::IsEmpty() {
 	return (this->result).empty();
 }

@@ -3,43 +3,43 @@
 #include <iostream>
 
 /* getters */
-unordered_map<string, vector<vector<string>>> QueryInfo::getRelRefMap() {
-	return this->relRef_map;
+STRING_STRINGLISTLIST_MAP QueryInfo::GetRelRefMap() {
+	return this->rel_ref_map;
 }
 
-unordered_map<VAR_NAME, string> QueryInfo::getVarMap() {
+STRING_STRING_MAP QueryInfo::GetVarMap() {
 	return this->var_map;
 }
 
-string QueryInfo::getOutputVar() {
+STRING QueryInfo::GetOutputVar() {
 	return this->output_var;
 }
 
-bool QueryInfo::isQueryInfoValid() {
-	return this->isValid;
+BOOLEAN QueryInfo::IsQueryInfoValid() {
+	return this->is_valid;
 }
 
 /* setters */
-void QueryInfo::setRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map) {
-	this->relRef_map = relRef_map;
+VOID QueryInfo::SetRelRefMap(STRING_STRINGLISTLIST_MAP rel_ref_map) {
+	this->rel_ref_map = rel_ref_map;
 }
 
-void QueryInfo::setVarMap(unordered_map<string, string> var_map) {
+VOID QueryInfo::SetVarMap(STRING_STRING_MAP var_map) {
 	this->var_map = var_map;
 }
 
-void QueryInfo::setOutputVar(string output_var) {
+VOID QueryInfo::SetOutputVar(STRING output_var) {
 	this->output_var = output_var;
 }
 
-void QueryInfo::setValidToFalse() {
-	this->isValid = false;
+VOID QueryInfo::SetValidToFalse() {
+	this->is_valid = false;
 }
 
 // test print functions
-void QueryInfo::printRelRefMap() {
+VOID QueryInfo::PrintRelRefMap() {
 	cout << "----- RELREF MAP ----- " << endl;
-	for (auto const& pair : this->relRef_map) {
+	for (auto const& pair : this->rel_ref_map) {
 		cout << " { " << pair.first << " , ";
 		for (vector<string> v : pair.second) {
 			cout << " < ";
@@ -53,7 +53,7 @@ void QueryInfo::printRelRefMap() {
 	}
 }
 
-void QueryInfo::printVarMap() {
+VOID QueryInfo::PrintVarMap() {
 	cout << "----- VAR MAP ----- " << endl;
 	for (auto const& pair : this->var_map) {
 		cout << " { " << pair.first << " , " << pair.second << " } " << endl;
@@ -61,7 +61,7 @@ void QueryInfo::printVarMap() {
 	}
 }
 
-void QueryInfo::printOutputVar() {
+VOID QueryInfo::PrintOutputVar() {
 	cout << "---- OUTPUT VAR ---- " << endl;
 	cout << "Output variable : " << this->output_var << endl;
 }
