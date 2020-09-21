@@ -9,10 +9,10 @@ using namespace std;
 class QueryInfo
 {
 private:
-	STRING_STRINGLISTLIST_MAP rel_ref_map;
-	STRING_STRING_MAP var_map;
-	STRING output_var;
-	BOOLEAN is_valid = true;
+	STRING_STRINGLISTLIST_MAP rel_ref_map_;
+	STRING_STRING_MAP var_map_;
+	STRING output_var_;
+	BOOLEAN is_valid_ = true;
 public:
 	/* getters */
 	STRING_STRINGLISTLIST_MAP GetRelRefMap();

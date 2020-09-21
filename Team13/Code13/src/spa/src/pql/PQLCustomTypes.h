@@ -50,6 +50,7 @@ typedef unordered_set<INTEGER> INTEGER_SET;
 typedef unordered_set<DOUBLE> DOUBLE_SET;
 
 typedef unordered_map<STRING, STRING> STRING_STRING_MAP;
+typedef unordered_map<STRING, STRING_LIST> STRING_STRINGLIST_MAP;
 typedef unordered_map<STRING, STRING_SET> STRING_STRINGSET_MAP;
 typedef unordered_map<STRING, STRINGLIST_LIST> STRING_STRINGLISTLIST_MAP;
 
