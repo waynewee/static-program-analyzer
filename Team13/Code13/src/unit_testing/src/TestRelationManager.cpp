@@ -18,8 +18,9 @@ TEST_CASE("RelationManager::AddFollows(STMT_IDX s1, STMT_IDX s2) unit test") {
     PKB pkb = PKB();
     RelationManager relation_manager = pkb.GetRelationManager();
     relation_manager.AddFollows(1, 2);
-//    REQUIRE(relation_manager.IsFollows(1, 2));
-//    REQUIRE(relation_manager.IsFollowsStar(1, 2));
+    relation_manager.IsFollows(1, 2);
+    REQUIRE(relation_manager.IsFollows(1, 2));
+    REQUIRE(relation_manager.IsFollowsStar(1, 2));
 }
 
 TEST_CASE("RelationManager::IsFollows(STMT_IDX s1, STMT_IDX s2) unit test") {
