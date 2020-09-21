@@ -1,91 +1,92 @@
+#include "PQLCustomTypes.h"
 #include "PQLParserStorage.h"
 
 PQLParserStorage::PQLParserStorage() 
 {
-	this->var_map = unordered_map<string, string>();
-	this->relRef_map = unordered_map<string, vector<vector<string>>>();
+	this->var_map_ = STANDARD_STRING_STRING_MAP();
+	this->rel_ref_map_ = STANDARD_STRING_STRINGLISTLIST_MAP();
 
-	this->pattern_var_name = string();
+	this->pattern_var_name_ = string();
 
-	this->all_declarations = vector<string>();
+	this->all_declarations_ = STANDARD_STRINGLIST();
 
-	this->all_user_declared_var = unordered_map<string, string>();
+	this->all_user_declared_var_ = STANDARD_STRING_STRING_MAP();
 
 }
 /*Getters*/
-unordered_map<string, vector<vector<string>>> PQLParserStorage::GetRelRefMap() {
-	return this->relRef_map;
+STANDARD_STRING_STRINGLISTLIST_MAP PQLParserStorage::GetRelRefMap() {
+	return this->rel_ref_map_;
 }
 
-unordered_map<string, string> PQLParserStorage::GetVarMap() {
-	return this->var_map;
+STANDARD_STRING_STRING_MAP PQLParserStorage::GetVarMap() {
+	return this->var_map_;
 }
 string PQLParserStorage::GetPatternVarName() {
-	return this->pattern_var_name;
+	return this->pattern_var_name_;
 }
-vector<string> PQLParserStorage::GetAllDeclarations() {
-	return this->all_declarations;
+STANDARD_STRINGLIST PQLParserStorage::GetAllDeclarations() {
+	return this->all_declarations_;
 }
-unordered_map<string, string> PQLParserStorage::GetAllUserDeclaredVar() {
-	return this->all_user_declared_var;
+STANDARD_STRING_STRING_MAP PQLParserStorage::GetAllUserDeclaredVar() {
+	return this->all_user_declared_var_;
 }
 
 /*Setters*/
-void PQLParserStorage::SetRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map) {
-	this->relRef_map = relRef_map;
+void PQLParserStorage::SetRelRefMap(STANDARD_STRING_STRINGLISTLIST_MAP relRef_map) {
+	this->rel_ref_map_ = relRef_map;
 }
-void PQLParserStorage::SetVarMap(unordered_map<string, string> var_map) {
-	this->var_map = var_map;
+void PQLParserStorage::SetVarMap(STANDARD_STRING_STRING_MAP var_map) {
+	this->var_map_ = var_map;
 }
 void PQLParserStorage::SetPatternVarName(string pattern_var_name) {
-	this->pattern_var_name = pattern_var_name;
+	this->pattern_var_name_ = pattern_var_name;
 }
-void PQLParserStorage::SetAllDeclarations(vector<string> all_declarations) {
-	this->all_declarations = all_declarations;
+void PQLParserStorage::SetAllDeclarations(STANDARD_STRINGLIST all_declarations) {
+	this->all_declarations_ = all_declarations;
 }
-void PQLParserStorage::SetAllUserDeclaredVar(unordered_map<string, string> all_user_declared_var) {
-	this->all_user_declared_var = all_user_declared_var;
-}
-
-void PQLParserStorage::StoreVariable(pair<string, string> var, string entType) {
-	this->all_user_declared_var.insert(var);
-	this->var_map[var.first] = entType;
+void PQLParserStorage::SetAllUserDeclaredVar(STANDARD_STRING_STRING_MAP all_user_declared_var) {
+	this->all_user_declared_var_ = all_user_declared_var;
 }
 
-void PQLParserStorage::StoreSuchThatClauseResult(unordered_map <string, vector<string>> result) {
+void PQLParserStorage::StoreVariable(pair<string, string> var, string ent_type) {
+	this->all_user_declared_var_.insert(var);
+	this->var_map_[var.first] = ent_type;
+}
+
+void PQLParserStorage::StoreSuchThatClauseResult(STANDARD_STRING_STRINGLIST_MAP result) {
 	for (auto const& pair : result) {
 		// already inside
-		if (this->relRef_map.count(pair.first) == 1) {
-			vector<vector<string>> empty;
-			this->relRef_map.at(pair.first).push_back(pair.second);
+		if (this->rel_ref_map_.count(pair.first) == 1) {
+			vector<STANDARD_STRINGLIST> empty;
+			this->rel_ref_map_.at(pair.first).push_back(pair.second);
 		}
 		else {
-			vector<vector<string>> empty;
-			this->relRef_map[pair.first] = empty;
+			vector<STANDARD_STRINGLIST> empty;
+			this->rel_ref_map_[pair.first] = empty;
 			// since second is a vector
-			this->relRef_map.at(pair.first).push_back(pair.second);
+			this->rel_ref_map_.at(pair.first).push_back(pair.second);
 		}
 	}
 }
 
-void PQLParserStorage::StorePatternClauseResult(unordered_map <string, vector<string>> result, string pattern_var_name) {
+void PQLParserStorage::StorePatternClauseResult(STANDARD_STRING_STRINGLIST_MAP result, string pattern_var_name) {
 	for (auto const& pair : result) {
 		// already inside
-		vector<string> p = pair.second;
+		STANDARD_STRINGLIST p = pair.second;
 		p.push_back(pattern_var_name);
 		for (auto i : p) {
 			//cout << i << " | ";
 			//cout << endl;
 		}
-		if (this->relRef_map.count(pair.first) == 1) {
-			vector<vector<string>> empty;
-			this->relRef_map.at(pair.first).push_back(p);
+		if (this->rel_ref_map_.count(pair.first) == 1) {
+			vector<STANDARD_STRINGLIST> empty;
+			this->rel_ref_map_.at(pair.first).push_back(p);
 		}
 		else {
-			vector<vector<string>> empty;
-			this->relRef_map[pair.first] = empty;
+			vector<STANDARD_STRINGLIST> empty;
+			this->rel_ref_map_[pair.first] = empty;
 			// since second is a vector
-			this->relRef_map.at(pair.first).push_back(p);
+			this->rel_ref_map_.at(pair.first).push_back(p);
 		}
 	}
 }

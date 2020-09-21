@@ -1,12 +1,10 @@
 #include "PQLDriver.h"
-
-#include <iostream>
-
 #include "PQLEvaluator.h"
 #include "PQLParser.h"
 #include "PQLProjector.h"
 #include "QueryInfo.h"
 #include "QueryResult.h"
+#include <iostream>
 
 STRING_PTR PQLDriver::query(STRING_PTR query_string) {
 	PQLParser* parser = new PQLParser();
