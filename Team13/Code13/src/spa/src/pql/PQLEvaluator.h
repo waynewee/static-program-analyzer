@@ -30,9 +30,9 @@ public:
 	STRING_SET_PTR ConvertSet(INTEGER_SET_PTR result_set);
 	STRING_SET_PTR ConvertSet(STRING_SET_PTR result_set);
 	STRING_SET_PTR ConvertSet(DOUBLE_SET_PTR result_set);
-	STRINGLIST_SET_PTR ConvertSet(STMT_STMT_PAIR_SET* result_set);
-	STRINGLIST_SET_PTR ConvertSet(STMT_VAR_PAIR_SET* result_set);
-	STRINGLIST_SET_PTR ConvertSet(PROC_VAR_PAIR_SET* result_set);
+	STRINGLIST_SET_PTR ConvertSet(STMT_STMT_PAIR_LIST* result_set);
+	STRINGLIST_SET_PTR ConvertSet(STMT_VAR_PAIR_LIST* result_set);
+	STRINGLIST_SET_PTR ConvertSet(PROC_VAR_PAIR_LIST* result_set);
 
 	BOOLEAN IsWildCard(STRING_PTR var);
 	BOOLEAN IsVar(STRING_PTR var, STRING_STRING_MAP_PTR var_map);

@@ -56,30 +56,30 @@ typedef struct {
 } STMT_STMT_PAIR;
 typedef struct {
     STMT_IDX s;
-    VAR_NAME* v;
+    VAR_NAME v;
 } STMT_VAR_PAIR;
 typedef struct {
-    PROC_NAME* p;
-    VAR_NAME* v;
+    PROC_NAME p;
+    VAR_NAME v;
 }PROC_VAR_PAIR;
 
-typedef std::vector<VAR_NAME*> VAR_NAME_LIST;
+typedef std::vector<VAR_NAME> VAR_NAME_LIST;
 typedef std::vector<PROC_NAME*> PROC_NAME_LIST;
 typedef std::vector<STMT_IDX> STMT_IDX_LIST;
-typedef std::unordered_set<VAR_NAME*> VAR_NAME_SET;
-typedef std::unordered_set<PROC_NAME*> PROC_NAME_SET;
+typedef std::unordered_set<VAR_NAME> VAR_NAME_SET;
+typedef std::unordered_set<PROC_NAME> PROC_NAME_SET;
 typedef std::unordered_set<STMT_IDX> STMT_IDX_SET;
 typedef std::unordered_set<CONST_VALUE> CONST_VALUE_SET;
-typedef std::unordered_set<EXPRESSION*> EXPRESSION_SET;
-typedef std::unordered_set<STMT_STMT_PAIR*> STMT_STMT_PAIR_SET;
-typedef std::unordered_set<STMT_VAR_PAIR*> STMT_VAR_PAIR_SET;
-typedef std::unordered_set<PROC_VAR_PAIR*> PROC_VAR_PAIR_SET;
-typedef std::unordered_map<EXPRESSION, STMT_IDX_SET*> EXPRESSION_TABLE;
-typedef std::unordered_map<STMT_IDX, STMT_IDX_SET*> STMT_STMT_RELATION_TABLE;
-typedef std::unordered_map<STMT_IDX, VAR_NAME_SET*> STMT_VAR_RELATION_TABLE;
-typedef std::unordered_map<VAR_NAME, STMT_IDX_SET*> VAR_STMT_RELATION_TABLE;
-typedef std::unordered_map<PROC_NAME, VAR_NAME_SET*> PROC_VAR_RELATION_TABLE;
-typedef std::unordered_map<VAR_NAME, PROC_NAME_SET*> VAR_PROC_RELATION_TABLE;
+typedef std::unordered_set<EXPRESSION> EXPRESSION_SET;
+typedef std::vector<STMT_STMT_PAIR> STMT_STMT_PAIR_LIST;
+typedef std::vector<STMT_VAR_PAIR> STMT_VAR_PAIR_LIST;
+typedef std::vector<PROC_VAR_PAIR> PROC_VAR_PAIR_LIST;
+typedef std::unordered_map<EXPRESSION, STMT_IDX_SET> EXPRESSION_TABLE;
+typedef std::unordered_map<STMT_IDX, STMT_IDX_SET> STMT_STMT_RELATION_TABLE;
+typedef std::unordered_map<STMT_IDX, VAR_NAME_SET> STMT_VAR_RELATION_TABLE;
+typedef std::unordered_map<VAR_NAME, STMT_IDX_SET> VAR_STMT_RELATION_TABLE;
+typedef std::unordered_map<PROC_NAME, VAR_NAME_SET> PROC_VAR_RELATION_TABLE;
+typedef std::unordered_map<VAR_NAME, PROC_NAME_SET> VAR_PROC_RELATION_TABLE;
 typedef STMT_STMT_RELATION_TABLE FOLLOWS_TABLE;
 typedef STMT_STMT_RELATION_TABLE FOLLOWS_STAR_TABLE;
 typedef STMT_STMT_RELATION_TABLE INVERSE_FOLLOWS_TABLE;
