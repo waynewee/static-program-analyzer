@@ -8,6 +8,7 @@
 #include "DataTables.h"
 
 class DataManager {
+protected:
     static ConstTable *const_table_;
     static StatementTable *stmt_table_;
     static VariableTable *var_table_;

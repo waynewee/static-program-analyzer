@@ -7,6 +7,7 @@ using namespace std;
 
 DataManager* PKB::data_manager_ = new DataManager();
 RelationManager* PKB::relation_manager_ = new RelationManager();
+PatternManager* PKB::pattern_manager_;
 TNode* PKB::ast_;
 DataManager *PKB::GetDataManager() {
     return data_manager_;

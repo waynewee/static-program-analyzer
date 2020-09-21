@@ -2,8 +2,10 @@
 // Created by Xu Lin on 11/9/20.
 //
 #include <cstdio>
-#include<iostream>
+#include <iostream>
+#include <string>
 #include "RelationManager.h"
+using namespace std;
 
 FOLLOWS_TABLE* RelationManager::follows_table_ = new FOLLOWS_TABLE();
 FOLLOWS_STAR_TABLE* RelationManager::follows_star_table_ = new FOLLOWS_STAR_TABLE();
@@ -125,6 +127,7 @@ bool RelationManager::AddProcModifies(PROC_NAME *p, VAR_NAME *v) {
     return res;
 }
 
+
 bool RelationManager::IsFollows(STMT_IDX s1, STMT_IDX s2) {
     return CheckStmtStmtRelation(follows_table_, inverse_follows_table_, s1, s2);
 }
@@ -149,6 +152,7 @@ bool RelationManager::IsStmtModifies(STMT_IDX s, VAR_NAME *v) {
 bool RelationManager::IsProcModifies(PROC_NAME *p, VAR_NAME *v) {
     return CheckProcVarRelation(proc_modifies_table_, inverse_proc_modifies_table_, p, v);
 }
+
 STMT_IDX_SET *RelationManager::GetFollows(STMT_IDX s) {
     return GetStmtStmtRelationVal(follows_table_, all_inverse_follows_keys_, s);
 }
@@ -243,32 +247,32 @@ bool RelationManager::InsertStmtVarRelation(STMT_VAR_RELATION_TABLE *set, STMT_I
 }
 
 bool RelationManager::InsertProcVarRelation(PROC_VAR_RELATION_TABLE *set, PROC_NAME *p, VAR_NAME *v) {
-    auto iter = set->find(p);
+    auto iter = set->find(*p);
     if (iter == set->end()) {
         VAR_NAME_SET* var_name_set = new VAR_NAME_SET();
-        return set->insert({p, var_name_set}).second && var_name_set->insert(v).second;
+        return set->insert({*p, var_name_set}).second && var_name_set->insert(v).second;
     } else {
-        return set->at(p)->insert(v).second;
+        return set->at(*p)->insert(v).second;
     }
 }
 
 bool RelationManager::InsertVarStmtRelation(VAR_STMT_RELATION_TABLE *set, VAR_NAME *v, STMT_IDX s) {
-    auto iter = set->find(v);
+    auto iter = set->find(*v);
     if (iter == set->end()) {
         STMT_IDX_SET* stmt_idx_set = new STMT_IDX_SET();
-        return set->insert({v, stmt_idx_set}).second && stmt_idx_set->insert(s).second;
+        return set->insert({*v, stmt_idx_set}).second && stmt_idx_set->insert(s).second;
     } else {
-        return set->at(v)->insert(s).second;
+        return set->at(*v)->insert(s).second;
     }
 }
 
 bool RelationManager::InsertVarProcRelation(VAR_PROC_RELATION_TABLE *set, VAR_NAME *v, PROC_NAME *p) {
-    auto iter = set->find(v);
+    auto iter = set->find(*v);
     if (iter == set->end()) {
         PROC_NAME_SET* proc_name_set = new PROC_NAME_SET();
-        return set->insert({v, proc_name_set}).second && proc_name_set->insert(p).second;
+        return set->insert({*v, proc_name_set}).second && proc_name_set->insert(p).second;
     } else {
-        return set->at(v)->insert(p).second;
+        return set->at(*v)->insert(p).second;
     }
 }
 bool RelationManager::CheckStmtStmtRelation(STMT_STMT_RELATION_TABLE *set, STMT_STMT_RELATION_TABLE *inv_set, STMT_IDX s1, STMT_IDX s2) {
@@ -293,7 +297,7 @@ bool RelationManager::CheckStmtVarRelation(STMT_VAR_RELATION_TABLE *set, VAR_STM
         return !set->empty();
     }
     if (s < 0) {
-        auto iter = inv_set->find(v);
+        auto iter = inv_set->find(*v);
         return iter != inv_set->end() && !(iter->second->empty());
     }
     if (!v) {
@@ -309,24 +313,24 @@ bool RelationManager::CheckProcVarRelation(PROC_VAR_RELATION_TABLE *set, VAR_PRO
         return !set->empty();
     }
     if (!p) {
-        auto iter = inv_set->find(v);
+        auto iter = inv_set->find(*v);
         return iter != inv_set->end() && !(iter->second->empty());
     }
     if (!v) {
-        auto iter = set->find(p);
+        auto iter = set->find(*p);
         return iter != set->end() && !(iter->second->empty());
     }
-    auto iter = set->find(p);
+    auto iter = set->find(*p);
     return iter != set->end() && iter->second->find(v) != iter->second->end();
 }
 
 bool RelationManager::CheckVarStmtRelation(VAR_STMT_RELATION_TABLE *set, VAR_NAME *v, STMT_IDX s) {
-    auto iter = set->find(v);
+    auto iter = set->find(*v);
     return iter != set->end() && iter->second->find(s) != iter->second->end();
 }
 
 bool RelationManager::CheckVarProcRelation(VAR_PROC_RELATION_TABLE *set, VAR_NAME *v, PROC_NAME *p) {
-    auto iter = set->find(v);
+    auto iter = set->find(*v);
     return iter != set->end() && iter->second->find(p) != iter->second->end();
 }
 
@@ -355,7 +359,7 @@ VAR_NAME_SET* RelationManager::GetProcVarRelationVal(PROC_VAR_RELATION_TABLE *se
     if (!p) {
         return var_keys;
     }
-    auto iter = set->find(p);
+    auto iter = set->find(*p);
     if (iter != set->end())  {
         return iter->second;
     }
@@ -365,7 +369,7 @@ STMT_IDX_SET* RelationManager::GetVarStmtRelationVal(VAR_STMT_RELATION_TABLE *se
     if (!v) {
         return stmt_keys;
     }
-    auto iter = set->find(v);
+    auto iter = set->find(*v);
     if (iter != set->end())  {
         return iter->second;
     }
@@ -376,7 +380,7 @@ PROC_NAME_SET* RelationManager::GetVarProcRelationVal(VAR_PROC_RELATION_TABLE *s
     if (!v) {
         return proc_keys;
     }
-    auto iter = set->find(v);
+    auto iter = set->find(*v);
     if (iter != set->end())  {
         return iter->second;
     }
@@ -406,6 +410,7 @@ bool RelationManager::InsertProcKey(PROC_NAME_SET *set, PROC_NAME *p) {
 bool RelationManager::InsertVarKey(VAR_NAME_SET *set, VAR_NAME *v) {
     return set->insert(v).second;
 }
+
 
 
 

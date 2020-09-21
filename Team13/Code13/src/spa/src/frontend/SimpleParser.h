@@ -3,9 +3,9 @@
 
 #include <vector>
 
-#include <FrontendTypes.h>
+#include "FrontendTypes.h"
 #include <TNode.h>
-#include <Token.h>
+#include "Token.h"
 
 using namespace std;
 
