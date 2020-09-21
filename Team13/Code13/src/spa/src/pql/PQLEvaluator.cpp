@@ -285,7 +285,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	// Consolidate results
 	STRING_STRINGSET_MAP consolidated_results = STRING_STRINGSET_MAP();
 	if (two_user_result_set.size() != 0) {
-		unordered_set<string> relatedVar = unordered_set<string>();
+		STRING_SET relatedVar = STRING_SET();
 		consolidated_results = ConsolidateResults(output_var, relatedVar, consolidated_results, one_user_result_set, two_user_result_set);
 	}
 	else {
@@ -786,7 +786,7 @@ STRING_SET PQLEvaluator::ConvertSet(INTEGER_SET result_set) {
 }
 
 STRING_SET PQLEvaluator::ConvertSet(DOUBLE_SET result_set) {
-	STRING_SET final_result = unordered_set<string>();
+	STRING_SET final_result = *(new STRING_SET());
 
 	if (!result_set.empty()) {
 		for (DOUBLE k : result_set) {
