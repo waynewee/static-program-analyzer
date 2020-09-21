@@ -45,23 +45,24 @@ VOID QueryInfo::PrintRelRefMap() {
 			cout << " < ";
 			for (auto i : v) {
 				cout << i << ", ";
-			}
-			cout << " > ";
+			}/*
+			else {
+				cout << "{ " << *(v->at(0)) << " " << *(v->at(1)) << "} ";
+			}*/
 		}
-		cout << " } " << endl;
 
 	}
 }
 
 VOID QueryInfo::PrintVarMap() {
 	cout << "----- VAR MAP ----- " << endl;
-	for (auto const& pair : this->var_map) {
-		cout << " { " << pair.first << " , " << pair.second << " } " << endl;
+	for (auto f = var_map.cbegin(); f != var_map.cend(); f++) {
+		cout << " { " << (*f).first << " , " << (*f).second << " } " << endl;
 
 	}
 }
 
 VOID QueryInfo::PrintOutputVar() {
 	cout << "---- OUTPUT VAR ---- " << endl;
-	cout << "Output variable : " << this->output_var << endl;
+	cout << "Output variable : " << output_var << endl;
 }

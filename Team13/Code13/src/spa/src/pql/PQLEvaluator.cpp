@@ -1,12 +1,13 @@
 #include "PQLEvaluator.h"
 #include <iostream>
+
 #include "pkb/PKB.h"
 
 QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
-	STRINGLIST_SET noUserDeclaredSet = STRINGLIST_SET();
-	STRINGLIST_SET oneUserDeclaredSet = STRINGLIST_SET();
-	STRINGLIST_SET twoUserDeclaredSet = STRINGLIST_SET();
-	STRING_STRINGSET_MAP oneUserResultSet = STRING_STRINGSET_MAP();
+	STRINGLIST_SET no_user_set = STRINGLIST_SET();
+	STRINGLIST_SET one_user_set = STRINGLIST_SET();
+	STRINGLIST_SET two_user_set = STRINGLIST_SET();
+	STRING_STRINGSET_MAP one_user_result_set = STRING_STRINGSET_MAP();
 	STRINGLIST_STRINGLISTSET_MAP two_user_result_set = STRINGLIST_STRINGLISTSET_MAP();
 	QueryResult final_result = QueryResult();
 
@@ -28,33 +29,47 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 
 			if (set->empty()) {
 				// error
-				cout << "error creating value for sets" << endl;
+				if (DEBUG) {
+					cout << "PQLEvaluator - Parsing clauses: Error creating value for sets." << endl;
+				}
+
 				final_result.SetResult({});
 				return final_result;
 			}
 
+			BOOLEAN is_insert_successful = true;
 			if (fCall.compare(TYPE_COND_PATTERN) == 0) {
 				// PATTERN clause = Special case
 				set->push_back(p[2]);
 				if (set->size() != 4) {
 					// error
-					cout << "error creating value for pattern sets" << endl;
+					if (DEBUG) {
+						cout << "PQLEvaluator - Parsing clauses: Error creating value for pattern sets." << endl;
+					}
 					final_result.SetResult({});
 					return final_result;
 				}
 
 				if (!IsVar(p[0], varMap)) {
 					// Pattern clause with assign & var
-					if (twoUserDeclaredSet.insert(set).second == 0) {
+					if (two_user_set.insert(set).second == 0) {
 						// error
-						cout << "error inserting twoUserDeclaredSet" << endl;
+						if (DEBUG) {
+							cout << "PQLEvaluator - Parsing clauses: Error inserting pattern's two_user_set." << endl;
+						}
+
+						is_insert_successful = false;
 					}
 				}
 				else if (IsVar(p[0], varMap)) {
 					// Pattern clause with assign only
-					if (oneUserDeclaredSet.insert(set).second == 0) {
+					if (one_user_set.insert(set).second == 0) {
 						// error
-						cout << "error inserting oneUserDeclaredSet" << endl;
+						if (DEBUG) {
+							cout << "PQLEvaluator - Parsing clauses: Error inserting pattern's one_user_set." << endl;
+						}
+
+						is_insert_successful = false;
 					}
 				}
 			}
@@ -63,43 +78,64 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 					// outputVar == CONST type
 					// OR
 					// both params != user declared var
-					if (noUserDeclaredSet.insert(set).second == 0) {
+					if (no_user_set.insert(set).second == 0) {
 						// error
-						cout << "error inserting noUserDeclaredSet" << endl;
+						if (DEBUG) {
+							cout << "PQLEvaluator - Parsing clauses: Error inserting no_user_set." << endl;
+						}
+
+						is_insert_successful = false;
 					}
 				}
 				else if ((IsVar(p[0], varMap) && !IsVar(p[1], varMap)) || (!IsVar(p[0], varMap) && IsVar(p[1], varMap))) {
 					// 1 param == user declared var
-					if (oneUserDeclaredSet.insert(set).second == 0) {
+					if (one_user_set.insert(set).second == 0) {
 						// error
-						cout << "error inserting oneUserDeclaredSet" << endl;
+						if (DEBUG) {
+							cout << "PQLEvaluator - Parsing clauses: Error inserting one_user_set." << endl;
+						}
+
+						is_insert_successful = false;
 					}
 				}
 				else if (IsVar(p[0], varMap) && IsVar(p[1], varMap)) {
 					// 2 params = user declared var
-					if (twoUserDeclaredSet.insert(set).second == 0) {
+					if (two_user_set.insert(set).second == 0) {
 						// error
-						cout << "error inserting twoUserDeclaredSet" << endl;
+						if (DEBUG) {
+							cout << "PQLEvaluator - Parsing clauses: Error inserting two_user_set." << endl;
+						}
+
+						is_insert_successful = false;
 					}
 				}
 				else {
 					// error
-					cout << "params invalid at parsing clause conditions" << endl;
-					final_result.SetResult({});
-					return final_result;
+					if (DEBUG) {
+						cout << "PQLEvaluator - Parsing clauses: Invalid parameters." << endl;
+					}
+					is_insert_successful = false;
 				}
+			}
+
+			if (!is_insert_successful) {
+				final_result.SetResult({});
+				return final_result;
 			}
 		}
 	}
 
-	// Evaluate noUserDeclaredSet -> T/F clauses
+	// Evaluate no_user_set -> T/F clauses
 	// FALSE -> return empty; ALL TRUE -> continue
-	for (const STRING_LIST* func : noUserDeclaredSet) {
+	for (const STRING_LIST* func : no_user_set) {
 		STRING fCall = (*func)[0];
 		STRING param1 = (*func)[1];
 		STRING param2 = (*func)[2];
 
 		if (!EvaluateNoUserDeclaredSet(fCall, param1, param2)) {
+			if (DEBUG) {
+				cout << "PQLEvaluator - Evaluating no user declared clauses: Empty result set received." << endl;
+			}
 			final_result.SetResult({});
 			return final_result;
 		}
@@ -110,15 +146,15 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	if (output_var_type.compare(TYPE_CONST) == 0) {
 		PKB pkb = PKB();
 
-		STRING_SET result = ConvertSet(pkb.GetDataManager()->GetAllConstants());
+		STRING_SET result = ConvertSet(pkb.GetDataManager().GetAllConstants());
 		final_result.SetResult(result);
 
 		return final_result;
 	}
 
-	// Evaluate oneUserDeclaredSet
+	// Evaluate one_user_set
 	// EMPTY set -> return empty;
-	for (const vector<string>* func : oneUserDeclaredSet) {
+	for (const vector<string>* func : one_user_set) {
 		string key = string();
 		unordered_set<string> value = unordered_set<string>();
 
@@ -133,47 +169,53 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			PKB pkb = PKB();
 			STATEMENT_TYPE stmtType = GetStmtType(output_var_type);
 			value = pkb.GetRelationManager().GetPattern(stmtType, ParsingEntRef(param1), param2);*/
-			cout << "pattern not implemented" << endl;
+			if (DEBUG) {
+				cout << "PQLEvaluator - Evaluating one user declared clauses: pattern not implemented yet." << endl;
+			}
 		} else if (IsVar(param1, varMap)) {
 			// getInverseXXX() branch
-			key.assign(param1);
+			key = param1;
 
 			// value = EvaluateOneDeclaredSet(f_call, param2);
 			value = EvaluateInverseOneDeclaredSet(fCall, param2);
 		}
 		else if (IsVar(param2, varMap)) {
 			// getXXX() branch
-			key.assign(param2);
+			key = param2;
 
 			value = EvaluateOneDeclaredSet(fCall, param1);
 			// value = EvaluateInverseOneDeclaredSet(f_call, param1);
 		}
 		else {
 			// error
-			cout << "no user declared var in oneUserDeclaredSet loop" << endl;
+			if (DEBUG) {
+				cout << "PQLEvaluator - Evaluating one user declared clauses: No user declared variable." << endl;
+			}
 			final_result.SetResult({});
 			return final_result;
 		}
 
 		if (value.empty()) {
-			cout << "empty value set at oneUserDeclaredSet" << endl;
+			if (DEBUG) {
+				cout << "PQLEvaluator - Evaluating one user declared clauses: Empty result set." << endl;
+			}
 			final_result.SetResult({});
 			return final_result;
 		}
 
 		// Check if KEY exists
 		// TRUE -> AND the results; FALSE -> insert the results
-		if (oneUserResultSet.find(key) == oneUserResultSet.end()) {
-			oneUserResultSet.insert({ key, value });
+		if (one_user_result_set.find(key) == one_user_result_set.end()) {
+			one_user_result_set.insert({ key, value });
 		}
 		else {
-			oneUserResultSet.at(key) = GetIntersectResult(oneUserResultSet.at(key), value);
+			one_user_result_set.at(key) = GetIntersectResult(one_user_result_set.at(key), value);
 		}
 	}
 
-	// Evaluate twoUserDeclaredSet
-	// EMPTY set -> return empty 
-	for (const vector<string>* func : twoUserDeclaredSet) {
+	// Evaluate two_user_set
+	// EMPTY set -> return empty
+	for (const vector<string>* func : two_user_set) {
 		vector<string>* key =  new vector<string>();
 		unordered_set<vector<string>*> value = unordered_set<vector<string>*>();
 
@@ -181,8 +223,8 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 		string param1 = (*func)[1];
 		string param2 = (*func)[2];
 
-		(*key).push_back(param1);
-		(*key).push_back(param2);
+		key->push_back(param1);
+		key->push_back(param2);
 
 		if (fCall.compare(TYPE_COND_PATTERN) == 0) {
 			/*string param3 = (*func)[3];
@@ -192,14 +234,18 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			PKB pkb = PKB();
 			STATEMENT_TYPE stmtType = GetStmtType(output_var_type);
 			value = pkb.GetRelationManager().GetPattern(stmtType, nullptr, param2);*/
-			cout << "pattern not implemented" << endl;
+			if (DEBUG) {
+				cout << "PQLEvaluator - Evaluating two user declared clauses: pattern not implemented yet." << endl;
+			}
 		}
 		else {
 			value = EvaluateTwoDeclaredSet(fCall);
 		}
 
 		if (value.empty()) {
-			cout << "empty value set at twoUserDeclaredSet" << endl;
+			if (DEBUG) {
+				cout << "PQLEvaluator - Evaluating two user declared clauses: Empty result set." << endl;
+			}
 			final_result.SetResult({});
 			return final_result;
 		}
@@ -214,30 +260,38 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			two_user_result_set.at(checkKey) = GetIntersectResult(two_user_result_set.at(checkKey), value);
 		}
 	}
-	
-	// Consolidate results
-	unordered_map<string, unordered_set<string>> consolidatedResults = unordered_map<string, unordered_set<string>>();
 
+	// Check if output_var is CONST type
+	// TRUE -> return all const vals; FALSE -> continue
+	if (output_var_type.compare(TYPE_CONST) == 0) {
+		PKB pkb = PKB();
+
+		final_result.SetResult(ConvertSet(pkb.GetDataManager().GetAllConstants()));
+		return final_result;
+	}
+
+	// Consolidate results
+	STRING_STRINGSET_MAP consolidated_results = STRING_STRINGSET_MAP();
 	if (two_user_result_set.size() != 0) {
 		unordered_set<string> relatedVar = unordered_set<string>();
-		consolidatedResults = ConsolidateResults(outputVar, relatedVar, consolidatedResults, oneUserResultSet, two_user_result_set);
+		consolidated_results = ConsolidateResults(outputVar, relatedVar, consolidated_results, one_user_result_set, two_user_result_set);
 	}
 	else {
-		consolidatedResults = oneUserResultSet;
-	}
- 	
-	// Check if outputVar is in consolidatedResults
-	// YES -> return corresponding values; NO -> getALLXXX(output_var_type)
-	if (consolidatedResults.find(outputVar) != consolidatedResults.end()) {
-		cout << "output var found in consolidatedResults" << endl;
-		final_result.SetResult(consolidatedResults.at(outputVar));
-	}
-	else {
-		unordered_set<string> value = unordered_set<string>();
-		value = GetAllSet(output_var_type);
-		final_result.SetResult(value);
+		consolidated_results = one_user_result_set;
 	}
 
+	// Check if outputVar is in consolidatedResults
+	// YES -> return corresponding values; NO -> getALLXXX(output_var_type)
+	if (consolidated_results.find(outputVar) != consolidated_results.end()) {
+		cout << "output var found in consolidatedResults" << endl;
+
+		STRING_SET result = *(new STRING_SET(consolidated_results.at(outputVar)));
+		final_result.SetResult(result);
+	}
+	else {
+		STRING_SET result = *(new STRING_SET(GetAllSet(output_var_type)));
+		final_result.SetResult(result);
+	}
 
 	// Return result as QueryResult
 	/*cout << final_result.GetResult().size() << endl;
@@ -250,119 +304,138 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 
 BOOLEAN PQLEvaluator::EvaluateNoUserDeclaredSet(string f_call, string param1, string param2) {
 	PKB pkb = PKB();
-	RelationManager* rm = pkb.GetRelationManager();
+	RelationManager rm = pkb.GetRelationManager();
 
 	cout << "in EvaluateNoUserDeclaredSet" << endl;
 	cout << "fcall: " << f_call << "; param1: " << param1 << "; param2: " << param2 << endl;
 
 	if (f_call.compare(TYPE_COND_FOLLOWS) == 0) {
-		return rm->IsFollows(ParsingStmtRef(param1), ParsingStmtRef(param2));
+		return rm.IsFollows(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_FOLLOWS_T) == 0) {
-		return rm->IsFollowsStar(ParsingStmtRef(param1), ParsingStmtRef(param2));
+		return rm.IsFollowsStar(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_PARENT) == 0) {
-		return rm->IsParent(ParsingStmtRef(param1), ParsingStmtRef(param2));
+		return rm.IsParent(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_PARENT_T) == 0) {
-		return rm->IsParentStar(ParsingStmtRef(param1), ParsingStmtRef(param2));
+		return rm.IsParentStar(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_USES_S) == 0) {
-		return rm->IsStmtUses(ParsingStmtRef(param1), ParsingEntRef(param2));
+		return rm.IsStmtUses(ParsingStmtRef(param1), ParsingEntRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_USES_P) == 0) {
-		return rm->IsProcUses(ParsingEntRef(param1), ParsingEntRef(param2));
+		return rm.IsProcUses(ParsingEntRef(param1), ParsingEntRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_MODIFIES_S) == 0) {
-		return rm->IsStmtModifies(ParsingStmtRef(param1), ParsingEntRef(param2));
+		return rm.IsStmtModifies(ParsingStmtRef(param1), ParsingEntRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_MODIFIES_P) == 0) {
-		return rm->IsProcModifies(ParsingEntRef(param1), ParsingEntRef(param2));
+		return rm.IsProcModifies(ParsingEntRef(param1), ParsingEntRef(param2));
 	}
 	else {
 		// error
-		cout << "no such relref" << endl;
+		if (DEBUG) {
+			cout << "PQLEvaluator - EvaluateNoUserDeclaredSet: No such relref." << endl;
+		}
+
 		return false;
 	}
 }
 
 STRING_SET PQLEvaluator::EvaluateOneDeclaredSet(STRING f_call, STRING param) {
 	PKB pkb;
-	RelationManager* rm = pkb.GetRelationManager();
+	RelationManager rm = pkb.GetRelationManager();
 	STRING_SET result = *(new STRING_SET());
 
-	cout << "in EvaluateOneDeclaredSet" << endl;
-	cout << "fcall: " << f_call << "; param: " << param << endl;
+	if (DEBUG) {
+		cout << "PQLEvaluator - EvaluateOneDeclaredSet" << endl;
+		cout << "fcall: " << f_call << "; param: " << param << endl;
+	}
 
 	if (f_call.compare(TYPE_COND_FOLLOWS) == 0) {
-		result = ConvertSet(rm->GetFollows(ParsingStmtRef(param)));
+		result = ConvertSet(rm.GetFollows(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_FOLLOWS_T) == 0) {
-		result = ConvertSet(rm->GetFollowsStars(ParsingStmtRef(param))));
+		result = ConvertSet(rm.GetFollowsStars(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_PARENT) == 0) {
-		result = ConvertSet(rm->GetParents(ParsingStmtRef(param))));
+		result = ConvertSet(rm.GetParents(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_PARENT_T) == 0) {
-		result = ConvertSet(rm->GetParentStars(ParsingStmtRef(param))));
+		result = ConvertSet(rm.GetParentStars(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_USES_S) == 0) {
-		result = ConvertSet(rm->GetStmtUses(ParsingStmtRef(param)));
+		result = rm.GetStmtUses(ParsingStmtRef(param));
 	}
 	else if (f_call.compare(TYPE_COND_USES_P) == 0) {
-		result = ConvertSet(rm->GetProcUses(ParsingEntRef(param)));
+		result = rm.GetProcUses(ParsingEntRef(param));
 	}
 	else if (f_call.compare(TYPE_COND_MODIFIES_S) == 0) {
-		result = ConvertSet(rm->GetStmtModifies(ParsingStmtRef(param)));
+		result = rm.GetStmtModifies(ParsingStmtRef(param));
 	}
 	else if (f_call.compare(TYPE_COND_MODIFIES_P) == 0) {
-		result = ConvertSet(rm->GetProcModifies(ParsingEntRef(param)));
+		result = rm.GetProcModifies(ParsingEntRef(param));
 	}
 	else {
 		// error
-		cout << "no such relref" << endl;
+		if (DEBUG) {
+			cout << "PQLEvaluator - EvaluateOneDeclaredSet: No such relref." << endl;
+		}
+
 		return {};
 	}
 
+	if (DEBUG) {
+		cout << "PQLEvaluator - EvaluateOneDeclaredSet: Result set's size = " << result.size() << endl;
+	}
 	return result;
 }
 
 STRING_SET PQLEvaluator::EvaluateInverseOneDeclaredSet(STRING f_call, STRING param) {
-	PKB* pkb = new PKB();
-	RelationManager* rm = pkb->GetRelationManager();
+	PKB pkb = PKB();
+	RelationManager rm = pkb.GetRelationManager();
 	STRING_SET result = *(new STRING_SET());
 
-	cout << "in EvaluateInverseOneDeclaredSet" << endl;
-	cout << "fcall: " << f_call << "; param: " << param << endl;
+	if (DEBUG) {
+		cout << "PQLEvaluator - EvaluateInverseOneDeclaredSet" << endl;
+		cout << "fcall: " << f_call << "; param: " << param << endl;
+	}
 
 	if (f_call.compare(TYPE_COND_FOLLOWS) == 0) {
-		result = ConvertSet(rm->GetInverseFollows(ParsingStmtRef(param)));
+		result = ConvertSet(rm.GetInverseFollows(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_FOLLOWS_T) == 0) {
-		result = ConvertSet(rm->GetInverseFollowsStars(ParsingStmtRef(param)));
+		result = ConvertSet(rm.GetInverseFollowsStars(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_PARENT) == 0) {
-		result = ConvertSet(rm->GetInverseParents(ParsingStmtRef(param)));
+		result = ConvertSet(rm.GetInverseParents(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_PARENT_T) == 0) {
-		result = ConvertSet(rm->GetInverseParentStars(ParsingStmtRef(param)));
+		result = ConvertSet(rm.GetInverseParentStars(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_USES_S) == 0) {
-		result = ConvertSet(rm->GetInverseStmtUses(ParsingEntRef(param)));
+		result = ConvertSet(rm.GetInverseStmtUses(ParsingEntRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_USES_P) == 0) {
-		result = ConvertSet(rm->GetInverseProcUses(ParsingEntRef(param)));
+		result = rm.GetInverseProcUses(ParsingEntRef(param));
 	}
 	else if (f_call.compare(TYPE_COND_MODIFIES_S) == 0) {
-		result = ConvertSet(rm->GetInverseStmtModifies(ParsingEntRef(param)));
+		result = ConvertSet(rm.GetInverseStmtModifies(ParsingEntRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_MODIFIES_P) == 0) {
-		result = ConvertSet(rm->GetInverseProcModifies(ParsingEntRef(param)));
+		result = rm.GetInverseProcModifies(ParsingEntRef(param));
 	}
 	else {
 		// error
-		cout << "no such relref" << endl;
+		if (DEBUG) {
+			cout << "PQLEvaluator - EvaluateInverseOneDeclaredSet: No such relref." << endl;
+		}
 		return {};
+	}
+
+	if (DEBUG) {
+		cout << "PQLEvaluator - EvaluateInverseOneDeclaredSet: Result set's size = " << result.size() << endl;
 	}
 
 	return result;
@@ -370,46 +443,53 @@ STRING_SET PQLEvaluator::EvaluateInverseOneDeclaredSet(STRING f_call, STRING par
 
 STRINGLIST_SET PQLEvaluator::EvaluateTwoDeclaredSet(STRING f_call) {
 	PKB pkb = PKB();
-	RelationManager* rm = pkb.GetRelationManager();
+	RelationManager rm = pkb.GetRelationManager();
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 
-	cout << "in EvaluateTwoDeclaredSet" << endl;
-	cout << "fcall: " << f_call << endl;
+	if (DEBUG) {
+		cout << "PQLEvaluator - EvaluateTwoDeclaredSet" << endl;
+		cout << "fcall: " << f_call << endl;
+	}
 
 	if (f_call.compare(TYPE_COND_FOLLOWS) == 0) {
-		result = ConvertSet(rm->GetAllFollows());
+		result = ConvertSet(rm.GetAllFollows());
 	}
 	else if (f_call.compare(TYPE_COND_FOLLOWS_T) == 0) {
-		result = ConvertSet(rm->GetAllFollowsStars());
+		result = ConvertSet(rm.GetAllFollowsStars());
 	}
 	else if (f_call.compare(TYPE_COND_PARENT) == 0) {
-		result = ConvertSet(rm->GetAllParents());
+		result = ConvertSet(rm.GetAllParents());
 	}
 	else if (f_call.compare(TYPE_COND_PARENT_T) == 0) {
-		result = ConvertSet(rm->GetAllParentStars());
+		result = ConvertSet(rm.GetAllParentStars());
 	}
 	else if (f_call.compare(TYPE_COND_USES_S) == 0) {
-		result = ConvertSet(rm->GetAllStmtUses());
+		result = ConvertSet(rm.GetAllStmtUses());
 	}
 	else if (f_call.compare(TYPE_COND_USES_P) == 0) {
-		result = ConvertSet(rm->GetAllProcUses());
+		result = ConvertSet(rm.GetAllProcUses());
 	}
 	else if (f_call.compare(TYPE_COND_MODIFIES_S) == 0) {
-		result = ConvertSet(rm->GetAllStmtModifies());
+		result = ConvertSet(rm.GetAllStmtModifies());
 	}
 	else if (f_call.compare(TYPE_COND_MODIFIES_P) == 0) {
-		result = ConvertSet(rm->GetAllProcModifies());
+		result = ConvertSet(rm.GetAllProcModifies());
 	}
 	else {
 		// error
-		cout << "no such relref" << endl;
+		if (DEBUG) {
+			cout << "PQLEvaluator - EvaluateTwoDeclaredSet: No such relref." << endl;
+		}
 		return {};
 	}
 
+	if (DEBUG) {
+		cout << "PQLEvaluator - EvaluateTwoDeclaredSet: Result set's size = " << result.size() << endl;
+	}
 	return result;
 }
 
-STRING_STRINGSET_MAP PQLEvaluator::ConsolidateResults(STRING curr_check, STRING_SET related_var, STRING_STRINGSET_MAP consolidated_results, 
+STRING_STRINGSET_MAP PQLEvaluator::ConsolidateResults(STRING curr_check, STRING_SET related_var, STRING_STRINGSET_MAP consolidated_results,
 	STRING_STRINGSET_MAP one_user_result_set, STRINGLIST_STRINGLISTSET_MAP two_user_result_set) {
 
 	BOOLEAN is_changed = false;
@@ -422,7 +502,7 @@ STRING_STRINGSET_MAP PQLEvaluator::ConsolidateResults(STRING curr_check, STRING_
 		INTEGER pos_to_check = -1;
 
 		// Check if KEY contains the entity being checked
-		// TRUE -> add its other entity into (PENDING) related var 
+		// TRUE -> add its other entity into (PENDING) related var
 		// FALSE -> go next loop
 		if (key[0].compare(curr_check)) {
 			to_insert.append(key[1]);
@@ -436,9 +516,9 @@ STRING_STRINGSET_MAP PQLEvaluator::ConsolidateResults(STRING curr_check, STRING_
 			continue;
 		}
 
-		// Check if oneUserResultSet contains entity being checked
+		// Check if one_user_result_set contains entity being checked
 		// TRUE -> AND the results
-		// FALSE -> create new entry and add all the values 
+		// FALSE -> create new entry and add all the values
 		// BOTH -> insert results into consolidatedResults
 		STRING_SET tmp = STRING_SET();
 		if (one_user_result_set.find(curr_check) != one_user_result_set.end()) {
@@ -469,9 +549,9 @@ STRING_STRINGSET_MAP PQLEvaluator::ConsolidateResults(STRING curr_check, STRING_
 	}
 
 	if (!related_var.empty()) {
-		auto toRemove = related_var.begin();
-		curr_check = *toRemove;
-		related_var.erase(toRemove);
+		auto to_remove = related_var.begin();
+		curr_check = *to_remove;
+		related_var.erase(to_remove);
 		ConsolidateResults(curr_check, related_var, consolidated_results, one_user_result_set, two_user_result_set);
 	}
 
@@ -480,45 +560,50 @@ STRING_STRINGSET_MAP PQLEvaluator::ConsolidateResults(STRING curr_check, STRING_
 
 STRING_SET PQLEvaluator::GetAllSet(STRING output_var_type) {
 	PKB pkb = PKB();
-	DataManager* dm = pkb.GetDataManager();
+	DataManager dm = pkb.GetDataManager();
 	STRING_SET result = *(new STRING_SET());
 
 	cout << "in GetAllSet" << endl;
 	cout << "output_var_type: " << output_var_type << endl;
 
 	if (output_var_type.compare(TYPE_STMT)) {
-		// result = ConvertSet(dm->GetAllStatements());
+		result = ConvertSet(dm.GetAllStatements());
 	}
 	else if (output_var_type == TYPE_STMT_ASSIGN) {
-		result = ConvertSet(dm->GetAllStatements(STATEMENT_TYPE::assignStatement));
+		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::assignStatement));
 	}
 	else if (output_var_type == TYPE_STMT_CALL) {
-		result = ConvertSet(dm->GetAllStatements(STATEMENT_TYPE::callStatement));
+		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::callStatement));
 	}
 	else if (output_var_type == TYPE_STMT_IF) {
-		result = ConvertSet(dm->GetAllStatements(STATEMENT_TYPE::ifStatement));
+		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::ifStatement));
 	}
 	else if (output_var_type == TYPE_STMT_WHILE) {
-		result = ConvertSet(dm->GetAllStatements(STATEMENT_TYPE::whileStatement));
+		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::whileStatement));
 	}
 	else if (output_var_type == TYPE_STMT_PRINT) {
-		result = ConvertSet(dm->GetAllStatements(STATEMENT_TYPE::printStatement));
+		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::printStatement));
 	}
 	else if (output_var_type == TYPE_STMT_READ) {
-		result = ConvertSet(dm->GetAllStatements(STATEMENT_TYPE::readStatement));
+		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::readStatement));
 	}
 	else if (output_var_type == TYPE_VAR) {
-		result = ConvertSet(dm->GetAllVariables());
+		result = dm.GetAllVariables();
 	}
 	else if (output_var_type == TYPE_PROC) {
-		result = ConvertSet(dm->GetAllProcedures());
+		result = dm.GetAllProcedures();
 	}
 	else {
 		// error
-		cout << "no such relref" << endl;
+		if (DEBUG) {
+			cout << "PQLEvaluator - GetAllSet: No such relref." << endl;
+		}
 		return {};
 	}
 
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetAllSet: Result set's size = " << result.size() << endl;
+	}
 	return result;
 }
 
@@ -550,7 +635,7 @@ STRING_SET PQLEvaluator::GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2
 
 STRING_SET PQLEvaluator::GetIntersectResult(STRING_SET val1, STRING_SET val2) {
 	STRING_SET result = *(new STRING_SET());
-	
+
 	for (auto i = val1.begin(); i != val1.end(); i++) {
 		if (val2.find(*i) != val2.end())
 			result.insert(*i);
@@ -593,7 +678,7 @@ BOOLEAN PQLEvaluator::RemoveIrrelevant(STRING_SET value, STRING_SET tmp) {
 			it = value.erase(it);
 		}
 		else {
-			++it;
+			it++;
 		}
 	}
 
@@ -616,7 +701,6 @@ BOOLEAN PQLEvaluator::RemoveIrrelevant(STRINGLIST_SET value, STRING_SET tmp, INT
 
 	return is_changed;
 }
-
 
 STRING_SET PQLEvaluator::ConvertSet(INTEGER_SET result_set) {
 	STRING_SET final_result = *(new STRING_SET());
@@ -650,13 +734,13 @@ STRING_SET PQLEvaluator::ConvertSet(DOUBLE_SET result_set) {
 	return final_result;
 }
 
-STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_STMT_PAIR_SET result_set) {
+STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_STMT_PAIR_LIST result_set) {
 	STRINGLIST_SET final_result = *(new STRINGLIST_SET());
 
 	if (!result_set.empty()) {
-		for (STMT_STMT_PAIR* k : result_set) {
-			STRING first = to_string(k->s1);
-			STRING second = to_string(k->s2);
+		for (STMT_STMT_PAIR k : result_set) {
+			STRING first = to_string(k.s1);
+			STRING second = to_string(k.s2);
 
 			STRING_LIST* value = new STRING_LIST();
 			value->push_back(first);
@@ -669,13 +753,13 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_STMT_PAIR_SET result_set) {
 	return final_result;
 }
 
-STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_VAR_PAIR_SET result_set) {
+STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_VAR_PAIR_LIST result_set) {
 	STRINGLIST_SET final_result = *(new STRINGLIST_SET());
 
 	if (!result_set.empty()) {
-		for (STMT_VAR_PAIR* k : result_set) {
-			STRING first = to_string(k->s);
-			STRING second = *(k->v);
+		for (STMT_VAR_PAIR k : result_set) {
+			STRING first = to_string(k.s);
+			STRING second = k.v;
 
 			STRING_LIST* value = new STRING_LIST();
 			value->push_back(first);
@@ -688,13 +772,13 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_VAR_PAIR_SET result_set) {
 	return final_result;
 }
 
-STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_VAR_PAIR_SET result_set) {
+STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_VAR_PAIR_LIST result_set) {
 	STRINGLIST_SET final_result = *(new STRINGLIST_SET());
 
 	if (!result_set.empty()) {
-		for (PROC_VAR_PAIR* k : result_set) {
-			STRING first = *(k->p);
-			STRING second = *(k->v);
+		for (PROC_VAR_PAIR k : result_set) {
+			STRING first = k.p;
+			STRING second = k.v;
 
 			STRING_LIST* value = new STRING_LIST();
 			value->push_back(first);

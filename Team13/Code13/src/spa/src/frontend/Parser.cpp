@@ -53,7 +53,7 @@ TNode* Parser::parseStatement() {
 
 	switch (firstToken.getTokenType()) {
 	case TokenType::TOKEN_TYPE::stmt:
-		switch (firstToken.getStmtType()) {
+		switch (firstToken.GetStmtType()) {
 		case TokenType::STMT_TYPE::_read:
 			return Parser::parseReadStatement();
 		case TokenType::STMT_TYPE::_print:
@@ -354,7 +354,7 @@ int compareOpPrecedence(Token a, Token b) {
 
 TNode* Parser::parseExpression(std::vector<Token> exprList) {
 	ExprEvaluator exprEvaluator(exprList);
-	TNode* rootNode = exprEvaluator.evaluate();
+	TNode* rootNode = exprEvaluator.Evaluate();
 	return rootNode;
 }
 

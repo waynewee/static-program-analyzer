@@ -10,8 +10,8 @@ public:
   static volatile bool GlobalStop;
   // method for parsing the SIMPLE source
   virtual void parse(std::string filename) = 0;
-  // method for evaluating a query
-  virtual void evaluate(std::string query, std::list<std::string>& results) =0;
+  // method for evaluating a Query
+  virtual void Evaluate(std::string Query, std::list<std::string>& results) =0;
 };
 
 class WrapperFactory {

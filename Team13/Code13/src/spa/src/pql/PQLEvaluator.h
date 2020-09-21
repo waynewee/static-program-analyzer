@@ -1,5 +1,7 @@
-#include "QueryInfo.h"new_val
+#include "QueryInfo.h"
 #include "QueryResult.h"
+#include "PQLCustomTypes.h"
+#include "CustomTypes.h"
 
 class PQLEvaluator
 {
@@ -10,8 +12,8 @@ public:
 	STRING_SET EvaluateOneDeclaredSet(STRING f_call, STRING param);
 	STRING_SET EvaluateInverseOneDeclaredSet(STRING f_call, STRING param);
 	STRINGLIST_SET EvaluateTwoDeclaredSet(STRING output_var_type);
-	STRING_STRINGSET_MAP ConsolidateResults(STRING curr_check, STRING_SET related_var, 
-		STRING_STRINGSET_MAP consolidated_results, STRING_STRINGSET_MAP one_user_result_set, 
+	STRING_STRINGSET_MAP ConsolidateResults(STRING curr_check, STRING_SET related_var,
+		STRING_STRINGSET_MAP consolidated_results, STRING_STRINGSET_MAP one_user_result_set,
 		STRINGLIST_STRINGLISTSET_MAP two_user_result_set);
 
 	STRING_SET GetNewResult(STRINGLIST_SET value, INTEGER pos_to_check);
@@ -27,9 +29,9 @@ public:
 	STRING_SET ConvertSet(INTEGER_SET result_set);
 	STRING_SET ConvertSet(unordered_set<string*>* result_set); // DO I STILL NEED IT??
 	STRING_SET ConvertSet(DOUBLE_SET result_set);
-	STRINGLIST_SET ConvertSet(STMT_STMT_PAIR_SET result_set);
-	STRINGLIST_SET ConvertSet(STMT_VAR_PAIR_SET result_set);
-	STRINGLIST_SET ConvertSet(PROC_VAR_PAIR_SET result_set);
+	STRINGLIST_SET ConvertSet(STMT_STMT_PAIR_LIST result_set);
+	STRINGLIST_SET ConvertSet(STMT_VAR_PAIR_LIST result_set);
+	STRINGLIST_SET ConvertSet(PROC_VAR_PAIR_LIST result_set);
 
 	BOOLEAN IsWildCard(STRING var);
 	BOOLEAN IsVar(STRING var, STRING_STRING_MAP var_map);

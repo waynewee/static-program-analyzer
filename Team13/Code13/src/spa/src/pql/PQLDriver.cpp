@@ -1,12 +1,10 @@
 #include "PQLDriver.h"
-
-#include <iostream>
-
 #include "PQLEvaluator.h"
 #include "PQLParser.h"
 #include "PQLProjector.h"
 #include "QueryInfo.h"
 #include "QueryResult.h"
+#include <iostream>
 
 STRING PQLDriver::Query(STRING query_string) {
 	PQLParser parser = PQLParser();
@@ -17,7 +15,7 @@ STRING PQLDriver::Query(STRING query_string) {
 
 	cout << "Query: " << query_string << endl;
 	QueryInfo parsed_info = parser.parse(query_string);
-	
+
 	if (!parsed_info.IsQueryInfoValid()) {
 		// Invalid Query
 		cout << "Query is invalid." << endl;
@@ -29,7 +27,7 @@ STRING PQLDriver::Query(STRING query_string) {
 	parsed_info.PrintOutputVar();
 	parsed_info.PrintRelRefMap();
 	parsed_info.PrintVarMap();
-	
+
 	QueryResult result = evaluator.Evaluate(parsed_info);
 	if (result.IsEmpty()) {
 		// Empty result

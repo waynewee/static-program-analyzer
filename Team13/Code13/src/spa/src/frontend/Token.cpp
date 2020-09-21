@@ -1,54 +1,56 @@
-#include <string>
 #include <iostream>
+#include <string>
 
 #include "Token.h"
 #include "TokenType.h"
 
-Token::Token(std::string tokenVal, TokenType::TOKEN_TYPE tokenType) {
-	value = tokenVal;
-	type = tokenType;
-	isUnaryOp = false;
+using namespace std;
+
+Token::Token(string tokenVal, TokenType::TOKEN_TYPE token_type) {
+	value_ = tokenVal;
+	type_ = token_type;
+	is_unary_op_ = false;
 }
 
 Token::Token(){}
 
-void Token::print() {
+void Token::Print() {
 
-	std::string output = "";
+	string output = "";
 
-	output += getTokenTypeStr(type) + "\t" + value;
+	output += GetTokenTypeStr(type_) + "\t" + value_;
 
-	std::cout << output << std::endl;
+	cout << output << endl;
 }
 
-std::string Token::getValue() {
-	return value;
+string Token::GetValue() {
+	return value_;
 }
 
-TokenType::TOKEN_TYPE Token::getTokenType() {
-	return type;
+TokenType::TOKEN_TYPE Token::GetTokenType() {
+	return type_;
 }
 
 
-TokenType::STMT_TYPE Token::getStmtType() {
-	return stmtType;
+TokenType::STMT_TYPE Token::GetStmtType() {
+	return stmt_type_;
 }
 
-std::string Token::getTokenTypeStr(TokenType::TOKEN_TYPE tokenType) {
+string Token::GetTokenTypeStr(TokenType::TOKEN_TYPE token_type) {
 
-	switch (tokenType) {
+	switch (token_type) {
 	case TokenType::TOKEN_TYPE::expr:
-		return "expr";
+		return TOKEN_TYPE_EXPR;
 	case TokenType::TOKEN_TYPE::rel_expr:
-		return "rel_expr";
+		return TOKEN_TYPE_REL_EXPR;
 	case TokenType::TOKEN_TYPE::punc:
-		return "punc";
+		return TOKEN_TYPE_PUNC;
 	case TokenType::TOKEN_TYPE::constant:
-		return "constant";
+		return TOKEN_TYPE_CONSTANT;
 	case TokenType::TOKEN_TYPE::var:
-		return "var";
+		return TOKEN_TYPE_VAR;
 	case TokenType::TOKEN_TYPE::stmt:
-		return "stmt";
+		return TOKEN_TYPE_STMT;
 	default:
 		return "";
 	}

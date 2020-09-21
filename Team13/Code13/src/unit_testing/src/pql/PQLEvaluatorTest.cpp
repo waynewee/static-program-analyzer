@@ -29,14 +29,14 @@ TEST_CASE("lazy testing") {
 	pkb.GetRelationManager()->AddProcModifies(proc, var);
 	pkb.GetRelationManager()->AddProcUses(proc, var);
 
-	pql.query("stmt s1, s2; Select s1 such that Follows(s1, s2)");
-	pql.query("stmt s1, s2; Select s1 such that Follows*(s1, s2)");
-	pql.query("stmt s1, s2; Select s1 such that Parent(s1, s2)");
-	pql.query("stmt s1, s2; Select s1 such that Parent*(s1, s2)");
-	pql.query("stmt s1; variable v1; Select s1 such that Uses(s1, v1)");
-	pql.query("proc p1; variable v1; Select s1 such that Uses(p1, v1)");
-	pql.query("stmt s1; variable v1; Select s1 such that Modifies(s1, v1)");
-	pql.query("proc p1; variable v1; Select s1 such that Modifies(p1, v1)");
+	pql.Query("stmt s1, s2; Select s1 such that Follows(s1, s2)");
+	pql.Query("stmt s1, s2; Select s1 such that Follows*(s1, s2)");
+	pql.Query("stmt s1, s2; Select s1 such that Parent(s1, s2)");
+	pql.Query("stmt s1, s2; Select s1 such that Parent*(s1, s2)");
+	pql.Query("stmt s1; variable v1; Select s1 such that Uses(s1, v1)");
+	pql.Query("proc p1; variable v1; Select s1 such that Uses(p1, v1)");
+	pql.Query("stmt s1; variable v1; Select s1 such that Modifies(s1, v1)");
+	pql.Query("proc p1; variable v1; Select s1 such that Modifies(p1, v1)");
 }
 
 TEST_CASE("1 clause || Follows || user-user") {
@@ -49,20 +49,20 @@ TEST_CASE("1 clause || Follows || user-user") {
 	relRefMap.insert({ TYPE_COND_FOLLOWS, values });
 
 	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "s1" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
+	queryInfo.SetOutputVar({ "s1" });
+	queryInfo.SetRelRefMap(relRefMap);
+	queryInfo.SetVarMap(varMap);
 
 	pkb.reset();
 	pkb.GetDataManager()->AddStatement(assignStatement, 1);
 	pkb.GetDataManager()->AddStatement(assignStatement, 2);
 	pkb.GetRelationManager()->AddFollows(1, 2);
 
-	QueryResult result = evaluator.evaluate(queryInfo);
+	QueryResult result = evaluator.Evaluate(queryInfo);
 
 	unordered_set<string> expectedResult = { "2" };
 
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 }
 
 TEST_CASE("1 clause || Follows || user-wildcard") {
@@ -74,20 +74,20 @@ TEST_CASE("1 clause || Follows || user-wildcard") {
 	relRefMap.insert({ TYPE_COND_FOLLOWS, values });
 
 	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "s" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
+	queryInfo.SetOutputVar({ "s" });
+	queryInfo.SetRelRefMap(relRefMap);
+	queryInfo.SetVarMap(varMap);
 
 	pkb.reset();
 	pkb.GetDataManager()->AddStatement(assignStatement, 1);
 	pkb.GetDataManager()->AddStatement(assignStatement, 2);
 	pkb.GetRelationManager()->AddFollows(1, 2);
 
-	QueryResult result = evaluator.evaluate(queryInfo);
+	QueryResult result = evaluator.Evaluate(queryInfo);
 
 	unordered_set<string> expectedResult = { "1" };
 
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 }
 
 TEST_CASE("1 clause || Follows || wildcard-user") {
@@ -99,20 +99,20 @@ TEST_CASE("1 clause || Follows || wildcard-user") {
 	relRefMap.insert({ TYPE_COND_FOLLOWS, values });
 
 	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "s" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
+	queryInfo.SetOutputVar({ "s" });
+	queryInfo.SetRelRefMap(relRefMap);
+	queryInfo.SetVarMap(varMap);
 
 	pkb.reset();
 	pkb.GetDataManager()->AddStatement(assignStatement, 1);
 	pkb.GetDataManager()->AddStatement(assignStatement, 2);
 	pkb.GetRelationManager()->AddFollows(1, 2);
 
-	QueryResult result = evaluator.evaluate(queryInfo);
+	QueryResult result = evaluator.Evaluate(queryInfo);
 
 	unordered_set<string> expectedResult = { "2" };
 
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 }
 
 TEST_CASE("1 clause || Follows || user-int") {
@@ -124,20 +124,20 @@ TEST_CASE("1 clause || Follows || user-int") {
 	relRefMap.insert({ TYPE_COND_FOLLOWS, values });
 
 	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "s" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
+	queryInfo.SetOutputVar({ "s" });
+	queryInfo.SetRelRefMap(relRefMap);
+	queryInfo.SetVarMap(varMap);
 
 	pkb.reset();
 	pkb.GetDataManager()->AddStatement(assignStatement, 1);
 	pkb.GetDataManager()->AddStatement(assignStatement, 2);
 	pkb.GetRelationManager()->AddFollows(1, 2);
 
-	QueryResult result = evaluator.evaluate(queryInfo);
+	QueryResult result = evaluator.Evaluate(queryInfo);
 
 	unordered_set<string> expectedResult = { "1" };
 
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 }
 
 TEST_CASE("1 clause || Follows || int-user") {
@@ -149,20 +149,20 @@ TEST_CASE("1 clause || Follows || int-user") {
 	relRefMap.insert({ TYPE_COND_FOLLOWS, values });
 
 	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "s" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
+	queryInfo.SetOutputVar({ "s" });
+	queryInfo.SetRelRefMap(relRefMap);
+	queryInfo.SetVarMap(varMap);
 
 	pkb.reset();
 	pkb.GetDataManager()->AddStatement(assignStatement, 1);
 	pkb.GetDataManager()->AddStatement(assignStatement, 2);
 	pkb.GetRelationManager()->AddFollows(1, 2);
 
-	QueryResult result = evaluator.evaluate(queryInfo);
+	QueryResult result = evaluator.Evaluate(queryInfo);
 
 	unordered_set<string> expectedResult = { "2" };
 
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 }
 
 TEST_CASE("1 clause || Follows || wildcard-wildcard") {
@@ -174,20 +174,20 @@ TEST_CASE("1 clause || Follows || wildcard-wildcard") {
 	relRefMap.insert({ TYPE_COND_FOLLOWS, values });
 
 	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "s" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
+	queryInfo.SetOutputVar({ "s" });
+	queryInfo.SetRelRefMap(relRefMap);
+	queryInfo.SetVarMap(varMap);
 
 	pkb.reset();
 	pkb.GetDataManager()->AddStatement(assignStatement, 1);
 	pkb.GetDataManager()->AddStatement(assignStatement, 2);
 	pkb.GetRelationManager()->AddFollows(1, 2);
 
-	QueryResult result = evaluator.evaluate(queryInfo);
+	QueryResult result = evaluator.Evaluate(queryInfo);
 
 	unordered_set<string> expectedResult = { "1", "2" };
 
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 }
 
 TEST_CASE("1 clause || Follows || wildcard-int") {
@@ -199,20 +199,20 @@ TEST_CASE("1 clause || Follows || wildcard-int") {
 	relRefMap.insert({ TYPE_COND_FOLLOWS, values });
 
 	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "s" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
+	queryInfo.SetOutputVar({ "s" });
+	queryInfo.SetRelRefMap(relRefMap);
+	queryInfo.SetVarMap(varMap);
 
 	pkb.reset();
 	pkb.GetDataManager()->AddStatement(assignStatement, 1);
 	pkb.GetDataManager()->AddStatement(assignStatement, 2);
 	pkb.GetRelationManager()->AddFollows(1, 2);
 
-	QueryResult result = evaluator.evaluate(queryInfo);
+	QueryResult result = evaluator.Evaluate(queryInfo);
 
 	unordered_set<string> expectedResult = { "1", "2" };
 
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 }
 
 TEST_CASE("1 clause || Follows || int-wildcard") {
@@ -224,20 +224,20 @@ TEST_CASE("1 clause || Follows || int-wildcard") {
 	relRefMap.insert({ TYPE_COND_FOLLOWS, values });
 
 	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "s" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
+	queryInfo.SetOutputVar({ "s" });
+	queryInfo.SetRelRefMap(relRefMap);
+	queryInfo.SetVarMap(varMap);
 
 	pkb.reset();
 	pkb.GetDataManager()->AddStatement(assignStatement, 1);
 	pkb.GetDataManager()->AddStatement(assignStatement, 2);
 	pkb.GetRelationManager()->AddFollows(2, 1);
 
-	QueryResult result = evaluator.evaluate(queryInfo);
+	QueryResult result = evaluator.Evaluate(queryInfo);
 
 	unordered_set<string> expectedResult = { "1", "2" };
 
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 }
 
 TEST_CASE("1 clause || Follows || int-int") {
@@ -249,20 +249,20 @@ TEST_CASE("1 clause || Follows || int-int") {
 	relRefMap.insert({ TYPE_COND_FOLLOWS, values });
 
 	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "s" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
+	queryInfo.SetOutputVar({ "s" });
+	queryInfo.SetRelRefMap(relRefMap);
+	queryInfo.SetVarMap(varMap);
 
 	pkb.reset();
 	pkb.GetDataManager()->AddStatement(assignStatement, 1);
 	pkb.GetDataManager()->AddStatement(assignStatement, 2);
 	pkb.GetRelationManager()->AddFollows(1, 2);
 
-	QueryResult result = evaluator.evaluate(queryInfo);
+	QueryResult result = evaluator.Evaluate(queryInfo);
 
 	unordered_set<string> expectedResult = { "1", "2"};
 
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 }
 
 TEST_CASE("no clauses || return variables") {
@@ -272,9 +272,9 @@ TEST_CASE("no clauses || return variables") {
 	unordered_map<string, vector<vector<string>>> relRefMap = {};
 
 	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "v" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
+	queryInfo.SetOutputVar({ "v" });
+	queryInfo.SetRelRefMap(relRefMap);
+	queryInfo.SetVarMap(varMap);
 
 	pkb.reset();
 	string* v1 = new string("v1");
@@ -284,11 +284,11 @@ TEST_CASE("no clauses || return variables") {
 	pkb.GetDataManager()->AddVariable(v2);
 	pkb.GetDataManager()->AddVariable(v3);
 
-	QueryResult result = evaluator.evaluate(queryInfo);
+	QueryResult result = evaluator.Evaluate(queryInfo);
 
 	unordered_set<string> expectedResult = { "v1", "v2", "v3" };
 
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 }
 
 TEST_CASE("no clauses || return procedures") {
@@ -298,9 +298,9 @@ TEST_CASE("no clauses || return procedures") {
 	unordered_map<string, vector<vector<string>>> relRefMap = {};
 
 	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "p" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
+	queryInfo.SetOutputVar({ "p" });
+	queryInfo.SetRelRefMap(relRefMap);
+	queryInfo.SetVarMap(varMap);
 
 	pkb.reset();
 	string* p1 = new string("p1");
@@ -310,11 +310,11 @@ TEST_CASE("no clauses || return procedures") {
 	pkb.GetDataManager()->AddProcedure(p2);
 	pkb.GetDataManager()->AddProcedure(p3);
 
-	QueryResult result = evaluator.evaluate(queryInfo);
+	QueryResult result = evaluator.Evaluate(queryInfo);
 
 	unordered_set<string> expectedResult = { "p1", "p2", "p3" };
 
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 }
 
 TEST_CASE("no clauses || return const") {
@@ -324,20 +324,20 @@ TEST_CASE("no clauses || return const") {
 	unordered_map<string, vector<vector<string>>> relRefMap = {};
 
 	QueryInfo queryInfo;
-	queryInfo.setOutputVar({ "c" });
-	queryInfo.setRelRefMap(relRefMap);
-	queryInfo.setVarMap(varMap);
+	queryInfo.SetOutputVar({ "c" });
+	queryInfo.SetRelRefMap(relRefMap);
+	queryInfo.SetVarMap(varMap);
 
 	pkb.reset();
 	pkb.GetDataManager()->AddConstant(1);
 	pkb.GetDataManager()->AddConstant(2);
 	pkb.GetDataManager()->AddConstant(3);
 
-	QueryResult result = evaluator.evaluate(queryInfo);
+	QueryResult result = evaluator.Evaluate(queryInfo);
 
 	unordered_set<string> expectedResult = { "1", "2", "3" };
 
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 }
 
 TEST_CASE("no clauses || return stmts") {
@@ -378,45 +378,45 @@ TEST_CASE("no clauses || return stmts") {
 	varMap.insert({ "c", TYPE_STMT_CALL });
 	varMap.insert({ "a", TYPE_STMT_ASSIGN });
 	varMap.insert({ "s", TYPE_STMT });
-	queryInfo.setVarMap(varMap);
+	queryInfo.SetVarMap(varMap);
 
 	unordered_map<string, vector<vector<string>>> relRefMap = {};
-	queryInfo.setRelRefMap(relRefMap);
+	queryInfo.SetRelRefMap(relRefMap);
 
-	queryInfo.setOutputVar({ "read" });
-	result = evaluator.evaluate(queryInfo);
+	queryInfo.SetOutputVar({ "read" });
+	result = evaluator.Evaluate(queryInfo);
 	expectedResult = { "16", "17", "18" };
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 
-	queryInfo.setOutputVar({ "p" });
-	result = evaluator.evaluate(queryInfo);
+	queryInfo.SetOutputVar({ "p" });
+	result = evaluator.Evaluate(queryInfo);
 	expectedResult = { "13", "14", "15" };
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 
-	queryInfo.setOutputVar({ "while" });
-	result = evaluator.evaluate(queryInfo);
+	queryInfo.SetOutputVar({ "while" });
+	result = evaluator.Evaluate(queryInfo);
 	expectedResult = { "10", "11", "12" };
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 
-	queryInfo.setOutputVar({ "ifs" });
-	result = evaluator.evaluate(queryInfo);
+	queryInfo.SetOutputVar({ "ifs" });
+	result = evaluator.Evaluate(queryInfo);
 	expectedResult = { "7", "8", "9" };
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 
-	queryInfo.setOutputVar({ "c" });
-	result = evaluator.evaluate(queryInfo);
+	queryInfo.SetOutputVar({ "c" });
+	result = evaluator.Evaluate(queryInfo);
 	expectedResult = { "4", "5", "6" };
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 
-	queryInfo.setOutputVar({ "a" });
-	result = evaluator.evaluate(queryInfo);
+	queryInfo.SetOutputVar({ "a" });
+	result = evaluator.Evaluate(queryInfo);
 	expectedResult = { "1", "2", "3" };
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 
-	queryInfo.setOutputVar({ "s" });
-	result = evaluator.evaluate(queryInfo);
+	queryInfo.SetOutputVar({ "s" });
+	result = evaluator.Evaluate(queryInfo);
 	expectedResult = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
 		"11", "12", "13", "14", "15", "16", "17", "18" };
 
-	REQUIRE(result.getResult() == expectedResult);
+	REQUIRE(result.GetResult() == expectedResult);
 }*/

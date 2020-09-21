@@ -2,8 +2,6 @@
 
 #include "PQLCustomTypes.h"
 
-using namespace std;
-
 class QueryResult
 {
 public:

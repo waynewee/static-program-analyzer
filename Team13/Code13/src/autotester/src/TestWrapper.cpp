@@ -1,13 +1,17 @@
 #include <fstream>
 #include <string>
+#include <stdexcept>
+
 #include <PKB.h>
 #include "TestWrapper.h"
-
-#include "frontend/Parser.h"
-#include "frontend/CodeExtractor.h"
-#include "testUtils/TreeTraverse.h"
+#include "frontend/SimpleParser.h"
+#include "frontend/Tokenizer.h"
+#include "frontend/FileReader.h"
 #include "pql/PQLDriver.h"
 #include "pkb/DesignExtractor.h"
+#include "pkb/PatternManager.h"
+
+using namespace std;
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -28,25 +32,39 @@ TestWrapper::TestWrapper() {
 }
 
 // method for parsing the SIMPLE source
-void TestWrapper::parse(std::string filename) {
+void TestWrapper::parse(string filename) {
 
-	CodeExtractor codeExtractor(filename);
+	try {
+		FileReader fileReader(filename);
 
-	std::string input = codeExtractor.extract();
-	Parser parser = Parser();
-	TestWrapper::pkb->SetASTRoot(parser.parse(input));
-	ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
-	ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
+		string* input = fileReader.ReadFile();
+
+		Tokenizer tokenizer(input);
+
+		TOKEN_LIST tokenList = tokenizer.GetTokenList();
+
+		SimpleParser parser = SimpleParser();
+	
+		TestWrapper::pkb->SetASTRoot(parser.Parse(tokenList));
+
+		ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
+		ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
+	}
+	catch (logic_error& e) {
+		cout << e.what() << endl;
+	}
+
 }
 
 // method to evaluating a query
-void TestWrapper::evaluate(std::string query, std::list<std::string>& results){
+void TestWrapper::evaluate(string query, list<string>& results){
 	// call your evaluator to evaluate the query here
 	// ...code to evaluate query...
-	PQLDriver main = PQLDriver();
-	string evaluatedResult = main.query(query);
+	PQLDriver* main = new PQLDriver();
+	STRING_PTR query_ptr = new STRING(query);
+	STRING_PTR evaluated_result = main->query(query_ptr);
 
 	// store the answers to the query in the results list (it is initially empty)
 	// each result must be a string.
-	results.push_back(evaluatedResult);
+	results.push_back(*evaluated_result);
 }
