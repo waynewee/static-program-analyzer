@@ -7,7 +7,18 @@
 #include <CustomTypes.h>
 #include <DataTables.h>
 #include <RelationManager.h>
+#include "CustomTypes.h"
+#include "PQLCustomTypes.h"
+#include "TNode.h"
 
+typedef struct {
+    STMT_IDX s;
+    VAR_NAME v;
+    TNode eroot;
+}ASSIGN_PATTERN;
+
+
+typedef std::vector<ASSIGN_PATTERN> EXPRESSION_TABLE;
 class AssignPatternTable {
 private:
     EXPRESSION_TABLE data_;
@@ -27,9 +38,15 @@ private:
 
     STMT_IDX_SET GetAssignWithPattern(VAR_NAME v, EXPRESSION e, AssignPatternTable table);
 
+<<<<<<< HEAD
     bool MatchPattern(TNode* root, TNode* qroot);
     string RemoveWhiteSpace(EXPRESSION e);
     TNode* ParseExpression(EXPRESSION e);
+=======
+    bool MatchPattern(TNode root, TNode qroot);
+    //string RemoveWhiteSpace(EXPRESSION e);
+    TNode* ParseExpression(EXPRESSION s);
+>>>>>>> 6eeb5362d1b7abeb82f5b9a10334f687c2a65472
     bool IsNumber(EXPRESSION s);
 public:
     PatternManager(StatementTable statement_table, RelationManager relation_manager) {

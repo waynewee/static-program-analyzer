@@ -68,11 +68,6 @@ typedef struct {
     VAR_NAME v;
 }PROC_VAR_PAIR;
 
-typedef struct {
-    STMT_IDX s;
-    VAR_NAME v;
-    TNode eroot;
-}ASSIGN_PATTERN;
 
 typedef std::vector<VAR_NAME> VAR_NAME_LIST;
 typedef std::vector<PROC_NAME*> PROC_NAME_LIST;
@@ -85,7 +80,6 @@ typedef std::unordered_set<EXPRESSION> EXPRESSION_SET;
 typedef std::vector<STMT_STMT_PAIR> STMT_STMT_PAIR_LIST;
 typedef std::vector<STMT_VAR_PAIR> STMT_VAR_PAIR_LIST;
 typedef std::vector<PROC_VAR_PAIR> PROC_VAR_PAIR_LIST;
-typedef std::vector<ASSIGN_PATTERN> EXPRESSION_TABLE;
 typedef std::unordered_map<STMT_IDX, STMT_IDX_SET> STMT_STMT_RELATION_TABLE;
 typedef std::unordered_map<STMT_IDX, VAR_NAME_SET> STMT_VAR_RELATION_TABLE;
 typedef std::unordered_map<VAR_NAME, STMT_IDX_SET> VAR_STMT_RELATION_TABLE;
