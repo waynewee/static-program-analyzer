@@ -1,0 +1,1 @@
+procedureNoWhiteSpace{x=2;z=3;i=5;while(i!=0){x=x-1;if(x==1)then{z=x+1;}else{y=z+x;}z=z+x+i;callq;i=i-1;}callp;}procedurep{if(x<0)then{while(i>0){x=z*3+2*y;callq;i=i-1;}x=x+1;z=x+z;}else{z=1;}z=z+x+i;}procedureq{if(x==1)then{z=x+1;}else{x=z+x;}}

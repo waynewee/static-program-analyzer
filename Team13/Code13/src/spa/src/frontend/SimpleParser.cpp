@@ -15,13 +15,16 @@ using namespace std;
 SimpleParser::SimpleParser() {}
 
 TNode* SimpleParser::Parse(TOKEN_LIST token_list) {
-
 	token_list_ = token_list;
 	token_index_ = -1;
 	statement_index_ = 0;
 
 	TNode* main_prg = new TNode(TNode::NODE_TYPE::program);
 	
+	if (token_list.size() == 0) {
+		throw logic_error("Program cannot be empty");
+	}
+
 	while (token_index_ < (int) token_list_.size() - 1) {
 		Token proc_token = SimpleParser::GetNextToken();
 
@@ -36,6 +39,7 @@ TNode* SimpleParser::Parse(TOKEN_LIST token_list) {
 	for (TNode* node : main_prg->GetChildrenVector()) {
 		node->Print(node);
 	}
+
 	return main_prg;
 }
 
@@ -57,6 +61,8 @@ TNode* SimpleParser::ParseStatement() {
 			return SimpleParser::ParseIfStatement();
 		case TokenType::STMT_TYPE::_while:
 			return SimpleParser::ParseWhileStatement();
+		case TokenType::STMT_TYPE::_procedure:
+			throw logic_error("Cannot define a procedure within a procedure");
 		default:
 			throw logic_error("Unhandled statement name");
 		}
@@ -162,12 +168,14 @@ TNode* SimpleParser::ParseIfStatement() {
 
 	if (PeekNextToken().GetValue() != TYPE_STMT_IF_ELSE) {
 		throw logic_error("Missing Else Block");
+		int x =
+			x + 1;
 	}
 
 	GetNextToken(); // Iterating through 'else' keyword
 	TNode * elseStmtListNode = SimpleParser::ParseStatementList();
 
-	for (TNode* child : elseStmtListNode->GetChildrenVector()) {
+	for (TNode* child :	 elseStmtListNode->GetChildrenVector()) {
 		child->SetParent(if_node);
 	}
 

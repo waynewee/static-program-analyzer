@@ -4,8 +4,9 @@
 #include <vector>
 
 #include <CustomTypes.h>
-#include "ExprEvaluator.h"
-#include "FrontendTypes.h"
+#include <ExprEvaluator.h>
+#include <ExprValidator.h>
+#include <FrontendTypes.h>
 #include <pkb/TNode.h>
 #include <testUtils/TreeTraverse.h>
 #include "Token.h"
@@ -14,6 +15,9 @@
 using namespace std;
 
 ExprEvaluator::ExprEvaluator(TOKEN_LIST expr_list) {
+
+	ExprValidator::Validate(expr_list);
+
 	token_list_ = expr_list;
 }
 
@@ -34,6 +38,7 @@ TNode* ExprEvaluator::EvaluateQueue( queue<tuple<Token, TNode*>> shunted_queue )
 		tup = shunted_queue.front();
 
 		token = get<0>(tup);
+
 		shunted_queue.pop();
 
 		if (token.GetTokenType() == TokenType::TOKEN_TYPE::constant || token.GetTokenType() == TokenType::TOKEN_TYPE::var) {
@@ -54,7 +59,7 @@ TNode* ExprEvaluator::EvaluateQueue( queue<tuple<Token, TNode*>> shunted_queue )
 				//CREATE SINGLE CHILD NODE
 				TNode* c_node_ptr = get<1>(t_stack.top());
 				t_stack.pop();
-				
+
 				//LINK PARENT TO CHILD
 				parent_node_ptr->AddChild(c_node_ptr);
 
@@ -64,10 +69,11 @@ TNode* ExprEvaluator::EvaluateQueue( queue<tuple<Token, TNode*>> shunted_queue )
 				//CREATE RIGHT CHILD NODE
 				TNode* r_node_ptr = get<1>(t_stack.top());
 				t_stack.pop();
-				
+
 				//CREATE LEFT CHILD NODE
 				TNode* l_node_ptr = get<1>(t_stack.top());
 				t_stack.pop();
+
 
 				parent_node_ptr->AddChild(l_node_ptr);
 				parent_node_ptr->AddChild(r_node_ptr);
@@ -95,7 +101,7 @@ queue<tuple<Token, TNode*>> ExprEvaluator::Shunt() {
 	while( i < token_list_.size()){
 
 		Token token = token_list_.at(i);
-		
+
 		TokenType::TOKEN_TYPE token_type = token.GetTokenType();
 
 		if (token_type == TokenType::TOKEN_TYPE::constant || token_type == TokenType::TOKEN_TYPE::var) {
@@ -184,7 +190,7 @@ int ExprEvaluator::CompareOpPrecedence(Token a, Token b) {
 
 int ExprEvaluator::GetPrecedence(Token t) {
 	string val = t.GetValue();
-	
+
 	if (t.is_unary_op_) {
 		return PRECEDENCE_UNARY;
 	}
@@ -193,13 +199,13 @@ int ExprEvaluator::GetPrecedence(Token t) {
 }
 
 TNode::OPERATOR ExprEvaluator::GetOperator(string op_str) {
-	if (op_str == TYPE_REL_EXPR_NOT) {
+	if (op_str == TYPE_COND_EXPR_NOT) {
 		return TNode::OPERATOR::notOp;
 	}
-	else if (op_str == TYPE_REL_EXPR_AND) {
+	else if (op_str == TYPE_COND_EXPR_AND) {
 		return TNode::OPERATOR::andOp;
 	}
-	else if (op_str == TYPE_REL_EXPR_OR) {
+	else if (op_str == TYPE_COND_EXPR_OR) {
 		return TNode::OPERATOR::orOp;
 	}
 	else if (op_str == TYPE_REL_EXPR_GT) {
@@ -236,7 +242,7 @@ TNode::OPERATOR ExprEvaluator::GetOperator(string op_str) {
 		return TNode::OPERATOR::mod;
 	}
 	else {
-		throw logic_error("Invalid token");
+		throw logic_error("Invalid token heree" );
 	}
 
 }
@@ -260,8 +266,11 @@ TNode* ExprEvaluator::ConvertTokenToNode(Token t) {
 	else if (t.GetTokenType() == TokenType::TOKEN_TYPE::constant) {
 		return new TNode(TNode::NODE_TYPE::constValue, stod(t.GetValue()));
 	}
+	else if (t.GetTokenType() == TokenType::TOKEN_TYPE::cond_expr) {
+		return new TNode(TNode::NODE_TYPE::condExpr, GetOperator(t.GetValue()));
+	}
 	else {
-		throw logic_error("Invalid token");
+		throw logic_error("Invalid token laala ");
 	}
 
 };

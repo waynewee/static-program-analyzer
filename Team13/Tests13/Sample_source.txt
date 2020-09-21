@@ -1,8 +1,8 @@
 procedure Example {
-  x = 2;
+  x = 2 + 10 10;
   z = 3;
-  i = 5;
-  while (!(x==0) && (x >= -2) || (y<3)) {
+  i = 5; 
+  while (!(x==0) && (x >= 2) || (y<3)) {
     x = x - 1;
     if (x==1) then {
       z = x + 1; }

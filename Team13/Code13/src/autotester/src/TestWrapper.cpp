@@ -33,18 +33,17 @@ TestWrapper::TestWrapper() {
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(string filename) {
-
 	try {
 		FileReader fileReader(filename);
 
-		string* input = fileReader.ReadFile();
+		string input = fileReader.ReadFile();
 
 		Tokenizer tokenizer(input);
 
 		TOKEN_LIST tokenList = tokenizer.GetTokenList();
 
 		SimpleParser parser = SimpleParser();
-	
+
 		TestWrapper::pkb->SetASTRoot(parser.Parse(tokenList));
 
 		ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());

@@ -12,16 +12,14 @@ Token::Token(string tokenVal, TokenType::TOKEN_TYPE token_type) {
 	is_unary_op_ = false;
 }
 
+Token::Token(string tokenVal, TokenType::TOKEN_TYPE token_type, bool is_unary_op ) {
+	value_ = tokenVal;
+	type_ = token_type;
+	is_unary_op_ = is_unary_op;
+}
+
 Token::Token(){}
 
-void Token::Print() {
-
-	string output = "";
-
-	output += GetTokenTypeStr(type_) + "\t" + value_;
-
-	cout << output << endl;
-}
 
 string Token::GetValue() {
 	return value_;
@@ -36,13 +34,15 @@ TokenType::STMT_TYPE Token::GetStmtType() {
 	return stmt_type_;
 }
 
-string Token::GetTokenTypeStr(TokenType::TOKEN_TYPE token_type) {
+string Token::GetTokenTypeStr() {
 
-	switch (token_type) {
+	switch (type_) {
 	case TokenType::TOKEN_TYPE::expr:
 		return TOKEN_TYPE_EXPR;
 	case TokenType::TOKEN_TYPE::rel_expr:
 		return TOKEN_TYPE_REL_EXPR;
+	case TokenType::TOKEN_TYPE::cond_expr:
+		return TOKEN_TYPE_COND_EXPR;
 	case TokenType::TOKEN_TYPE::punc:
 		return TOKEN_TYPE_PUNC;
 	case TokenType::TOKEN_TYPE::constant:
@@ -51,6 +51,8 @@ string Token::GetTokenTypeStr(TokenType::TOKEN_TYPE token_type) {
 		return TOKEN_TYPE_VAR;
 	case TokenType::TOKEN_TYPE::stmt:
 		return TOKEN_TYPE_STMT;
+	case TokenType::TOKEN_TYPE::assign:
+		return TOKEN_TYPE_ASSIGN;
 	default:
 		return "";
 	}

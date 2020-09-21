@@ -1,0 +1,11 @@
+procedure IfIfNest{
+	if (x==1) then {
+		if(y<10) then {
+			print x;
+		} else {
+      print y;
+    }
+	} else {
+    print z;
+  }
+}

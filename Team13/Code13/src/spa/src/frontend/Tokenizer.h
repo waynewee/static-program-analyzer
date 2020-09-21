@@ -17,19 +17,19 @@ using namespace std;
 #define WHITESPACE_RETURN "\r"
 #define WHITESPACE_TAB "\t"
 
-#define TYPE_REL_EXPR_AND_PART "&"
+#define TYPE_COND_EXPR_AND_PART "&"
 #define TYPE_REL_EXPR_EQ_PART "="
 #define TYPE_REL_EXPR_GT_PART ">"
 #define TYPE_REL_EXPR_LT_PART "<"
 #define TYPE_REL_EXPR_NEQ_PART "!"
-#define TYPE_REL_EXPR_OR_PART "|"
+#define TYPE_COND_EXPR_OR_PART "|"
 
 class Tokenizer {
 public:
 	
-	int len;
-	int pos;
-	string* text;
+	int len_;
+	int pos_;
+	string text_;
 	string token_str_;
 
 	STR_LIST expressions_ = {
@@ -47,6 +47,17 @@ public:
 		TYPE_PUNC_OPEN_PARAN,
 		TYPE_PUNC_SEMICOLON
 	};
+
+	STR_LIST cond_expressions_ = {
+		TYPE_COND_EXPR_AND,
+		TYPE_COND_EXPR_OR,
+		TYPE_COND_EXPR_NOT
+	};
+
+	STR_LIST cond_expressions_part_ = {
+		TYPE_COND_EXPR_AND_PART,
+		TYPE_COND_EXPR_OR_PART
+	};
 	
 	STR_LIST rel_expressions_ = {
 		TYPE_REL_EXPR_GT,
@@ -54,18 +65,13 @@ public:
 		TYPE_REL_EXPR_LT,
 		TYPE_REL_EXPR_LTE,
 		TYPE_REL_EXPR_EQ,
-		TYPE_REL_EXPR_AND,
-		TYPE_REL_EXPR_OR,
 		TYPE_REL_EXPR_NEQ,
-		TYPE_REL_EXPR_NOT
 	};
 
 	STR_LIST rel_expressions_part_ = {
 		TYPE_REL_EXPR_GT_PART ,
 		TYPE_REL_EXPR_LT_PART ,
 		TYPE_REL_EXPR_EQ_PART ,
-		TYPE_REL_EXPR_AND_PART,
-		TYPE_REL_EXPR_OR_PART ,
 		TYPE_REL_EXPR_NEQ_PART
 	};
 
@@ -89,23 +95,29 @@ public:
 
 	TOKEN_LIST token_list_;
 
-	Tokenizer(string* input);
+	Tokenizer(string input);
 	
 	int Tokenize();
 
 	Token* AddToken(TokenType::TOKEN_TYPE token_type);
 	void AppendStrToTokenStr(string str);
 	void AppendCharToTokenStr(char c);
+	string GetPredictedString(char curr_char, char next_char);
 	vector<Token> GetTokenList();
 	void ResetTokenStr();
-	void TestAndSetUnary(Token* curr_ptr, Token prev);
 
-	bool CheckMatch(string s, STR_LIST v);
+	bool IsMatch(string s, STR_LIST v);
 	bool IsExpr(char c);
 	bool IsPunc(char c);
 	bool IsRelExpr(string str);
 	bool IsRelExprPart(char c);
+	bool IsCondExpr(string str);
+	bool IsCondExprPart(char c);
 	bool IsWhiteSpace(char c);
+
+	bool IsStmtName(string stmtName);
+	bool IsInteger(string integer);
+	bool IsVar(string varName);
 
 };
 

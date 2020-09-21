@@ -1,0 +1,7 @@
+procedure SpellReadWrong {
+  if (x ==5) then {
+    red x;
+  } else {
+    red y;
+  }
+}
