@@ -5,7 +5,7 @@ file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.hpp")
 
-add_library(spa ${srcs} ${headers})
+add_library(spa ${srcs} ${headers} "src/frontend/ExprValidator.h" "src/frontend/ExprValidator.cpp")
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/pkb" "${CMAKE_CURRENT_SOURCE_DIR}/pql" "${CMAKE_CURRENT_SOURCE_DIR}/frontend")
 # this makes the headers accessible for other projects which uses spa lib

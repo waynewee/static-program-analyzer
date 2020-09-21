@@ -36,7 +36,7 @@ void TestWrapper::parse(string filename) {
 	try {
 		FileReader fileReader(filename);
 
-		string* input = fileReader.ReadFile();
+		string input = fileReader.ReadFile();
 
 		Tokenizer tokenizer(input);
 

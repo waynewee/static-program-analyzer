@@ -34,15 +34,19 @@
 #define TYPE_REL_EXPR_LT "<"
 #define TYPE_REL_EXPR_LTE "<="
 #define TYPE_REL_EXPR_EQ "=="
-#define TYPE_REL_EXPR_AND "&&"
-#define TYPE_REL_EXPR_OR "||"
 #define TYPE_REL_EXPR_NEQ "!="
-#define TYPE_REL_EXPR_NOT "!"
+
+#define TYPE_COND_EXPR_AND "&&"
+#define TYPE_COND_EXPR_OR "||"
+#define TYPE_COND_EXPR_NOT "!"
+
 #define TYPE_EXPR_MOD "%"
 #define TYPE_EXPR_PLUS "+"
 #define TYPE_EXPR_MINUS "-"
 #define TYPE_EXPR_TIMES "*"
 #define TYPE_EXPR_DIVIDE "/"
+
+#define TYPE_ASSIGN "="
 
 typedef std::string VAR_NAME;
 typedef std::string PROC_NAME;

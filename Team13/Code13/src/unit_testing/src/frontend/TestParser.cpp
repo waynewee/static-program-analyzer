@@ -52,7 +52,7 @@ bool SameAST(vector<TNode*> v1, vector<TNode*> v2) {
 }
 
 TEST_CASE("Parsing regular assignment statement") {
-	Tokenizer tokenizer(AssgnTest1.SourceProgram);
+	Tokenizer tokenizer(*(AssgnTest1.SourceProgram));
 	tokenizer.Tokenize();
 	TNode* actualRoot = parser.Parse(tokenizer.GetTokenList());
 

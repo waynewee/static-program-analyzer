@@ -9,12 +9,12 @@ FileReader::FileReader(string file_name) {
 	file_name_ = file_name;
 }
 
-string* FileReader::ReadFile() {
+string FileReader::ReadFile() {
 
 	ifstream ifs(file_name_);
-	string* input = new string();
+	string input;
 
-	input->assign((istreambuf_iterator<char>(ifs)),
+	input.assign((istreambuf_iterator<char>(ifs)),
 		(istreambuf_iterator<char>()));
 
 	return input;

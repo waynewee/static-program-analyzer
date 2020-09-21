@@ -1,0 +1,8 @@
+procedure IfExtraStuff {
+  if randomstring ( x == 5 ) then {
+    x = 5;
+  } else {
+    x = 6;
+  }
+
+}

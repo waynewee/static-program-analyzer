@@ -1,0 +1,4 @@
+procedure EmptyIf {
+	if(x == 1)then{}else{}
+  while(x==1){}
+}

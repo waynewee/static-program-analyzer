@@ -5,10 +5,14 @@
 #include "TreeTraverse.h"
 #include "../pkb/TNode.h"
 
-void TreeTraverse::traverse(TNode* root) {
+using namespace std;
 
+string TreeTraverse::traverse(TNode* root) {
+
+	string result = "";
+	
 	if (root == NULL) {
-		return;
+		return result;
 	}
 
 	std::queue<TNode*> queue;
@@ -21,11 +25,13 @@ void TreeTraverse::traverse(TNode* root) {
 		TNode* node = queue.front();
 		queue.pop();
 
-		std::cout << node->getData() << std::endl;
+		result += node->getData();
 
 		for (TNode* cNode : node->GetChildrenVector()) {
 			queue.push(cNode);
 		}
 	}
+
+	return result;
 
 }
