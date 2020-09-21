@@ -7,9 +7,9 @@
 #include "frontend/SimpleParser.h"
 #include "frontend/Tokenizer.h"
 #include "frontend/FileReader.h"
-#include "testUtils/TreeTraverse.h"
 #include "pql/PQLDriver.h"
 #include "pkb/DesignExtractor.h"
+#include "pkb/PatternManager.h"
 
 using namespace std;
 

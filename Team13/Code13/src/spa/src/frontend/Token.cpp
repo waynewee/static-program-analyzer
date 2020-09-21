@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 
-#include <Token.h>
-#include <TokenType.h>
+#include "Token.h"
+#include "TokenType.h"
 
 using namespace std;
 

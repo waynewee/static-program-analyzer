@@ -4,12 +4,12 @@
 #include <vector>
 
 #include <CustomTypes.h>
-#include <ExprEvaluator.h>
-#include <FrontendTypes.h>
+#include "ExprEvaluator.h"
+#include "FrontendTypes.h"
 #include <pkb/TNode.h>
 #include <testUtils/TreeTraverse.h>
-#include <Token.h>
-#include <TokenType.h>
+#include "Token.h"
+#include "TokenType.h"
 
 using namespace std;
 
