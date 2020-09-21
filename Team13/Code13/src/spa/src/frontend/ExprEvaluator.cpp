@@ -9,8 +9,8 @@
 #include <FrontendTypes.h>
 #include <pkb/TNode.h>
 #include <testUtils/TreeTraverse.h>
-#include "Token.h"
-#include "TokenType.h"
+#include <Token.h>
+#include <TokenType.h>
 
 using namespace std;
 

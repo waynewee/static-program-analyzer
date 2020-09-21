@@ -20,7 +20,7 @@ TNode* SimpleParser::Parse(TOKEN_LIST token_list) {
 	statement_index_ = 0;
 
 	TNode* main_prg = new TNode(TNode::NODE_TYPE::program);
-	
+
 	if (token_list.size() == 0) {
 		throw logic_error("Program cannot be empty");
 	}
@@ -39,7 +39,6 @@ TNode* SimpleParser::Parse(TOKEN_LIST token_list) {
 	/*for (TNode* node : main_prg->GetChildrenVector()) {
 		node->Print(node);
 	}*/
-
 	return main_prg;
 }
 
@@ -78,7 +77,7 @@ TNode* SimpleParser::ParseProcStatement() {
 	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
 		throw logic_error("Invalid procedure name");
 	}
-	
+
 	TNode * proc_node = new TNode(TNode::NODE_TYPE::procedure);
 	TNode * proc_name_node = new TNode(TNode::NODE_TYPE::procName, name_token.GetValue());
 	TNode * stmt_list_node = SimpleParser::ParseStatementList();
@@ -86,7 +85,7 @@ TNode* SimpleParser::ParseProcStatement() {
 	if (!proc_node->AddChild(proc_name_node) || !proc_node->AddChild((stmt_list_node))) {
 		throw logic_error("Null node added to child of proc node");
 	}
-	
+
 	return proc_node;
 }
 
@@ -97,7 +96,7 @@ TNode* SimpleParser::ParseReadStatement() {
 	if (var_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
 		throw logic_error("Invalid variable name for read statement");
 	}
-	
+
 	TNode * read_node = new TNode(TNode::NODE_TYPE::readStmt, statement_index_);
 	TNode * var_node = new TNode(TNode::NODE_TYPE::varName, var_token.GetValue());
 
@@ -115,7 +114,7 @@ TNode* SimpleParser::ParseReadStatement() {
 TNode* SimpleParser::ParsePrintStatement() {
 	Token var_token = SimpleParser::GetNextToken();
 	if (var_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
-		
+
 		throw logic_error("Invalid variable name for print statement");
 	}
 
@@ -139,7 +138,7 @@ TNode* SimpleParser::ParseCallStatement() {
 	if (proc_name_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
 		throw logic_error("Invalid procedure name for call statement");
 	}
-	
+
 	TNode * call_node = new TNode(TNode::NODE_TYPE::callStmt, statement_index_);
 	TNode * proc_name_node = new TNode(TNode::NODE_TYPE::procName, statement_index_);
 
@@ -168,8 +167,6 @@ TNode* SimpleParser::ParseIfStatement() {
 
 	if (PeekNextToken().GetValue() != TYPE_STMT_IF_ELSE) {
 		throw logic_error("Missing Else Block");
-		int x =
-			x + 1;
 	}
 
 	GetNextToken(); // Iterating through 'else' keyword
@@ -226,7 +223,7 @@ TNode* SimpleParser::ParseAssignStatement(Token name_token) {
 TNode* SimpleParser::ParseStatementList() {
 	int end_index = SimpleParser::GetEndIndxOfStatementList();
 	TNode* stmt_list_node = new TNode(TNode::NODE_TYPE::stmtList, statement_index_);
-	// Parse the whole statement block 
+	// Parse the whole statement block
 	while ((token_index_) < end_index) {
 		if (PeekNextToken().GetValue() == TYPE_PUNC_OPEN_BRACKET ||
 			PeekNextToken().GetValue() == TYPE_PUNC_CLOSED_BRACKET) {
@@ -263,7 +260,7 @@ TNode* SimpleParser::ParseExpressionStatement(SimpleParser::expressionType exprT
 		}
 
 		if (exprType == SimpleParser::expressionType::_if) {
-			
+
 			while (SimpleParser::PeekNextToken().GetValue() != TYPE_STMT_IF_THEN) {
 				next_token = SimpleParser::GetNextToken();
 				expr_list.push_back(next_token);
@@ -281,7 +278,7 @@ TNode* SimpleParser::ParseExpressionStatement(SimpleParser::expressionType exprT
 	}
 	TNode* expr_node = SimpleParser::ParseExpression(expr_list);
 	return expr_node;
-	
+
 }
 
 TNode* SimpleParser::ParseExpression(vector<Token> expr_list) {
