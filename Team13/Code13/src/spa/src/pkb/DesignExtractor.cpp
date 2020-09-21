@@ -325,7 +325,7 @@ bool ExtractPattern(PatternManager manager, TNode root) {
     if (root.GetNodeType() == TNode::assignStmt) {
         TNode* var_node = children.at(0);
         TNode* expr_node = children.at(1);
-        manager.AddAssignPattern(root.GetStmtIndex(), var_node->GetName(), *expr_node);
+        manager.AddAssignPattern(root.GetStmtIndex(), *var_node->GetName(), *expr_node);
     } else {
         for (TNode* child : children) {
             ExtractPattern(manager, *child);

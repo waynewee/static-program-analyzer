@@ -38,15 +38,9 @@ private:
 
     STMT_IDX_SET GetAssignWithPattern(VAR_NAME v, EXPRESSION e, AssignPatternTable table);
 
-<<<<<<< HEAD
-    bool MatchPattern(TNode* root, TNode* qroot);
     string RemoveWhiteSpace(EXPRESSION e);
-    TNode* ParseExpression(EXPRESSION e);
-=======
     bool MatchPattern(TNode root, TNode qroot);
-    //string RemoveWhiteSpace(EXPRESSION e);
     TNode* ParseExpression(EXPRESSION s);
->>>>>>> 6eeb5362d1b7abeb82f5b9a10334f687c2a65472
     bool IsNumber(EXPRESSION s);
 public:
     PatternManager(StatementTable statement_table, RelationManager relation_manager) {

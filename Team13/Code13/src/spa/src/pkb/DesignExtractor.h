@@ -5,9 +5,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "CustomTypes.h"
+#include "PatternManager.h"
 #include "PKB.h"
 #include "TNode.h"
-#include "CustomTypes.h"
+
 
 using namespace std;
 

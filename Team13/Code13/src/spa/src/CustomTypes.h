@@ -4,7 +4,6 @@
 #include <string>
 #include <cstdlib>
 #include <vector>
-#include <TNode.h>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -76,7 +75,6 @@ typedef std::unordered_set<VAR_NAME> VAR_NAME_SET;
 typedef std::unordered_set<PROC_NAME> PROC_NAME_SET;
 typedef std::unordered_set<STMT_IDX> STMT_IDX_SET;
 typedef std::unordered_set<CONST_VALUE> CONST_VALUE_SET;
-typedef std::unordered_set<EXPRESSION> EXPRESSION_SET;
 typedef std::vector<STMT_STMT_PAIR> STMT_STMT_PAIR_LIST;
 typedef std::vector<STMT_VAR_PAIR> STMT_VAR_PAIR_LIST;
 typedef std::vector<PROC_VAR_PAIR> PROC_VAR_PAIR_LIST;
