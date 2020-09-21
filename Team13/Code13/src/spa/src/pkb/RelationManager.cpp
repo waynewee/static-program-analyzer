@@ -293,14 +293,14 @@ bool RelationManager::CheckStmtStmtRelation(STMT_STMT_RELATION_TABLE set, STMT_S
 }
 bool RelationManager::CheckStmtVarRelation(STMT_VAR_RELATION_TABLE set, VAR_STMT_RELATION_TABLE inv_set, STMT_IDX s, VAR_NAME v) {
     //If s and v are both wildcard, then just check if program contains such relation
-    if (s < 0 && !v.empty()) {
+    if (s < 0 && v.empty()) {
         return !set.empty();
     }
     if (s < 0) {
         auto iter = inv_set.find(v);
         return iter != inv_set.end() && !(iter->second.empty());
     }
-    if (!v.empty()) {
+    if (v.empty()) {
         auto iter = set.find(s);
         return iter != set.end() && !(iter->second.empty());
     }
@@ -309,14 +309,14 @@ bool RelationManager::CheckStmtVarRelation(STMT_VAR_RELATION_TABLE set, VAR_STMT
 }
 bool RelationManager::CheckProcVarRelation(PROC_VAR_RELATION_TABLE set, VAR_PROC_RELATION_TABLE inv_set, PROC_NAME p, VAR_NAME v) {
     //If p and v are both wildcard, then just check if program contains such relation
-    if (!p.empty() && !v.empty()) {
+    if (p.empty() && v.empty()) {
         return !set.empty();
     }
-    if (!p.empty()) {
+    if (p.empty()) {
         auto iter = inv_set.find(v);
         return iter != inv_set.end() && !(iter->second.empty());
     }
-    if (!v.empty()) {
+    if (v.empty()) {
         auto iter = set.find(p);
         return iter != set.end() && !(iter->second.empty());
     }
@@ -356,7 +356,7 @@ VAR_NAME_SET RelationManager::GetStmtVarRelationVal(STMT_VAR_RELATION_TABLE set,
     return VAR_NAME_SET();
 }
 VAR_NAME_SET RelationManager::GetProcVarRelationVal(PROC_VAR_RELATION_TABLE set, VAR_NAME_SET var_keys, PROC_NAME p) {
-    if (!p.empty()) {
+    if (p.empty()) {
         return var_keys;
     }
     auto iter = set.find(p);
@@ -366,7 +366,7 @@ VAR_NAME_SET RelationManager::GetProcVarRelationVal(PROC_VAR_RELATION_TABLE set,
     return VAR_NAME_SET();
 }
 STMT_IDX_SET RelationManager::GetVarStmtRelationVal(VAR_STMT_RELATION_TABLE set, STMT_IDX_SET stmt_keys, VAR_NAME v) {
-    if (!v.empty()) {
+    if (v.empty()) {
         return stmt_keys;
     }
     auto iter = set.find(v);
@@ -377,7 +377,7 @@ STMT_IDX_SET RelationManager::GetVarStmtRelationVal(VAR_STMT_RELATION_TABLE set,
 }
 
 PROC_NAME_SET RelationManager::GetVarProcRelationVal(VAR_PROC_RELATION_TABLE set, PROC_NAME_SET proc_keys, VAR_NAME v) {
-    if (!v.empty()) {
+    if (v.empty()) {
         return proc_keys;
     }
     auto iter = set.find(v);

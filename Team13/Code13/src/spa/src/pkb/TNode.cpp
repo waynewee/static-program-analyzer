@@ -137,3 +137,7 @@ CONST_VALUE TNode::GetConstValue() {
 string* TNode::GetName() {
     return name;
 }
+bool TNode::InsertChildAtHead(TNode *child) {
+    children.insert(children.begin(), child);
+    return true;
+}
