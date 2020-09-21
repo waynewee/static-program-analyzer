@@ -5,9 +5,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include <FrontendTypes.h>
+#include "FrontendTypes.h"
 #include <pkb/TNode.h>
-#include <Token.h>
+#include "Token.h"
 
 using namespace std;
 

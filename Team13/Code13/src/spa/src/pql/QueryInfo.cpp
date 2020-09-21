@@ -8,7 +8,7 @@ STRING_STRINGLISTLIST_MAP_PTR QueryInfo::GetRelRefMap() {
 }
 
 STRING_STRING_MAP_PTR QueryInfo::GetVarMap() {
-	return this->var_map;
+	return this->var_map_;
 }
 
 STRING_PTR QueryInfo::GetOutputVar() {
@@ -25,7 +25,7 @@ void QueryInfo::SetRelRefMap(STRING_STRINGLISTLIST_MAP_PTR rel_ref_map) {
 }
 
 void QueryInfo::SetVarMap(STRING_STRING_MAP_PTR var_map) {
-	this->var_map = var_map;
+	this->var_map_ = var_map;
 }
 
 void QueryInfo::SetOutputVar(STRING_PTR output_var) {
@@ -60,7 +60,7 @@ void QueryInfo::PrintRelRefMap() {
 
 void QueryInfo::PrintVarMap() {
 	cout << "----- VAR MAP ----- " << endl;
-	for (auto f = var_map->cbegin(); f != var_map->cend(); f++) {
+	for (auto f = var_map_->cbegin(); f != var_map_->cend(); f++) {
 		cout << " { " << *((*f).first) << " , " << *((*f).second) << " } " << endl;
 
 	}

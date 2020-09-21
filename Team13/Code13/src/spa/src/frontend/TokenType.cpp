@@ -1,9 +1,9 @@
 #include <stdexcept>
 #include <string>
 
-#include <FrontendTypes.h>
+#include "FrontendTypes.h"
 #include <CustomTypes.h>
-#include <TokenType.h>
+#include "TokenType.h"
 
 using namespace std;
 

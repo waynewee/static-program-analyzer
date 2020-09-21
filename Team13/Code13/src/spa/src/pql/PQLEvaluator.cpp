@@ -738,7 +738,7 @@ STRING_SET_PTR PQLEvaluator::ConvertSet(DOUBLE_SET_PTR result_set) {
 	return final_result;
 }
 
-STRINGLIST_SET_PTR PQLEvaluator::ConvertSet(STMT_STMT_PAIR_SET* result_set) {
+STRINGLIST_SET_PTR PQLEvaluator::ConvertSet(STMT_STMT_PAIR_LIST* result_set) {
 	STRINGLIST_SET_PTR final_result = new STRINGLIST_SET();
 
 	if (!result_set->empty()) {
@@ -757,7 +757,7 @@ STRINGLIST_SET_PTR PQLEvaluator::ConvertSet(STMT_STMT_PAIR_SET* result_set) {
 	return final_result;
 }
 
-STRINGLIST_SET_PTR PQLEvaluator::ConvertSet(STMT_VAR_PAIR_SET* result_set) {
+STRINGLIST_SET_PTR PQLEvaluator::ConvertSet(STMT_VAR_PAIR_LIST* result_set) {
 	STRINGLIST_SET_PTR final_result = new STRINGLIST_SET();
 
 	if (!result_set->empty()) {
@@ -776,7 +776,7 @@ STRINGLIST_SET_PTR PQLEvaluator::ConvertSet(STMT_VAR_PAIR_SET* result_set) {
 	return final_result;
 }
 
-STRINGLIST_SET_PTR PQLEvaluator::ConvertSet(PROC_VAR_PAIR_SET* result_set) {
+STRINGLIST_SET_PTR PQLEvaluator::ConvertSet(PROC_VAR_PAIR_LIST* result_set) {
 	STRINGLIST_SET_PTR final_result = new STRINGLIST_SET();
 
 	if (!result_set->empty()) {

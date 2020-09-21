@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-#include <TokenType.h>
+#include "TokenType.h"
 
 using namespace std;
 

@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <Token.h>
+#include "Token.h"
 
 #define TYPE_STMT_IF_THEN "then"
 #define TYPE_STMT_IF_ELSE "else"

@@ -6,9 +6,9 @@
 #include <vector>
 
 #include <CustomTypes.h>
-#include <FrontendTypes.h>
-#include <Token.h>
-#include <TokenType.h>
+#include "FrontendTypes.h"
+#include "Token.h"
+#include "TokenType.h"
 
 using namespace std;
 

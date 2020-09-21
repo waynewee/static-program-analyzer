@@ -4,11 +4,11 @@
 #include <stack>
 #include <vector>
 
-#include <ExprEvaluator.h>
-#include <SimpleParser.h>
+#include "ExprEvaluator.h"
+#include "SimpleParser.h"
 #include <TNode.h>
-#include <TokenType.h>
-#include <Token.h>
+#include "TokenType.h"
+#include "Token.h"
 
 using namespace std;
 

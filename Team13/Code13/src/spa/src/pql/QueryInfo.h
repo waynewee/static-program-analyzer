@@ -6,7 +6,7 @@ class QueryInfo
 {
 private:
 	STRING_STRINGLISTLIST_MAP_PTR rel_ref_map;
-	STRING_STRING_MAP_PTR var_map;
+	STRING_STRING_MAP_PTR var_map_;
 	STRING_PTR output_var;
 	BOOLEAN is_valid = true;
 public:
