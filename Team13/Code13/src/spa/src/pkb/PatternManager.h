@@ -24,10 +24,9 @@ private:
 
     STMT_IDX_LIST GetStmtIdxSetIntersection(STMT_IDX_SET s1, STMT_IDX_SET s2);
     STMT_IDX_LIST GetStmtIdxSetIntersection(STMT_IDX_LIST l1, STMT_IDX_SET s2);
-    STMT_IDX_LIST GetAllAssignModifies(VAR_NAME v);
+
     STMT_IDX_SET GetAssignWithPattern(VAR_NAME v, EXPRESSION e, AssignPatternTable table);
 
-    STMT_IDX_SET GetAssignWithMatchingPattern(TNode* qroot);
     bool MatchPattern(TNode* root, TNode* qroot);
     string RemoveWhiteSpace(EXPRESSION e);
     TNode* ParseExpression(EXPRESSION e);
@@ -41,6 +40,8 @@ public:
 
     STMT_IDX_SET GetAssignWithFullPattern(VAR_NAME v, EXPRESSION e);
     STMT_IDX_SET GetAssignWithSubpattern(VAR_NAME v, EXPRESSION e);
+    STMT_VAR_PAIR_LIST GetAssignStmtVarPairWithFullPattern(VAR_NAME v, EXPRESSION e);
+    STMT_VAR_PAIR_LIST GetAssignStmtVarPairWithSubPattern(VAR_NAME v, EXPRESSION e);
 };
 
 #endif // PATTERNMANAGER_H

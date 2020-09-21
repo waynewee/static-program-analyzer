@@ -122,3 +122,48 @@ bool PatternManager::IsNumber(EXPRESSION s) {
     return !s.empty() && std::find_if(s.begin(),
                                       s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
 }
+STMT_VAR_PAIR_LIST PatternManager::GetAssignStmtVarPairWithFullPattern(VAR_NAME v, EXPRESSION e) {
+    auto data = assign_pattern_table_.GetData();
+    if (v.empty() && e.empty()) {
+        STMT_VAR_PAIR_LIST result = STMT_VAR_PAIR_LIST();
+        for (auto tuple: data) {
+            STMT_VAR_PAIR pair = {tuple.s, tuple.v};
+            result.push_back(pair);
+        }
+        return result;
+    }
+    if (e.empty()) {
+        STMT_VAR_PAIR_LIST result = STMT_VAR_PAIR_LIST();
+        for (auto tuple: data) {
+            if (tuple.v == v) {
+                STMT_VAR_PAIR pair = {tuple.s, tuple.v};
+                result.push_back(pair);
+            }
+        }
+        return result;
+    }
+
+    TNode* qroot = ParseExpression(e);
+    if (v.empty()){
+        STMT_VAR_PAIR_LIST result = STMT_VAR_PAIR_LIST();
+        for (auto tuple: data) {
+            if (MatchPattern(tuple.eroot, qroot)) {
+                STMT_VAR_PAIR pair = {tuple.s, tuple.v};
+                result.push_back(pair);
+            }
+        }
+        return result;
+    }
+    STMT_VAR_PAIR_LIST result = STMT_VAR_PAIR_LIST();
+    for (auto tuple: data) {
+        if (tuple.v == v && MatchPattern(tuple.eroot, qroot)) {
+            STMT_VAR_PAIR pair = {tuple.s, tuple.v};
+            result.push_back(pair);
+        }
+    }
+    return result;
+}
+
+STMT_VAR_PAIR_LIST PatternManager::GetAssignStmtVarPairWithSubPattern(VAR_NAME v, EXPRESSION e) {
+    return STMT_VAR_PAIR_LIST();
+}
