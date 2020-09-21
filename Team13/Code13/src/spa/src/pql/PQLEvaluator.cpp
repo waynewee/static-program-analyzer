@@ -356,7 +356,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateAssignPatternCall(STRING f_call, STRING par
 
 	if (f_call.compare(TYPE_COND_PATTERN_P) == 0) {
 		// result = ConvertSet(rm.GetAssignWithFullPattern("", param));
-		rm
+		//rm
 	}
 	else if (f_call.compare(TYPE_COND_PATTERN_F) == 0) {
 		// result = ConvertSet(rm.GetAssignWithSubPattern("", param));
