@@ -276,6 +276,7 @@ bool RelationManager::InsertVarProcRelation(VAR_PROC_RELATION_TABLE set, VAR_NAM
     }
 }
 bool RelationManager::CheckStmtStmtRelation(STMT_STMT_RELATION_TABLE set, STMT_STMT_RELATION_TABLE inv_set, STMT_IDX s1, STMT_IDX s2) {
+    std::cout << "s1 = " << s1 << "s2 = " << s2 << std::endl;
     //If s1 and s2 are both wildcard, then just check if program contains such relation
     if (s1 < 0 && s2 < 0) {
         return !set.empty();
@@ -289,7 +290,9 @@ bool RelationManager::CheckStmtStmtRelation(STMT_STMT_RELATION_TABLE set, STMT_S
         return iter != set.end() && !(iter->second.empty());
     }
     auto iter = set.find(s1);
-    return iter != set.end() && iter->second.find(s2) != iter->second.end();
+    std::cout << " can we find " << s1 << std::endl;
+    bool res = iter != set.end() && iter->second.find(s2) != iter->second.end();
+    return res;
 }
 bool RelationManager::CheckStmtVarRelation(STMT_VAR_RELATION_TABLE set, VAR_STMT_RELATION_TABLE inv_set, STMT_IDX s, VAR_NAME v) {
     //If s and v are both wildcard, then just check if program contains such relation
