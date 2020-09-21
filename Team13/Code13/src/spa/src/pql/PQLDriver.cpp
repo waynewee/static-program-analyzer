@@ -7,14 +7,14 @@
 #include <iostream>
 
 STRING PQLDriver::Query(STRING query_string) {
-	PQLParser parser = PQLParser();
+	//PQLParser parser = PQLParser();
 	PQLEvaluator evaluator = PQLEvaluator();
 	PQLProjector projector = PQLProjector();
 
 	STRING final_result = "";
 
 	cout << "Query: " << query_string << endl;
-	QueryInfo parsed_info = parser.parse(query_string);
+	QueryInfo parsed_info = {};//parser.parse(query_string);
 
 	if (!parsed_info.IsQueryInfoValid()) {
 		// Invalid Query
