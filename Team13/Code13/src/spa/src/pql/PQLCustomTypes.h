@@ -74,4 +74,13 @@ typedef STRING_STRING_MAP* STRING_STRING_MAP_PTR;
 typedef unordered_map<STRING_PTR, STRINGLIST_LIST_PTR> STRING_STRINGLISTLIST_MAP;
 typedef STRING_STRINGLISTLIST_MAP* STRING_STRINGLISTLIST_MAP_PTR;
 
+typedef vector<string> STANDARD_STRINGLIST;
+typedef unordered_map<string, string> STANDARD_STRING_STRING_MAP;
+
+typedef unordered_map<string, vector<string>> STANDARD_STRING_STRINGLIST_MAP;
+
+typedef unordered_map<string, vector<vector<string>>> STANDARD_STRING_STRINGLISTLIST_MAP;
+
+typedef unordered_set<string> STANDARD_STRING_SET;
+
 #endif

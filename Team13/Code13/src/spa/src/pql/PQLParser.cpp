@@ -19,21 +19,21 @@ QueryInfo* PQLParser::Parse(string s) {
 
     try {
         // get all the user declarations
-        vector<string> all_declarations = SplitBySemicolons(&query);
+        STANDARD_STRINGLIST all_declarations = SplitBySemicolons(&query);
         PQL_parser_storage->SetAllDeclarations(all_declarations);
         
         TrimLeadingWhitespaces(&query);
 
         for (auto decl : all_declarations) {
             TrimLeadingWhitespaces(&decl);
-            string entType = decl.substr(0, decl.find_first_of(" "));
+            string ent_type = decl.substr(0, decl.find_first_of(" "));
 
-            unordered_map<string, string> vars_declared = query_syntax_validator->ValidateDeclaration(decl);
+            STANDARD_STRING_STRING_MAP vars_declared = query_syntax_validator->ValidateDeclaration(decl);
 
             for (pair<string, string> var : vars_declared) {
                 query_syntax_validator->ValidateVariableName(var.first);
                 //cout << "1st : " << var.first << "2nd : " << entType << endl;
-                PQL_parser_storage->StoreVariable(var, entType);
+                PQL_parser_storage->StoreVariable(var, ent_type);
             }
         }
 
@@ -45,8 +45,8 @@ QueryInfo* PQLParser::Parse(string s) {
         //cout << "query is now :" << query << endl;
 
         string user_select_var = DeleteOneWordAndRetrieveIt(&query);
-        cout << "user_select var is :" << user_select_var << endl;
-        cout << "query is now :" << query << endl;
+        // cout << "user_select var is :" << user_select_var << endl;
+        // cout << "query is now :" << query << endl;
 
         query_syntax_validator->ValidateVariableExists(user_select_var, PQL_parser_storage->GetAllUserDeclaredVar());
 
@@ -62,53 +62,53 @@ QueryInfo* PQLParser::Parse(string s) {
         }
         while (query.find_first_not_of(' ') != string::npos && !query.empty()) {
             TrimLeadingWhitespaces(&query);
-            string suchThatWithOneSpacing = query.substr(0, 9);
+            string such_that_with_one_spacing = query.substr(0, 9);
             // cout << suchThatWithOneSpacing << endl;
             // SUCH OR PATTERN
             string current_clause = DeleteOneWordAndRetrieveIt(&query);
-            cout << "curr clause : " << current_clause << endl;
+            //cout << "curr clause : " << current_clause << endl;
             if (current_clause.compare("such") != 0 && current_clause.compare("pattern") != 0) {
                 throw ("Error : cannot find 'such that' or 'pattern' clause");
             }
 
             if (current_clause.compare("such") == 0) {
-                if (suchThatWithOneSpacing.compare("such that") != 0) {
+                if (such_that_with_one_spacing.compare("such that") != 0) {
                     throw ("Error : Invalid 'such that' clause");
                 }
                 string that_word = DeleteOneWordAndRetrieveIt(&query);
-                unordered_map<string, vector<string>> suchThatClauseResult;
+                STANDARD_STRING_STRINGLIST_MAP such_that_clause_result;
                 if (that_word.compare("that") == 0) {
-                    cout << "such that in query is now : " << query << endl;
+                    //cout << "such that in query is now : " << query << endl;
                     string such_that_clause = query.substr(0, query.find_first_of(")") + 1);
                     query.erase(0, query.find_first_of(")") + 1);
-                    suchThatClauseResult = query_syntax_validator->ValidateSuchThatClause(such_that_clause, PQL_parser_storage->GetAllUserDeclaredVar());
+                    such_that_clause_result = query_syntax_validator->ValidateSuchThatClause(such_that_clause, PQL_parser_storage->GetAllUserDeclaredVar());
 
-                    PQL_parser_storage->StoreSuchThatClauseResult(suchThatClauseResult);
+                    PQL_parser_storage->StoreSuchThatClauseResult(such_that_clause_result);
                 }
             }
 
             if (current_clause.compare("pattern") == 0) {
-                unordered_map<string, vector<string>> patternClauseResult;
+                STANDARD_STRING_STRINGLIST_MAP pattern_clause_result;
                 string pattern_var_name = DeleteOneWordAndRetrieveIt(&query);
-                cout << "pattern var name : " << pattern_var_name << endl;
-                cout << "QUERY PATTERN : " << query << endl;
-                patternClauseResult = ParsePatternClause(&query, PQL_parser_storage->GetAllUserDeclaredVar(), query_syntax_validator);
+                //cout << "pattern var name : " << pattern_var_name << endl;
+                //cout << "QUERY PATTERN : " << query << endl;
+                pattern_clause_result = ParsePatternClause(&query, PQL_parser_storage->GetAllUserDeclaredVar(), query_syntax_validator);
 
-                PQL_parser_storage->StorePatternClauseResult(patternClauseResult, pattern_var_name);
+                PQL_parser_storage->StorePatternClauseResult(pattern_clause_result, pattern_var_name);
             }
         }
         // such OR pattern
         //string current_clause = deleteOneWordAndRetrieveIt(&query);
 
         // unordered_map<string*, string*>* resultVarMap = new unordered_map<string*, string*>();
-        STRING_STRING_MAP_PTR resultVarMap = new STRING_STRING_MAP();
-        resultVarMap = ToPointerVarMap(PQL_parser_storage->GetVarMap());
+        STRING_STRING_MAP_PTR result_var_map = new STRING_STRING_MAP();
+        result_var_map = ToPointerVarMap(PQL_parser_storage->GetVarMap());
         // unordered_map<string*, vector<vector<string*>*>*>* resultRelRefMap = new unordered_map<string*, vector<vector<string*>*>*>();
-        STRING_STRINGLISTLIST_MAP_PTR resultRelRefMap = new STRING_STRINGLISTLIST_MAP();
-        resultRelRefMap = ToPointerRelRefMap(PQL_parser_storage->GetRelRefMap());
+        STRING_STRINGLISTLIST_MAP_PTR result_rel_ref_map = new STRING_STRINGLISTLIST_MAP();
+        result_rel_ref_map = ToPointerRelRefMap(PQL_parser_storage->GetRelRefMap());
 
-        query_info->SetVarMap(resultVarMap);
-        query_info->SetRelRefMap(resultRelRefMap);
+        query_info->SetVarMap(result_var_map);
+        query_info->SetRelRefMap(result_rel_ref_map);
     } 
     catch (const char* msg) {
         cerr << msg << endl;
@@ -155,43 +155,43 @@ string PQLParser::DeleteOneWordAndRetrieveIt(string* str) {
     return next_word;
 }
 
-unordered_map<string, vector<string>> PQLParser::ParsePatternClause(string* clause, unordered_map<string, string> all_user_declared_var,
+STANDARD_STRING_STRINGLIST_MAP PQLParser::ParsePatternClause(string* clause, STANDARD_STRING_STRING_MAP all_user_declared_var,
     QuerySyntaxValidator* query_syntax_validator) {
-    unordered_map<string, vector<string>> patternClauseResult;
+    STANDARD_STRING_STRINGLIST_MAP pattern_clause_result;
     if (clause->find("\"") != string::npos && clause->find("\"") < clause->find_first_of(")")) {
-        int endOfPatternClause = query_syntax_validator->nthOccurrence(clause, "\"", 2);
+        int end_of_pattern_clause = query_syntax_validator->nthOccurrence(clause, "\"", 2);
 
-        string temp = clause->substr(endOfPatternClause, clause->length());
+        string temp = clause->substr(end_of_pattern_clause, clause->length());
 
-        int distanceToClosedBracket = temp.find_first_of(")") + 1;
+        int distance_to_closed_bracket = temp.find_first_of(")") + 1;
 
-        string pattern_clause = clause->substr(0, endOfPatternClause + distanceToClosedBracket);
+        string pattern_clause = clause->substr(0, end_of_pattern_clause + distance_to_closed_bracket);
 
         // cout << "pattern clause : " << pattern_clause << endl;
 
-        clause->erase(0, endOfPatternClause + distanceToClosedBracket);
+        clause->erase(0, end_of_pattern_clause + distance_to_closed_bracket);
 
-        patternClauseResult = query_syntax_validator->ValidatePatternClause(pattern_clause, all_user_declared_var);
+        pattern_clause_result = query_syntax_validator->ValidatePatternClause(pattern_clause, all_user_declared_var);
     }
     else {
         // cannot find ", so pattern variables are blank. we can find by next closing bracket
-        int endOfPatternClause = clause->find_first_of(")") + 1;
+        int end_of_pattern_clause = clause->find_first_of(")") + 1;
 
-        string pattern_clause = clause->substr(0, endOfPatternClause);
+        string pattern_clause = clause->substr(0, end_of_pattern_clause);
 
         // cout << "pattern clause : " << pattern_clause << endl;
 
-        clause->erase(0, endOfPatternClause);
+        clause->erase(0, end_of_pattern_clause);
 
-        patternClauseResult = query_syntax_validator->ValidatePatternClause(pattern_clause, all_user_declared_var);
+        pattern_clause_result = query_syntax_validator->ValidatePatternClause(pattern_clause, all_user_declared_var);
     }
     
-    return patternClauseResult;
+    return pattern_clause_result;
 }
 
-STRING_STRING_MAP_PTR PQLParser::ToPointerVarMap(unordered_map<string, string> strMap) {
+STRING_STRING_MAP_PTR PQLParser::ToPointerVarMap(STANDARD_STRING_STRING_MAP str_map) {
     STRING_STRING_MAP_PTR result = new STRING_STRING_MAP();
-    for (pair<string, string> elems : strMap) {
+    for (pair<string, string> elems : str_map) {
         string* first = new string(elems.first);
         string* second = new string(elems.second);
         result->insert({ first, second });
@@ -199,7 +199,7 @@ STRING_STRING_MAP_PTR PQLParser::ToPointerVarMap(unordered_map<string, string> s
     return result;
 }
 
-STRING_STRINGLISTLIST_MAP_PTR PQLParser::ToPointerRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map) {
+STRING_STRINGLISTLIST_MAP_PTR PQLParser::ToPointerRelRefMap(STANDARD_STRING_STRINGLISTLIST_MAP relRef_map) {
     STRING_STRINGLISTLIST_MAP_PTR result = new STRING_STRINGLISTLIST_MAP();
     for (pair<string, vector<vector<string>>> elems : relRef_map) {
         STRING_PTR first = new string(elems.first);

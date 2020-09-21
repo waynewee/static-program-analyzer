@@ -7,14 +7,14 @@
 #include <iostream>
 using namespace std;
 
-const unordered_set<string> validDesignEntities = { "stmt" , "read" , "print" , "call" , "while" , "if" , "assign" , "variable" , "constant" , "procedure" };
-const unordered_set<string> validRelrefNames = { "Follows" , "FollowsT" , "Follows*" , "Parent" , "ParentT" , "Parent*" , "Uses" , "UsesS" , "UsesP" , "Modifies" ,  "ModifiesS" , "ModifiesP" };
+const STANDARD_STRING_SET valid_design_entities = { "stmt" , "read" , "print" , "call" , "while" , "if" , "assign" , "variable" , "constant" , "procedure" };
+const STANDARD_STRING_SET valid_relref_names = { "Follows" , "FollowsT" , "Follows*" , "Parent" , "ParentT" , "Parent*" , "Uses" , "UsesS" , "UsesP" , "Modifies" ,  "ModifiesS" , "ModifiesP" };
 
 /*
 	Returns an unordered map of the variables user declared.
 	Key -> value pair is varname -> 0 if var is a stmt, varname -> 1 if var is a proc
 */
-unordered_map<string, string> QuerySyntaxValidator::ValidateDeclaration(string decl) {
+STANDARD_STRING_STRING_MAP QuerySyntaxValidator::ValidateDeclaration(string decl) {
 	// this one validates the declaration
 	// ie. assign a, b -> true, assijn a, b -> false, stmt s -> true
 	/*
@@ -24,14 +24,14 @@ unordered_map<string, string> QuerySyntaxValidator::ValidateDeclaration(string d
 	*/
 
 	string decl_clone = decl;
-	vector<string> temp_results;
+	STANDARD_STRINGLIST temp_results;
 
-	unordered_map<string, string> variable_names_declared;
+	STANDARD_STRING_STRING_MAP variable_names_declared;
 	// if variable name is a PROCEEDURE, then <VAR_NAME, 1>
 	// if variable name is a STMT, then <VAR_NAME, 0>
 	// for each key-value pair.
 
-	vector<string> final_results;
+	STANDARD_STRINGLIST final_results;
 
 	string comma = ",";
 	size_t pos = 0;
@@ -61,7 +61,7 @@ unordered_map<string, string> QuerySyntaxValidator::ValidateDeclaration(string d
 	string variable_with_entity = temp_results.front(); // variable with entity is the first set delimited by comma, assign a, b, c -> [assign a]
 	temp_results.erase(temp_results.begin());
 
-	vector<std::string> first_stmt; // first_stmt is everything before the first comma.
+	STANDARD_STRINGLIST first_stmt; // first_stmt is everything before the first comma.
 	std::istringstream iss(variable_with_entity);
 	string entity_type = variable_with_entity.substr(0, variable_with_entity.find_first_of(" "));
 
@@ -117,7 +117,7 @@ unordered_map<string, string> QuerySyntaxValidator::ValidateDeclaration(string d
 	}
 
 	// checks if first word is a valid design entity
-	if (validDesignEntities.count(entity_type) != 1) {
+	if (valid_design_entities.count(entity_type) != 1) {
 		throw ("Error : Invalid Design Entity Type declared!");
 	}
 
@@ -161,7 +161,7 @@ bool QuerySyntaxValidator::ValidateVariableName(string s) {
 	return true;
 }
 
-bool QuerySyntaxValidator::ValidateVariableExists(string s, unordered_map<string, string> varNames) {
+bool QuerySyntaxValidator::ValidateVariableExists(string s, STANDARD_STRING_STRING_MAP varNames) {
 	/*
 		Just need to check if string s is in the set of varNames. Very simple
 	*/
@@ -179,7 +179,7 @@ bool QuerySyntaxValidator::ValidateVariableExists(string s, unordered_map<string
 	return res;
 }
 
-unordered_map<string, vector<string>> QuerySyntaxValidator::ValidateSuchThatClause(string s, unordered_map<string, string> declaredVarNames) {
+STANDARD_STRING_STRINGLIST_MAP QuerySyntaxValidator::ValidateSuchThatClause(string s, STANDARD_STRING_STRING_MAP declared_var_names) {
 	// validates if what's after such that is legit
 	/*
 		So if : select s such that Follows (s1, s2);
@@ -191,7 +191,7 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::ValidateSuchThatClau
 		Select a such that Parent* (w, a) pattern a (“count”, _)
 	*/
 	string temp = s;
-	vector<std::string> such_that_clause;
+	STANDARD_STRINGLIST such_that_clause;
 
 	string open_brackets_delimiter = "(";
 	string comma_delimiter = ",";
@@ -204,11 +204,11 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::ValidateSuchThatClau
 	if ((pos_bracket = temp.find(open_brackets_delimiter)) == string::npos) {
 		throw ("Error : Invalid Relation-Reference Format, open bracket not found! ");
 	}
-	string declared_relRef = temp.substr(0, pos_bracket);
+	string declared_relref = temp.substr(0, pos_bracket);
 	temp.erase(0, pos_bracket + open_brackets_delimiter.length()); // erase off front part -> remaining with s1, s2 );
-	declared_relRef = TrimTrailingWhitespaces(declared_relRef);
+	declared_relref = TrimTrailingWhitespaces(declared_relref);
 
-	if (validRelrefNames.count(declared_relRef) != 1) {
+	if (valid_relref_names.count(declared_relref) != 1) {
 		throw ("Error : Invalid Relational-Reference name!");
 	}
 
@@ -246,40 +246,40 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::ValidateSuchThatClau
 
 	// cout << "such that clause : Second argument : " << second_argument << endl;
 
-	unordered_map<string, vector<string>> relRef_map;
-	string assigned_relRef;
-	vector<string> arguments;
+	STANDARD_STRING_STRINGLIST_MAP relref_map;
+	string assigned_relref;
+	STANDARD_STRINGLIST arguments;
 
-	if (declared_relRef.compare("Follows") == 0 || declared_relRef.compare("Follows*") == 0 ||
-		declared_relRef.compare("Parent") == 0 || declared_relRef.compare("Parent*") == 0) {
+	if (declared_relref.compare("Follows") == 0 || declared_relref.compare("Follows*") == 0 ||
+		declared_relref.compare("Parent") == 0 || declared_relref.compare("Parent*") == 0) {
 		// If the relref is Follows or Parent, we just need to check if the argument is declared by the user
 		// note that we don't need to check the validity here because it's already checked by the declaration validator
-		if (declared_relRef.compare("Follows") == 0) {
+		if (declared_relref.compare("Follows") == 0) {
 			arguments.push_back(first_argument);
 			arguments.push_back(second_argument);
-			relRef_map["Follows"] = arguments;
+			relref_map["Follows"] = arguments;
 		}
-		if (declared_relRef.compare("Follows*") == 0) {
+		if (declared_relref.compare("Follows*") == 0) {
 			arguments.push_back(first_argument);
 			arguments.push_back(second_argument);
-			assigned_relRef = "FollowsT";
-			relRef_map["FollowsT"] = arguments;
+			assigned_relref = "FollowsT";
+			relref_map["FollowsT"] = arguments;
 		}
-		if (declared_relRef.compare("Parent") == 0) {
+		if (declared_relref.compare("Parent") == 0) {
 			arguments.push_back(first_argument);
 			arguments.push_back(second_argument);
-			relRef_map["Parent"] = arguments;
+			relref_map["Parent"] = arguments;
 		}
-		if (declared_relRef.compare("Parent*") == 0) {
+		if (declared_relref.compare("Parent*") == 0) {
 			arguments.push_back(first_argument);
 			arguments.push_back(second_argument);
-			assigned_relRef = "ParentT";
-			relRef_map["ParentT"] = arguments;
+			assigned_relref = "ParentT";
+			relref_map["ParentT"] = arguments;
 		}
-		if (declaredVarNames.count(first_argument) != 1 && !IsInteger(first_argument) && !IsUnderscore(first_argument)) { // first argument wasnt defined by the user
+		if (declared_var_names.count(first_argument) != 1 && !IsInteger(first_argument) && !IsUnderscore(first_argument)) { // first argument wasnt defined by the user
 			throw ("Error : First argument is not declared or is invalid ");
 		}
-		if (declaredVarNames.count(second_argument) != 1 && !IsInteger(second_argument) && !IsUnderscore(second_argument)) { // second argument wasnt defined by the user
+		if (declared_var_names.count(second_argument) != 1 && !IsInteger(second_argument) && !IsUnderscore(second_argument)) { // second argument wasnt defined by the user
 			throw ("Error : Second argument is not declared or is invalid ");
 		}
 
@@ -289,14 +289,14 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::ValidateSuchThatClau
 		}
 		*/
 
-		if (declaredVarNames.count(first_argument) == 1) {
-			if (declaredVarNames.at(first_argument).compare("stmtType") != 0) {
+		if (declared_var_names.count(first_argument) == 1) {
+			if (declared_var_names.at(first_argument).compare("stmtType") != 0) {
 				throw ("Error : First argument must be type Stmt in Follows/Parent clause ");
 			}
 		}
 
-		if (declaredVarNames.count(second_argument) == 1) {
-			if (declaredVarNames.at(second_argument).compare("stmtType") != 0) {
+		if (declared_var_names.count(second_argument) == 1) {
+			if (declared_var_names.at(second_argument).compare("stmtType") != 0) {
 				throw ("Error : First argument must be type Stmt in Follows/Parent clause ");
 			}
 		}
@@ -317,10 +317,10 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::ValidateSuchThatClau
 	*/
 
 	// function name is Uses
-	if (declared_relRef.compare("Uses") == 0) {
+	if (declared_relref.compare("Uses") == 0) {
 		// regardless, 2nd argument must be entRef
-		if (declaredVarNames.count(second_argument) == 1) {
-			if (declaredVarNames.at(second_argument).compare("stmtType") == 0) {
+		if (declared_var_names.count(second_argument) == 1) {
+			if (declared_var_names.at(second_argument).compare("stmtType") == 0) {
 				throw ("Error : 2nd argument must be of type entref");
 			}
 		}
@@ -331,21 +331,21 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::ValidateSuchThatClau
 		// first argument is an entRef
 		// cout << "what is first arg : " << first_argument;
 		if (IsInteger(first_argument)) {
-			assigned_relRef = "UsesS";
+			assigned_relref = "UsesS";
 		}
-		else if ((declaredVarNames.count(first_argument) == 1) && declaredVarNames.at(first_argument).compare("stmtType") == 0) {
-			assigned_relRef = "UsesS";
+		else if ((declared_var_names.count(first_argument) == 1) && declared_var_names.at(first_argument).compare("stmtType") == 0) {
+			assigned_relref = "UsesS";
 		}
 		else {
-			assigned_relRef = "UsesP";
+			assigned_relref = "UsesP";
 		}
 	}
 
 	// function name is Modifies
-	if (declared_relRef.compare("Modifies") == 0) {
+	if (declared_relref.compare("Modifies") == 0) {
 		// regardless, 2nd argument must be entRef
-		if (declaredVarNames.count(second_argument) == 1) {
-			if (declaredVarNames.at(second_argument).compare("stmtType") == 0) {
+		if (declared_var_names.count(second_argument) == 1) {
+			if (declared_var_names.at(second_argument).compare("stmtType") == 0) {
 				throw ("Error : 2nd argument must be of type entref");
 			}
 		}
@@ -354,13 +354,13 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::ValidateSuchThatClau
 		}
 		// first argument is an entRef
 		if (IsInteger(first_argument)) {
-			assigned_relRef = "ModifiesS";
+			assigned_relref = "ModifiesS";
 		}
-		else if ((declaredVarNames.count(first_argument) == 1) && declaredVarNames.at(first_argument).compare("stmtType") == 0) {
-			assigned_relRef = "ModifiesS";
+		else if ((declared_var_names.count(first_argument) == 1) && declared_var_names.at(first_argument).compare("stmtType") == 0) {
+			assigned_relref = "ModifiesS";
 		}
 		else {
-			assigned_relRef = "ModifiesP";
+			assigned_relref = "ModifiesP";
 		}
 	}
 
@@ -369,9 +369,9 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::ValidateSuchThatClau
 
 
 	// regardless, first argument cannot be '_'
-	if (assigned_relRef.compare("UsesS") == 0 || assigned_relRef.compare("ModifiesS") == 0) {
+	if (assigned_relref.compare("UsesS") == 0 || assigned_relref.compare("ModifiesS") == 0) {
 		// first argument is a statement ref
-		if ((declaredVarNames.count(first_argument) != 1 && !IsInteger(first_argument)) && !IsUnderscore(first_argument)) {
+		if ((declared_var_names.count(first_argument) != 1 && !IsInteger(first_argument)) && !IsUnderscore(first_argument)) {
 			// first argument wasnt defined by the user or is just invalid
 			throw ("Error : First argument is not declared or is invalid ");
 		}
@@ -381,11 +381,11 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::ValidateSuchThatClau
 		// second argument is an entity ref
 		string parsed_second_argument = second_argument;
 
-		if (declaredVarNames.count(second_argument) == 1) {
+		if (declared_var_names.count(second_argument) == 1) {
 			// found second arg in declared var names
 			// if this second argument is NOT A VARIABLE declared by USER
 			// cout << "2nd arg here : " << second_argument << "with number : " << declaredVarNames.at(second_argument) << endl;
-			if (declaredVarNames.at(second_argument).compare("stmtType") == 0) {
+			if (declared_var_names.at(second_argument).compare("stmtType") == 0) {
 				throw ("Error : second argument is not of type variable/procedure declared by the user");
 			}
 		}
@@ -398,34 +398,34 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::ValidateSuchThatClau
 		// cout << "123123 second arg : " << second_argument << endl;
 		// is inside or is an EntRef
 		if (!IsUnderscore(second_argument)) {
-			if (declaredVarNames.count(second_argument) != 1 && !IsEntRef(second_argument, declaredVarNames)) {
+			if (declared_var_names.count(second_argument) != 1 && !IsEntRef(second_argument, declared_var_names)) {
 				// second argument wasnt defined user or is just invalid
 				throw ("Error : Second argument is not declared or is invalid");
 			}
 		}
 
 		// cout << "parsed 2nd arg : " << parsed_second_argument << endl;
-		if (assigned_relRef.compare("UsesS") == 0) {
+		if (assigned_relref.compare("UsesS") == 0) {
 			arguments.push_back(first_argument);
 			arguments.push_back(second_argument);
-			relRef_map["UsesS"] = arguments;
+			relref_map["UsesS"] = arguments;
 		}
 
-		if (assigned_relRef.compare("ModifiesS") == 0) {
+		if (assigned_relref.compare("ModifiesS") == 0) {
 			arguments.push_back(first_argument);
 			arguments.push_back(second_argument);
-			relRef_map["ModifiesS"] = arguments;
+			relref_map["ModifiesS"] = arguments;
 		}
 	}
 
 
-	if (assigned_relRef.compare("UsesP") == 0 || assigned_relRef.compare("ModifiesP") == 0) {
+	if (assigned_relref.compare("UsesP") == 0 || assigned_relref.compare("ModifiesP") == 0) {
 		// first argument is a entity ref
 		// string parsed_first_argument = first_argument.substr(1, first_argument.length() - 2);
 		//cout << "such that clause :  1st arg : " << parsed_first_argument << endl;
 
 		//cout << "FIRST ARG : " << first_argument;
-		if (!IsEntRef(first_argument, declaredVarNames)) {
+		if (!IsEntRef(first_argument, declared_var_names)) {
 			throw ("Error : First argument is not declared or is invalid ");
 
 		}
@@ -434,40 +434,40 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::ValidateSuchThatClau
 			throw ("Error : Second argument cannot be an Integer ");
 		}
 
-		if (declaredVarNames.count(second_argument) == 1) {
+		if (declared_var_names.count(second_argument) == 1) {
 			// found second arg in declared var names
 			// if this second argument is NOT A VARIABLE declared by USER
-			if (declaredVarNames.at(second_argument).compare("stmtType") == 0) {
+			if (declared_var_names.at(second_argument).compare("stmtType") == 0) {
 				throw ("Error : second argument is not of type variable/procedure declared by the user");
 			}
 		}
 
 		//cout << "modifies 2nd arg :" << second_argument;
 		if (!IsUnderscore(second_argument)) {
-			if (!IsEntRef(second_argument, declaredVarNames)) {
+			if (!IsEntRef(second_argument, declared_var_names)) {
 
 				throw ("Error : Second argument is not declared or is invalid ");
 
 			}
 		}
 
-		if (assigned_relRef.compare("UsesP") == 0) {
+		if (assigned_relref.compare("UsesP") == 0) {
 			arguments.push_back(first_argument);
 			arguments.push_back(second_argument);
-			relRef_map["UsesP"] = arguments;
+			relref_map["UsesP"] = arguments;
 		}
 
-		if (assigned_relRef.compare("ModifiesP") == 0) {
+		if (assigned_relref.compare("ModifiesP") == 0) {
 			arguments.push_back(first_argument);
 			arguments.push_back(second_argument);
-			relRef_map["ModifiesP"] = arguments;
+			relref_map["ModifiesP"] = arguments;
 		}
 	}
 
-	return relRef_map;
+	return relref_map;
 }
 
-unordered_map<string, vector<string>> QuerySyntaxValidator::ValidatePatternClause(string s, unordered_map<string, string> declaredVarNames) {
+STANDARD_STRING_STRINGLIST_MAP QuerySyntaxValidator::ValidatePatternClause(string s, STANDARD_STRING_STRING_MAP declaredVarNames) {
 	// validates what after pattern clause is legit
 	/*
 		Select a pattern a ( _ , _“v + x * y + z * t”_)
@@ -475,8 +475,8 @@ unordered_map<string, vector<string>> QuerySyntaxValidator::ValidatePatternClaus
 		I think we dont need to care about the arguments passed
 	*/
 
-	unordered_map<string, vector<string>> result;
-	vector<string> arguments;
+	STANDARD_STRING_STRINGLIST_MAP result;
+	STANDARD_STRINGLIST arguments;
 	string str = s;
 	string comma = ",";
 	int pos_comma;
@@ -654,7 +654,7 @@ bool QuerySyntaxValidator::IsInteger(string i) {
 	return res;
 }
 
-bool QuerySyntaxValidator::IsEntRef(string s, unordered_map<string, string> declaredVars) {
+bool QuerySyntaxValidator::IsEntRef(string s, STANDARD_STRING_STRING_MAP declaredVars) {
 	bool res = false;
 	if (s.length() <= 0) {
 		throw ("Error : Invalid entRef Name");
