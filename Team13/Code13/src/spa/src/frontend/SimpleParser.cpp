@@ -36,9 +36,9 @@ TNode* SimpleParser::Parse(TOKEN_LIST token_list) {
 		main_prg->AddChild(proc_node);
 	}
 
-	for (TNode* node : main_prg->GetChildrenVector()) {
+	/*for (TNode* node : main_prg->GetChildrenVector()) {
 		node->Print(node);
-	}
+	}*/
 
 	return main_prg;
 }

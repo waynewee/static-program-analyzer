@@ -14,7 +14,7 @@ STRING PQLDriver::Query(STRING query_string) {
 	STRING final_result = "";
 
 	cout << "Query: " << query_string << endl;
-	QueryInfo parsed_info = {};//parser.parse(query_string);
+	QueryInfo parsed_info = parser.Parse(query_string);
 
 	if (!parsed_info.IsQueryInfoValid()) {
 		// Invalid Query

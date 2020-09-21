@@ -51,7 +51,7 @@ TEST_CASE("Test 1") {
 
 	string pql_query = "stmt s; Select s";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("s");
 
@@ -78,7 +78,7 @@ TEST_CASE("Test 2") {
 
 	string pql_query = "stmt s1, s2; Select s1 such that Follows (6, s1)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("s1");
 
@@ -119,7 +119,7 @@ TEST_CASE("Test 3") {
 
 	string pql_query = "if i1; Select i1 such that Follows* (6, i1)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("i1");
 
@@ -159,7 +159,7 @@ TEST_CASE("Test 4") {
 
 	string pql_query = "read r1; Select r1 such that Follows (r1, 6)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("r1");
 
@@ -199,7 +199,7 @@ TEST_CASE("Test 5") {
 
 	string pql_query = "assign a1; Select a1 such that Follows* (a1, 6)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("a1");
 
@@ -238,7 +238,7 @@ TEST_CASE("Test 6") {
 
 	string pql_query = "print p; Select p such that Follows (6, 7)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("p");
 
@@ -277,7 +277,7 @@ TEST_CASE("Test 7") {
 
 	string pql_query = "call c; Select c such that Follows* (6, 7)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("c");
 
@@ -316,7 +316,7 @@ TEST_CASE("Test 8") {
 
 	string pql_query = "while w1, w2; Select w1 such that Follows (w1, w2)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("w1");
 
@@ -356,7 +356,7 @@ TEST_CASE("Test 9") {
 
 	string pql_query = "stmt s1; if i1; Select s1 such that Follows* (s1, i1)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("s1");
 
@@ -400,7 +400,7 @@ TEST_CASE("Test 10") {
 
 	string pql_query = "stmt s1; Select s1 such that Parent (3, s1)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("s1");
 
@@ -439,7 +439,7 @@ TEST_CASE("Test 11") {
 
 	string pql_query = "read r1; Select r1 such that Parent* (3, r1)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("r1");
 
@@ -478,7 +478,7 @@ TEST_CASE("Test 12") {
 
 	string pql_query = "print p; Select p such that Parent (p, 4)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("p");
 
@@ -517,7 +517,7 @@ TEST_CASE("Test 13") {
 
 	string pql_query = "if i1; Select i1 such that Parent* (i1, 4)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("i1");
 
@@ -557,7 +557,7 @@ TEST_CASE("Test 14") {
 
 	string pql_query = "assign a1; Select a1 such that Parent (5, 6)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("a1");
 
@@ -597,7 +597,7 @@ TEST_CASE("Test 15") {
 
 	string pql_query = "call c; Select c such that Parent* (5, 6)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("c");
 
@@ -637,7 +637,7 @@ TEST_CASE("Test 16") {
 
 	string pql_query = "assign a1, a2; Select a1 such that Parent (a1, a2)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("a1");
 
@@ -677,7 +677,7 @@ TEST_CASE("Test 17") {
 
 	string pql_query = "call c1; if i1; Select c1 such that Parent* (c1, i1)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("c1");
 
@@ -717,7 +717,7 @@ TEST_CASE("Test 18") {
 
 	string pql_query = "while w; Select w such that Uses (w ,\"x\")";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("w");
 
@@ -756,7 +756,7 @@ TEST_CASE("Test 19") {
 
 	string pql_query = "procedure p; Select p such that Uses (p ,\"x\")";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("p");
 
@@ -795,7 +795,7 @@ TEST_CASE("Test 20") {
 
 	string pql_query = "assign a1; Select a1 such that Uses (5, \"y\")";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("a1");
 
@@ -834,7 +834,7 @@ TEST_CASE("Test 21") {
 
 	string pql_query = "call c; Select c such that Uses (\"x\", \"y\")";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("c");
 
@@ -873,7 +873,7 @@ TEST_CASE("Test 22") {
 
 	string pql_query = "procedure p1, p2; Select p1 such that Uses (p1, p2)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("p1");
 
@@ -913,7 +913,7 @@ TEST_CASE("Test 23") {
 
 	string pql_query = "stmt s; procedure p; Select s such that Uses (s, p)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("s");
 
@@ -953,7 +953,7 @@ TEST_CASE("Test 24") {
 
 	string pql_query = "if i1; Select i1 such that Uses (i1, _)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("i1");
 
@@ -992,7 +992,7 @@ TEST_CASE("Test 25") {
 
 	string pql_query = "procedure p; Select p such that Uses (p, _)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("p");
 
@@ -1033,7 +1033,7 @@ TEST_CASE("Test 26") {
 
 	string pql_query = "stmt s; Select s such that Modifies (s ,\"x\")";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("s");
 
@@ -1072,7 +1072,7 @@ TEST_CASE("Test 27") {
 
 	string pql_query = "procedure p; Select p such that Modifies (p ,\"x\")";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("p");
 
@@ -1111,7 +1111,7 @@ TEST_CASE("Test 28") {
 
 	string pql_query = "assign a1; Select a1 such that Modifies (5, \"y\")";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("a1");
 
@@ -1150,7 +1150,7 @@ TEST_CASE("Test 29") {
 
 	string pql_query = "call c; Select c such that Modifies (\"x\", \"y\")";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("c");
 
@@ -1190,7 +1190,7 @@ TEST_CASE("Test 30") {
 
 	string pql_query = "procedure p1, p2; Select p1 such that Modifies (p1, p2)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("p1");
 
@@ -1230,7 +1230,7 @@ TEST_CASE("Test 31") {
 
 	string pql_query = "stmt s; procedure p; Select s such that Modifies (s, p)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("s");
 
@@ -1270,7 +1270,7 @@ TEST_CASE("Test 32") {
 
 	string pql_query = "if i1; Select i1 such that Modifies (i1, _)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("i1");
 
@@ -1309,7 +1309,7 @@ TEST_CASE("Test 33") {
 
 	string pql_query = "procedure p; Select p such that Modifies (p, _)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("p");
 
@@ -1345,7 +1345,7 @@ TEST_CASE("Test 34") {
 
 	string pql_query = "stmt s; procedure p; Select p such that Modifies (p , \"x\")";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("p");
 
@@ -1386,7 +1386,7 @@ TEST_CASE("Test 35") {
 
 	string pql_query = "assign a; variable v; Select a pattern a (_, _)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("a");
 
@@ -1425,7 +1425,7 @@ TEST_CASE("Test 36") {
 
 	string pql_query = "assign a; variable v; Select a pattern a (_, \"z * y / s + x\")";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("a");
 
@@ -1464,7 +1464,7 @@ TEST_CASE("Test 37") {
 
 	string pql_query = "assign a; variable v; Select a pattern a (v, _\"z * y / s + x\"_)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("a");
 
@@ -1503,7 +1503,7 @@ TEST_CASE("Test 38") {
 
 	string pql_query = "assign a; call c; variable v; Select a such that Uses (a, v) pattern a (v, _) pattern a (_ , _\"x + y\"_)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("a");
 
@@ -1558,7 +1558,7 @@ TEST_CASE("Test 39") {
 
 	string pql_query = "call c; variable v; Select c such that Uses (c, v)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("c");
 
@@ -1599,7 +1599,7 @@ TEST_CASE("Test 40") {
 
 	string pql_query = "stmt   s   ;   Select    s     such that         Modifies   (   s    ,  \"  x  \"  )  ";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	query_info_expected.SetOutputVar("s");
 
@@ -1640,7 +1640,7 @@ TEST_CASE("Test 41") {
 
 	string pql_query = "stmt s; Select s such that Modifies (_ ,\"x\")";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1661,7 +1661,7 @@ TEST_CASE("Test 42") {
 
 	string pql_query = "assign a; variable v; Select a pattern a (v, _\"z\")";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1682,7 +1682,7 @@ TEST_CASE("Test 43") {
 
 	string pql_query = "assign a; variable v; Select a pattern a (v, \"z\"_)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1703,7 +1703,7 @@ TEST_CASE("Test 44") {
 
 	string pql_query = "assign a; variable v; Select a pattern a (v, _\" + z + y\"_)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1724,7 +1724,7 @@ TEST_CASE("Test 45") {
 
 	string pql_query = "assign a; variable v; Select a pattern a (v, _\" ) z + y(\"_)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1745,7 +1745,7 @@ TEST_CASE("Test 46") {
 
 	string pql_query = "procedure p; Select p such that Uses (p ,\"[\")";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1766,7 +1766,7 @@ TEST_CASE("Test 47") {
 
 	string pql_query = "aszign a; variable v; Select a pattern a (_, _)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1787,7 +1787,7 @@ TEST_CASE("Test 48") {
 
 	string pql_query = "procedure p1, p2; p1 such that Uses (p1, p2)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1808,7 +1808,7 @@ TEST_CASE("Test 49") {
 
 	string pql_query = "stmt s1; Select s1 such  that Parent (3, s1)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1829,7 +1829,7 @@ TEST_CASE("Test 50") {
 
 	string pql_query = "stmt 0s; Select 0s";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1850,7 +1850,7 @@ TEST_CASE("Test 51") {
 
 	string pql_query = "stmt [/v; Select [/v";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1871,7 +1871,7 @@ TEST_CASE("Test 52") {
 
 	string pql_query = "call c1; if i1; Select c1 such that Parent* (c1 i1)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1892,7 +1892,7 @@ TEST_CASE("Test 53") {
 
 	string pql_query = "stmt s1; Select s such that Parent (3, s1)";
 
-	query_info_actual = pql_parser.parse(pql_query);
+	query_info_actual = pql_parser.Parse(pql_query);
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
