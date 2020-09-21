@@ -1,7 +1,7 @@
-#include "QueryInfo.h"
-#include "QueryResult.h"
-#include "PQLCustomTypes.h"
-#include "CustomTypes.h"
+#include <CustomTypes.h>
+#include <PQLCustomTypes.h>
+#include <QueryInfo.h>
+#include <QueryResult.h>
 
 class PQLEvaluator
 {
