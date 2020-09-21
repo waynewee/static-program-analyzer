@@ -7,7 +7,7 @@
 #include <iostream>
 
 STRING PQLDriver::Query(STRING query_string) {
-	//PQLParser parser = PQLParser();
+	PQLParser parser = PQLParser();
 	PQLEvaluator evaluator = PQLEvaluator();
 	PQLProjector projector = PQLProjector();
 

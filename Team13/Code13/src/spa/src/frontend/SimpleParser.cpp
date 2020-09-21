@@ -39,7 +39,6 @@ TNode* SimpleParser::Parse(TOKEN_LIST token_list) {
 	/*for (TNode* node : main_prg->GetChildrenVector()) {
 		node->Print(node);
 	}*/
-
 	return main_prg;
 }
 
@@ -168,8 +167,6 @@ TNode* SimpleParser::ParseIfStatement() {
 
 	if (PeekNextToken().GetValue() != TYPE_STMT_IF_ELSE) {
 		throw logic_error("Missing Else Block");
-		int x =
-			x + 1;
 	}
 
 	GetNextToken(); // Iterating through 'else' keyword
