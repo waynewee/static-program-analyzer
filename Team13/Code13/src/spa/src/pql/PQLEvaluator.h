@@ -8,6 +8,8 @@ class PQLEvaluator
 public:
 	QueryResult Evaluate(QueryInfo query_info);
 
+	STRING_SET EvaluateAssignPatternCall(STRING f_call, STRING param1, STRING param2);
+	STRINGLIST_SET EvaluateAssignPatternCall(STRING f_call, STRING param);
 	BOOLEAN EvaluateNoUserDeclaredSet(STRING f_call, STRING param1, STRING param2);
 	STRING_SET EvaluateOneDeclaredSet(STRING f_call, STRING param);
 	STRING_SET EvaluateInverseOneDeclaredSet(STRING f_call, STRING param);
@@ -27,7 +29,6 @@ public:
 	BOOLEAN RemoveIrrelevant(STRINGLIST_SET value, STRING_SET tmp, INTEGER pos_to_check);
 
 	STRING_SET ConvertSet(INTEGER_SET result_set);
-	STRING_SET ConvertSet(unordered_set<string*>* result_set); // DO I STILL NEED IT??
 	STRING_SET ConvertSet(DOUBLE_SET result_set);
 	STRINGLIST_SET ConvertSet(STMT_STMT_PAIR_LIST result_set);
 	STRINGLIST_SET ConvertSet(STMT_VAR_PAIR_LIST result_set);
