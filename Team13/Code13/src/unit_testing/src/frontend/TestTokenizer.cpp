@@ -57,7 +57,7 @@ TEST_CASE("Tokenizer | Manipulates tokens correctly") {
 		REQUIRE(tokenList.at(i).GetTokenType() == TokenType::TOKEN_TYPE::var);
 		i++;
 		REQUIRE(tokenList.at(i).GetValue() == "=");
-		REQUIRE(tokenList.at(i).GetTokenType() == TokenType::TOKEN_TYPE::rel_expr);
+		REQUIRE(tokenList.at(i).GetTokenType() == TokenType::TOKEN_TYPE::assign);
 		i++;
 		REQUIRE(tokenList.at(i).GetValue() == "a");
 		REQUIRE(tokenList.at(i).GetTokenType() == TokenType::TOKEN_TYPE::var);

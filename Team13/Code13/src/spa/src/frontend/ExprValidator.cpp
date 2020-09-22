@@ -42,7 +42,6 @@ void ExprValidator::CheckValid(Token prev_token, Token curr_token) {
 	}
 
 	if (prev_type == TokenType::TOKEN_TYPE::rel_expr) {
-		cout << prev_val << endl;
 		if (curr_type != TokenType::TOKEN_TYPE::var && curr_type != TokenType::TOKEN_TYPE::constant) {
 			throw logic_error("rel_expr -> var | const");
 		}
