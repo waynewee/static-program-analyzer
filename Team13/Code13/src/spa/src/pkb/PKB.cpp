@@ -15,6 +15,9 @@ DataManager PKB::GetDataManager() {
 RelationManager PKB::GetRelationManager() {
     return relation_manager_;
 }
+PatternManager PKB::GetPatternManager() {
+    return pattern_manager_;
+}
 void PKB::SetASTRoot(TNode* root) {
     if (root->GetNodeType() != TNode::NODE_TYPE::program) {
         throw ASTRootTypeUnmatchException();

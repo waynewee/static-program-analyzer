@@ -51,6 +51,7 @@ void TestWrapper::parse(string filename) {
 		ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
 		ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
 		ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot()); 
+		ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
 	}
 	catch (logic_error& e) {
 		cout << e.what() << endl;
