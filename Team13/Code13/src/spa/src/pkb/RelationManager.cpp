@@ -69,66 +69,83 @@ bool RelationManager::AddFollows(STMT_IDX s1, STMT_IDX s2) {
 }
 
 bool RelationManager::AddFollowsStar(STMT_IDX s1, STMT_IDX s2) {
-    bool res = InsertStmtStmtRelation(follows_star_table_, s1, s2)
-            && InsertStmtStmtRelation(inverse_follows_star_table_, s2, s1);
-    InsertStmtStmtTuple(all_follows_star_, s1, s2);
+    bool can_add_follows_star = InsertStmtStmtRelation(follows_star_table_, s1, s2);
+    bool can_add_inverse_follows_star = InsertStmtStmtRelation(inverse_follows_star_table_, s2, s1);
+    if (can_add_follows_star) {
+        InsertStmtStmtTuple(all_follows_star_, s1, s2);
+    }
     InsertStmtKey(all_follows_star_keys_, s1);
     InsertStmtKey(all_inverse_follows_star_keys_, s2);
-    return res;
+    return can_add_follows_star && can_add_inverse_follows_star;
 }
 
 bool RelationManager::AddParent(STMT_IDX s1, STMT_IDX s2) {
-    bool res = InsertStmtStmtRelation(parent_table_, s1, s2)
-            && InsertStmtStmtRelation(inverse_parent_table_, s2, s1)
-            && InsertStmtStmtRelation(parent_star_table_, s1, s2)
-            && InsertStmtStmtRelation(inverse_parent_star_table_, s2, s1);
-    InsertStmtStmtTuple(all_parent_, s1, s2);
-    InsertStmtStmtTuple(all_parent_star_, s1, s2);
+    bool can_add_parent = InsertStmtStmtRelation(parent_table_, s1, s2);
+    bool can_add_inverse_parent = InsertStmtStmtRelation(inverse_parent_table_, s2, s1);
+    bool can_add_parent_star = InsertStmtStmtRelation(parent_star_table_, s1, s2);
+    bool can_add_inverse_parent_star = InsertStmtStmtRelation(inverse_parent_star_table_, s2, s1);
+    if (can_add_parent) {
+        InsertStmtStmtTuple(all_parent_, s1, s2);
+    }
+    if (can_add_parent_star) {
+        InsertStmtStmtTuple(all_parent_star_, s1, s2);
+    }
     InsertStmtKey(all_parent_keys_, s1);
     InsertStmtKey(all_inverse_parent_keys_, s2);
     InsertStmtKey(all_parent_star_keys_, s1);
     InsertStmtKey(all_inverse_parent_star_keys_, s2);
-    return res;
+    return can_add_parent && can_add_parent_star && can_add_inverse_parent && can_add_inverse_parent_star;
 }
 bool RelationManager::AddParentStar(STMT_IDX s1, STMT_IDX s2) {
-    bool res = InsertStmtStmtRelation(parent_star_table_, s1, s2)
-            && InsertStmtStmtRelation(inverse_parent_star_table_, s2, s1);
-    InsertStmtStmtTuple(all_parent_star_, s1, s2);
+    bool can_add_parent_star = InsertStmtStmtRelation(parent_star_table_, s1, s2);
+    bool can_add_inverse_parent_star = InsertStmtStmtRelation(inverse_parent_star_table_, s2, s1);
+    if (can_add_parent_star) {
+        InsertStmtStmtTuple(all_parent_star_, s1, s2);
+    }
     InsertStmtKey(all_parent_star_keys_, s1);
     InsertStmtKey(all_inverse_parent_star_keys_, s2);
-    return res;
+    return can_add_parent_star && can_add_inverse_parent_star;
 }
 bool RelationManager::AddStmtUses(STMT_IDX s, VAR_NAME v) {
-    bool res = InsertStmtVarRelation(stmt_uses_table_, s, v)
-            && InsertVarStmtRelation(inverse_stmt_uses_table_, v, s);
-    InsertStmtVarTuple(all_stmt_uses_, s, v);
+    bool can_add_uses = InsertStmtVarRelation(stmt_uses_table_, s, v);
+    bool can_add_inverse_uses = InsertVarStmtRelation(inverse_stmt_uses_table_, v, s);
+    if (can_add_uses) {
+        InsertStmtVarTuple(all_stmt_uses_, s, v);
+    }
     InsertStmtKey(all_stmt_uses_keys_, s);
     InsertVarKey(all_inverse_stmt_uses_keys_, v);
-    return res;
+    return can_add_inverse_uses && can_add_uses;
 }
 bool RelationManager::AddProcUses(PROC_NAME p, VAR_NAME v) {
-    bool res = InsertProcVarRelation(proc_uses_table_, p, v)
-            && InsertVarProcRelation(inverse_proc_uses_table_, v, p);
-    InsertProcVarTuple(all_proc_uses_, p, v);
+    bool can_add_uses = InsertProcVarRelation(proc_uses_table_, p, v);
+    bool can_add_inverse_uses = InsertVarProcRelation(inverse_proc_uses_table_, v, p);
+    if (can_add_uses) {
+        InsertProcVarTuple(all_proc_uses_, p, v);
+    }
     InsertProcKey(all_proc_uses_keys_, p);
     InsertVarKey(all_inverse_proc_uses_keys_, v);
-    return res;
+    return can_add_uses && can_add_inverse_uses;
 }
+
 bool RelationManager::AddStmtModifies(STMT_IDX s, VAR_NAME v) {
-    bool res = InsertStmtVarRelation(stmt_modifies_table_, s, v)
-            && InsertVarStmtRelation(inverse_stmt_modifies_table_, v, s);
-    InsertStmtVarTuple(all_stmt_modifies_, s, v);
+    bool can_add_modifies = InsertStmtVarRelation(stmt_modifies_table_, s, v);
+    bool can_add_inverse_modifies = InsertVarStmtRelation(inverse_stmt_modifies_table_, v, s);
+    if (can_add_modifies) {
+        InsertStmtVarTuple(all_stmt_modifies_, s, v);
+    }
     InsertStmtKey(all_stmt_modifies_keys_, s);
     InsertVarKey(all_inverse_stmt_modifies_keys_, v);
-    return res;
+    return can_add_modifies && can_add_inverse_modifies;
 }
 bool RelationManager::AddProcModifies(PROC_NAME p, VAR_NAME v) {
-    bool res = InsertProcVarRelation(proc_modifies_table_, p, v)
-            && InsertVarProcRelation(inverse_proc_modifies_table_, v, p);
-    InsertProcVarTuple(all_proc_modifies_, p, v);
+    bool can_add_modifies = InsertProcVarRelation(proc_modifies_table_, p, v);
+    bool can_add_inverse_modifies = InsertVarProcRelation(inverse_proc_modifies_table_, v, p);
+    if (can_add_modifies) {
+        InsertProcVarTuple(all_proc_modifies_, p, v);
+    }
     InsertProcKey(all_proc_modifies_keys_, p);
     InsertVarKey(all_inverse_proc_modifies_keys_, v);
-    return res;
+    return can_add_modifies && can_add_inverse_modifies;
 }
 
 
