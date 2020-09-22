@@ -100,14 +100,15 @@ queue<tuple<Token, TNode*>> ExprEvaluator::Shunt() {
 
 	while( i < token_list_.size()){
 
-		Token token = token_list_.at(i);
 
+		Token token = token_list_.at(i);
+		
 		TokenType::TOKEN_TYPE token_type = token.GetTokenType();
 
 		if (token_type == TokenType::TOKEN_TYPE::constant || token_type == TokenType::TOKEN_TYPE::var) {
 			output_queue.push(make_tuple(token, ConvertTokenToNode(token)));
 		}
-		else if (token_type == TokenType::TOKEN_TYPE::expr|| token_type == TokenType::TOKEN_TYPE::rel_expr) {
+		else if (token_type == TokenType::TOKEN_TYPE::expr|| token_type == TokenType::TOKEN_TYPE::rel_expr || token_type == TokenType::TOKEN_TYPE::cond_expr) {
 
 			while (op_stack.size() > 0
 				&& (
@@ -119,9 +120,11 @@ queue<tuple<Token, TNode*>> ExprEvaluator::Shunt() {
 					)
 				&& op_stack.top().GetValue() != TYPE_PUNC_OPEN_PARAN
 				) {
+
+
 				Token op_token = op_stack.top();
 				op_stack.pop();
-				output_queue.push(make_tuple(op_token, ConvertTokenToNode(op_token)));
+				output_queue.push(make_tuple(op_token, ConvertTokenToNode(op_token)));	
 			}
 
 			op_stack.push(token);
@@ -164,11 +167,13 @@ bool ExprEvaluator::IsLeftAssoc(Token t) {
 
 	string val = t.GetValue();
 
-	for (string s : right_assoc_list_) {
+	for (string s : non_left_assoc_list) {
 		if (s == val) {
 			return false;
 		}
 	}
+
+	return true;
 
 }
 

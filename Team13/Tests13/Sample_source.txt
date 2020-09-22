@@ -1,5 +1,5 @@
 procedure Example {
-  x = 2 + 10 10;
+  x = 2 + 10;
   z = 3;
   i = 5; 
   while (!(x==0) && (x >= 2) || (y<3)) {
