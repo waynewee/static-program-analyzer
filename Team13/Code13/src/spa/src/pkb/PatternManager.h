@@ -37,9 +37,8 @@ private:
     STMT_IDX_LIST GetStmtIdxSetIntersection(STMT_IDX_LIST l1, STMT_IDX_SET s2);
 
     STMT_IDX_SET GetAssignWithPattern(VAR_NAME v, EXPRESSION e, AssignPatternTable table);
-
-    string RemoveWhiteSpace(EXPRESSION e);
-    bool MatchPattern(TNode root, TNode qroot);
+    //string RemoveWhiteSpace(EXPRESSION );
+    bool HasMatchingPattern(TNode root, TNode qroot);
     TNode* ParseExpression(EXPRESSION s);
     bool IsNumber(EXPRESSION s);
 public:
@@ -53,6 +52,7 @@ public:
     STMT_IDX_SET GetAssignWithSubpattern(VAR_NAME v, EXPRESSION e);
     STMT_VAR_PAIR_LIST GetAssignStmtVarPairWithFullPattern(VAR_NAME v, EXPRESSION e);
     STMT_VAR_PAIR_LIST GetAssignStmtVarPairWithSubPattern(VAR_NAME v, EXPRESSION e);
+
 };
 
 #endif // PATTERNMANAGER_H
