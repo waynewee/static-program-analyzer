@@ -1,8 +1,10 @@
-#include "PKB.h"
-#include "TNode.h"
+
 #include "catch.hpp"
 #include "CustomTypes.h"
 #include "DesignExtractor.h"
+#include "PKB.h"
+#include "TestUtils.h"
+#include "TNode.h"
 
 using namespace std;
 
@@ -199,6 +201,7 @@ TEST_CASE("Test Add Uses") {
     PROC_NAME* procn = new string("pp");
     
     manager.AddProcUses(*procn, *v1);
+    */
 
     auto all_uses = manager.GetAllStmtUses();
     for (auto use : all_uses) {
@@ -209,7 +212,6 @@ TEST_CASE("Test Add Uses") {
     for (auto use : all_proc_uses) {
         cout << use.p << " " << use.v << "\n";
     }
-    */
 
     bool trueStmtUses = manager.IsStmtUses(1, "v2");
     bool falseStmtUses = manager.IsStmtUses(1, "v1");
@@ -379,35 +381,34 @@ TEST_CASE("Test Modifies with call") {
 }
 
 /*
-TEST_CASE("Test Extract Pattern") {
-    TNode list = TNode(TNode::stmtList);
-    TNode s1 = TNode(TNode::printStmt, 1);
-    TNode s2 = TNode(TNode::readStmt, 2);
-    TNode s3 = TNode(TNode::assignStmt, 3);
-    TNode v1 = TNode(TNode::varName, string("v"));
-    TNode c1 = TNode(TNode::constValue, CONST_VALUE(2));
-    TNode s4 = TNode(TNode::assignStmt, 4);
-    TNode v4 = TNode(TNode::varName, string("x"));
-    TNode expr = TNode(TNode::expr, TNode::plus);
-    TNode c4 = TNode(TNode::constValue, CONST_VALUE(3));
-    TNode v5 = TNode(TNode::varName, string("yy"));
-    list.AddChild(&s1);
-    list.AddChild(&s2);
-    list.AddChild(&s3);
-    list.AddChild(&s4);
-    s3.AddChild(&v1);
-    s3.AddChild(&c1);
-    s4.AddChild(&v4);
-    s4.AddChild(&expr);
-    expr.AddChild(&c4);
-    expr.AddChild(&v5);
-    list.Print(&list);
-    PKB pkb;
-    PatternManager manager = pkb.GetPatternManager();
-    ExtractPattern(manager, list);
-    STMT_IDX_SET stmts = manager.GetAssignWithFullPattern("", "");
-    for (STMT_IDX stmt : stmts) {
-        cout << "got pattern: " << stmt << "\n";
-    }
+TEST_CASE("Test extract Pattern") {
+    PKB* pkb = new PKB();
+    PatternManager pattern_manager = pkb->GetPatternManager();
+    TNode* prog = testutils::ConstructProgTreeWithSingleAssignStmt();
+    ExtractPattern(pattern_manager, *prog);
+
+    STMT_IDX_SET set1 =  pattern_manager.GetAssignWithFullPattern("", "");
+    REQUIRE(set1.size() == 1);
+    REQUIRE(set1.find(1) != set1.end());
+
+    STMT_IDX_SET set2 = pattern_manager.GetAssignWithFullPattern("var1", "");
+    REQUIRE(set2.size() == 1);
+    REQUIRE(set2.find(1) != set2.end());
+
+    STMT_IDX_SET set3 = pattern_manager.GetAssignWithFullPattern("", "5");
+    REQUIRE(set3.size() == 1);
+    REQUIRE(set3.find(1) != set3.end());
+
+    STMT_IDX_SET set4 = pattern_manager.GetAssignWithFullPattern("", "var2");
+    REQUIRE(set4.size() == 1);
+    REQUIRE(set4.find(1) != set4.end());
+
+    STMT_IDX_SET set5 = pattern_manager.GetAssignWithFullPattern("var1", "var2");
+    REQUIRE(set5.size() == 1);
+    REQUIRE(set5.find(1) != set5.end());
+
+    STMT_IDX_SET set6 = pattern_manager.GetAssignWithFullPattern("var1", "5");
+    REQUIRE(set6.size() == 1);
+    REQUIRE(set6.find(1) != set6.end());
 }
 */
