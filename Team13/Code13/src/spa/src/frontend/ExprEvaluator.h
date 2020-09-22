@@ -48,13 +48,14 @@ public:
 	{TYPE_COND_EXPR_OR, PRECEDENCE_OR},
 	};
 
-	STR_LIST right_assoc_list_ = {
+	STR_LIST non_left_assoc_list = {
 		TYPE_PUNC_OPEN_PARAN,
 		TYPE_PUNC_CLOSED_PARAN,
 		TYPE_REL_EXPR_GT,
 		TYPE_REL_EXPR_GTE,
 		TYPE_REL_EXPR_LT,
-		TYPE_REL_EXPR_LTE
+		TYPE_REL_EXPR_LTE,
+		TYPE_COND_EXPR_NOT
 	};
 
 private:

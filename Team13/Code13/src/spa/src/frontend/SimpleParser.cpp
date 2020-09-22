@@ -36,9 +36,6 @@ TNode* SimpleParser::Parse(TOKEN_LIST token_list) {
 		main_prg->AddChild(proc_node);
 	}
 
-	/*for (TNode* node : main_prg->GetChildrenVector()) {
-		node->Print(node);
-	}*/
 	return main_prg;
 }
 
@@ -140,7 +137,7 @@ TNode* SimpleParser::ParseCallStatement() {
 	}
 
 	TNode * call_node = new TNode(TNode::NODE_TYPE::callStmt, statement_index_);
-	TNode * proc_name_node = new TNode(TNode::NODE_TYPE::procName, statement_index_);
+	TNode * proc_name_node = new TNode(TNode::NODE_TYPE::procName, proc_name_token.GetValue());
 
 	if (SimpleParser::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON){
 		throw logic_error("Missing ; in line: " + statement_index_);
