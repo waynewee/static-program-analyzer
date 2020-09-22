@@ -7,7 +7,7 @@ using namespace std;
 
 DataManager PKB::data_manager_ = DataManager();
 RelationManager PKB::relation_manager_ = RelationManager();
-PatternManager PKB::pattern_manager_ = PatternManager(data_manager_.GetStmtTable(), relation_manager_);
+PatternManager PKB::pattern_manager_ = PatternManager();
 TNode PKB::ast_;
 DataManager PKB::GetDataManager() {
     return data_manager_;

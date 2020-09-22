@@ -5,16 +5,11 @@ Select s such that Follows(2, s)
 5000
 2 - follows
 stmt s;
-Select s such that Follows(s, 3)
+Select ifs such that Follows(s, 3)
 2
 5000
 3 - follows
 assign a;
 Select a such that Follows(2, a)
 3
-5000
-3 - follows*
-assign a;
-Select a such that Follows*(1, a)
-2,3
 5000
