@@ -1542,8 +1542,8 @@ TEST_CASE("Test 38") {
 	expected_relRef_map["pattern_p"] = all_arguments_third;
 	
 	query_info_expected.SetRelRefMap(expected_relRef_map);
-	query_info_expected.PrintRelRefMap();
-	query_info_actual.PrintRelRefMap();
+	//query_info_expected.PrintRelRefMap();
+	//query_info_actual.PrintRelRefMap();
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
 	requireBool(are_similar);
@@ -1939,7 +1939,7 @@ TEST_CASE("Test ADDITIONAL") {
 
 	query_info_actual = pql_parser.Parse(pql_query);
 
-	query_info_expected.SetOutputVar("a");
+	query_info_expected.SetOutputVar("a1");
 
 	unordered_map<string, string> expected_var_map;
 	expected_var_map["a1"] = "assign";
@@ -1958,6 +1958,10 @@ TEST_CASE("Test ADDITIONAL") {
 	expected_relRef_map["pattern_f"] = all_arguments;
 
 	query_info_expected.SetRelRefMap(expected_relRef_map);
+
+	// cout << "FROM ADDITIONAL TEST : " << endl;
+	// query_info_actual.PrintRelRefMap();
+	// query_info_expected.PrintRelRefMap();
 
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
