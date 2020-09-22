@@ -116,7 +116,7 @@ TNode* buildAssgnTestCase4() {
 
 	mainPrg->AddChild(procNode);
 
-	TNode* procNameNode = new TNode(TNode::NODE_TYPE::procName, "AssgnTest1");
+	TNode* procNameNode = new TNode(TNode::NODE_TYPE::procName, "AssgnTest4");
 
 	TNode* stmtListNode = new TNode(TNode::stmtList);
 
