@@ -1,5 +1,6 @@
 #pragma once
 
+#include <PQLCustomTypes.h>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -11,32 +12,32 @@ class PQLParserStorage
 {
 
 private:
-	unordered_map<string, string> var_map;
-	unordered_map<string, vector<vector<string>>> relRef_map;
+	STRING_STRING_MAP var_map_;
+	STRING_STRINGLISTLIST_MAP relRef_map_;
 
-	string pattern_var_name;
+	string pattern_var_name_;
 
-	vector<string> all_declarations;
+	STRING_LIST all_declarations_;
 
-	unordered_map<string, string> all_user_declared_var;
+	STRING_STRING_MAP all_user_declared_var_;
 
 public:
 	PQLParserStorage();
 	/*Getters*/
-	unordered_map<string, vector<vector<string>>> getRelRefMap();
-	unordered_map<string, string> getVarMap();
-	string getPatternVarName();
-	vector<string> getAllDeclarations();
-	unordered_map<string, string> getAllUserDeclaredVar();
+	STRING_STRINGLISTLIST_MAP GetRelRefMap();
+	STRING_STRING_MAP GetVarMap();
+	string GetPatternVarName();
+	STRING_LIST GetAllDeclarations();
+	STRING_STRING_MAP GetAllUserDeclaredVar();
 
 	/*Setters*/
-	void setRelRefMap(unordered_map<string, vector<vector<string>>> relRef_map);
-	void setVarMap(unordered_map<string, string> var_map);
-	void setPatternVarName(string pattern_var_name);
-	void setAllDeclarations(vector<string> all_declarations);
-	void setAllUserDeclaredVar(unordered_map<string, string> all_user_declared_var);
+	void SetRelRefMap(STRING_STRINGLISTLIST_MAP relRef_map);
+	void SetVarMap(STRING_STRING_MAP var_map);
+	void SetPatternVarName(string pattern_var_name);
+	void SetAllDeclarations(STRING_LIST all_declarations);
+	void SetAllUserDeclaredVar(STRING_STRING_MAP all_user_declared_var);
 
-	void storeVariable(pair<string, string> var, string entType);
-	void storeSuchThatClauseResult(unordered_map <string, vector<string>> result);
-	void storePatternClauseResult(unordered_map <string, vector<string>> result, string pattern_var_name);
+	void StoreVariable(pair<string, string> var, string entType);
+	void StoreSuchThatClauseResult(STRING_STRINGLIST_MAP result);
+	void StorePatternClauseResult(STRING_STRINGLIST_MAP result, string pattern_var_name);
 };

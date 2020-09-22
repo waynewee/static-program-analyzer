@@ -55,16 +55,16 @@ typedef double CONST_VALUE;
 typedef std::string EXPRESSION;
 
 typedef struct {
-    STMT_IDX s1;
-    STMT_IDX s2;
+	STMT_IDX s1;
+	STMT_IDX s2;
 } STMT_STMT_PAIR;
 typedef struct {
-    STMT_IDX s;
-    VAR_NAME v;
+	STMT_IDX s;
+	VAR_NAME v;
 } STMT_VAR_PAIR;
 typedef struct {
-    PROC_NAME p;
-    VAR_NAME v;
+	PROC_NAME p;
+	VAR_NAME v;
 }PROC_VAR_PAIR;
 
 
