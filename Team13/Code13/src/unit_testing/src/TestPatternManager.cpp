@@ -40,13 +40,13 @@ TEST_CASE("Test AddAssignPattern(STMT_IDX s, VAR_NAME v, TNode root) with single
 
     manager.AddAssignPattern(1, "var1", *assign1);
 
-    STMT_IDX_SET set =  manager.GetAssignWithFullPattern("var1", "5");
+    STMT_IDX_SET set =  manager.GetAssignWithSubPattern("var1", "5");
     REQUIRE(!set.empty());
     REQUIRE(set.size() == 1);
     REQUIRE(set.find(1) != set.end());
 }
 
-TEST_CASE("Test GetAssignWithFullPattern(STMT_IDX s, VAR_NAME v, TNode root) with two assignment") {
+TEST_CASE("Test GetAssignWithSubPattern(STMT_IDX s, VAR_NAME v, TNode root) with two assignment") {
     PKB* pkb = new PKB();
     PatternManager manager = pkb->GetPatternManager();
     TNode* prog = new TNode(TNode::NODE_TYPE::program, "SIMPLE");
@@ -96,26 +96,27 @@ TEST_CASE("Test GetAssignWithFullPattern(STMT_IDX s, VAR_NAME v, TNode root) wit
     const2->SetParent(expr3);
     var4->SetParent(expr3);
     const4->SetParent(expr3);
-    manager.AddAssignPattern(1, "var1", *assign1);
-    manager.AddAssignPattern(2, "var1", *assign2);
+    manager.AddAssignPattern(1, "var1", *expr1);
+    manager.AddAssignPattern(2, "var1", *expr2);
 
-    STMT_IDX_SET set1 =  manager.GetAssignWithFullPattern("", "");
+
+    STMT_IDX_SET set1 = manager.GetAssignWithSubPattern("", "");
     REQUIRE(set1.size() == 2);
     REQUIRE(set1.find(1) != set1.end());
     REQUIRE(set1.find(2) != set1.end());
 
-    STMT_IDX_SET set2 =  manager.GetAssignWithFullPattern("var1", "");
+    STMT_IDX_SET set2 = manager.GetAssignWithSubPattern("var1", "");
     REQUIRE(set2.size() == 2);
     REQUIRE(set2.find(1) != set1.end());
     REQUIRE(set2.find(2) != set1.end());
 
-    STMT_IDX_SET set3 =  manager.GetAssignWithFullPattern("", "2");
+    STMT_IDX_SET set3 = manager.GetAssignWithSubPattern("", "2");
     REQUIRE(set2.size() == 2);
     REQUIRE(set2.find(1) != set1.end());
     REQUIRE(set2.find(2) != set1.end());
 }
 
-TEST_CASE("Test GetAssignStmtVarPairWithFullPattern") {
+TEST_CASE("Test GetAssignStmtVarPairWithSubpattern") {
     PKB* pkb = new PKB();
     PatternManager manager = pkb->GetPatternManager();
     TNode* prog = new TNode(TNode::NODE_TYPE::program, "SIMPLE");
@@ -165,10 +166,10 @@ TEST_CASE("Test GetAssignStmtVarPairWithFullPattern") {
     const2->SetParent(expr3);
     var4->SetParent(expr3);
     const4->SetParent(expr3);
-    manager.AddAssignPattern(1, "var1", *assign1);
-    manager.AddAssignPattern(2, "var1", *assign2);
+    manager.AddAssignPattern(1, "var1", *expr1);
+    manager.AddAssignPattern(2, "var1", *expr2);
 
-    STMT_VAR_PAIR_LIST list1 =  manager.GetAssignStmtVarPairWithFullPattern("", "var2");
+    STMT_VAR_PAIR_LIST list1 =  manager.GetAssignStmtVarPairWithSubPattern("", "var2");
     REQUIRE(!list1.empty());
     REQUIRE(list1.size() == 2);
 }

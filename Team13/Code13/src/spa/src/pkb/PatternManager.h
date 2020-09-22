@@ -30,22 +30,19 @@ public:
 class PatternManager {
 private:
     AssignPatternTable assign_pattern_table_;
-
-    STMT_IDX_LIST GetStmtIdxSetIntersection(STMT_IDX_SET s1, STMT_IDX_SET s2);
-    STMT_IDX_LIST GetStmtIdxSetIntersection(STMT_IDX_LIST l1, STMT_IDX_SET s2);
-
-    STMT_IDX_SET GetAssignWithPattern(VAR_NAME v, EXPRESSION e, AssignPatternTable& table);
-    STMT_IDX_SET GetStmtOfMatchingAssignments(VAR_NAME v, EXPRESSION e, EXPRESSION_TABLE* data);
-    STMT_VAR_PAIR_LIST GetStmtVarPairOfMatchingAssignments(VAR_NAME v, EXPRESSION e, EXPRESSION_TABLE* data);
+    STMT_IDX_SET GetStmtOfMatchingAssignments(VAR_NAME v, EXPRESSION e, bool is_full, EXPRESSION_TABLE* data);
+    STMT_VAR_PAIR_LIST GetStmtVarPairOfMatchingAssignments(VAR_NAME v, EXPRESSION e, bool is_full, EXPRESSION_TABLE* data);
     //string RemoveWhiteSpace(EXPRESSION );
-    bool HasMatchingPattern(TNode root, TNode qroot);
+    bool HasMatchingPattern(TNode root, TNode qroot, bool is_full);
+    bool HasSubMatchingPattern(TNode root, TNode qroot);
+    bool HasFullMatchingPattern(TNode root, TNode qroot);
+    bool IsMatchingEntRefTNode(TNode root, TNode qroot);
     TNode* ParseExpression(EXPRESSION s);
     bool IsNumber(EXPRESSION s);
 public:
     void AddAssignPattern(STMT_IDX s, VAR_NAME v, TNode root);
-
     STMT_IDX_SET GetAssignWithFullPattern(VAR_NAME v, EXPRESSION e);
-    STMT_IDX_SET GetAssignWithSubpattern(VAR_NAME v, EXPRESSION e);
+    STMT_IDX_SET GetAssignWithSubPattern(VAR_NAME v, EXPRESSION e);
     STMT_VAR_PAIR_LIST GetAssignStmtVarPairWithFullPattern(VAR_NAME v, EXPRESSION e);
     STMT_VAR_PAIR_LIST GetAssignStmtVarPairWithSubPattern(VAR_NAME v, EXPRESSION e);
 
