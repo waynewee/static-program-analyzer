@@ -185,14 +185,14 @@ list<PROC_NAME> ExtractUsesRecursive(RelationManager manager, TNode root, STMT_I
     return lst;
 }
 
-bool ExtractUses(RelationManager manager, TNode root) {
-    vector<TNode*> children = root.GetChildrenVector();
-    vector<STMT_IDX> vec;
+bool ExtractUses(RelationManager manager, TNode program) {
+    vector<TNode*> procs = program.GetChildrenVector();
     unordered_map < PROC_NAME, list<PROC_NAME> > proc_calls;
 
-    for (TNode* child : children) {
-        PROC_NAME* procName = (child->GetChildrenVector()).at(0)->GetName();
-        list<PROC_NAME> calls = ExtractUsesRecursive(manager, *child, vec, *procName);
+    for (TNode* proc: procs) {
+        vector<STMT_IDX> vec;
+        PROC_NAME* procName = (proc->GetChildrenVector()).at(0)->GetName();
+        list<PROC_NAME> calls = ExtractUsesRecursive(manager, *proc, vec, *procName);
         proc_calls.insert(make_pair(*procName, calls));
     }
 
