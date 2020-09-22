@@ -1,7 +1,8 @@
-#include "PQLEvaluator.h"
+#include <PQLEvaluator.h>
+
 #include <iostream>
 
-#include "pkb/PKB.h"
+#include <pkb/PKB.h>
 
 QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	STRINGLIST_SET no_user_set = STRINGLIST_SET();
@@ -355,6 +356,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateAssignPatternCall(STRING f_call, STRING par
 
 	if (f_call.compare(TYPE_COND_PATTERN_P) == 0) {
 		// result = ConvertSet(rm.GetAssignWithFullPattern("", param));
+		//rm
 	}
 	else if (f_call.compare(TYPE_COND_PATTERN_F) == 0) {
 		// result = ConvertSet(rm.GetAssignWithSubPattern("", param));

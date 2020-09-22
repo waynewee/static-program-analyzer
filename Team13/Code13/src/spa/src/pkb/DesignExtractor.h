@@ -5,9 +5,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "CustomTypes.h"
+#include "PatternManager.h"
 #include "PKB.h"
 #include "TNode.h"
-#include "CustomTypes.h"
+
 
 using namespace std;
 
@@ -18,6 +20,8 @@ bool ExtractParent(RelationManager manager, TNode root);
 bool ExtractModifies(RelationManager manager, TNode root);
 bool ExtractUses(RelationManager manager, TNode root);
 bool ExtractData(DataManager manager, TNode root);
+bool ExtractPattern(PatternManager manager, TNode root);
+
 // };
 
 #endif

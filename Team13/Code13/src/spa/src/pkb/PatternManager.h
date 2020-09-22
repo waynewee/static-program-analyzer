@@ -38,8 +38,8 @@ private:
 
     STMT_IDX_SET GetAssignWithPattern(VAR_NAME v, EXPRESSION e, AssignPatternTable table);
 
+    string RemoveWhiteSpace(EXPRESSION e);
     bool MatchPattern(TNode root, TNode qroot);
-    //string RemoveWhiteSpace(EXPRESSION e);
     TNode* ParseExpression(EXPRESSION s);
     bool IsNumber(EXPRESSION s);
 public:

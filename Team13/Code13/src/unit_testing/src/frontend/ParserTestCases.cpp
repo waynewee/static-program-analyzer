@@ -6,7 +6,7 @@
 using namespace std;
 
 
-template<typename TNode*, typename... Args>
+template<typename TNode, typename... Args>
 TNode* AddChildren(TNode* parent, std::vector<TNode*> children) {
 	for (TNode* child : children) {
 		parent->AddChild(child);

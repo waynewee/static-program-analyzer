@@ -47,31 +47,31 @@ private:
     static PROC_NAME_SET all_proc_modifies_keys_;
     static VAR_NAME_SET all_inverse_proc_modifies_keys_;
 
-    bool InsertStmtStmtRelation(STMT_STMT_RELATION_TABLE set, STMT_IDX s1, STMT_IDX s2);
-    bool InsertStmtVarRelation(STMT_VAR_RELATION_TABLE set, STMT_IDX s, VAR_NAME v);
-    bool InsertProcVarRelation(PROC_VAR_RELATION_TABLE set, PROC_NAME p, VAR_NAME v);
-    bool InsertVarStmtRelation(VAR_STMT_RELATION_TABLE set, VAR_NAME v, STMT_IDX s);
-    bool InsertVarProcRelation(VAR_PROC_RELATION_TABLE set, VAR_NAME v, PROC_NAME p);
+    bool InsertStmtStmtRelation(STMT_STMT_RELATION_TABLE& set, STMT_IDX s1, STMT_IDX s2);
+    bool InsertStmtVarRelation(STMT_VAR_RELATION_TABLE &set, STMT_IDX s, VAR_NAME v);
+    bool InsertProcVarRelation(PROC_VAR_RELATION_TABLE &set, PROC_NAME p, VAR_NAME v);
+    bool InsertVarStmtRelation(VAR_STMT_RELATION_TABLE &set, VAR_NAME v, STMT_IDX s);
+    bool InsertVarProcRelation(VAR_PROC_RELATION_TABLE &set, VAR_NAME v, PROC_NAME p);
 
-    void InsertStmtStmtTuple(STMT_STMT_PAIR_LIST set, STMT_IDX s1, STMT_IDX s2);
-    void InsertStmtVarTuple(STMT_VAR_PAIR_LIST set, STMT_IDX s, VAR_NAME v);
-    void InsertProcVarTuple(PROC_VAR_PAIR_LIST set, PROC_NAME p, VAR_NAME v);
+    void InsertStmtStmtTuple(STMT_STMT_PAIR_LIST &set, STMT_IDX s1, STMT_IDX s2);
+    void InsertStmtVarTuple(STMT_VAR_PAIR_LIST &set, STMT_IDX s, VAR_NAME v);
+    void InsertProcVarTuple(PROC_VAR_PAIR_LIST &set, PROC_NAME p, VAR_NAME v);
 
-    bool InsertStmtKey(STMT_IDX_SET set, STMT_IDX s);
-    bool InsertProcKey(PROC_NAME_SET set, PROC_NAME p);
-    bool InsertVarKey(VAR_NAME_SET set, VAR_NAME v);
+    bool InsertStmtKey(STMT_IDX_SET &set, STMT_IDX s);
+    bool InsertProcKey(PROC_NAME_SET &set, PROC_NAME p);
+    bool InsertVarKey(VAR_NAME_SET &set, VAR_NAME v);
 
-    bool CheckStmtStmtRelation(STMT_STMT_RELATION_TABLE set, STMT_STMT_RELATION_TABLE inv_set, STMT_IDX s1, STMT_IDX s2);
-    bool CheckStmtVarRelation(STMT_VAR_RELATION_TABLE set, VAR_STMT_RELATION_TABLE inv_set, STMT_IDX s, VAR_NAME v);
-    bool CheckProcVarRelation(PROC_VAR_RELATION_TABLE set, VAR_PROC_RELATION_TABLE inv_set, PROC_NAME p, VAR_NAME v);
-    bool CheckVarStmtRelation(VAR_STMT_RELATION_TABLE set, VAR_NAME v, STMT_IDX s);
-    bool CheckVarProcRelation(VAR_PROC_RELATION_TABLE set, VAR_NAME v, PROC_NAME p);
+    bool CheckStmtStmtRelation(STMT_STMT_RELATION_TABLE &set, STMT_STMT_RELATION_TABLE &inv_set, STMT_IDX s1, STMT_IDX s2);
+    bool CheckStmtVarRelation(STMT_VAR_RELATION_TABLE &set, VAR_STMT_RELATION_TABLE &inv_set, STMT_IDX s, VAR_NAME v);
+    bool CheckProcVarRelation(PROC_VAR_RELATION_TABLE &set, VAR_PROC_RELATION_TABLE &inv_set, PROC_NAME p, VAR_NAME v);
+    bool CheckVarStmtRelation(VAR_STMT_RELATION_TABLE &set, VAR_NAME v, STMT_IDX s);
+    bool CheckVarProcRelation(VAR_PROC_RELATION_TABLE &set, VAR_NAME v, PROC_NAME p);
 
-    STMT_IDX_SET GetStmtStmtRelationVal(STMT_STMT_RELATION_TABLE set, STMT_IDX_SET stmt_keys, STMT_IDX s);
-    VAR_NAME_SET GetStmtVarRelationVal(STMT_VAR_RELATION_TABLE set, VAR_NAME_SET var_keys, STMT_IDX s);
-    VAR_NAME_SET GetProcVarRelationVal(PROC_VAR_RELATION_TABLE set, VAR_NAME_SET var_keys, PROC_NAME p);
-    STMT_IDX_SET GetVarStmtRelationVal(VAR_STMT_RELATION_TABLE set, STMT_IDX_SET stmt_keys, VAR_NAME v);
-    PROC_NAME_SET GetVarProcRelationVal(VAR_PROC_RELATION_TABLE set, PROC_NAME_SET proc_keys, VAR_NAME v);
+    STMT_IDX_SET GetStmtStmtRelationVal(STMT_STMT_RELATION_TABLE &set, STMT_IDX_SET &stmt_keys, STMT_IDX s);
+    VAR_NAME_SET GetStmtVarRelationVal(STMT_VAR_RELATION_TABLE &set, VAR_NAME_SET &var_keys, STMT_IDX s);
+    VAR_NAME_SET GetProcVarRelationVal(PROC_VAR_RELATION_TABLE &set, VAR_NAME_SET &var_keys, PROC_NAME p);
+    STMT_IDX_SET GetVarStmtRelationVal(VAR_STMT_RELATION_TABLE &set, STMT_IDX_SET &stmt_keys, VAR_NAME v);
+    PROC_NAME_SET GetVarProcRelationVal(VAR_PROC_RELATION_TABLE &set, PROC_NAME_SET &proc_keys, VAR_NAME v);
 public:
     bool AddFollows(STMT_IDX s1, STMT_IDX s2);
     bool AddFollowsStar(STMT_IDX s1, STMT_IDX s2);

@@ -257,10 +257,10 @@ list<PROC_NAME> ExtractModifiesRecursive(RelationManager manager, TNode root, ve
 
 bool ExtractModifies(RelationManager manager, TNode root) {
     vector<TNode*> children = root.GetChildrenVector();
-    vector<STMT_IDX> vec;
     unordered_map < PROC_NAME, list<PROC_NAME> > proc_calls;
 
     for (TNode* child : children) {
+        vector<STMT_IDX> vec;
         PROC_NAME* procName = (child->GetChildrenVector()).at(0)->GetName();
         list<PROC_NAME> calls = ExtractModifiesRecursive(manager, root, vec, *procName);
         proc_calls.insert(make_pair(*procName, calls));
@@ -284,8 +284,8 @@ bool ExtractModifies(RelationManager manager, TNode root) {
 bool ExtractData(DataManager manager, TNode root) {
     vector<TNode*> children = root.GetChildrenVector();
     switch (root.GetNodeType()) {
-    case TNode::procName:
-        manager.AddProcedure(*(root.GetName()));
+    case TNode::procedure:
+        manager.AddProcedure(*(root.GetChildrenVector().at(0)->GetName()));
         break;
     case TNode::assignStmt:
         manager.AddStatement(assignStatement, root.GetStmtIndex());
@@ -319,3 +319,18 @@ bool ExtractData(DataManager manager, TNode root) {
     }
     return true;
 }
+
+bool ExtractPattern(PatternManager manager, TNode root) {
+    vector<TNode*> children = root.GetChildrenVector();
+    if (root.GetNodeType() == TNode::assignStmt) {
+        TNode* var_node = children.at(0);
+        TNode* expr_node = children.at(1);
+        manager.AddAssignPattern(root.GetStmtIndex(), *var_node->GetName(), *expr_node);
+    } else {
+        for (TNode* child : children) {
+            ExtractPattern(manager, *child);
+        }
+    }
+    return true;
+}
+
