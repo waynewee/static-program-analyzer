@@ -19,7 +19,7 @@ bool ExtractFollows(RelationManager manager, TNode root) {
             }
         }
     }
-    else if (children.empty()) {
+    if (children.empty()) {
         return true;
     }
     else {

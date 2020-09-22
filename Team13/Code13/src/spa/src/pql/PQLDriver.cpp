@@ -6,12 +6,12 @@
 #include "QueryResult.h"
 #include <iostream>
 
-STRING PQLDriver::Query(STRING query_string) {
+STRING_SET PQLDriver::Query(STRING query_string) {
 	PQLParser parser = PQLParser();
 	PQLEvaluator evaluator = PQLEvaluator();
 	PQLProjector projector = PQLProjector();
 
-	STRING final_result = "";
+	STRING_SET final_result;
 
 	cout << "Query: " << query_string << endl;
 	QueryInfo parsed_info = parser.Parse(query_string);
@@ -19,7 +19,6 @@ STRING PQLDriver::Query(STRING query_string) {
 	if (!parsed_info.IsQueryInfoValid()) {
 		// Invalid Query
 		cout << "Query is invalid." << endl;
-		final_result.assign("");
 		return final_result;
 	}
 
@@ -32,18 +31,19 @@ STRING PQLDriver::Query(STRING query_string) {
 	if (result.IsEmpty()) {
 		// Empty result
 		cout << "Result is empty." << endl;
-		final_result.assign("");
 		return final_result;
 	}
 
 	// loop: check whats in Query result
 
 	final_result = projector.Project(result);
+	/*
 	if (final_result.empty()) {
 		cout << "Projecting result has errors. 'final_result' should not be empty as it is already caught." << endl;
 	}
 
 	cout << "Final Result: \"" << final_result << "\"" << std::endl;
 	cout << "________________________________________________________" << endl;
+	*/
 	return final_result;
 }

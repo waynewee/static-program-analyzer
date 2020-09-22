@@ -222,6 +222,7 @@ TEST_CASE("Test Add Uses") {
     REQUIRE(!falseStmtUses);
     REQUIRE(trueProcUses);
     REQUIRE(!falseProcUses);
+    REQUIRE(false);
 }
 
 TEST_CASE("Test Add Modifies") {
