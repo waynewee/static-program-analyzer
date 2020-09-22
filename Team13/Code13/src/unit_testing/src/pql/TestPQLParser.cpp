@@ -1423,7 +1423,7 @@ TEST_CASE("Test 36") {
 	QueryInfo query_info_actual;
 	QueryInfo query_info_expected;
 
-	string pql_query = "assign a; variable v; Select a pattern a (_, \"z * y / s + x\")";
+	string pql_query = "assign a; variable v; Select a pattern a(_, \"z * y / s + x\")";
 
 	query_info_actual = pql_parser.Parse(pql_query);
 
@@ -1477,7 +1477,7 @@ TEST_CASE("Test 37") {
 	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
 	vector<string> arguments; // for a single clause
 	arguments.push_back("v");
-	arguments.push_back("_\"z * y / s + x\"_");
+	arguments.push_back("\"z * y / s + x\"");
 	arguments.push_back("a");
 
 	all_arguments.push_back(arguments);
@@ -1532,7 +1532,7 @@ TEST_CASE("Test 38") {
 	vector<vector<string>> all_arguments_third;
 	vector<string> arguments_third; // for clause : pattern a (_ , _\"x + y\"_)
 	arguments_third.push_back("_");
-	arguments_third.push_back("_\"x + y\"_");
+	arguments_third.push_back("\"x + y\"");
 	arguments_third.push_back("a");
 
 	all_arguments_third.push_back(arguments_third);
@@ -1643,8 +1643,12 @@ TEST_CASE("Test 41") {
 
 	string pql_query = "stmt s; Select s such that Modifies (_ ,\"x\")";
 
-	query_info_actual = pql_parser.Parse(pql_query);
+	try {
+		query_info_actual = pql_parser.Parse(pql_query);
+	}
+	catch (exception e) {
 
+	}
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
 	requireBool(!isValid);
@@ -1664,7 +1668,12 @@ TEST_CASE("Test 42") {
 
 	string pql_query = "assign a; variable v; Select a pattern a (v, _\"z\")";
 
-	query_info_actual = pql_parser.Parse(pql_query);
+	try {
+		query_info_actual = pql_parser.Parse(pql_query);
+	}
+	catch (exception e) {
+
+	}
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1685,7 +1694,12 @@ TEST_CASE("Test 43") {
 
 	string pql_query = "assign a; variable v; Select a pattern a (v, \"z\"_)";
 
-	query_info_actual = pql_parser.Parse(pql_query);
+	try {
+		query_info_actual = pql_parser.Parse(pql_query);
+	}
+	catch (exception e) {
+
+	}
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1706,7 +1720,12 @@ TEST_CASE("Test 44") {
 
 	string pql_query = "assign a; variable v; Select a pattern a (v, _\" + z + y\"_)";
 
-	query_info_actual = pql_parser.Parse(pql_query);
+	try {
+		query_info_actual = pql_parser.Parse(pql_query);
+	}
+	catch (exception e) {
+
+	}
 
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
@@ -1900,4 +1919,51 @@ TEST_CASE("Test 53") {
 	bool isValid = query_info_actual.IsQueryInfoValid();
 
 	requireBool(!isValid);
+}
+
+/*
+ADDITIONAL TEST CASES
+*/
+
+/*
+First argument underscore :
+assign a1; variable v1; Select a1 pattern a1 (v1, _)
+*/
+TEST_CASE("Test ADDITIONAL") {
+
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "assign a1; variable v1; Select a1 pattern a1(v1, _)";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	query_info_expected.SetOutputVar("a1");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["a1"] = "assign";
+	expected_var_map["v1"] = "variable";
+	query_info_expected.SetVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("v1");
+	arguments.push_back("_");
+	arguments.push_back("a1");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["pattern_f"] = all_arguments;
+
+	query_info_expected.SetRelRefMap(expected_relRef_map);
+
+	// cout << "FROM ADDITIONAL TEST : " << endl;
+	// query_info_actual.PrintRelRefMap();
+	// query_info_expected.PrintRelRefMap();
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	requireBool(are_similar);
 }
