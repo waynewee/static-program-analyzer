@@ -27,18 +27,19 @@ TEST_CASE("Test Add Follows") {
     REQUIRE(trueFollow == true);
     REQUIRE(falseFollow == false);
 }
-/*
-TEST_CASE("Test Data Manager") {
-    PKB pkb;
-    DataManager manager = pkb.GetDataManager();
-    manager.AddVariable("v");
-    VAR_NAME_SET vars = manager.GetAllVariables();
-    for (auto v : vars) {
-        cout << v << "\n";
-    }
-    REQUIRE(false);
-}
-*/
+
+//TEST_CASE("Test Data Manager") {
+//    PKB pkb;
+//    DataManager manager = pkb.GetDataManager();
+//    manager.AddVariable("test_data");
+//    manager.AddVariable("data");
+//    VAR_NAME_SET vars = manager.GetAllVariables();
+//    for (auto v : vars) {
+//        cout << v << "\n";
+//    }
+//    REQUIRE(false);
+//}
+
 
 TEST_CASE("Test Add Parent Star") {
     TNode* while_ = new TNode(TNode::NODE_TYPE::whileStmt, 1);
