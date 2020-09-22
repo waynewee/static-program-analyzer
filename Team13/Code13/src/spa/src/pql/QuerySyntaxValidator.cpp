@@ -189,7 +189,7 @@ STRING_STRINGLIST_MAP QuerySyntaxValidator::ValidateSuchThatClause(string s, STR
 		and we check against the list of variable names in the program
 		and we need to check against RelrefNames
 
-		Select a such that Parent* (w, a) pattern a (“count”, _)
+		Select a such that Parent* (w, a) pattern a (“count? _)
 	*/
 	string temp = s;
 	vector<std::string> such_that_clause;
@@ -305,10 +305,10 @@ STRING_STRINGLIST_MAP QuerySyntaxValidator::ValidateSuchThatClause(string s, STR
 	}
 
 	/*
-		UsesS : ‘Uses’ ‘(’ stmtRef ‘,’ entRef ‘)’
-		UsesP: ‘Uses’ ‘(’ entRef ‘, ’ entRef ‘)’
-		ModifiesS : ‘Modifies’ ‘(’ stmtRef ‘, ’ entRef ‘)’
-		ModifiesP : ‘Modifies’ ‘(’ entRef ‘, ’ entRef ‘)’
+		UsesS : ‘Uses???stmtRef ??entRef ??
+		UsesP: ‘Uses???entRef ? ?entRef ??
+		ModifiesS : ‘Modifies???stmtRef ? ?entRef ??
+		ModifiesP : ‘Modifies???entRef ? ?entRef ??
 	*/
 
 	/*
