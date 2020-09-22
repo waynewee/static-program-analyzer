@@ -377,3 +377,37 @@ TEST_CASE("Test Modifies with call") {
     REQUIRE(trueProcModifies);
     REQUIRE(!falseProcModifies);
 }
+
+/*
+TEST_CASE("Test Extract Pattern") {
+    TNode list = TNode(TNode::stmtList);
+    TNode s1 = TNode(TNode::printStmt, 1);
+    TNode s2 = TNode(TNode::readStmt, 2);
+    TNode s3 = TNode(TNode::assignStmt, 3);
+    TNode v1 = TNode(TNode::varName, string("v"));
+    TNode c1 = TNode(TNode::constValue, CONST_VALUE(2));
+    TNode s4 = TNode(TNode::assignStmt, 4);
+    TNode v4 = TNode(TNode::varName, string("x"));
+    TNode expr = TNode(TNode::expr, TNode::plus);
+    TNode c4 = TNode(TNode::constValue, CONST_VALUE(3));
+    TNode v5 = TNode(TNode::varName, string("yy"));
+    list.AddChild(&s1);
+    list.AddChild(&s2);
+    list.AddChild(&s3);
+    list.AddChild(&s4);
+    s3.AddChild(&v1);
+    s3.AddChild(&c1);
+    s4.AddChild(&v4);
+    s4.AddChild(&expr);
+    expr.AddChild(&c4);
+    expr.AddChild(&v5);
+    list.Print(&list);
+    PKB pkb;
+    PatternManager manager = pkb.GetPatternManager();
+    ExtractPattern(manager, list);
+    STMT_IDX_SET stmts = manager.GetAssignWithFullPattern("", "");
+    for (STMT_IDX stmt : stmts) {
+        cout << "got pattern: " << stmt << "\n";
+    }
+}
+*/
