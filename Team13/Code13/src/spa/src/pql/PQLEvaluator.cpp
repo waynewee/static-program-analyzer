@@ -339,7 +339,7 @@ STRING_SET PQLEvaluator::EvaluateAssignPatternCall(STRING f_call, STRING param1,
 	}
 
 	if (f_call.compare(TYPE_COND_PATTERN_P) == 0) {
-		result = ConvertSet(pm.GetAssignWithSubpattern(ParsingEntRef(param1), ParsingEntRef(param2)));
+		result = ConvertSet(pm.GetAssignWithSubPattern(ParsingEntRef(param1), ParsingEntRef(param2)));
 	}
 	else if (f_call.compare(TYPE_COND_PATTERN_F) == 0) {
 		result = ConvertSet(pm.GetAssignWithFullPattern(ParsingEntRef(param1), ParsingEntRef(param2)));
