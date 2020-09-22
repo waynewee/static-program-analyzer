@@ -292,6 +292,92 @@ TEST_CASE("Test Add Modifies") {
     REQUIRE(!falseProcModifies);
 }
 
+TEST_CASE("Test Modifies with call") {
+    TNode* program = new TNode(TNode::NODE_TYPE::program);
+
+    TNode* proc = new TNode(TNode::NODE_TYPE::procedure);
+    TNode* procname = new TNode(TNode::NODE_TYPE::procName, "pp");
+    TNode* proclst = new TNode(TNode::NODE_TYPE::stmtList);
+    TNode* procassign = new TNode(TNode::NODE_TYPE::assignStmt, 1);
+    TNode* var = new TNode(TNode::NODE_TYPE::varName, "v1");
+    TNode* expr = new TNode(TNode::NODE_TYPE::varName, "v2");
+    TNode* procprint = new TNode(TNode::NODE_TYPE::readStmt, 2);
+    TNode* printvar = new TNode(TNode::NODE_TYPE::varName, "read_vv");
+    TNode* proccall = new TNode(TNode::NODE_TYPE::callStmt, 3);
+    TNode* callname = new TNode(TNode::NODE_TYPE::procName, "proc3");
+    procprint->AddChild(printvar);
+    procassign->AddChild(var);
+    procassign->AddChild(expr);
+    proccall->AddChild(callname);
+    proclst->AddChild(procassign);
+    proclst->AddChild(procprint);
+    proclst->AddChild(proccall);
+    proc->AddChild(procname);
+    proc->AddChild(proclst);
+
+    TNode* proc2 = new TNode(TNode::NODE_TYPE::procedure);
+    TNode* procname2 = new TNode(TNode::NODE_TYPE::procName, "proc2");
+    TNode* proclst2 = new TNode(TNode::NODE_TYPE::stmtList);
+    TNode* procprint2 = new TNode(TNode::NODE_TYPE::readStmt, 4);
+    TNode* printvar2 = new TNode(TNode::NODE_TYPE::varName, "read_vv2");
+    procprint2->AddChild(printvar2);
+    proclst2->AddChild(procprint2);
+    proc2->AddChild(procname2);
+    proc2->AddChild(proclst2);
+
+    TNode* proc3 = new TNode(TNode::NODE_TYPE::procedure);
+    TNode* procname3 = new TNode(TNode::NODE_TYPE::procName, "proc3");
+    TNode* proclst3 = new TNode(TNode::NODE_TYPE::stmtList);
+    TNode* proccall3 = new TNode(TNode::NODE_TYPE::callStmt, 5);
+    TNode* callname3 = new TNode(TNode::NODE_TYPE::procName, "pp");
+    TNode* proccall33 = new TNode(TNode::NODE_TYPE::callStmt, 6);
+    TNode* callname33 = new TNode(TNode::NODE_TYPE::procName, "proc2");
+    proccall3->AddChild(callname3);
+    proclst3->AddChild(proccall3);
+    proccall33->AddChild(callname33);
+    proclst3->AddChild(proccall33);
+    proc3->AddChild(procname3);
+    proc3->AddChild(proclst3);
+
+    program->AddChild(proc);
+    program->AddChild(proc2);
+    program->AddChild(proc3);
+
+    program->Print(program);
+
+    PKB pkb;
+    RelationManager manager = pkb.GetRelationManager();
+    ExtractModifies(manager, *program);
+
+    /*VAR_NAME* v1 = new string("v1");
+    VAR_NAME* v2 = new string("v2");
+    PROC_NAME* procn = new string("pp");
+
+    manager.AddProcUses(*procn, *v1);
+
+    */
+    auto all_mods = manager.GetAllStmtModifies();
+    for (auto mod : all_mods) {
+        cout << mod.s << " " << mod.v << "\n";
+    }
+
+    auto all_proc_mods = manager.GetAllProcModifies();
+    for (auto mod : all_proc_mods) {
+        cout << mod.p << " " << mod.v << "\n";
+    }
+    
+
+    bool trueStmtModifies = manager.IsStmtModifies(1, "v1");
+    bool falseStmtModifies = manager.IsStmtModifies(2, "v1");
+    bool trueProcModifies = manager.IsProcModifies("pp", "v1");
+    bool falseProcModifies = manager.IsProcModifies("proc2", "v1");
+
+    REQUIRE(trueStmtModifies);
+    REQUIRE(!falseStmtModifies);
+    REQUIRE(trueProcModifies);
+    REQUIRE(!falseProcModifies);
+}
+
 TEST_CASE("Test extract Pattern") {
     TNode* prog = new TNode(TNode::NODE_TYPE::program, "SIMPLE");
     TNode* proc = new TNode(TNode::NODE_TYPE::procedure);
@@ -323,5 +409,8 @@ TEST_CASE("Test extract Pattern") {
     PKB* pkb = new PKB();
     PatternManager pattern_manager = pkb->GetPatternManager();
     ExtractPattern(pattern_manager, *prog);
-
+//    STMT_IDX_SET stmts = manager.GetAssignWithFullPattern("", "");
+//    for (STMT_IDX stmt : stmts) {
+//        cout << "got pattern: " << stmt << "\n";
+//    }
 }
