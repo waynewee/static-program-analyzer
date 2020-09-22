@@ -51,17 +51,21 @@ PROC_NAME_SET* RelationManager::all_proc_modifies_keys_ = new PROC_NAME_SET();
 VAR_NAME_SET* RelationManager::all_inverse_proc_modifies_keys_ = new VAR_NAME_SET();
 
 bool RelationManager::AddFollows(STMT_IDX s1, STMT_IDX s2) {
-    bool res =  InsertStmtStmtRelation(follows_table_, s1, s2)
-            && InsertStmtStmtRelation(inverse_follows_table_, s2, s1)
-            && InsertStmtStmtRelation(follows_star_table_, s1, s2)
-            && InsertStmtStmtRelation(inverse_follows_star_table_, s2, s1);
-    InsertStmtStmtTuple(all_follows_, s1, s2);
-    InsertStmtStmtTuple(all_follows_star_, s1, s2);
+    bool can_add_follows =  InsertStmtStmtRelation(follows_table_, s1, s2);
+    bool can_add_inverse_follows = InsertStmtStmtRelation(inverse_follows_table_, s2, s1);
+    bool can_add_follows_star = InsertStmtStmtRelation(follows_star_table_, s1, s2);
+    bool can_add_inverse_follows_star = InsertStmtStmtRelation(inverse_follows_star_table_, s2, s1);
+    if (can_add_follows) {
+        InsertStmtStmtTuple(all_follows_, s1, s2);
+    }
+    if (can_add_follows_star) {
+        InsertStmtStmtTuple(all_follows_star_, s1, s2);
+    }
     InsertStmtKey(all_follows_keys_, s1);
     InsertStmtKey(all_inverse_follows_keys_, s2);
     InsertStmtKey(all_follows_star_keys_, s1);
     InsertStmtKey(all_inverse_follows_star_keys_, s2);
-    return res;
+    return can_add_follows && can_add_inverse_follows && can_add_follows_star && can_add_inverse_follows_star;
 }
 
 bool RelationManager::AddFollowsStar(STMT_IDX s1, STMT_IDX s2) {
