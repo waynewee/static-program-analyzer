@@ -8,5 +8,6 @@
 #include <TNode.h>
 namespace testutils {
 TNode* ConstructProgTreeWithSingleAssignStmt();
+TNode* ConstructProgTreeWithTwoAssignStmt();
 }
 #endif //AUTOTESTER_TEAM13_CODE13_SRC_UNIT_TESTING_SRC_TESTUTILS_H_
