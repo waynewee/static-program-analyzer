@@ -1,8 +1,10 @@
-#include "PKB.h"
-#include "TNode.h"
+
 #include "catch.hpp"
 #include "CustomTypes.h"
 #include "DesignExtractor.h"
+#include "PKB.h"
+#include "TestUtils.h"
+#include "TNode.h"
 
 using namespace std;
 
@@ -379,38 +381,33 @@ TEST_CASE("Test Modifies with call") {
 }
 
 TEST_CASE("Test extract Pattern") {
-    TNode* prog = new TNode(TNode::NODE_TYPE::program, "SIMPLE");
-    TNode* proc = new TNode(TNode::NODE_TYPE::procedure);
-    TNode* proc_name = new TNode(TNode::NODE_TYPE::procName, "main");
-    TNode* stmt_list = new TNode(TNode::NODE_TYPE::stmtList);
-    TNode* assign1 = new TNode(TNode::NODE_TYPE::assignStmt);
-    TNode* var1 = new TNode(TNode::NODE_TYPE::varName, "var1");
-    TNode* expr1 = new TNode(TNode::NODE_TYPE::expr, TNode::OPERATOR::plus);
-    TNode* var2 = new TNode(TNode::NODE_TYPE::varName, "var2");
-    TNode* const1 = new TNode(TNode::NODE_TYPE::constValue, 5);
-
-    prog->AddChild(proc);
-    proc->AddChild(proc_name);
-    proc->AddChild(stmt_list);
-    stmt_list->AddChild(assign1);
-    assign1->AddChild(var1);
-    assign1->AddChild(expr1);
-    expr1->AddChild(var2);
-    expr1->AddChild(const1);
-    proc->SetParent(prog);
-    proc_name->SetParent(proc);
-    stmt_list->SetParent(proc);
-    assign1->SetParent(stmt_list);
-    var1->SetParent(assign1);
-    expr1->SetParent(assign1);
-    var2->SetParent(expr1);
-    const1->SetParent(expr1);
-
     PKB* pkb = new PKB();
     PatternManager pattern_manager = pkb->GetPatternManager();
+    TNode* prog = testutils::ConstructProgTreeWithSingleAssignStmt();
     ExtractPattern(pattern_manager, *prog);
-//    STMT_IDX_SET stmts = manager.GetAssignWithFullPattern("", "");
-//    for (STMT_IDX stmt : stmts) {
-//        cout << "got pattern: " << stmt << "\n";
-//    }
+
+    STMT_IDX_SET set1 =  pattern_manager.GetAssignWithFullPattern("", "");
+    REQUIRE(set1.size() == 1);
+    REQUIRE(set1.find(1) != set1.end());
+
+    STMT_IDX_SET set2 = pattern_manager.GetAssignWithFullPattern("var1", "");
+    REQUIRE(set2.size() == 1);
+    REQUIRE(set2.find(1) != set2.end());
+
+    STMT_IDX_SET set3 = pattern_manager.GetAssignWithFullPattern("", "5");
+    REQUIRE(set3.size() == 1);
+    REQUIRE(set3.find(1) != set3.end());
+
+    STMT_IDX_SET set4 = pattern_manager.GetAssignWithFullPattern("", "var2");
+    REQUIRE(set4.size() == 1);
+    REQUIRE(set4.find(1) != set4.end());
+
+    STMT_IDX_SET set5 = pattern_manager.GetAssignWithFullPattern("var1", "var2");
+    REQUIRE(set5.size() == 1);
+    REQUIRE(set5.find(1) != set5.end());
+
+    STMT_IDX_SET set6 = pattern_manager.GetAssignWithFullPattern("var1", "5");
+    REQUIRE(set6.size() == 1);
+    REQUIRE(set6.find(1) != set6.end());
 }
+
