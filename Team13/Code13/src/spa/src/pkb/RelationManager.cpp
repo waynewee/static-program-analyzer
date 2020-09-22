@@ -7,48 +7,48 @@
 #include "RelationManager.h"
 using namespace std;
 
-FOLLOWS_TABLE RelationManager::follows_table_ = FOLLOWS_TABLE();
-FOLLOWS_STAR_TABLE RelationManager::follows_star_table_ = FOLLOWS_STAR_TABLE();
-INVERSE_FOLLOWS_TABLE RelationManager::inverse_follows_table_ = INVERSE_FOLLOWS_TABLE();
-INVERSE_FOLLOWS_STAR_TABLE RelationManager::inverse_follows_star_table_ = INVERSE_FOLLOWS_STAR_TABLE();
-PARENT_TABLE RelationManager::parent_table_ = PARENT_TABLE();
-PARENT_STAR_TABLE RelationManager::parent_star_table_ = PARENT_STAR_TABLE();
-INVERSE_PARENT_TABLE RelationManager::inverse_parent_table_ = INVERSE_PARENT_TABLE();
-INVERSE_PARENT_STAR_TABLE RelationManager::inverse_parent_star_table_ = INVERSE_PARENT_STAR_TABLE();
-STMT_USES_TABLE RelationManager::stmt_uses_table_ = STMT_USES_TABLE();
-PROC_USES_TABLE RelationManager::proc_uses_table_ = PROC_USES_TABLE();
-INVERSE_STMT_USES_TABLE RelationManager::inverse_stmt_uses_table_ = INVERSE_STMT_USES_TABLE();
-INVERSE_PROC_USES_TABLE RelationManager::inverse_proc_uses_table_ = INVERSE_PROC_USES_TABLE();
-STMT_MODIFIES_TABLE RelationManager::stmt_modifies_table_ = STMT_MODIFIES_TABLE();
-PROC_MODIFIES_TABLE RelationManager::proc_modifies_table_ = PROC_MODIFIES_TABLE();
-INVERSE_STMT_MODIFIES_TABLE RelationManager::inverse_stmt_modifies_table_ = INVERSE_STMT_MODIFIES_TABLE();
-INVERSE_PROC_MODIFIES_TABLE RelationManager::inverse_proc_modifies_table_ = INVERSE_PROC_MODIFIES_TABLE();
+FOLLOWS_TABLE* RelationManager::follows_table_ = new FOLLOWS_TABLE();
+FOLLOWS_STAR_TABLE* RelationManager::follows_star_table_ = new FOLLOWS_STAR_TABLE();
+INVERSE_FOLLOWS_TABLE* RelationManager::inverse_follows_table_ = new INVERSE_FOLLOWS_TABLE();
+INVERSE_FOLLOWS_STAR_TABLE* RelationManager::inverse_follows_star_table_ = new INVERSE_FOLLOWS_STAR_TABLE();
+PARENT_TABLE* RelationManager::parent_table_ = new PARENT_TABLE();
+PARENT_STAR_TABLE* RelationManager::parent_star_table_ = new PARENT_STAR_TABLE();
+INVERSE_PARENT_TABLE* RelationManager::inverse_parent_table_ = new INVERSE_PARENT_TABLE();
+INVERSE_PARENT_STAR_TABLE* RelationManager::inverse_parent_star_table_ = new INVERSE_PARENT_STAR_TABLE();
+STMT_USES_TABLE* RelationManager::stmt_uses_table_ = new STMT_USES_TABLE();
+PROC_USES_TABLE* RelationManager::proc_uses_table_ = new PROC_USES_TABLE();
+INVERSE_STMT_USES_TABLE* RelationManager::inverse_stmt_uses_table_ = new INVERSE_STMT_USES_TABLE();
+INVERSE_PROC_USES_TABLE* RelationManager::inverse_proc_uses_table_ = new INVERSE_PROC_USES_TABLE();
+STMT_MODIFIES_TABLE* RelationManager::stmt_modifies_table_ = new STMT_MODIFIES_TABLE();
+PROC_MODIFIES_TABLE* RelationManager::proc_modifies_table_ = new PROC_MODIFIES_TABLE();
+INVERSE_STMT_MODIFIES_TABLE* RelationManager::inverse_stmt_modifies_table_ = new INVERSE_STMT_MODIFIES_TABLE();
+INVERSE_PROC_MODIFIES_TABLE* RelationManager::inverse_proc_modifies_table_ = new INVERSE_PROC_MODIFIES_TABLE();
 
-STMT_STMT_PAIR_LIST RelationManager::all_follows_ = STMT_STMT_PAIR_LIST();
-STMT_STMT_PAIR_LIST RelationManager::all_follows_star_ = STMT_STMT_PAIR_LIST();
-STMT_STMT_PAIR_LIST RelationManager::all_parent_ = STMT_STMT_PAIR_LIST();
-STMT_STMT_PAIR_LIST RelationManager::all_parent_star_ = STMT_STMT_PAIR_LIST();
-STMT_VAR_PAIR_LIST RelationManager::all_stmt_uses_ = STMT_VAR_PAIR_LIST();
-PROC_VAR_PAIR_LIST RelationManager::all_proc_uses_ = PROC_VAR_PAIR_LIST();
-STMT_VAR_PAIR_LIST RelationManager::all_stmt_modifies_ = STMT_VAR_PAIR_LIST();
-PROC_VAR_PAIR_LIST RelationManager::all_proc_modifies_ = PROC_VAR_PAIR_LIST();
+STMT_STMT_PAIR_LIST* RelationManager::all_follows_ = new STMT_STMT_PAIR_LIST();
+STMT_STMT_PAIR_LIST* RelationManager::all_follows_star_ = new STMT_STMT_PAIR_LIST();
+STMT_STMT_PAIR_LIST* RelationManager::all_parent_ = new STMT_STMT_PAIR_LIST();
+STMT_STMT_PAIR_LIST* RelationManager::all_parent_star_ = new STMT_STMT_PAIR_LIST();
+STMT_VAR_PAIR_LIST* RelationManager::all_stmt_uses_ = new STMT_VAR_PAIR_LIST();
+PROC_VAR_PAIR_LIST* RelationManager::all_proc_uses_ = new PROC_VAR_PAIR_LIST();
+STMT_VAR_PAIR_LIST* RelationManager::all_stmt_modifies_ = new STMT_VAR_PAIR_LIST();
+PROC_VAR_PAIR_LIST* RelationManager::all_proc_modifies_ = new PROC_VAR_PAIR_LIST();
 
-STMT_IDX_SET RelationManager::all_follows_keys_ = STMT_IDX_SET();
-STMT_IDX_SET RelationManager::all_inverse_follows_keys_ = STMT_IDX_SET();
-STMT_IDX_SET RelationManager::all_follows_star_keys_ = STMT_IDX_SET();
-STMT_IDX_SET RelationManager::all_inverse_follows_star_keys_ = STMT_IDX_SET();
-STMT_IDX_SET RelationManager::all_parent_keys_ = STMT_IDX_SET();
-STMT_IDX_SET RelationManager::all_inverse_parent_keys_ = STMT_IDX_SET();
-STMT_IDX_SET RelationManager::all_parent_star_keys_ = STMT_IDX_SET();
-STMT_IDX_SET RelationManager::all_inverse_parent_star_keys_ = STMT_IDX_SET();
-STMT_IDX_SET RelationManager::all_stmt_uses_keys_ = STMT_IDX_SET();
-VAR_NAME_SET RelationManager::all_inverse_stmt_uses_keys_ = VAR_NAME_SET();
-PROC_NAME_SET RelationManager::all_proc_uses_keys_ = PROC_NAME_SET();
-VAR_NAME_SET RelationManager::all_inverse_proc_uses_keys_ = VAR_NAME_SET();
-STMT_IDX_SET RelationManager::all_stmt_modifies_keys_ = STMT_IDX_SET();
-VAR_NAME_SET RelationManager::all_inverse_stmt_modifies_keys_ = VAR_NAME_SET();
-PROC_NAME_SET RelationManager::all_proc_modifies_keys_ = PROC_NAME_SET();
-VAR_NAME_SET RelationManager::all_inverse_proc_modifies_keys_ = VAR_NAME_SET();
+STMT_IDX_SET* RelationManager::all_follows_keys_ = new STMT_IDX_SET();
+STMT_IDX_SET* RelationManager::all_inverse_follows_keys_ = new STMT_IDX_SET();
+STMT_IDX_SET* RelationManager::all_follows_star_keys_ = new STMT_IDX_SET();
+STMT_IDX_SET* RelationManager::all_inverse_follows_star_keys_ = new STMT_IDX_SET();
+STMT_IDX_SET* RelationManager::all_parent_keys_ = new STMT_IDX_SET();
+STMT_IDX_SET* RelationManager::all_inverse_parent_keys_ = new STMT_IDX_SET();
+STMT_IDX_SET* RelationManager::all_parent_star_keys_ = new STMT_IDX_SET();
+STMT_IDX_SET* RelationManager::all_inverse_parent_star_keys_ = new STMT_IDX_SET();
+STMT_IDX_SET* RelationManager::all_stmt_uses_keys_ = new STMT_IDX_SET();
+VAR_NAME_SET* RelationManager::all_inverse_stmt_uses_keys_ = new VAR_NAME_SET();
+PROC_NAME_SET* RelationManager::all_proc_uses_keys_ = new PROC_NAME_SET();
+VAR_NAME_SET* RelationManager::all_inverse_proc_uses_keys_ = new VAR_NAME_SET();
+STMT_IDX_SET* RelationManager::all_stmt_modifies_keys_ = new STMT_IDX_SET();
+VAR_NAME_SET* RelationManager::all_inverse_stmt_modifies_keys_ = new VAR_NAME_SET();
+PROC_NAME_SET* RelationManager::all_proc_modifies_keys_ = new PROC_NAME_SET();
+VAR_NAME_SET* RelationManager::all_inverse_proc_modifies_keys_ = new VAR_NAME_SET();
 
 bool RelationManager::AddFollows(STMT_IDX s1, STMT_IDX s2) {
     bool res =  InsertStmtStmtRelation(follows_table_, s1, s2)
@@ -203,213 +203,213 @@ PROC_NAME_SET  RelationManager::GetInverseProcModifies(VAR_NAME v) {
     return GetVarProcRelationVal(inverse_proc_modifies_table_, all_proc_modifies_keys_, v);
 }
 STMT_STMT_PAIR_LIST RelationManager::GetAllFollows() {
-    return all_follows_;
+    return *all_follows_;
 }
 STMT_STMT_PAIR_LIST RelationManager::GetAllFollowsStars() {
-    return all_follows_star_;
+    return *all_follows_star_;
 }
 STMT_STMT_PAIR_LIST RelationManager::GetAllParents() {
-    return all_parent_;
+    return *all_parent_;
 }
 STMT_STMT_PAIR_LIST RelationManager::GetAllParentStars() {
-    return all_parent_star_;
+    return *all_parent_star_;
 }
 STMT_VAR_PAIR_LIST RelationManager::GetAllStmtUses() {
-    return all_stmt_uses_;
+    return *all_stmt_uses_;
 }
 PROC_VAR_PAIR_LIST RelationManager::GetAllProcUses() {
-    return all_proc_uses_;
+    return *all_proc_uses_;
 }
 STMT_VAR_PAIR_LIST RelationManager::GetAllStmtModifies() {
-    return all_stmt_modifies_;
+    return *all_stmt_modifies_;
 }
 PROC_VAR_PAIR_LIST RelationManager::GetAllProcModifies() {
-    return all_proc_modifies_;
+    return *all_proc_modifies_;
 }
 
-bool RelationManager::InsertStmtStmtRelation(STMT_STMT_RELATION_TABLE& set, STMT_IDX s1, STMT_IDX s2) {
-    auto iter = set.find(s1);
-    if (iter == set.end()) {
+bool RelationManager::InsertStmtStmtRelation(STMT_STMT_RELATION_TABLE* set, STMT_IDX s1, STMT_IDX s2) {
+    auto iter = set->find(s1);
+    if (iter == set->end()) {
         STMT_IDX_SET* stmt_set = new STMT_IDX_SET();
-        bool res = set.insert({s1, stmt_set}).second && stmt_set->insert(s2).second;
+        bool res = set->insert({s1, stmt_set}).second && stmt_set->insert(s2).second;
         return res;
     } else {
-        bool res = set.at(s1)->insert(s2).second;
+        bool res = set->at(s1)->insert(s2).second;
         return res;
     }
 }
 
-bool RelationManager::InsertStmtVarRelation(STMT_VAR_RELATION_TABLE &set, STMT_IDX s, VAR_NAME v) {
-    auto iter = set.find(s);
-    if (iter == set.end()) {
+bool RelationManager::InsertStmtVarRelation(STMT_VAR_RELATION_TABLE *set, STMT_IDX s, VAR_NAME v) {
+    auto iter = set->find(s);
+    if (iter == set->end()) {
         VAR_NAME_SET* var_name_set = new VAR_NAME_SET();
-        return set.insert({s, var_name_set}).second && var_name_set->insert(v).second;
+        return set->insert({s, var_name_set}).second && var_name_set->insert(v).second;
     } else {
-        return set.at(s)->insert(v).second;
+        return set->at(s)->insert(v).second;
     }
 }
 
-bool RelationManager::InsertProcVarRelation(PROC_VAR_RELATION_TABLE &set, PROC_NAME p, VAR_NAME v) {
-    auto iter = set.find(p);
-    if (iter == set.end()) {
+bool RelationManager::InsertProcVarRelation(PROC_VAR_RELATION_TABLE *set, PROC_NAME p, VAR_NAME v) {
+    auto iter = set->find(p);
+    if (iter == set->end()) {
         VAR_NAME_SET* var_name_set = new VAR_NAME_SET();
-        return set.insert({p, var_name_set}).second && var_name_set->insert(v).second;
+        return set->insert({p, var_name_set}).second && var_name_set->insert(v).second;
     } else {
-        return set.at(p)->insert(v).second;
+        return set->at(p)->insert(v).second;
     }
 }
 
-bool RelationManager::InsertVarStmtRelation(VAR_STMT_RELATION_TABLE &set, VAR_NAME v, STMT_IDX s) {
-    auto iter = set.find(v);
-    if (iter == set.end()) {
+bool RelationManager::InsertVarStmtRelation(VAR_STMT_RELATION_TABLE *set, VAR_NAME v, STMT_IDX s) {
+    auto iter = set->find(v);
+    if (iter == set->end()) {
         STMT_IDX_SET* stmt_idx_set = new STMT_IDX_SET();
-        return set.insert({v, stmt_idx_set}).second && stmt_idx_set->insert(s).second;
+        return set->insert({v, stmt_idx_set}).second && stmt_idx_set->insert(s).second;
     } else {
-        return set.at(v)->insert(s).second;
+        return set->at(v)->insert(s).second;
     }
 }
 
-bool RelationManager::InsertVarProcRelation(VAR_PROC_RELATION_TABLE &set, VAR_NAME v, PROC_NAME p) {
-    auto iter = set.find(v);
-    if (iter == set.end()) {
+bool RelationManager::InsertVarProcRelation(VAR_PROC_RELATION_TABLE *set, VAR_NAME v, PROC_NAME p) {
+    auto iter = set->find(v);
+    if (iter == set->end()) {
         PROC_NAME_SET* proc_name_set = new PROC_NAME_SET();
-        return set.insert({v, proc_name_set}).second && proc_name_set->insert(p).second;
+        return set->insert({v, proc_name_set}).second && proc_name_set->insert(p).second;
     } else {
-        return set.at(v)->insert(p).second;
+        return set->at(v)->insert(p).second;
     }
 }
-bool RelationManager::CheckStmtStmtRelation(STMT_STMT_RELATION_TABLE &set, STMT_STMT_RELATION_TABLE &inv_set, STMT_IDX s1, STMT_IDX s2) {
+bool RelationManager::CheckStmtStmtRelation(STMT_STMT_RELATION_TABLE *set, STMT_STMT_RELATION_TABLE *inv_set, STMT_IDX s1, STMT_IDX s2) {
     //If s1 and s2 are both wildcard, then just check if program contains such relation
     if (s1 < 0 && s2 < 0) {
-        return !set.empty();
+        return !set->empty();
     }
     if (s1 < 0) {
-        auto iter = inv_set.find(s2);
-        return iter != inv_set.end() && !(iter->second->empty());
+        auto iter = inv_set->find(s2);
+        return iter != inv_set->end() && !(iter->second->empty());
     }
     if (s2 < 0) {
-        auto iter = set.find(s1);
-        return iter != set.end() && !(iter->second->empty());
+        auto iter = set->find(s1);
+        return iter != set->end() && !(iter->second->empty());
     }
-    auto iter = set.find(s1);
-    bool res = iter != set.end() && iter->second->find(s2) != iter->second->end();
+    auto iter = set->find(s1);
+    bool res = iter != set->end() && iter->second->find(s2) != iter->second->end();
     return res;
 }
-bool RelationManager::CheckStmtVarRelation(STMT_VAR_RELATION_TABLE &set, VAR_STMT_RELATION_TABLE &inv_set, STMT_IDX s, VAR_NAME v) {
+bool RelationManager::CheckStmtVarRelation(STMT_VAR_RELATION_TABLE *set, VAR_STMT_RELATION_TABLE *inv_set, STMT_IDX s, VAR_NAME v) {
     //If s and v are both wildcard, then just check if program contains such relation
     if (s < 0 && v.empty()) {
-        return !set.empty();
+        return !set->empty();
     }
     if (s < 0) {
-        auto iter = inv_set.find(v);
-        return iter != inv_set.end() && !(iter->second->empty());
+        auto iter = inv_set->find(v);
+        return iter != inv_set->end() && !(iter->second->empty());
     }
     if (v.empty()) {
-        auto iter = set.find(s);
-        return iter != set.end() && !(iter->second->empty());
+        auto iter = set->find(s);
+        return iter != set->end() && !(iter->second->empty());
     }
-    auto iter = set.find(s);
-    return iter != set.end() && iter->second->find(v) != iter->second->end();
+    auto iter = set->find(s);
+    return iter != set->end() && iter->second->find(v) != iter->second->end();
 }
-bool RelationManager::CheckProcVarRelation(PROC_VAR_RELATION_TABLE &set, VAR_PROC_RELATION_TABLE &inv_set, PROC_NAME p, VAR_NAME v) {
+bool RelationManager::CheckProcVarRelation(PROC_VAR_RELATION_TABLE *set, VAR_PROC_RELATION_TABLE *inv_set, PROC_NAME p, VAR_NAME v) {
     //If p and v are both wildcard, then just check if program contains such relation
     if (p.empty() && v.empty()) {
-        return !set.empty();
+        return !set->empty();
     }
     if (p.empty()) {
-        auto iter = inv_set.find(v);
-        return iter != inv_set.end() && !(iter->second->empty());
+        auto iter = inv_set->find(v);
+        return iter != inv_set->end() && !(iter->second->empty());
     }
     if (v.empty()) {
-        auto iter = set.find(p);
-        return iter != set.end() && !(iter->second->empty());
+        auto iter = set->find(p);
+        return iter != set->end() && !(iter->second->empty());
     }
-    auto iter = set.find(p);
-    return iter != set.end() && iter->second->find(v) != iter->second->end();
+    auto iter = set->find(p);
+    return iter != set->end() && iter->second->find(v) != iter->second->end();
 }
 
-bool RelationManager::CheckVarStmtRelation(VAR_STMT_RELATION_TABLE &set, VAR_NAME v, STMT_IDX s) {
-    auto iter = set.find(v);
-    return iter != set.end() && iter->second->find(s) != iter->second->end();
+bool RelationManager::CheckVarStmtRelation(VAR_STMT_RELATION_TABLE *set, VAR_NAME v, STMT_IDX s) {
+    auto iter = set->find(v);
+    return iter != set->end() && iter->second->find(s) != iter->second->end();
 }
 
-bool RelationManager::CheckVarProcRelation(VAR_PROC_RELATION_TABLE &set, VAR_NAME v, PROC_NAME p) {
-    auto iter = set.find(v);
-    return iter != set.end() && iter->second->find(p) != iter->second->end();
+bool RelationManager::CheckVarProcRelation(VAR_PROC_RELATION_TABLE *set, VAR_NAME v, PROC_NAME p) {
+    auto iter = set->find(v);
+    return iter != set->end() && iter->second->find(p) != iter->second->end();
 }
 
-STMT_IDX_SET RelationManager::GetStmtStmtRelationVal(STMT_STMT_RELATION_TABLE &set, STMT_IDX_SET &stmt_keys, STMT_IDX s) {
+STMT_IDX_SET RelationManager::GetStmtStmtRelationVal(STMT_STMT_RELATION_TABLE *set, STMT_IDX_SET *stmt_keys, STMT_IDX s) {
     if (s < 0) {
-        return stmt_keys;
+        return *stmt_keys;
     }
-    auto iter = set.find(s);
-    if (iter != set.end()) {
+    auto iter = set->find(s);
+    if (iter != set->end()) {
         return *(iter->second);
     }
     return STMT_IDX_SET();
 }
 
-VAR_NAME_SET RelationManager::GetStmtVarRelationVal(STMT_VAR_RELATION_TABLE &set, VAR_NAME_SET &var_keys, STMT_IDX s) {
+VAR_NAME_SET RelationManager::GetStmtVarRelationVal(STMT_VAR_RELATION_TABLE *set, VAR_NAME_SET *var_keys, STMT_IDX s) {
     if (s < 0) {
-        return var_keys;
+        return *var_keys;
     }
-    auto iter = set.find(s);
-    if (iter != set.end())  {
+    auto iter = set->find(s);
+    if (iter != set->end())  {
         return *(iter->second);
     }
     return VAR_NAME_SET();
 }
-VAR_NAME_SET RelationManager::GetProcVarRelationVal(PROC_VAR_RELATION_TABLE &set, VAR_NAME_SET &var_keys, PROC_NAME p) {
+VAR_NAME_SET RelationManager::GetProcVarRelationVal(PROC_VAR_RELATION_TABLE *set, VAR_NAME_SET *var_keys, PROC_NAME p) {
     if (p.empty()) {
-        return var_keys;
+        return *var_keys;
     }
-    auto iter = set.find(p);
-    if (iter != set.end())  {
+    auto iter = set->find(p);
+    if (iter != set->end())  {
         return *(iter->second);
     }
     return VAR_NAME_SET();
 }
-STMT_IDX_SET RelationManager::GetVarStmtRelationVal(VAR_STMT_RELATION_TABLE &set, STMT_IDX_SET &stmt_keys, VAR_NAME v) {
+STMT_IDX_SET RelationManager::GetVarStmtRelationVal(VAR_STMT_RELATION_TABLE *set, STMT_IDX_SET *stmt_keys, VAR_NAME v) {
     if (v.empty()) {
-        return stmt_keys;
+        return *stmt_keys;
     }
-    auto iter = set.find(v);
-    if (iter != set.end())  {
+    auto iter = set->find(v);
+    if (iter != set->end())  {
         return *(iter->second);
     }
     return STMT_IDX_SET();
 }
 
-PROC_NAME_SET RelationManager::GetVarProcRelationVal(VAR_PROC_RELATION_TABLE &set, PROC_NAME_SET &proc_keys, VAR_NAME v) {
+PROC_NAME_SET RelationManager::GetVarProcRelationVal(VAR_PROC_RELATION_TABLE *set, PROC_NAME_SET *proc_keys, VAR_NAME v) {
     if (v.empty()) {
-        return proc_keys;
+        return *proc_keys;
     }
-    auto iter = set.find(v);
-    if (iter != set.end())  {
+    auto iter = set->find(v);
+    if (iter != set->end())  {
         return *(iter->second);
     }
     return PROC_NAME_SET();
 }
-void RelationManager::InsertStmtStmtTuple(STMT_STMT_PAIR_LIST &set, STMT_IDX s1, STMT_IDX s2) {
+void RelationManager::InsertStmtStmtTuple(STMT_STMT_PAIR_LIST *set, STMT_IDX s1, STMT_IDX s2) {
     STMT_STMT_PAIR pair = {s1, s2};
-    set.push_back(pair);
+    set->push_back(pair);
 }
-void RelationManager::InsertStmtVarTuple(STMT_VAR_PAIR_LIST &set, STMT_IDX s, VAR_NAME v) {
+void RelationManager::InsertStmtVarTuple(STMT_VAR_PAIR_LIST *set, STMT_IDX s, VAR_NAME v) {
     STMT_VAR_PAIR pair = {s, v};
-    set.push_back(pair);
+    set->push_back(pair);
 }
-void RelationManager::InsertProcVarTuple(PROC_VAR_PAIR_LIST &set, PROC_NAME p, VAR_NAME v) {
+void RelationManager::InsertProcVarTuple(PROC_VAR_PAIR_LIST *set, PROC_NAME p, VAR_NAME v) {
     PROC_VAR_PAIR pair = {p, v};
-    set.push_back(pair);
+    set->push_back(pair);
 }
-bool RelationManager::InsertStmtKey(STMT_IDX_SET &set, STMT_IDX s) {
-    return set.insert(s).second;
+bool RelationManager::InsertStmtKey(STMT_IDX_SET *set, STMT_IDX s) {
+    return set->insert(s).second;
 }
-bool RelationManager::InsertProcKey(PROC_NAME_SET &set, PROC_NAME p) {
-    return set.insert(p).second;
+bool RelationManager::InsertProcKey(PROC_NAME_SET *set, PROC_NAME p) {
+    return set->insert(p).second;
 }
-bool RelationManager::InsertVarKey(VAR_NAME_SET &set, VAR_NAME v) {
-    return set.insert(v).second;
+bool RelationManager::InsertVarKey(VAR_NAME_SET *set, VAR_NAME v) {
+    return set->insert(v).second;
 }
 
 
