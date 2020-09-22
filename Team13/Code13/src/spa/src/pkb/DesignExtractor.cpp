@@ -93,6 +93,10 @@ VAR_NAME_LIST ExtractVarsFromExpr(TNode expr) {
     vector<TNode*> children = expr.GetChildrenVector();
     VAR_NAME_LIST result;
 
+    if (expr.GetNodeType() == TNode::varName) {
+        result.push_back(*expr.GetName());
+    }
+
     if(children.empty()) {
         return result;
     }
@@ -188,7 +192,7 @@ bool ExtractUses(RelationManager manager, TNode root) {
 
     for (TNode* child : children) {
         PROC_NAME* procName = (child->GetChildrenVector()).at(0)->GetName();
-        list<PROC_NAME> calls = ExtractUsesRecursive(manager, root, vec, *procName);
+        list<PROC_NAME> calls = ExtractUsesRecursive(manager, *child, vec, *procName);
         proc_calls.insert(make_pair(*procName, calls));
     }
 
@@ -229,6 +233,7 @@ list<PROC_NAME> ExtractModifiesRecursive(RelationManager manager, TNode root, ve
         for (STMT_IDX parent : parents) {
             manager.AddStmtModifies(parent, *var);
         }
+        // cout << proc << " mods " << *var << "\n";
         manager.AddProcModifies(proc, *var);
     }
     else if (root.GetNodeType() == TNode::readStmt) {
@@ -238,6 +243,7 @@ list<PROC_NAME> ExtractModifiesRecursive(RelationManager manager, TNode root, ve
         for (STMT_IDX parent : parents) {
             manager.AddStmtModifies(parent, *var);
         }
+        // cout << proc << " mods " << *var << "\n";
         manager.AddProcModifies(proc, *var);
     }
     else if (root.GetNodeType() == TNode::whileStmt) {
@@ -248,7 +254,7 @@ list<PROC_NAME> ExtractModifiesRecursive(RelationManager manager, TNode root, ve
     }
 
     for (TNode* child : children) {
-        list<PROC_NAME> new_lst = ExtractUsesRecursive(manager, *child, new_parents, proc);
+        list<PROC_NAME> new_lst = ExtractModifiesRecursive(manager, *child, new_parents, proc);
         lst.splice(lst.end(), new_lst);
     }
 
@@ -262,7 +268,7 @@ bool ExtractModifies(RelationManager manager, TNode root) {
     for (TNode* child : children) {
         vector<STMT_IDX> vec;
         PROC_NAME* procName = (child->GetChildrenVector()).at(0)->GetName();
-        list<PROC_NAME> calls = ExtractModifiesRecursive(manager, root, vec, *procName);
+        list<PROC_NAME> calls = ExtractModifiesRecursive(manager, *child, vec, *procName);
         proc_calls.insert(make_pair(*procName, calls));
     }
 

@@ -28,17 +28,49 @@ TEST_CASE("Test Add Follows") {
     REQUIRE(falseFollow == false);
 }
 
-//TEST_CASE("Test Data Manager") {
-//    PKB pkb;
-//    DataManager manager = pkb.GetDataManager();
-//    manager.AddVariable("test_data");
-//    manager.AddVariable("data");
-//    VAR_NAME_SET vars = manager.GetAllVariables();
-//    for (auto v : vars) {
-//        cout << v << "\n";
-//    }
-//    REQUIRE(false);
-//}
+// only tested for vars and procs, TODO: consts and stmts
+TEST_CASE("Test Data Manager") {
+    PKB pkb;
+    DataManager manager = pkb.GetDataManager();
+
+    VAR_NAME* v1 = new string("test_var1");
+    VAR_NAME* v2 = new string("test_var2");
+    PROC_NAME* procn = new string("test_proc");
+
+    TNode* program = new TNode(TNode::NODE_TYPE::program);
+
+    TNode* proc = new TNode(TNode::NODE_TYPE::procedure);
+    TNode* procname = new TNode(TNode::NODE_TYPE::procName, *procn);
+    TNode* proclst = new TNode(TNode::NODE_TYPE::stmtList);
+    TNode* procassign = new TNode(TNode::NODE_TYPE::assignStmt, 1);
+    TNode* var = new TNode(TNode::NODE_TYPE::varName, *v1);
+    TNode* expr = new TNode(TNode::NODE_TYPE::varName, *v2);
+
+    procassign->AddChild(var);
+    procassign->AddChild(expr);
+    proclst->AddChild(procassign);
+    proc->AddChild(procname);
+    proc->AddChild(proclst);
+    program->AddChild(proc);
+
+    ExtractData(manager, *program);
+
+    // vars
+    VAR_NAME_SET vars = manager.GetAllVariables();
+    int varsize = vars.size();
+    for (auto v : vars) {
+        cout << v << "\n";
+    }
+    REQUIRE(varsize == 2);
+
+    // procs
+    PROC_NAME_SET procs = manager.GetAllProcedures();
+    int procsize = procs.size();
+    for (auto p : procs) {
+        cout << p << "\n";
+    }
+    REQUIRE(procsize == 1);
+}
 
 
 TEST_CASE("Test Add Parent Star") {
@@ -128,7 +160,6 @@ TEST_CASE("Test Add Parent") {
 }
 
 
-// Failing because Relation Manager compares varName pointers in stead of value
 TEST_CASE("Test Add Uses") {
     VAR_NAME* v1 = new string("v1");
     VAR_NAME* v2 = new string("v2");
@@ -142,13 +173,22 @@ TEST_CASE("Test Add Uses") {
     TNode* procassign = new TNode(TNode::NODE_TYPE::assignStmt, 1);
     TNode* var = new TNode(TNode::NODE_TYPE::varName, *v1);
     TNode* expr = new TNode(TNode::NODE_TYPE::varName, *v2);
+    TNode* procprint = new TNode(TNode::NODE_TYPE::printStmt, 2);
+    TNode* printvar = new TNode(TNode::NODE_TYPE::varName, "print_vv");
 
+    procprint->AddChild(printvar);
     procassign->AddChild(var);
     procassign->AddChild(expr);
+
     proclst->AddChild(procassign);
+    proclst->AddChild(procprint);
+
     proc->AddChild(procname);
     proc->AddChild(proclst);
+
     program->AddChild(proc);
+
+    program->Print(program);
 
     PKB pkb;
     RelationManager manager = pkb.GetRelationManager();
@@ -158,16 +198,96 @@ TEST_CASE("Test Add Uses") {
     VAR_NAME* v2 = new string("v2");
     PROC_NAME* procn = new string("pp");
     
-    manager.AddProcUses(*procn, *v1);*/
+    manager.AddProcUses(*procn, *v1);
 
-    bool trueStmtUses = manager.IsStmtUses(1, *v2);
-    bool falseStmtUses = manager.IsStmtUses(1, *v1);
-    bool trueProcUses = manager.IsProcUses(*procn, *v2);
-    bool falseProcUses = manager.IsProcUses(*procn, *v1);
+    auto all_uses = manager.GetAllStmtUses();
+    for (auto use : all_uses) {
+        cout << use.s << " " << use.v << "\n";
+    }
+
+    auto all_proc_uses = manager.GetAllProcUses();
+    for (auto use : all_proc_uses) {
+        cout << use.p << " " << use.v << "\n";
+    }
+    */
+
+    bool trueStmtUses = manager.IsStmtUses(1, "v2");
+    bool falseStmtUses = manager.IsStmtUses(1, "v1");
+    bool trueProcUses = manager.IsProcUses("pp", "v2");
+    bool falseProcUses = manager.IsProcUses("pp", "v1");
 
     REQUIRE(trueStmtUses);
     REQUIRE(!falseStmtUses);
     REQUIRE(trueProcUses);
     REQUIRE(!falseProcUses);
-    REQUIRE(false);
+}
+
+TEST_CASE("Test Add Modifies") {
+    VAR_NAME* v1 = new string("v1");
+    VAR_NAME* v2 = new string("v2");
+    PROC_NAME* procn = new string("pp");
+
+    TNode* program = new TNode(TNode::NODE_TYPE::program);
+
+    TNode* proc = new TNode(TNode::NODE_TYPE::procedure);
+    TNode* procname = new TNode(TNode::NODE_TYPE::procName, *procn);
+    TNode* proclst = new TNode(TNode::NODE_TYPE::stmtList);
+    TNode* procassign = new TNode(TNode::NODE_TYPE::assignStmt, 1);
+    TNode* var = new TNode(TNode::NODE_TYPE::varName, *v1);
+    TNode* expr = new TNode(TNode::NODE_TYPE::varName, *v2);
+    TNode* procprint = new TNode(TNode::NODE_TYPE::readStmt, 2);
+    TNode* printvar = new TNode(TNode::NODE_TYPE::varName, "read_vv");
+
+    TNode* proc2 = new TNode(TNode::NODE_TYPE::procedure);
+    TNode* procname2 = new TNode(TNode::NODE_TYPE::procName, "proc2");
+    TNode* proclst2 = new TNode(TNode::NODE_TYPE::stmtList);
+    proc2->AddChild(procname2);
+    proc2->AddChild(proclst2);
+
+    procprint->AddChild(printvar);
+    procassign->AddChild(var);
+    procassign->AddChild(expr);
+
+    proclst->AddChild(procassign);
+    proclst->AddChild(procprint);
+
+    proc->AddChild(procname);
+    proc->AddChild(proclst);
+
+    program->AddChild(proc);
+    program->AddChild(proc2);
+
+    program->Print(program);
+
+    PKB pkb;
+    RelationManager manager = pkb.GetRelationManager();
+    ExtractModifies(manager, *program);
+
+    /*VAR_NAME* v1 = new string("v1");
+    VAR_NAME* v2 = new string("v2");
+    PROC_NAME* procn = new string("pp");
+
+    manager.AddProcUses(*procn, *v1);
+    
+
+    auto all_mods = manager.GetAllStmtModifies();
+    for (auto mod : all_mods) {
+        cout << mod.s << " " << mod.v << "\n";
+    }
+
+    auto all_proc_mods = manager.GetAllProcModifies();
+    for (auto mod : all_proc_mods) {
+        cout << mod.p << " " << mod.v << "\n";
+    }
+    */
+
+    bool trueStmtModifies = manager.IsStmtModifies(1, "v1");
+    bool falseStmtModifies = manager.IsStmtModifies(2, "v1");
+    bool trueProcModifies = manager.IsProcModifies("pp", "v1");
+    bool falseProcModifies = manager.IsProcModifies("proc2", "v1");
+
+    REQUIRE(trueStmtModifies);
+    REQUIRE(!falseStmtModifies);
+    REQUIRE(trueProcModifies);
+    REQUIRE(!falseProcModifies);
 }
