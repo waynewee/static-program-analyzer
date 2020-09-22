@@ -519,7 +519,7 @@ STRING_STRINGLIST_MAP QuerySyntaxValidator::ValidatePatternClause(string s, STRI
 
 
 	// cout << "pattern second arg : " << second_argument << endl;
-	arguments.push_back(second_argument);
+	//arguments.push_back(second_argument);
 
 	// first arg in pattern can be in ""
 	/*
@@ -543,6 +543,8 @@ STRING_STRINGLIST_MAP QuerySyntaxValidator::ValidatePatternClause(string s, STRI
 
 	bool is_partial = false;
 
+	string trimmed_underscore_second_argument = second_argument;
+
 	if (!IsUnderscore(second_argument)) {
 		if (second_argument.front() == '_') {
 			second_argument.erase(0, 1);
@@ -550,6 +552,7 @@ STRING_STRINGLIST_MAP QuerySyntaxValidator::ValidatePatternClause(string s, STRI
 				is_partial = true;
 				// value looks like "x + y"_
 				second_argument.erase(second_argument.length() - 1, second_argument.length());
+				trimmed_underscore_second_argument = second_argument;
 				// cout << "2nd arg test: " << second_argument;
 			}
 			else {
@@ -559,17 +562,18 @@ STRING_STRINGLIST_MAP QuerySyntaxValidator::ValidatePatternClause(string s, STRI
 		if (second_argument.back() == '_') {
 			throw ("Error : Invalid argument for Pattern clause!");
 		}
-
+		// arguments.push_back(second_argument);
 		// cout << "2nd arg test: " << second_argument;
 		// 2nd argument will be in the form "x + y" no matter what
 		// erase the "" again
 		// now is just in the form x + y
+		//arguments.push_back(second_argument);
 		second_argument.erase(0, 1);
 		second_argument.erase(second_argument.length() - 1, second_argument.length());
 		// cout << "2nd arg test: " << second_argument;
 		ValidateExpression(second_argument);
 	}
-
+	arguments.push_back(trimmed_underscore_second_argument);
 	// is_partial -> 2nd arg _"x + y"_
 	// not partial -> 2nd arg "x + y"
 	if (is_partial) {

@@ -87,7 +87,7 @@ QueryInfo PQLParser::Parse(string s) {
 
             if (current_clause.compare("pattern") == 0) {
                 STRING_STRINGLIST_MAP patternClauseResult;
-                string pattern_var_name = DeleteOneWordAndRetrieveIt(&query);
+                string pattern_var_name = DeleteByOpenBracketAndRetrieveIt(&query);
                 //cout << "pattern var name : " << pattern_var_name << endl;
                 //cout << "QUERY PATTERN : " << query << endl;
                 patternClauseResult = ParsePatternClause(&query, PQL_parser_storage->GetAllUserDeclaredVar(), query_syntax_validator);
@@ -101,7 +101,7 @@ QueryInfo PQLParser::Parse(string s) {
         query_info.SetVarMap(PQL_parser_storage->GetVarMap());
     } 
     catch (const char* msg) {
-        cerr << msg << endl;
+        //cerr << msg << endl;
         query_info.SetValidToFalse();
     }
     /*
@@ -143,6 +143,17 @@ string PQLParser::DeleteOneWordAndRetrieveIt(string* str) {
     TrimLeadingWhitespaces(str);
     string next_word = str->substr(0, str->find_first_of(" "));
     str->erase(0, str->find_first_of(" "));
+    TrimLeadingWhitespaces(str);
+
+    TrimLeadingWhitespaces(&next_word);
+    TrimTrailingWhitespaces(&next_word);
+    return next_word;
+}
+
+string PQLParser::DeleteByOpenBracketAndRetrieveIt(string* str) {
+    TrimLeadingWhitespaces(str);
+    string next_word = str->substr(0, str->find_first_of("("));
+    str->erase(0, str->find_first_of("("));
     TrimLeadingWhitespaces(str);
 
     TrimLeadingWhitespaces(&next_word);
