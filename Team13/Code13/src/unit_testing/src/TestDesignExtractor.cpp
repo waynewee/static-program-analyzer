@@ -201,6 +201,7 @@ TEST_CASE("Test Add Uses") {
     PROC_NAME* procn = new string("pp");
     
     manager.AddProcUses(*procn, *v1);
+    */
 
     auto all_uses = manager.GetAllStmtUses();
     for (auto use : all_uses) {
@@ -211,7 +212,6 @@ TEST_CASE("Test Add Uses") {
     for (auto use : all_proc_uses) {
         cout << use.p << " " << use.v << "\n";
     }
-    */
 
     bool trueStmtUses = manager.IsStmtUses(1, "v2");
     bool falseStmtUses = manager.IsStmtUses(1, "v1");
@@ -380,6 +380,7 @@ TEST_CASE("Test Modifies with call") {
     REQUIRE(!falseProcModifies);
 }
 
+/*
 TEST_CASE("Test extract Pattern") {
     PKB* pkb = new PKB();
     PatternManager pattern_manager = pkb->GetPatternManager();
@@ -410,4 +411,4 @@ TEST_CASE("Test extract Pattern") {
     REQUIRE(set6.size() == 1);
     REQUIRE(set6.find(1) != set6.end());
 }
-
+*/
