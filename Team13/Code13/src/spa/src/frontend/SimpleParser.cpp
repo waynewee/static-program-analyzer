@@ -35,7 +35,6 @@ TNode* SimpleParser::Parse(TOKEN_LIST token_list) {
 		TNode* proc_node = SimpleParser::ParseProcStatement();
 		main_prg->AddChild(proc_node);
 	}
-	cout << "huh" << endl;
 
 	return main_prg;
 }

@@ -39,8 +39,6 @@ TNode* ExprEvaluator::EvaluateQueue( queue<tuple<Token, TNode*>> shunted_queue )
 
 		token = get<0>(tup);
 
-		cout << token.GetValue() << endl;
-
 		shunted_queue.pop();
 
 		if (token.GetTokenType() == TokenType::TOKEN_TYPE::constant || token.GetTokenType() == TokenType::TOKEN_TYPE::var) {

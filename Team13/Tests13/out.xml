@@ -1,14 +1,14 @@
 <?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
 <test_results>
 <info>
-<name>Tests13</name><parsing_time_taken>7.000000</parsing_time_taken>
+<name>Tests13</name><parsing_time_taken>4.000000</parsing_time_taken>
 </info>
 <queries>
 <query>
 <id ReturnTuple="1" Follows="1" SuchThat="1" CondNum="3" RelNum="1" comment="comment">2</id><querystr><![CDATA[if ifs; Select ifs such that Follows(5, ifs)]]></querystr>
 <stuans></stuans>
 <correct>6</correct>
-<time_taken>11.000000</time_taken>
+<time_taken>14.000000</time_taken>
 <failed>
 <missing>6</missing>
 <additional></additional>
