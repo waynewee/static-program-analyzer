@@ -161,3 +161,6 @@ STMT_VAR_PAIR_LIST PatternManager::GetAssignStmtVarPairWithFullPattern(VAR_NAME 
 STMT_VAR_PAIR_LIST PatternManager::GetAssignStmtVarPairWithSubPattern(VAR_NAME v, EXPRESSION e) {
     return STMT_VAR_PAIR_LIST();
 }
+STMT_IDX_SET PatternManager::GetAssignWithSubpattern(VAR_NAME v, EXPRESSION e) {
+    return STMT_IDX_SET();
+}
