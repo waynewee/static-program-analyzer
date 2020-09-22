@@ -95,6 +95,7 @@ bool PatternManager::MatchPattern(TNode root, TNode qroot) {
 
 string PatternManager::RemoveWhiteSpace(EXPRESSION e) {
     e.erase(std::remove(e.begin(), e.end(), ' '), e.end());
+    return e;
 }
 
 TNode* PatternManager::ParseExpression(EXPRESSION e) {

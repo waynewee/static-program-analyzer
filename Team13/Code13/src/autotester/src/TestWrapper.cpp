@@ -46,8 +46,11 @@ void TestWrapper::parse(string filename) {
 
 		TestWrapper::pkb->SetASTRoot(parser.Parse(tokenList));
 
-		ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
 		ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
+		ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
+		ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
+		// ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
+		// ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot()); 
 	}
 	catch (logic_error& e) {
 		cout << e.what() << endl;
