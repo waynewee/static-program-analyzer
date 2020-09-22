@@ -27,6 +27,7 @@ public:
     }
     DataManager GetDataManager();
     RelationManager GetRelationManager();
+    PatternManager GetPatternManager();
 
     void SetASTRoot(TNode* root);
     TNode GetASTRoot();
