@@ -19,7 +19,7 @@ QueryInfo PQLParser::Parse(string s) {
     try {
         // get all the user declarations
         STRING_LIST all_declarations = SplitBySemicolons(&query);
-        PQL_parser_storage->setAllDeclarations(all_declarations);
+        PQL_parser_storage->SetAllDeclarations(all_declarations);
         
         TrimLeadingWhitespaces(&query);
 
@@ -32,7 +32,7 @@ QueryInfo PQLParser::Parse(string s) {
             for (pair<string, string> var : vars_declared) {
                 query_syntax_validator->ValidateVariableName(var.first);
                 //cout << "1st : " << var.first << "2nd : " << entType << endl;
-                PQL_parser_storage->storeVariable(var, entType);
+                PQL_parser_storage->StoreVariable(var, entType);
             }
         }
 
@@ -44,10 +44,10 @@ QueryInfo PQLParser::Parse(string s) {
         //cout << "query is now :" << query << endl;
 
         string user_select_var = DeleteOneWordAndRetrieveIt(&query);
-        cout << "user_select var is :" << user_select_var << endl;
-        cout << "query is now :" << query << endl;
+        //cout << "user_select var is :" << user_select_var << endl;
+        //cout << "query is now :" << query << endl;
 
-        query_syntax_validator->ValidateVariableExists(user_select_var, PQL_parser_storage->getAllUserDeclaredVar());
+        query_syntax_validator->ValidateVariableExists(user_select_var, PQL_parser_storage->GetAllUserDeclaredVar());
 
         query_info.SetOutputVar(user_select_var);
 
@@ -64,7 +64,7 @@ QueryInfo PQLParser::Parse(string s) {
             // cout << suchThatWithOneSpacing << endl;
             // SUCH OR PATTERN
             string current_clause = DeleteOneWordAndRetrieveIt(&query);
-            cout << "curr clause : " << current_clause << endl;
+            //cout << "curr clause : " << current_clause << endl;
             if (current_clause.compare("such") != 0 && current_clause.compare("pattern") != 0) {
                 throw ("Error : cannot find 'such that' or 'pattern' clause");
             }
@@ -76,29 +76,29 @@ QueryInfo PQLParser::Parse(string s) {
                 string that_word = DeleteOneWordAndRetrieveIt(&query);
                 STRING_STRINGLIST_MAP suchThatClauseResult;
                 if (that_word.compare("that") == 0) {
-                    cout << "such that in query is now : " << query << endl;
+                    //cout << "such that in query is now : " << query << endl;
                     string such_that_clause = query.substr(0, query.find_first_of(")") + 1);
                     query.erase(0, query.find_first_of(")") + 1);
-                    suchThatClauseResult = query_syntax_validator->ValidateSuchThatClause(such_that_clause, PQL_parser_storage->getAllUserDeclaredVar());
+                    suchThatClauseResult = query_syntax_validator->ValidateSuchThatClause(such_that_clause, PQL_parser_storage->GetAllUserDeclaredVar());
 
-                    PQL_parser_storage->storeSuchThatClauseResult(suchThatClauseResult);
+                    PQL_parser_storage->StoreSuchThatClauseResult(suchThatClauseResult);
                 }
             }
 
             if (current_clause.compare("pattern") == 0) {
                 STRING_STRINGLIST_MAP patternClauseResult;
                 string pattern_var_name = DeleteOneWordAndRetrieveIt(&query);
-                cout << "pattern var name : " << pattern_var_name << endl;
-                cout << "QUERY PATTERN : " << query << endl;
-                patternClauseResult = ParsePatternClause(&query, PQL_parser_storage->getAllUserDeclaredVar(), query_syntax_validator);
+                //cout << "pattern var name : " << pattern_var_name << endl;
+                //cout << "QUERY PATTERN : " << query << endl;
+                patternClauseResult = ParsePatternClause(&query, PQL_parser_storage->GetAllUserDeclaredVar(), query_syntax_validator);
 
-                PQL_parser_storage->storePatternClauseResult(patternClauseResult, pattern_var_name);
+                PQL_parser_storage->StorePatternClauseResult(patternClauseResult, pattern_var_name);
             }
         }
         // such OR pattern
         //string current_clause = deleteOneWordAndRetrieveIt(&query);
-        query_info.SetRelRefMap(PQL_parser_storage->getRelRefMap());
-        query_info.SetVarMap(PQL_parser_storage->getVarMap());
+        query_info.SetRelRefMap(PQL_parser_storage->GetRelRefMap());
+        query_info.SetVarMap(PQL_parser_storage->GetVarMap());
     } 
     catch (const char* msg) {
         cerr << msg << endl;

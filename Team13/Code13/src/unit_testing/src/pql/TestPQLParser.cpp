@@ -1404,7 +1404,7 @@ TEST_CASE("Test 35") {
 
 	all_arguments.push_back(arguments);
 
-	expected_relRef_map["pattern"] = all_arguments;
+	expected_relRef_map["pattern_f"] = all_arguments;
 
 	query_info_expected.SetRelRefMap(expected_relRef_map);
 
@@ -1443,7 +1443,7 @@ TEST_CASE("Test 36") {
 
 	all_arguments.push_back(arguments);
 
-	expected_relRef_map["pattern"] = all_arguments;
+	expected_relRef_map["pattern_f"] = all_arguments;
 
 	query_info_expected.SetRelRefMap(expected_relRef_map);
 
@@ -1482,7 +1482,7 @@ TEST_CASE("Test 37") {
 
 	all_arguments.push_back(arguments);
 
-	expected_relRef_map["pattern"] = all_arguments;
+	expected_relRef_map["pattern_p"] = all_arguments;
 
 	query_info_expected.SetRelRefMap(expected_relRef_map);
 
@@ -1529,18 +1529,21 @@ TEST_CASE("Test 38") {
 
 	all_arguments_second.push_back(arguments_second);
 
+	vector<vector<string>> all_arguments_third;
 	vector<string> arguments_third; // for clause : pattern a (_ , _\"x + y\"_)
 	arguments_third.push_back("_");
 	arguments_third.push_back("_\"x + y\"_");
 	arguments_third.push_back("a");
 
-	all_arguments_second.push_back(arguments_third);
+	all_arguments_third.push_back(arguments_third);
 
 	expected_relRef_map["UsesS"] = all_arguments_first;
-	expected_relRef_map["pattern"] = all_arguments_second;
-
+	expected_relRef_map["pattern_f"] = all_arguments_second;
+	expected_relRef_map["pattern_p"] = all_arguments_third;
+	
 	query_info_expected.SetRelRefMap(expected_relRef_map);
-
+	//query_info_expected.PrintRelRefMap();
+	//query_info_actual.PrintRelRefMap();
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
 	requireBool(are_similar);
