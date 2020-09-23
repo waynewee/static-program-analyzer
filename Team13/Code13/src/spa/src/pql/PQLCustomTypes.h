@@ -14,7 +14,7 @@ using namespace std;
 #define TYPE_CONST "constant"
 #define TYPE_PROC "procedure"
 #define TYPE_VAR "variable"
-#define TYPE_STMT "stmt"
+#define TYPE_STMT "statement"
 
 #define TYPE_STMT_ASSIGN "assign"
 #define TYPE_STMT_CALL "call"

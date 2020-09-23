@@ -12,13 +12,13 @@ Token::Token(string tokenVal, TokenType::TOKEN_TYPE token_type) {
 	is_unary_op_ = false;
 }
 
-Token::Token(string tokenVal, TokenType::TOKEN_TYPE token_type, bool is_unary_op) {
+Token::Token(string tokenVal, TokenType::TOKEN_TYPE token_type, bool is_unary_op ) {
 	value_ = tokenVal;
 	type_ = token_type;
 	is_unary_op_ = is_unary_op;
 }
 
-Token::Token() {}
+Token::Token(){}
 
 
 string Token::GetValue() {
@@ -57,8 +57,4 @@ string Token::GetTokenTypeStr() {
 		return "";
 	}
 
-}
-
-bool Token::Compare(Token t) {
-	return t.value_ == value_ && t.type_ == type_ && t.is_unary_op_ == is_unary_op_;
 }

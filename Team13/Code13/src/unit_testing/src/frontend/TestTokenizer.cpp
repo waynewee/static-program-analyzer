@@ -6,20 +6,6 @@
 #include "catch.hpp"
 #include <vector>
 
-bool CompareTokenLists(TOKEN_LIST t_list_a, TOKEN_LIST t_list_b) {
-
-	for (int i = 0; i < t_list_a.size(); i++) {
-		Token t_a = t_list_a.at(i);
-		Token t_b = t_list_b.at(i);
-
-		if (!t_a.Compare(t_b)) {
-			return false;
-		}
-	};
-
-	return true;
-}
-
 TEST_CASE("Tokenizer | Manipulates token string correctly") {
 
 	Tokenizer tokenizer("");
@@ -64,45 +50,63 @@ TEST_CASE("Tokenizer | Manipulates tokens correctly") {
 	SECTION("Tokenizes arithmetic expression string correctly") {
 		Tokenizer tokenizer("x = a + 5");
 		tokenizer.Tokenize();
-		std::vector<Token> actual_token_list = tokenizer.GetTokenList();
-		std::vector<Token> expected_token_list;
+		std::vector<Token> tokenList = tokenizer.GetTokenList();
 
-		expected_token_list.push_back(Token("x", TokenType::TOKEN_TYPE::var));
-		expected_token_list.push_back(Token("=", TokenType::TOKEN_TYPE::assign));
-		expected_token_list.push_back(Token("a", TokenType::TOKEN_TYPE::var));
-		expected_token_list.push_back(Token("+", TokenType::TOKEN_TYPE::expr));
-		expected_token_list.push_back(Token("5", TokenType::TOKEN_TYPE::constant));
+		int i = 0;
+		REQUIRE(tokenList.at(i).GetValue() == "x");
+		REQUIRE(tokenList.at(i).GetTokenType() == TokenType::TOKEN_TYPE::var);
+		i++;
+		REQUIRE(tokenList.at(i).GetValue() == "=");
+		REQUIRE(tokenList.at(i).GetTokenType() == TokenType::TOKEN_TYPE::assign);
+		i++;
+		REQUIRE(tokenList.at(i).GetValue() == "a");
+		REQUIRE(tokenList.at(i).GetTokenType() == TokenType::TOKEN_TYPE::var);
+		i++;
+		REQUIRE(tokenList.at(i).GetValue() == "+");
+		REQUIRE(tokenList.at(i).GetTokenType() == TokenType::TOKEN_TYPE::expr);
+		i++;
+		REQUIRE(tokenList.at(i).GetValue() == "5");
+		REQUIRE(tokenList.at(i).GetTokenType() == TokenType::TOKEN_TYPE::constant);
 
-		REQUIRE(CompareTokenLists(expected_token_list, actual_token_list));
 	}
 
 	SECTION("Tokenizes while statement with one condition correctly") {
 
 		Tokenizer tokenizer("while ( 1 ) {");
 		tokenizer.Tokenize();
-		std::vector<Token> actual_token_list = tokenizer.GetTokenList();
-		std::vector<Token> expected_token_list;
+		std::vector<Token> tokenList = tokenizer.GetTokenList();
 
-		expected_token_list.push_back(Token("while", TokenType::TOKEN_TYPE::stmt));
-		expected_token_list.push_back(Token("(", TokenType::TOKEN_TYPE::punc));
-		expected_token_list.push_back(Token("1", TokenType::TOKEN_TYPE::constant));
-		expected_token_list.push_back(Token(")", TokenType::TOKEN_TYPE::punc));
-		expected_token_list.push_back(Token("{", TokenType::TOKEN_TYPE::punc));
+		int i = 0;
+		REQUIRE(tokenList.at(i).GetValue() == "while");
+		REQUIRE(tokenList.at(i).GetTokenType() == TokenType::TOKEN_TYPE::stmt);
+		REQUIRE(tokenList.at(i).GetStmtType() == TokenType::STMT_TYPE::_while);
+		i++;
+		REQUIRE(tokenList.at(i).GetValue() == "(");
+		REQUIRE(tokenList.at(i).GetTokenType() == TokenType::TOKEN_TYPE::punc);
+		i++;
+		REQUIRE(tokenList.at(i).GetValue() == "1");
+		REQUIRE(tokenList.at(i).GetTokenType() == TokenType::TOKEN_TYPE::constant);
+		i++;
+		REQUIRE(tokenList.at(i).GetValue() == ")");
+		REQUIRE(tokenList.at(i).GetTokenType() == TokenType::TOKEN_TYPE::punc);
+		i++;
+		REQUIRE(tokenList.at(i).GetValue() == "{");
+		REQUIRE(tokenList.at(i).GetTokenType() == TokenType::TOKEN_TYPE::punc);
 
-		REQUIRE(CompareTokenLists(expected_token_list, actual_token_list));
 
 	}
 
 	SECTION("Tokenizes print statement correctly") {
 		Tokenizer tokenizer("print x");
 		tokenizer.Tokenize();
-		std::vector<Token> actual_token_list = tokenizer.GetTokenList();
-		std::vector<Token> expected_token_list;
+		std::vector<Token> tokenList = tokenizer.GetTokenList();
 
-		expected_token_list.push_back(Token("print", TokenType::TOKEN_TYPE::stmt));
-		expected_token_list.push_back(Token("x", TokenType::TOKEN_TYPE::var));
+		REQUIRE(tokenList.at(0).GetValue() == "print");
+		REQUIRE(tokenList.at(0).GetTokenType() == TokenType::TOKEN_TYPE::stmt);
+		REQUIRE(tokenList.at(0).GetStmtType() == TokenType::STMT_TYPE::_print);
 
-		REQUIRE(CompareTokenLists(expected_token_list, actual_token_list));
+		REQUIRE(tokenList.at(1).GetValue() == "x");
+		REQUIRE(tokenList.at(1).GetTokenType() == TokenType::TOKEN_TYPE::var);
 	}
 
 }
