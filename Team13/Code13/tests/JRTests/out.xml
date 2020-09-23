@@ -1,7 +1,7 @@
 <?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
 <test_results>
 <info>
-<name>JRTests</name><parsing_time_taken>954.000000</parsing_time_taken>
+<name>JRTests</name><parsing_time_taken>21.000000</parsing_time_taken>
 </info>
 <queries>
 </queries>
