@@ -35,6 +35,7 @@ TNode* SimpleParser::Parse(TOKEN_LIST token_list) {
 		TNode* proc_node = SimpleParser::ParseProcStatement();
 		main_prg->AddChild(proc_node);
 	}
+	//main_prg->Print(main_prg);
 
 	return main_prg;
 }
@@ -152,6 +153,11 @@ TNode* SimpleParser::ParseCallStatement() {
 TNode* SimpleParser::ParseIfStatement() {
 	TNode* if_node = new TNode(TNode::NODE_TYPE::ifStmt, statement_index_);
 	TNode* expr_node = SimpleParser::ParseExpressionStatement(SimpleParser::expressionType::_if);
+
+	if (expr_node->GetNodeType() != TNode::NODE_TYPE::relExpr) {
+		throw logic_error("Invalid expression at line " + statement_index_);
+	}
+
 	TNode* thenStmtListNode = SimpleParser::ParseStatementList();
 
 	for (TNode* child : thenStmtListNode->GetChildrenVector()) {
@@ -184,6 +190,10 @@ TNode* SimpleParser::ParseWhileStatement() {
 	TNode* whleNode = new TNode(TNode::NODE_TYPE::whileStmt, statement_index_);
 	TNode* expr_node = SimpleParser::ParseExpressionStatement(SimpleParser::expressionType::_while);
 	TNode* stmt_list_node = SimpleParser::ParseStatementList();
+
+	if (expr_node->GetNodeType() != TNode::NODE_TYPE::relExpr) {
+		throw logic_error("Invalid expression at line " + statement_index_);
+	}
 
 	for (TNode* child : stmt_list_node->GetChildrenVector()) {
 		child->SetParent(whleNode);
@@ -219,7 +229,7 @@ TNode* SimpleParser::ParseAssignStatement(Token name_token) {
 // Returns a stmtList node
 TNode* SimpleParser::ParseStatementList() {
 	int end_index = SimpleParser::GetEndIndxOfStatementList();
-	TNode* stmt_list_node = new TNode(TNode::NODE_TYPE::stmtList, statement_index_);
+	TNode* stmt_list_node = new TNode(TNode::NODE_TYPE::stmtList);
 	// Parse the whole statement block
 	while ((token_index_) < end_index) {
 		if (PeekNextToken().GetValue() == TYPE_PUNC_OPEN_BRACKET ||
@@ -309,12 +319,22 @@ int SimpleParser::GetEndIndxOfStatementList() {
 	}
 	return token_index_ + counter;
 }
-
 Token SimpleParser::GetNextToken() {
-	token_index_++;
-	return token_list_[token_index_];
+  token_index_++;
+
+  if (token_index_ < token_list_.size()) {
+    return token_list_[token_index_];
+  }
+  else {
+    throw out_of_range("Out of range.");
+  }
 }
 
 Token SimpleParser::PeekNextToken() {
-	return token_list_[token_index_ + 1];
+	if (token_index_ + 1 < token_list_.size()) {
+		return token_list_[token_index_ + 1];
+	}
+	else {
+		throw out_of_range("Out of range.");
+	}
 }
