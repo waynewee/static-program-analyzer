@@ -107,13 +107,16 @@ TEST_CASE("Test GetAssignWithSubPattern(STMT_IDX s, VAR_NAME v, TNode root) with
 
     STMT_IDX_SET set2 = manager.GetAssignWithSubPattern("var1", "");
     REQUIRE(set2.size() == 2);
-    REQUIRE(set2.find(1) != set1.end());
-    REQUIRE(set2.find(2) != set1.end());
+    REQUIRE(set2.find(1) != set2.end());
+    REQUIRE(set2.find(2) != set2.end());
 
     STMT_IDX_SET set3 = manager.GetAssignWithSubPattern("", "2");
-    REQUIRE(set2.size() == 2);
-    REQUIRE(set2.find(1) != set1.end());
-    REQUIRE(set2.find(2) != set1.end());
+    REQUIRE(set3.size() == 1);
+    REQUIRE(set3.find(2) != set3.end());
+
+    STMT_IDX_SET set4 = manager.GetAssignWithSubPattern("var1", "var2");
+    REQUIRE(set4.size() == 1);
+
 }
 
 TEST_CASE("Test GetAssignWithFullPattern(VAR_NAME v, EXPRESSION e) with full pattern") {
