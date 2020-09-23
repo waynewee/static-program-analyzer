@@ -23,7 +23,7 @@ TEST_CASE("Test Add Follows") {
     list.Print(&list);
     PKB pkb;
     RelationManager manager = pkb.GetRelationManager();
-    ExtractFollows(manager, list);
+    DesignExtractor::ExtractFollows(manager, list);
     bool trueFollow = manager.IsFollows(1, 2);
     bool falseFollow = manager.IsFollows(1, 3);
     REQUIRE(trueFollow == true);
@@ -55,7 +55,7 @@ TEST_CASE("Test Data Manager") {
     proc->AddChild(proclst);
     program->AddChild(proc);
 
-    ExtractData(manager, *program);
+    DesignExtractor::ExtractData(manager, *program);
 
     // vars
     VAR_NAME_SET vars = manager.GetAllVariables();
@@ -102,7 +102,7 @@ TEST_CASE("Test Add Parent Star") {
     
     PKB pkb;
     RelationManager manager = pkb.GetRelationManager();
-    ExtractParent(manager, *while_);
+    DesignExtractor::ExtractParent(manager, *while_);
     bool trueParent = manager.IsParentStar(1, 4);
     bool falseParent = manager.IsParentStar(4, 1);
     bool trueParentStar = manager.IsParentStar(1, 5);
@@ -150,7 +150,7 @@ TEST_CASE("Test Add Parent") {
 
     PKB pkb;
     RelationManager manager = pkb.GetRelationManager();
-    ExtractParent(manager, *list);
+    DesignExtractor::ExtractParent(manager, *list);
     bool trueParentWhile = manager.IsParent(1, 2);
     bool falseParentWhile = manager.IsParent(1, 7);
     bool trueParentIf = manager.IsParent(5, 6);
@@ -194,7 +194,7 @@ TEST_CASE("Test Add Uses") {
 
     PKB pkb;
     RelationManager manager = pkb.GetRelationManager();
-    ExtractUses(manager, *program);
+    DesignExtractor::ExtractUses(manager, *program);
     
     /*VAR_NAME* v1 = new string("v1");
     VAR_NAME* v2 = new string("v2");
@@ -263,7 +263,7 @@ TEST_CASE("Test Add Modifies") {
 
     PKB pkb;
     RelationManager manager = pkb.GetRelationManager();
-    ExtractModifies(manager, *program);
+    DesignExtractor::ExtractModifies(manager, *program);
 
     /*VAR_NAME* v1 = new string("v1");
     VAR_NAME* v2 = new string("v2");
@@ -349,7 +349,7 @@ TEST_CASE("Test Modifies with call") {
 
     PKB pkb;
     RelationManager manager = pkb.GetRelationManager();
-    ExtractModifies(manager, *program);
+    DesignExtractor::ExtractModifies(manager, *program);
 
     /*VAR_NAME* v1 = new string("v1");
     VAR_NAME* v2 = new string("v2");

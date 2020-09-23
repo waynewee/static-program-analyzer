@@ -46,12 +46,12 @@ void TestWrapper::parse(string filename) {
 
 		TestWrapper::pkb->SetASTRoot(parser.Parse(tokenList));
 
-		ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
-		ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
-		ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
-		ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
-		ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot()); 
-		ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
+		DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
+        DesignExtractor::ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
+        DesignExtractor::ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
+        DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
+        DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
+        DesignExtractor::ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
 	}
 	catch (logic_error& e) {
 		cout << e.what() << endl;
