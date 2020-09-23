@@ -23,16 +23,14 @@ public:
     ProcedureTable GetProcTable();
 
     bool AddStatement(STATEMENT_TYPE t, STMT_IDX s);
+    bool AddVariable(VAR_NAME v);
+    bool AddProcedure(PROC_NAME p);
+    bool AddConstant(CONST_VALUE c);
+
     STMT_IDX_SET GetAllStatements(STATEMENT_TYPE t);
     STMT_IDX_SET GetAllStatements();
-
-    bool AddVariable(VAR_NAME v);
     VAR_NAME_SET GetAllVariables();
-
-    bool AddProcedure(PROC_NAME p);
     PROC_NAME_SET GetAllProcedures();
-
-    bool AddConstant(CONST_VALUE c);
     CONST_VALUE_SET GetAllConstants();
 };
 

@@ -48,7 +48,6 @@ STMT_IDX_SET PatternManager::GetStmtOfMatchingAssignments(VAR_NAME v, EXPRESSION
         STMT_IDX_SET result = STMT_IDX_SET();
         for (auto tuple: *data) {
             if (tuple.v == v && HasMatchingPattern(tuple.eroot, *qroot, is_full)) {
-                std::cout << "they match!" << std::endl;
                 result.insert(tuple.s);
             }
         }
@@ -112,42 +111,67 @@ void AssignPatternTable::Add(STMT_IDX s, VAR_NAME v, TNode root) {
 //    }
 }
 bool PatternManager::HasMatchingPattern(TNode root, TNode qroot, bool is_full) {
-    return is_full?HasFullMatchingPattern(root, qroot): HasSubMatchingPattern(root, qroot);
+    if (is_full) {
+        return AreTwoTreesEqual(root, qroot);
+    } else {
+        return HasSubMatchingPattern(root, qroot);
+    }
 }
 bool PatternManager::HasSubMatchingPattern(TNode root, TNode qroot) {
-    vector<TNode*> children = root.GetChildrenVector();
-    if (!children.empty()) {
-        for (TNode* child: children) {
-            if (HasSubMatchingPattern(*child, qroot)) {
-                return true;
-            };
+    if (AreTwoTreesEqual(root, qroot)) {
+        return true;
+    }
+    auto root_children = root.GetChildrenVector();
+    auto root_children_size = root_children.size();
+    if (root_children_size == 0) {
+        return false;
+    }
+    for (int i = 0; i < root_children_size; i++) {
+        if (AreTwoTreesEqual(*(root_children[i]), qroot)) {
+            return true;
         }
-    } else {
-        if (IsMatchingEntRefTNode(root, qroot)) {
+    }
+    for (int i = 0; i < root_children_size; i++) {
+        if (HasSubMatchingPattern(*(root_children[i]), qroot)) {
             return true;
         }
     }
     return false;
 }
-bool PatternManager::HasFullMatchingPattern(TNode root, TNode qroot) {
-    vector<TNode*> children = root.GetChildrenVector();
-    for (auto child: children) {
-        if (IsMatchingEntRefTNode(root, qroot)) {
-            return true;
+
+bool PatternManager::AreTwoTreesEqual(TNode root, TNode query_root) {
+    if (!AreTwoNodesEqual(root, query_root)) {
+        return false;
+    }
+    auto root_children = root.GetChildrenVector();
+    auto query_root_children = query_root.GetChildrenVector();
+    auto root_children_size = root_children.size();
+    auto query_root_children_size = query_root_children.size();
+    if (root_children_size != query_root_children_size) {
+        return false;
+    }
+    if (root_children_size <= 0) {
+        return true;
+    }
+    for (int i = 0; i < root_children_size; i++) {
+        if (!AreTwoTreesEqual(*(root_children[i]), *(query_root_children[i]))) {
+            return false;
         }
     }
-    return false;
+    return true;
 }
-bool PatternManager::IsMatchingEntRefTNode(TNode root, TNode qroot) {
-    if (qroot.GetNodeType() == root.GetNodeType()) {
-        if (root.GetNodeType() == TNode::NODE_TYPE::varName) {
-            if (*(qroot.GetName()) == *(root.GetName())) {
-                return true;
-            }
-        } else if (root.GetNodeType() == TNode::NODE_TYPE::constValue) {
-            if ((int) qroot.GetConstValue() == (int) root.GetConstValue()) {
-                return true;
-            }
+
+bool PatternManager::AreTwoNodesEqual(TNode root, TNode query_root) {
+    if (root.GetNodeType() == query_root.GetNodeType()) {
+        switch (root.GetNodeType()) {
+            case TNode::NODE_TYPE::expr:
+                return root.GetOperator() == query_root.GetOperator();
+            case TNode::NODE_TYPE::varName:
+                return *(root.GetName()) == *(query_root.GetName());
+            case TNode::NODE_TYPE::constValue:
+                return root.GetConstValue() == query_root.GetConstValue();
+            default:
+                return false;
         }
     }
     return false;
@@ -160,12 +184,12 @@ bool PatternManager::IsMatchingEntRefTNode(TNode root, TNode qroot) {
 TNode* PatternManager::ParseExpression(EXPRESSION s) {
     if (IsNumber(s)) {
         CONST_VALUE val = (CONST_VALUE) stoi(s);
-        TNode* node = new TNode(TNode::NODE_TYPE::constValue);
-        node->SetValue(val);
+        auto node = new TNode(TNode::NODE_TYPE::constValue, val);
         return node;
     }
     else {
-        return new TNode(TNode::NODE_TYPE::varName, s);
+        auto node = new TNode(TNode::NODE_TYPE::varName, s);
+        return node;
     }
 }
 
@@ -173,6 +197,31 @@ TNode* PatternManager::ParseExpression(EXPRESSION s) {
 bool PatternManager::IsNumber(EXPRESSION s) {
     return !s.empty() && std::find_if(s.begin(),
                                       s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
+}
+void PatternManager::PrintTNode(TNode root) {
+    switch (root.GetNodeType()) {
+        case TNode::NODE_TYPE::expr:
+            if (root.GetOperator() == TNode::OPERATOR::plus) {
+                std::cout << "val = plus" << std::endl;
+            }
+            if (root.GetOperator() == TNode::OPERATOR::minus) {
+                std::cout << "val = minus" << std::endl;
+            }
+            if (root.GetOperator() == TNode::OPERATOR::times) {
+                std::cout << "val = times" << std::endl;
+            }
+            if (root.GetOperator() == TNode::OPERATOR::divide) {
+                std::cout << "val = divide" << std::endl;
+            }
+            break;
+        case TNode::NODE_TYPE::varName:
+            std::cout << "val = " << *(root.GetName()) << std::endl;
+            break;
+        case TNode::NODE_TYPE::constValue:
+            std::cout << "val = " << root.GetConstValue() << std::endl;
+            break;
+    }
+
 }
 
 

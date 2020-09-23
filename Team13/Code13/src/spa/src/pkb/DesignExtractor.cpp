@@ -4,7 +4,7 @@
 #include "CustomTypes.h"
 #include "DesignExtractor.h"
 
-bool ExtractFollows(RelationManager manager, TNode root) {
+bool DesignExtractor::ExtractFollows(RelationManager manager, TNode root) {
     vector<TNode*> children = root.GetChildrenVector();
 
     if (root.GetNodeType() == TNode::stmtList) {
@@ -31,7 +31,7 @@ bool ExtractFollows(RelationManager manager, TNode root) {
     return true;
 }
 
-bool ExtractParentRecursive(RelationManager manager, TNode root, STMT_IDX_LIST parents) {
+bool DesignExtractor::ExtractParentRecursive(RelationManager manager, TNode root, STMT_IDX_LIST parents) {
     vector<TNode*> children = root.GetChildrenVector();
     if (children.empty()) {
         return true;
@@ -84,13 +84,13 @@ bool ExtractParentRecursive(RelationManager manager, TNode root, STMT_IDX_LIST p
     return true;
 }
 
-bool ExtractParent(RelationManager manager, TNode root) {
+bool DesignExtractor::ExtractParent(RelationManager manager, TNode root) {
     STMT_IDX_LIST vec;
 
     return ExtractParentRecursive(manager, root, vec);
 }
 
-VAR_NAME_LIST ExtractVarsFromExpr(TNode expr) {
+VAR_NAME_LIST DesignExtractor::ExtractVarsFromExpr(TNode expr) {
     vector<TNode*> children = expr.GetChildrenVector();
     VAR_NAME_LIST result;
 
@@ -118,7 +118,7 @@ VAR_NAME_LIST ExtractVarsFromExpr(TNode expr) {
 }
 
 // returns the list of procs called by this proc
-list<pair <PROC_NAME, STMT_IDX> > ExtractUsesRecursive(RelationManager manager, TNode root, STMT_IDX_LIST parents, PROC_NAME proc) {
+list<pair <PROC_NAME, STMT_IDX> > DesignExtractor::ExtractUsesRecursive(RelationManager manager, TNode root, STMT_IDX_LIST parents, PROC_NAME proc) {
     vector<TNode*> children = root.GetChildrenVector();
     list<pair <PROC_NAME, STMT_IDX> > lst;
     
@@ -186,7 +186,7 @@ list<pair <PROC_NAME, STMT_IDX> > ExtractUsesRecursive(RelationManager manager, 
     return lst;
 }
 
-bool ExtractUses(RelationManager manager, TNode program) {
+bool DesignExtractor::ExtractUses(RelationManager manager, TNode program) {
     vector<TNode*> procs = program.GetChildrenVector();
     unordered_map < PROC_NAME, list<pair <PROC_NAME, STMT_IDX> > > proc_calls;
 
@@ -263,7 +263,7 @@ list<pair <PROC_NAME, STMT_IDX> > ExtractModifiesRecursive(RelationManager manag
     return lst;
 }
 
-bool ExtractModifies(RelationManager manager, TNode program) {
+bool DesignExtractor::ExtractModifies(RelationManager manager, TNode program) {
     vector<TNode*> procs = program.GetChildrenVector();
     unordered_map < PROC_NAME, list<pair <PROC_NAME, STMT_IDX> > > proc_calls;
 
@@ -290,7 +290,7 @@ bool ExtractModifies(RelationManager manager, TNode program) {
 }
 
 
-bool ExtractData(DataManager manager, TNode root) {
+bool DesignExtractor::ExtractData(DataManager manager, TNode root) {
     vector<TNode*> children = root.GetChildrenVector();
     switch (root.GetNodeType()) {
     case TNode::procedure:
@@ -329,7 +329,7 @@ bool ExtractData(DataManager manager, TNode root) {
     return true;
 }
 
-bool ExtractPattern(PatternManager manager, TNode root) {
+bool DesignExtractor::ExtractPattern(PatternManager manager, TNode root) {
     vector<TNode*> children = root.GetChildrenVector();
     if (root.GetNodeType() == TNode::assignStmt) {
         TNode* var_node = children.at(0);
