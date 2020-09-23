@@ -21,7 +21,7 @@ Tokenizer::Tokenizer(string input) {
 
 }
 
-int Tokenizer::Tokenize() {
+void Tokenizer::Tokenize() {
 
 	Token prev_token;
 	Token* curr_token_ptr;
@@ -165,8 +165,6 @@ int Tokenizer::Tokenize() {
 		}
 
 	}
-
-	return 0;
 
 }
 
