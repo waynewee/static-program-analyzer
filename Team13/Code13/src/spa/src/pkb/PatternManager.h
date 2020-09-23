@@ -35,10 +35,11 @@ private:
     //string RemoveWhiteSpace(EXPRESSION );
     bool HasMatchingPattern(TNode root, TNode qroot, bool is_full);
     bool HasSubMatchingPattern(TNode root, TNode qroot);
-    bool HasFullMatchingPattern(TNode root, TNode qroot);
-    bool IsMatchingEntRefTNode(TNode root, TNode qroot);
+    bool AreTwoTreesEqual(TNode root, TNode query_root);
+    bool AreTwoNodesEqual(TNode root, TNode query_root);
     TNode* ParseExpression(EXPRESSION s);
     bool IsNumber(EXPRESSION s);
+    void PrintTNode(TNode root);
 public:
     void AddAssignPattern(STMT_IDX s, VAR_NAME v, TNode root);
     STMT_IDX_SET GetAssignWithFullPattern(VAR_NAME v, EXPRESSION e);
