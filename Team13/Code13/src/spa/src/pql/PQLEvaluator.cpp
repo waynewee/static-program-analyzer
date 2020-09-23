@@ -10,6 +10,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	STRINGLIST_SET pattern_set = STRINGLIST_SET();
 	STRING_STRINGSET_MAP one_user_result_set = STRING_STRINGSET_MAP();
 	STRINGLIST_STRINGLISTSET_MAP two_user_result_set = STRINGLIST_STRINGLISTSET_MAP();
+	STRING_STRINGSET_MAP consolidated_results = STRING_STRINGSET_MAP();
 	QueryResult final_result = QueryResult();
 
 	STRING_STRING_MAP var_map = query_info.GetVarMap();
@@ -17,226 +18,195 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	STRING output_var = query_info.GetOutputVar();
 	STRING output_var_type = var_map.at(output_var);
 
-	// Parse clauses conditions
-	for (auto f = rel_ref_map.cbegin(); f != rel_ref_map.cend(); f++) {
-		STRING f_call = (*f).first;
-		STRINGLIST_LIST allParams = (*f).second;
+	if (!rel_ref_map.empty()) {
+		// Parse clauses conditions
+		for (auto f = rel_ref_map.cbegin(); f != rel_ref_map.cend(); f++) {
+			STRING f_call = (*f).first;
+			STRINGLIST_LIST allParams = (*f).second;
 
-		for (STRING_LIST p : allParams) {
-			STRING_LIST* set = new STRING_LIST();
-			set->push_back(f_call);
-			set->push_back(p[0]);
-			set->push_back(p[1]);
+			for (STRING_LIST p : allParams) {
+				STRING_LIST* set = new STRING_LIST();
+				set->push_back(f_call);
+				set->push_back(p[0]);
+				set->push_back(p[1]);
 
-			if (set->empty()) {
-				// error
-				if (DEBUG) {
-					cout << "PQLEvaluator - Parsing clauses: Error creating value for sets." << endl;
-				}
-
-				final_result.SetResult({});
-				return final_result;
-			}
-
-			BOOLEAN is_insert_successful = true;
-			if (f_call.compare(TYPE_COND_PATTERN_P) == 0 || f_call.compare(TYPE_COND_PATTERN_F) == 0) {
-				// PATTERN clause = Special case
-				set->push_back(p[2]);
-				if (set->size() != 4) {
+				if (set->empty()) {
 					// error
 					if (DEBUG) {
-						cout << "PQLEvaluator - Parsing clauses: Error creating value for pattern sets." << endl;
+						cout << "PQLEvaluator - Parsing clauses: Error creating value for sets." << endl;
 					}
+
 					final_result.SetResult({});
 					return final_result;
 				}
 
-				if (pattern_set.insert(set).second == 0) {
-					// error
-					if (DEBUG) {
-						cout << "PQLEvaluator - Parsing clauses: Error inserting into pattern set." << endl;
-					}
-
-					is_insert_successful = false;
-				}
-			}
-			else {
-				if (output_var_type.compare(TYPE_CONST) == 0 || (!IsVar(p[0], var_map) && !IsVar(p[1], var_map))) {
-					// output_var == CONST type
-					// OR
-					// both params != user declared var
-					if (no_user_set.insert(set).second == 0) {
+				BOOLEAN is_insert_successful = true;
+				if (f_call.compare(TYPE_COND_PATTERN_P) == 0 || f_call.compare(TYPE_COND_PATTERN_F) == 0) {
+					// PATTERN clause = Special case
+					set->push_back(p[2]);
+					if (set->size() != 4) {
 						// error
 						if (DEBUG) {
-							cout << "PQLEvaluator - Parsing clauses: Error inserting no_user_set." << endl;
+							cout << "PQLEvaluator - Parsing clauses: Error creating value for pattern sets." << endl;
 						}
-
-						is_insert_successful = false;
+						final_result.SetResult({});
+						return final_result;
 					}
-				}
-				else if ((IsVar(p[0], var_map) && !IsVar(p[1], var_map)) || (!IsVar(p[0], var_map) && IsVar(p[1], var_map))) {
-					// 1 param == user declared var
-					if (one_user_set.insert(set).second == 0) {
+
+					if (pattern_set.insert(set).second == 0) {
 						// error
 						if (DEBUG) {
-							cout << "PQLEvaluator - Parsing clauses: Error inserting one_user_set." << endl;
-						}
-
-						is_insert_successful = false;
-					}
-				}
-				else if (IsVar(p[0], var_map) && IsVar(p[1], var_map)) {
-					// 2 params = user declared var
-					if (two_user_set.insert(set).second == 0) {
-						// error
-						if (DEBUG) {
-							cout << "PQLEvaluator - Parsing clauses: Error inserting two_user_set." << endl;
+							cout << "PQLEvaluator - Parsing clauses: Error inserting into pattern set." << endl;
 						}
 
 						is_insert_successful = false;
 					}
 				}
 				else {
-					// error
-					if (DEBUG) {
-						cout << "PQLEvaluator - Parsing clauses: Invalid parameters." << endl;
+					if (output_var_type.compare(TYPE_CONST) == 0 || (!IsVar(p[0], var_map) && !IsVar(p[1], var_map))) {
+						// output_var == CONST type
+						// OR
+						// both params != user declared var
+						if (no_user_set.insert(set).second == 0) {
+							// error
+							if (DEBUG) {
+								cout << "PQLEvaluator - Parsing clauses: Error inserting no_user_set." << endl;
+							}
+
+							is_insert_successful = false;
+						}
 					}
-					is_insert_successful = false;
+					else if ((IsVar(p[0], var_map) && !IsVar(p[1], var_map)) || (!IsVar(p[0], var_map) && IsVar(p[1], var_map))) {
+						// 1 param == user declared var
+						if (one_user_set.insert(set).second == 0) {
+							// error
+							if (DEBUG) {
+								cout << "PQLEvaluator - Parsing clauses: Error inserting one_user_set." << endl;
+							}
+
+							is_insert_successful = false;
+						}
+					}
+					else if (IsVar(p[0], var_map) && IsVar(p[1], var_map)) {
+						// 2 params = user declared var
+						if (two_user_set.insert(set).second == 0) {
+							// error
+							if (DEBUG) {
+								cout << "PQLEvaluator - Parsing clauses: Error inserting two_user_set." << endl;
+							}
+
+							is_insert_successful = false;
+						}
+					}
+					else {
+						// error
+						if (DEBUG) {
+							cout << "PQLEvaluator - Parsing clauses: Invalid parameters." << endl;
+						}
+						is_insert_successful = false;
+					}
+				}
+
+				if (!is_insert_successful) {
+					final_result.SetResult({});
+					return final_result;
 				}
 			}
+		}
 
-			if (!is_insert_successful) {
+		// Evaluate no_user_set -> T/F clauses
+		// FALSE -> return empty; ALL TRUE -> continue
+		for (const STRING_LIST* func : no_user_set) {
+			STRING f_call = (*func)[0];
+			STRING param1 = IsVar((*func)[1], var_map) ? "" : (*func)[1];
+			STRING param2 = IsVar((*func)[2], var_map) ? "" : (*func)[2];
+
+			BOOLEAN is_true = true;
+
+			if (!EvaluateNoUserDeclaredSet(f_call, param1, param2)) {
+				if (DEBUG) {
+					cout << "PQLEvaluator - Evaluating no user declared clauses: False clause." << endl;
+				}
+
+				is_true = false;
+			}
+
+			if (!is_true) {
 				final_result.SetResult({});
 				return final_result;
 			}
 		}
-	}
-	
-	// Evaluate no_user_set -> T/F clauses
-	// FALSE -> return empty; ALL TRUE -> continue
-	for (const STRING_LIST* func : no_user_set) {
-		STRING f_call = (*func)[0];
-		STRING param1 = IsVar((*func)[1], var_map) ? "" : (*func)[1];
-		STRING param2 = IsVar((*func)[2], var_map) ? "" : (*func)[2];
 
-		BOOLEAN is_true = true;
+		// Evaluate one_user_set
+		// EMPTY set -> return empty;
+		for (const STRING_LIST* func : one_user_set) {
+			STRING key = "";
+			STRING_SET value = STRING_SET();
 
-		if (!EvaluateNoUserDeclaredSet(f_call, param1, param2)) {
-			if (DEBUG) {
-				cout << "PQLEvaluator - Evaluating no user declared clauses: False clause." << endl;
+			STRING f_call = (*func)[0];
+			STRING param1 = (*func)[1];
+			STRING param2 = (*func)[2];
+
+			if (IsVar(param1, var_map)) {
+				// getInverseXXX() branch
+				key = param1;
+
+				value = EvaluateInverseOneDeclaredSet(f_call, param2);
 			}
-			
-			is_true = false;
-		}
+			else if (IsVar(param2, var_map)) {
+				// getXXX() branch
+				key = param2;
 
-		if (!is_true) {
-			final_result.SetResult({});
-			return final_result;
-		}
-	}
-
-	// Evaluate one_user_set
-	// EMPTY set -> return empty;
-	for (const STRING_LIST* func : one_user_set) {
-		STRING key = "";
-		STRING_SET value = STRING_SET();
-
-		STRING f_call = (*func)[0];
-		STRING param1 = (*func)[1];
-		STRING param2 = (*func)[2];
-
-		if (IsVar(param1, var_map)) {
-			// getInverseXXX() branch
-			key = param1;
-
-			value = EvaluateInverseOneDeclaredSet(f_call, param2);
-		}
-		else if (IsVar(param2, var_map)) {
-			// getXXX() branch
-			key = param2;
-
-			value = EvaluateOneDeclaredSet(f_call, param1);
-		}
-		else {
-			// error
-			if (DEBUG) {
-				cout << "PQLEvaluator - Evaluating one user declared clauses: No user declared variable." << endl;
+				value = EvaluateOneDeclaredSet(f_call, param1);
 			}
-			final_result.SetResult({});
-			return final_result;
-		}
-
-		if (value.empty()) {
-			if (DEBUG) {
-				cout << "PQLEvaluator - Evaluating one user declared clauses: Empty result set." << endl;
+			else {
+				// error
+				if (DEBUG) {
+					cout << "PQLEvaluator - Evaluating one user declared clauses: No user declared variable." << endl;
+				}
+				final_result.SetResult({});
+				return final_result;
 			}
-			final_result.SetResult({});
-			return final_result;
-		}
 
-		// Check if KEY exists
-		// TRUE -> AND the results; FALSE -> insert the results
-		if (one_user_result_set.find(key) == one_user_result_set.end()) {
-			one_user_result_set.insert({ key, value });
-		}
-		else {
-			one_user_result_set.at(key) = GetIntersectResult(one_user_result_set.at(key), value);
-		}
-	}
-
-	// Evaluate two_user_set
-	// EMPTY set -> return empty
-	for (const STRING_LIST* func : two_user_set) {
-		STRING_LIST* key =  new STRING_LIST();
-		STRINGLIST_SET value = STRINGLIST_SET();
-
-		STRING f_call = (*func)[0];
-		STRING param1 = (*func)[1];
-		STRING param2 = (*func)[2];
-
-		key->push_back(param1);
-		key->push_back(param2);
-
-		
-		value = EvaluateTwoDeclaredSet(f_call);
-		if (value.empty()) {
-			if (DEBUG) {
-				cout << "PQLEvaluator - Evaluating two user declared clauses: Empty result set." << endl;
-			}
-			final_result.SetResult({});
-			return final_result;
-		}
-
-		// Check if KEY exists
-		// TRUE -> AND the results; FALSE -> insert the results
-		STRING_LIST* check_key = IsKey(*key, two_user_result_set);
-		if (check_key == nullptr) {
-			two_user_result_set.insert({ key, value });
-		}
-		else {
-			two_user_result_set.at(check_key) = GetIntersectResult(two_user_result_set.at(check_key), value);
-		}
-	}
-
-	// Evaluate pattern_set
-	// EMPTY set -> return empty;
-	for (const STRING_LIST* func : pattern_set) {
-		STRING f_call = (*func)[0];
-		STRING param1 = (*func)[1];
-		STRING param2 = (*func)[2];
-		STRING param3 = (*func)[3];
-
-		if (IsVar(param1, var_map)) {
-			// insert into two_user_result_set
-			STRING_LIST* key = new STRING_LIST();
-			key->push_back(param3);
-			key->push_back(param1);
-
-			STRINGLIST_SET value = EvaluateAssignPatternCall(f_call, param2);
 			if (value.empty()) {
 				if (DEBUG) {
-					cout << "PQLEvaluator - Evaluating pattern clauses: Empty result set (1 param)." << endl;
+					cout << "PQLEvaluator - Evaluating one user declared clauses: Empty result set." << endl;
 				}
+				final_result.SetResult({});
+				return final_result;
+			}
+
+			// Check if KEY exists
+			// TRUE -> AND the results; FALSE -> insert the results
+			if (one_user_result_set.find(key) == one_user_result_set.end()) {
+				one_user_result_set.insert({ key, value });
+			}
+			else {
+				one_user_result_set.at(key) = GetIntersectResult(one_user_result_set.at(key), value);
+			}
+		}
+
+		// Evaluate two_user_set
+		// EMPTY set -> return empty
+		for (const STRING_LIST* func : two_user_set) {
+			STRING_LIST* key = new STRING_LIST();
+			STRINGLIST_SET value = STRINGLIST_SET();
+
+			STRING f_call = (*func)[0];
+			STRING param1 = (*func)[1];
+			STRING param2 = (*func)[2];
+
+			key->push_back(param1);
+			key->push_back(param2);
+
+
+			value = EvaluateTwoDeclaredSet(f_call);
+			if (value.empty()) {
+				if (DEBUG) {
+					cout << "PQLEvaluator - Evaluating two user declared clauses: Empty result set." << endl;
+				}
+				final_result.SetResult({});
+				return final_result;
 			}
 
 			// Check if KEY exists
@@ -249,59 +219,81 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 				two_user_result_set.at(check_key) = GetIntersectResult(two_user_result_set.at(check_key), value);
 			}
 		}
-		else {
-			// insert into one_user_result_set
-			STRING key = param3;
-			STRING_SET value = EvaluateAssignPatternCall(f_call, param1, param2);
-			if (value.empty()) {
-				if (DEBUG) {
-					cout << "PQLEvaluator - Evaluating pattern clauses: Empty result set (2 params)." << endl;
+
+		// Evaluate pattern_set
+		// EMPTY set -> return empty;
+		for (const STRING_LIST* func : pattern_set) {
+			STRING f_call = (*func)[0];
+			STRING param1 = (*func)[1];
+			STRING param2 = (*func)[2];
+			STRING param3 = (*func)[3];
+
+			if (IsVar(param1, var_map)) {
+				// insert into two_user_result_set
+				STRING_LIST* key = new STRING_LIST();
+				key->push_back(param3);
+				key->push_back(param1);
+
+				STRINGLIST_SET value = EvaluateAssignPatternCall(f_call, param2);
+				if (value.empty()) {
+					if (DEBUG) {
+						cout << "PQLEvaluator - Evaluating pattern clauses: Empty result set (1 param)." << endl;
+					}
+				}
+
+				// Check if KEY exists
+				// TRUE -> AND the results; FALSE -> insert the results
+				STRING_LIST* check_key = IsKey(*key, two_user_result_set);
+				if (check_key == nullptr) {
+					two_user_result_set.insert({ key, value });
+				}
+				else {
+					two_user_result_set.at(check_key) = GetIntersectResult(two_user_result_set.at(check_key), value);
 				}
 			}
-
-			// Check if KEY exists
-			// TRUE -> AND the results; FALSE -> insert the results
-			if (one_user_result_set.find(key) == one_user_result_set.end()) {
-				one_user_result_set.insert({ key, value });
-			}
 			else {
-				one_user_result_set.at(key) = GetIntersectResult(one_user_result_set.at(key), value);
+				// insert into one_user_result_set
+				STRING key = param3;
+				STRING_SET value = EvaluateAssignPatternCall(f_call, param1, param2);
+				if (value.empty()) {
+					if (DEBUG) {
+						cout << "PQLEvaluator - Evaluating pattern clauses: Empty result set (2 params)." << endl;
+					}
+				}
+
+				// Check if KEY exists
+				// TRUE -> AND the results; FALSE -> insert the results
+				if (one_user_result_set.find(key) == one_user_result_set.end()) {
+					one_user_result_set.insert({ key, value });
+				}
+				else {
+					one_user_result_set.at(key) = GetIntersectResult(one_user_result_set.at(key), value);
+				}
 			}
 		}
-	}
 
-	// Check if output_var is CONST type
-	// TRUE -> return all const vals; FALSE -> continue
-	if (output_var_type.compare(TYPE_CONST) == 0) {
-		if (DEBUG) {
-			cout << "PQLEvaluator - Constant Call" << endl;
-		}
+		// Check if output_var is CONST type
+		// TRUE -> return all const vals; FALSE -> continue
+		if (output_var_type.compare(TYPE_CONST) == 0) {
+			
+			STRING_SET result = *(new STRING_SET(GetAllSet(output_var_type)));
+			final_result.SetResult(result);
 
-		if (UNIT_TESTING) {
-			cout << "PQLEvaluator - Constant Call - UNIT TESTING" << endl;
-			final_result.SetResult({ "1", "2", "3" });
 			return final_result;
 		}
 
-		PKB pkb = PKB();
-		STRING_SET result = ConvertSet(pkb.GetDataManager().GetAllConstants());
-		final_result.SetResult(result);
-
-		return final_result;
+		// Consolidate results
+		if (two_user_result_set.size() != 0) {
+			STRING_SET relatedVar = STRING_SET();
+			consolidated_results = ConsolidateResults(output_var, relatedVar, consolidated_results, one_user_result_set, two_user_result_set);
+		}
+		else {
+			consolidated_results = one_user_result_set;
+		}
 	}
-
-	// Consolidate results
-	STRING_STRINGSET_MAP consolidated_results = STRING_STRINGSET_MAP();
-	if (two_user_result_set.size() != 0) {
-		STRING_SET relatedVar = STRING_SET();
-		consolidated_results = ConsolidateResults(output_var, relatedVar, consolidated_results, one_user_result_set, two_user_result_set);
-	}
-	else {
-		consolidated_results = one_user_result_set;
-	}
-
+	
 	// Check if output_var is in consolidatedResults
-	// YES -> return corresponding values; NO -> getALLXXX(output_var_type)
+		// YES -> return corresponding values; NO -> getALLXXX(output_var_type)
 	if (consolidated_results.find(output_var) != consolidated_results.end()) {
 		cout << "output var found in consolidatedResults" << endl;
 
@@ -793,6 +785,9 @@ STRING_SET PQLEvaluator::GetAllSet(STRING output_var_type) {
 	}
 	else if (output_var_type.compare(TYPE_PROC) == 0) {
 		result = dm.GetAllProcedures();
+	}
+	else if (output_var_type.compare(TYPE_CONST) == 0) {
+		result = ConvertSet(dm.GetAllConstants());
 	}
 	else {
 		// error
