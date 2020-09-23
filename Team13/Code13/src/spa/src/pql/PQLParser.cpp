@@ -53,6 +53,11 @@ QueryInfo PQLParser::Parse(string s) {
 
         TrimLeadingWhitespaces(&query);
 
+        if (query.empty()) {
+            //cout << "query is empty already" << endl;
+            query_info.PrintOutputVar();
+            return query_info;
+        }
         while (query.find_first_not_of(' ') != string::npos && !query.empty()) {
             TrimLeadingWhitespaces(&query);
             string suchThatWithOneSpacing = query.substr(0, 9);

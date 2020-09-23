@@ -37,10 +37,13 @@ STRING_SET PQLDriver::Query(STRING query_string) {
 	// loop: check whats in Query result
 
 	final_result = projector.Project(result);
-	
+	/*
 	if (final_result.empty()) {
 		cout << "Projecting result has errors. 'final_result' should not be empty as it is already caught." << endl;
 	}
 
+	cout << "Final Result: \"" << final_result << "\"" << std::endl;
+	cout << "________________________________________________________" << endl;
+	*/
 	return final_result;
 }
