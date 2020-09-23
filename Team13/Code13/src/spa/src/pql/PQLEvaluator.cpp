@@ -123,9 +123,10 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 
 		if (!EvaluateNoUserDeclaredSet(f_call, param1, param2)) {
 			if (DEBUG) {
-				cout << "PQLEvaluator - Evaluating no user declared clauses: Empty result set received." << endl;
+				cout << "PQLEvaluator - Evaluating no user declared clauses: False clause." << endl;
 			}
 			
+			is_true = false;
 		}
 
 		if (!is_true) {
@@ -148,15 +149,13 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			// getInverseXXX() branch
 			key = param1;
 
-			value = EvaluateOneDeclaredSet(f_call, param2);
-			// value = EvaluateInverseOneDeclaredSet(f_call, param2);
+			value = EvaluateInverseOneDeclaredSet(f_call, param2);
 		}
 		else if (IsVar(param2, var_map)) {
 			// getXXX() branch
 			key = param2;
 
-			// value = EvaluateOneDeclaredSet(f_call, param1);
-			value = EvaluateInverseOneDeclaredSet(f_call, param1);
+			value = EvaluateOneDeclaredSet(f_call, param1);
 		}
 		else {
 			// error
@@ -414,6 +413,7 @@ BOOLEAN PQLEvaluator::EvaluateNoUserDeclaredSet(STRING f_call, STRING param1, ST
 	}
 
 	if (f_call.compare(TYPE_COND_FOLLOWS) == 0) {
+		cout << "Parsed param 1: " << ParsingStmtRef(param1) << endl;
 		return rm.IsFollows(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_FOLLOWS_T) == 0) {
@@ -547,6 +547,7 @@ STRING_SET PQLEvaluator::EvaluateInverseOneDeclaredSet(STRING f_call, STRING par
 		result = rm.GetInverseProcUses(ParsingEntRef(param));
 	}
 	else if (f_call.compare(TYPE_COND_MODIFIES_S) == 0) {
+		cout << "Parsed param : " << ParsingEntRef(param) << endl;
 		result = ConvertSet(rm.GetInverseStmtModifies(ParsingEntRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_MODIFIES_P) == 0) {
@@ -1030,6 +1031,8 @@ STRING PQLEvaluator::ParsingEntRef(STRING param) {
 		return "";
 	}
 	else {
+		// trim away the quotation marks
+		param.erase(remove(param.begin(), param.end(), '\"'), param.end());
 		return param;
 	}
 }

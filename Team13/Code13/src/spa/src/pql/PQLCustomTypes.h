@@ -9,7 +9,7 @@
 using namespace std;
 
 #define DEBUG true
-#define UNIT_TESTING true
+#define UNIT_TESTING false
 
 #define TYPE_CONST "constant"
 #define TYPE_PROC "procedure"
