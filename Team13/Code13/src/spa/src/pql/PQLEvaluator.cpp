@@ -116,8 +116,8 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	// FALSE -> return empty; ALL TRUE -> continue
 	for (const STRING_LIST* func : no_user_set) {
 		STRING f_call = (*func)[0];
-		STRING param1 = (*func)[1];
-		STRING param2 = (*func)[2];
+		STRING param1 = IsVar((*func)[1], var_map) ? "" : (*func)[1];
+		STRING param2 = IsVar((*func)[2], var_map) ? "" : (*func)[2];
 
 		BOOLEAN is_true = true;
 
@@ -766,31 +766,32 @@ STRING_SET PQLEvaluator::GetAllSet(STRING output_var_type) {
 		return result;
 	}
 
-	if (output_var_type.compare(TYPE_STMT)) {
+	if (output_var_type.compare(TYPE_STMT) == 0) {
 		result = ConvertSet(dm.GetAllStatements());
 	}
-	else if (output_var_type == TYPE_STMT_ASSIGN) {
+	else if (output_var_type.compare(TYPE_STMT_ASSIGN) == 0) {
 		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::assignStatement));
 	}
-	else if (output_var_type == TYPE_STMT_CALL) {
+	else if (output_var_type.compare(TYPE_STMT_CALL) == 0) {
 		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::callStatement));
 	}
-	else if (output_var_type == TYPE_STMT_IF) {
+	else if (output_var_type.compare(TYPE_STMT_IF) == 0) {
 		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::ifStatement));
 	}
-	else if (output_var_type == TYPE_STMT_WHILE) {
+	else if (output_var_type.compare(TYPE_STMT_WHILE) == 0) {
 		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::whileStatement));
 	}
-	else if (output_var_type == TYPE_STMT_PRINT) {
+	else if (output_var_type.compare(TYPE_STMT_PRINT) == 0) {
 		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::printStatement));
 	}
-	else if (output_var_type == TYPE_STMT_READ) {
+	else if (output_var_type.compare(TYPE_STMT_READ) == 0) {
+		cout << "REACHED READ" << endl;
 		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::readStatement));
 	}
-	else if (output_var_type == TYPE_VAR) {
+	else if (output_var_type.compare(TYPE_VAR) == 0) {
 		result = dm.GetAllVariables();
 	}
-	else if (output_var_type == TYPE_PROC) {
+	else if (output_var_type.compare(TYPE_PROC) == 0) {
 		result = dm.GetAllProcedures();
 	}
 	else {
@@ -1018,7 +1019,7 @@ BOOLEAN PQLEvaluator::IsWildCard(STRING var) {
 
 
 INTEGER PQLEvaluator::ParsingStmtRef(STRING param) {
-	if (param.compare("_") == 0) {
+	if (param.compare("_") == 0 || param.compare("") == 0) {
 		return -1;
 	}
 	else {
