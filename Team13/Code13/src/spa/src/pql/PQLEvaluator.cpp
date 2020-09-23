@@ -293,10 +293,8 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	}
 	
 	// Check if output_var is in consolidatedResults
-		// YES -> return corresponding values; NO -> getALLXXX(output_var_type)
+	// YES -> return corresponding values; NO -> getALLXXX(output_var_type)
 	if (consolidated_results.find(output_var) != consolidated_results.end()) {
-		cout << "output var found in consolidatedResults" << endl;
-
 		STRING_SET result = *(new STRING_SET(consolidated_results.at(output_var)));
 		final_result.SetResult(result);
 	}
@@ -306,11 +304,6 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	}
 
 	// Return result as QueryResult
-	/*cout << final_result.GetResult().size() << endl;
-	for (string const s : final_result.GetResult()) {
-		cout << s << endl;
-	}
-	*/
 	return final_result;
 }
 
