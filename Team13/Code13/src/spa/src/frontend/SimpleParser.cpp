@@ -35,7 +35,7 @@ TNode* SimpleParser::Parse(TOKEN_LIST token_list) {
 		TNode* proc_node = SimpleParser::ParseProcStatement();
 		main_prg->AddChild(proc_node);
 	}
-	//main_prg->Print(main_prg);
+	main_prg->Print(main_prg);
 
 	return main_prg;
 }
@@ -73,7 +73,7 @@ TNode* SimpleParser::ParseStatement() {
 TNode* SimpleParser::ParseProcStatement() {
 	Token name_token = SimpleParser::GetNextToken();
 	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
-		throw logic_error("Invalid procedure name");
+		TokenType::GetStmtType(name_token.GetValue());
 	}
 
 	TNode * proc_node = new TNode(TNode::NODE_TYPE::procedure);
@@ -92,7 +92,7 @@ TNode* SimpleParser::ParseReadStatement() {
 	Token var_token = SimpleParser::GetNextToken();
 
 	if (var_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
-		throw logic_error("Invalid variable name for read statement");
+		TokenType::GetStmtType(var_token.GetValue());
 	}
 
 	TNode * read_node = new TNode(TNode::NODE_TYPE::readStmt, statement_index_);
@@ -112,8 +112,7 @@ TNode* SimpleParser::ParseReadStatement() {
 TNode* SimpleParser::ParsePrintStatement() {
 	Token var_token = SimpleParser::GetNextToken();
 	if (var_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
-
-		throw logic_error("Invalid variable name for print statement");
+		TokenType::GetStmtType(var_token.GetValue());
 	}
 
 	TNode * print_node = new TNode (TNode::NODE_TYPE::printStmt, statement_index_);
@@ -134,7 +133,7 @@ TNode* SimpleParser::ParsePrintStatement() {
 TNode* SimpleParser::ParseCallStatement() {
 	Token proc_name_token = SimpleParser::GetNextToken();
 	if (proc_name_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
-		throw logic_error("Invalid procedure name for call statement");
+		TokenType::GetStmtType(proc_name_token.GetValue());
 	}
 
 	TNode * call_node = new TNode(TNode::NODE_TYPE::callStmt, statement_index_);
