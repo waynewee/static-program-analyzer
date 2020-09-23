@@ -19,6 +19,8 @@ string TreeTraverse::traverse(TNode* root) {
 
 	queue.push(root);
 
+	std::cout << "Printing Level Order Traversal" << std::endl;
+
 	while (!queue.empty()) {
 		TNode* node = queue.front();
 		queue.pop();

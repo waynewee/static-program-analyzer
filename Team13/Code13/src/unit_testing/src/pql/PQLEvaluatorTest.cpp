@@ -7,6 +7,29 @@
 PQLEvaluator evaluator;
 PKB pkb = PKB();
 
+
+TEST_CASE("lazy testing") {
+	PQLDriver pql = PQLDriver();
+	cout << "LAZYYYYYYYYYYYYYYYYYYYY TESTINGGGGGGGGGGGGGGGGGGGGGG" << endl;
+	cout << "__________________________________________________" << endl;
+	pql.Query("stmt s1, s2; Select s1 such that Follows(s1, s2)");
+	pql.Query("stmt s1, s2; Select s1 such that Follows*(s1, s2)");
+	pql.Query("stmt s1, s2; Select s1 such that Parent(s1, s2)");
+	pql.Query("stmt s1, s2; Select s1 such that Parent*(s1, s2)");
+	pql.Query("stmt s1; variable v1; Select s1 such that Uses(s1, v1)");
+	pql.Query("procedure p1; variable v1; Select p1 such that Uses(\"proc\", v1)");
+	pql.Query("stmt s1; variable v1; Select s1 such that Modifies(s1, v1)");
+	pql.Query("procedure p1; variable v1; Select v1 such that Modifies(p1, v1)");
+	pql.Query("assign a1; variable v1; Select a1 pattern a1(v1, _)");
+	pql.Query("stmt s1; assign a1; variable v1; Select v1 such that Follows(s1, a1) pattern a1(v1, _)");
+	/*pql.Query("assign a1; variable v1; Select a1 pattern a1(v1, _\"x+x\"_)");
+	pql.Query("stmt s1; assign a1; variable v1; Select v1 such that Follows(s1, a1) pattern a1(v1, _\"x+x\"_)");
+	pql.Query("assign a1; variable v1; Select a1 pattern a1(v1, \"x+x\")");
+	pql.Query("stmt s1; assign a1; variable v1; Select v1 such that Follows(s1, a1) pattern a1(v1, \"x+x\")");*/
+	cout << "__________________________________________________" << endl;
+
+}
+
 TEST_CASE("1 clause || Follows || user-user") {
 	unordered_map<string, string> varMap;
 	varMap.insert({ "s1", TYPE_STMT });
