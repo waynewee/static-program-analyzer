@@ -27,6 +27,7 @@ public:
 	TokenType::STMT_TYPE stmt_type_;
 	TokenType::TOKEN_TYPE type_;
 
+	bool Compare(Token t);
 	TokenType::STMT_TYPE GetStmtType();
 	TokenType::TOKEN_TYPE GetTokenType();
 	string GetTokenTypeStr();
