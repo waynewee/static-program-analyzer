@@ -17,6 +17,8 @@ public:
 
 	string DeleteOneWordAndRetrieveIt(string* str);
 
+	string DeleteByOpenBracketAndRetrieveIt(string* str);
+
 	STRING_STRINGLIST_MAP ParsePatternClause(string* clause, STRING_STRING_MAP all_user_declared_var,
 		QuerySyntaxValidator* query_syntax_validator);
 };

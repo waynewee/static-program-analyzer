@@ -6,9 +6,12 @@
     "\\Team13\\Code13\\src",
     "\\Team13\\Code13\\src\\spa",
     "\\Team13\\Code13\\src\\spa\\src",
-    "\\Team13\\Code13\\tests",
-    "\\Team13\\Code13\\tests\\JRTests"
+    "\\Team13\\Code13\\src\\spa\\src\\frontend",
+    "\\Team13\\Code13\\src\\spa\\src\\pql",
+    "\\Team13\\Code13\\src\\unit_testing",
+    "\\Team13\\Code13\\src\\unit_testing\\src",
+    "\\Team13\\Code13\\src\\unit_testing\\src\\frontend"
   ],
-  "SelectedNode": "\\Team13\\Code13\\tests\\JRTests\\read_statement.txt",
+  "SelectedNode": "\\Team13\\Code13\\src\\unit_testing\\src\\TestDesignExtractor.cpp",
   "PreviewInSolutionExplorer": false
 }

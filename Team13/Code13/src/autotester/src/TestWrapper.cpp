@@ -51,6 +51,7 @@ void TestWrapper::parse(string filename) {
 		ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
 		ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
 		ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot()); 
+		ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
 	}
 	catch (logic_error& e) {
 		cout << e.what() << endl;
@@ -63,9 +64,11 @@ void TestWrapper::Evaluate(string query, list<string>& results){
 	// call your evaluator to evaluate the query here
 	// ...code to evaluate query...
 	PQLDriver* main = new PQLDriver();
-	string evaluated_result = main->Query(query);
+	STRING_SET evaluated_result = main->Query(query);
 
 	// store the answers to the query in the results list (it is initially empty)
 	// each result must be a string.
-	results.push_back(evaluated_result);
+	for (string res : evaluated_result) {
+		results.push_back(res);
+	}
 }

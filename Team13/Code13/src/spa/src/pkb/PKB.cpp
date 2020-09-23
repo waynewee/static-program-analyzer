@@ -7,13 +7,16 @@ using namespace std;
 
 DataManager PKB::data_manager_ = DataManager();
 RelationManager PKB::relation_manager_ = RelationManager();
-PatternManager PKB::pattern_manager_ = PatternManager(data_manager_.GetStmtTable(), relation_manager_);
+PatternManager PKB::pattern_manager_ = PatternManager();
 TNode PKB::ast_;
 DataManager PKB::GetDataManager() {
     return data_manager_;
 }
 RelationManager PKB::GetRelationManager() {
     return relation_manager_;
+}
+PatternManager PKB::GetPatternManager() {
+    return pattern_manager_;
 }
 void PKB::SetASTRoot(TNode* root) {
     if (root->GetNodeType() != TNode::NODE_TYPE::program) {

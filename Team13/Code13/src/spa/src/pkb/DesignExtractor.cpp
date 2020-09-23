@@ -19,7 +19,8 @@ bool ExtractFollows(RelationManager manager, TNode root) {
             }
         }
     }
-    else if (children.empty()) {
+    
+    if (children.empty()) {
         return true;
     }
     else {
@@ -117,9 +118,9 @@ VAR_NAME_LIST ExtractVarsFromExpr(TNode expr) {
 }
 
 // returns the list of procs called by this proc
-list<PROC_NAME> ExtractUsesRecursive(RelationManager manager, TNode root, STMT_IDX_LIST parents, PROC_NAME proc) {
+list<pair <PROC_NAME, STMT_IDX> > ExtractUsesRecursive(RelationManager manager, TNode root, STMT_IDX_LIST parents, PROC_NAME proc) {
     vector<TNode*> children = root.GetChildrenVector();
-    list<PROC_NAME> lst;
+    list<pair <PROC_NAME, STMT_IDX> > lst;
     
     if (children.empty()) {
         return lst;
@@ -128,7 +129,7 @@ list<PROC_NAME> ExtractUsesRecursive(RelationManager manager, TNode root, STMT_I
     vector<STMT_IDX> new_parents(parents);
 
     if (root.GetNodeType() == TNode::callStmt) {
-        lst.push_back(*(root.GetChildrenVector().at(0)->GetName()));
+        lst.push_back(make_pair(*(root.GetChildrenVector().at(0)->GetName()), root.GetStmtIndex()));
     }
     // assignment
     else if (root.GetNodeType() == TNode::assignStmt) {
@@ -178,7 +179,7 @@ list<PROC_NAME> ExtractUsesRecursive(RelationManager manager, TNode root, STMT_I
     }
 
     for (TNode* child : children) {
-        list<PROC_NAME> new_lst = ExtractUsesRecursive(manager, *child, new_parents, proc);
+        list<pair <PROC_NAME, STMT_IDX> > new_lst = ExtractUsesRecursive(manager, *child, new_parents, proc);
         lst.splice(lst.end(), new_lst);
     }
 
@@ -187,21 +188,22 @@ list<PROC_NAME> ExtractUsesRecursive(RelationManager manager, TNode root, STMT_I
 
 bool ExtractUses(RelationManager manager, TNode program) {
     vector<TNode*> procs = program.GetChildrenVector();
-    unordered_map < PROC_NAME, list<PROC_NAME> > proc_calls;
+    unordered_map < PROC_NAME, list<pair <PROC_NAME, STMT_IDX> > > proc_calls;
 
     for (TNode* proc: procs) {
         vector<STMT_IDX> vec;
         PROC_NAME* procName = (proc->GetChildrenVector()).at(0)->GetName();
-        list<PROC_NAME> calls = ExtractUsesRecursive(manager, *proc, vec, *procName);
+        list<pair <PROC_NAME, STMT_IDX> > calls = ExtractUsesRecursive(manager, *proc, vec, *procName);
         proc_calls.insert(make_pair(*procName, calls));
     }
 
-    for (pair < PROC_NAME, list<PROC_NAME> > call : proc_calls) {
+    for (pair < PROC_NAME, list<pair <PROC_NAME, STMT_IDX> > > call : proc_calls) {
         PROC_NAME caller = call.first;
-        list<PROC_NAME> callees = call.second;
-        for (PROC_NAME callee : callees) {
-            VAR_NAME_SET uses = manager.GetProcUses(callee);
+        list<pair <PROC_NAME, STMT_IDX> > callees = call.second;
+        for (pair <PROC_NAME, STMT_IDX> callee : callees) {
+            VAR_NAME_SET uses = manager.GetProcUses(callee.first);
             for (VAR_NAME use: uses) {
+                manager.AddStmtUses(callee.second, use);
                 manager.AddProcUses(caller, use);
             }
         }
@@ -211,9 +213,9 @@ bool ExtractUses(RelationManager manager, TNode program) {
 }
 
 // returns the list of procs called by this proc
-list<PROC_NAME> ExtractModifiesRecursive(RelationManager manager, TNode root, vector<STMT_IDX> parents, PROC_NAME proc) {
+list<pair <PROC_NAME, STMT_IDX> > ExtractModifiesRecursive(RelationManager manager, TNode root, vector<STMT_IDX> parents, PROC_NAME proc) {
     vector<TNode*> children = root.GetChildrenVector();
-    list<PROC_NAME> lst;
+    list<pair <PROC_NAME, STMT_IDX> > lst;
 
     if (children.empty()) {
         return lst;
@@ -222,7 +224,7 @@ list<PROC_NAME> ExtractModifiesRecursive(RelationManager manager, TNode root, ve
     vector<STMT_IDX> new_parents(parents);
 
     if (root.GetNodeType() == TNode::callStmt) {
-        lst.push_back(*(root.GetChildrenVector().at(0)->GetName()));
+        lst.push_back(make_pair(*(root.GetChildrenVector().at(0)->GetName()), root.GetStmtIndex()));
     }
     // assignment: if left side
     else if (root.GetNodeType() == TNode::assignStmt) {
@@ -254,30 +256,31 @@ list<PROC_NAME> ExtractModifiesRecursive(RelationManager manager, TNode root, ve
     }
 
     for (TNode* child : children) {
-        list<PROC_NAME> new_lst = ExtractModifiesRecursive(manager, *child, new_parents, proc);
+        list<pair <PROC_NAME, STMT_IDX> > new_lst = ExtractModifiesRecursive(manager, *child, new_parents, proc);
         lst.splice(lst.end(), new_lst);
     }
 
     return lst;
 }
 
-bool ExtractModifies(RelationManager manager, TNode root) {
-    vector<TNode*> children = root.GetChildrenVector();
-    unordered_map < PROC_NAME, list<PROC_NAME> > proc_calls;
+bool ExtractModifies(RelationManager manager, TNode program) {
+    vector<TNode*> procs = program.GetChildrenVector();
+    unordered_map < PROC_NAME, list<pair <PROC_NAME, STMT_IDX> > > proc_calls;
 
-    for (TNode* child : children) {
+    for (TNode* proc: procs) {
         vector<STMT_IDX> vec;
-        PROC_NAME* procName = (child->GetChildrenVector()).at(0)->GetName();
-        list<PROC_NAME> calls = ExtractModifiesRecursive(manager, *child, vec, *procName);
+        PROC_NAME* procName = (proc->GetChildrenVector()).at(0)->GetName();
+        list<pair <PROC_NAME, STMT_IDX> > calls = ExtractModifiesRecursive(manager, *proc, vec, *procName);
         proc_calls.insert(make_pair(*procName, calls));
     }
 
-    for (pair < PROC_NAME, list<PROC_NAME> > call : proc_calls) {
+    for (pair < PROC_NAME, list<pair <PROC_NAME, STMT_IDX> > > call : proc_calls) {
         PROC_NAME caller = call.first;
-        list<PROC_NAME> callees = call.second;
-        for (PROC_NAME callee : callees) {
-            VAR_NAME_SET uses = manager.GetProcModifies(callee);
+        list<pair <PROC_NAME, STMT_IDX> > callees = call.second;
+        for (pair <PROC_NAME, STMT_IDX> callee : callees) {
+            VAR_NAME_SET uses = manager.GetProcModifies(callee.first);
             for (VAR_NAME use : uses) {
+                manager.AddStmtModifies(callee.second, use);
                 manager.AddProcModifies(caller, use);
             }
         }

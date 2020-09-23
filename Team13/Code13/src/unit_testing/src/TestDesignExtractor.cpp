@@ -1,8 +1,10 @@
-#include "PKB.h"
-#include "TNode.h"
+
 #include "catch.hpp"
 #include "CustomTypes.h"
 #include "DesignExtractor.h"
+#include "PKB.h"
+#include "TestUtils.h"
+#include "TNode.h"
 
 using namespace std;
 
@@ -199,6 +201,7 @@ TEST_CASE("Test Add Uses") {
     PROC_NAME* procn = new string("pp");
     
     manager.AddProcUses(*procn, *v1);
+    */
 
     auto all_uses = manager.GetAllStmtUses();
     for (auto use : all_uses) {
@@ -209,7 +212,6 @@ TEST_CASE("Test Add Uses") {
     for (auto use : all_proc_uses) {
         cout << use.p << " " << use.v << "\n";
     }
-    */
 
     bool trueStmtUses = manager.IsStmtUses(1, "v2");
     bool falseStmtUses = manager.IsStmtUses(1, "v1");
@@ -291,3 +293,122 @@ TEST_CASE("Test Add Modifies") {
     REQUIRE(trueProcModifies);
     REQUIRE(!falseProcModifies);
 }
+
+TEST_CASE("Test Modifies with call") {
+    TNode* program = new TNode(TNode::NODE_TYPE::program);
+
+    TNode* proc = new TNode(TNode::NODE_TYPE::procedure);
+    TNode* procname = new TNode(TNode::NODE_TYPE::procName, "pp");
+    TNode* proclst = new TNode(TNode::NODE_TYPE::stmtList);
+    TNode* procassign = new TNode(TNode::NODE_TYPE::assignStmt, 1);
+    TNode* var = new TNode(TNode::NODE_TYPE::varName, "v1");
+    TNode* expr = new TNode(TNode::NODE_TYPE::varName, "v2");
+    TNode* procprint = new TNode(TNode::NODE_TYPE::readStmt, 2);
+    TNode* printvar = new TNode(TNode::NODE_TYPE::varName, "read_vv");
+    TNode* proccall = new TNode(TNode::NODE_TYPE::callStmt, 3);
+    TNode* callname = new TNode(TNode::NODE_TYPE::procName, "proc3");
+    procprint->AddChild(printvar);
+    procassign->AddChild(var);
+    procassign->AddChild(expr);
+    proccall->AddChild(callname);
+    proclst->AddChild(procassign);
+    proclst->AddChild(procprint);
+    proclst->AddChild(proccall);
+    proc->AddChild(procname);
+    proc->AddChild(proclst);
+
+    TNode* proc2 = new TNode(TNode::NODE_TYPE::procedure);
+    TNode* procname2 = new TNode(TNode::NODE_TYPE::procName, "proc2");
+    TNode* proclst2 = new TNode(TNode::NODE_TYPE::stmtList);
+    TNode* procprint2 = new TNode(TNode::NODE_TYPE::readStmt, 4);
+    TNode* printvar2 = new TNode(TNode::NODE_TYPE::varName, "read_vv2");
+    procprint2->AddChild(printvar2);
+    proclst2->AddChild(procprint2);
+    proc2->AddChild(procname2);
+    proc2->AddChild(proclst2);
+
+    TNode* proc3 = new TNode(TNode::NODE_TYPE::procedure);
+    TNode* procname3 = new TNode(TNode::NODE_TYPE::procName, "proc3");
+    TNode* proclst3 = new TNode(TNode::NODE_TYPE::stmtList);
+    TNode* proccall3 = new TNode(TNode::NODE_TYPE::callStmt, 5);
+    TNode* callname3 = new TNode(TNode::NODE_TYPE::procName, "pp");
+    TNode* proccall33 = new TNode(TNode::NODE_TYPE::callStmt, 6);
+    TNode* callname33 = new TNode(TNode::NODE_TYPE::procName, "proc2");
+    proccall3->AddChild(callname3);
+    proclst3->AddChild(proccall3);
+    proccall33->AddChild(callname33);
+    proclst3->AddChild(proccall33);
+    proc3->AddChild(procname3);
+    proc3->AddChild(proclst3);
+
+    program->AddChild(proc);
+    program->AddChild(proc2);
+    program->AddChild(proc3);
+
+    program->Print(program);
+
+    PKB pkb;
+    RelationManager manager = pkb.GetRelationManager();
+    ExtractModifies(manager, *program);
+
+    /*VAR_NAME* v1 = new string("v1");
+    VAR_NAME* v2 = new string("v2");
+    PROC_NAME* procn = new string("pp");
+
+    manager.AddProcUses(*procn, *v1);
+
+    */
+    auto all_mods = manager.GetAllStmtModifies();
+    for (auto mod : all_mods) {
+        cout << mod.s << " " << mod.v << "\n";
+    }
+
+    auto all_proc_mods = manager.GetAllProcModifies();
+    for (auto mod : all_proc_mods) {
+        cout << mod.p << " " << mod.v << "\n";
+    }
+    
+
+    bool trueStmtModifies = manager.IsStmtModifies(1, "v1");
+    bool falseStmtModifies = manager.IsStmtModifies(2, "v1");
+    bool trueProcModifies = manager.IsProcModifies("pp", "v1");
+    bool falseProcModifies = manager.IsProcModifies("proc2", "v1");
+
+    REQUIRE(trueStmtModifies);
+    REQUIRE(!falseStmtModifies);
+    REQUIRE(trueProcModifies);
+    REQUIRE(!falseProcModifies);
+}
+
+/*
+TEST_CASE("Test extract Pattern") {
+    PKB* pkb = new PKB();
+    PatternManager pattern_manager = pkb->GetPatternManager();
+    TNode* prog = testutils::ConstructProgTreeWithSingleAssignStmt();
+    ExtractPattern(pattern_manager, *prog);
+
+    STMT_IDX_SET set1 =  pattern_manager.GetAssignWithFullPattern("", "");
+    REQUIRE(set1.size() == 1);
+    REQUIRE(set1.find(1) != set1.end());
+
+    STMT_IDX_SET set2 = pattern_manager.GetAssignWithFullPattern("var1", "");
+    REQUIRE(set2.size() == 1);
+    REQUIRE(set2.find(1) != set2.end());
+
+    STMT_IDX_SET set3 = pattern_manager.GetAssignWithFullPattern("", "5");
+    REQUIRE(set3.size() == 1);
+    REQUIRE(set3.find(1) != set3.end());
+
+    STMT_IDX_SET set4 = pattern_manager.GetAssignWithFullPattern("", "var2");
+    REQUIRE(set4.size() == 1);
+    REQUIRE(set4.find(1) != set4.end());
+
+    STMT_IDX_SET set5 = pattern_manager.GetAssignWithFullPattern("var1", "var2");
+    REQUIRE(set5.size() == 1);
+    REQUIRE(set5.find(1) != set5.end());
+
+    STMT_IDX_SET set6 = pattern_manager.GetAssignWithFullPattern("var1", "5");
+    REQUIRE(set6.size() == 1);
+    REQUIRE(set6.find(1) != set6.end());
+}
+*/

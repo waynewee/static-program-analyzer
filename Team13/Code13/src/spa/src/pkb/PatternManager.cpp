@@ -1,105 +1,163 @@
 #include "PatternManager.h"
 
+
 void PatternManager::AddAssignPattern(STMT_IDX s, VAR_NAME v, TNode root) {
     assign_pattern_table_.Add(s, v, root);
 }
 
 STMT_IDX_SET PatternManager::GetAssignWithFullPattern(VAR_NAME v, EXPRESSION e) {
-    return GetAssignWithPattern(v, e, assign_pattern_table_);
+    return GetStmtOfMatchingAssignments(v, e, true, assign_pattern_table_.GetData());
 }
-STMT_IDX_SET PatternManager::GetAssignWithPattern(VAR_NAME v, EXPRESSION e, AssignPatternTable table) {
+STMT_IDX_SET PatternManager::GetAssignWithSubPattern(VAR_NAME v, EXPRESSION e) {
+    return GetStmtOfMatchingAssignments(v, e, false, assign_pattern_table_.GetData());
+}
+STMT_VAR_PAIR_LIST PatternManager::GetAssignStmtVarPairWithFullPattern(VAR_NAME v, EXPRESSION e) {
+    return GetStmtVarPairOfMatchingAssignments(v, e, true, assign_pattern_table_.GetData());
+}
+
+STMT_VAR_PAIR_LIST PatternManager::GetAssignStmtVarPairWithSubPattern(VAR_NAME v, EXPRESSION e) {
+    return GetStmtVarPairOfMatchingAssignments(v, e, false, assign_pattern_table_.GetData());
+}
+
+STMT_IDX_SET PatternManager::GetStmtOfMatchingAssignments(VAR_NAME v, EXPRESSION e, bool is_full, EXPRESSION_TABLE *data) {
     if (v.empty() && e.empty()) {
-        return statement_table_.GetAll(STATEMENT_TYPE::assignStatement);
-    }
-    if (!v.empty() && e.empty()) {
         STMT_IDX_SET result = STMT_IDX_SET();
-        auto data = assign_pattern_table_.GetData();
-        for (auto tuple: data) {
+        for (auto tuple: *data) {
+            result.insert(tuple.s);
+        }
+        return result;
+    }else if (!v.empty() && e.empty()) {
+        STMT_IDX_SET result = STMT_IDX_SET();
+        for (auto tuple: *data) {
             if (tuple.v == v) {
                 result.insert(tuple.s);
             }
         }
         return result;
-    }
-    TNode* qroot = ParseExpression(e);
-    if (v.empty() && !e.empty()) {
+    }else if (v.empty() && !e.empty()) {
+        TNode* qroot = ParseExpression(e);
         STMT_IDX_SET result = STMT_IDX_SET();
-        auto data = assign_pattern_table_.GetData();
-        for (auto tuple: data) {
-            if (MatchPattern(tuple.eroot, *qroot)) {
+        for (auto tuple: *data) {
+            if (HasMatchingPattern(tuple.eroot, *qroot, is_full)) {
+                result.insert(tuple.s);
+            }
+        }
+        return result;
+    } else {
+        TNode* qroot = ParseExpression(e);
+        STMT_IDX_SET result = STMT_IDX_SET();
+        for (auto tuple: *data) {
+            if (tuple.v == v && HasMatchingPattern(tuple.eroot, *qroot, is_full)) {
+                std::cout << "they match!" << std::endl;
                 result.insert(tuple.s);
             }
         }
         return result;
     }
-    STMT_IDX_SET result = STMT_IDX_SET();
-    auto data = assign_pattern_table_.GetData();
-    for (auto tuple: data) {
-        if (tuple.v == v && MatchPattern(tuple.eroot, *qroot)) {
-            result.insert(tuple.s);
-        }
-    }
-    return result;
 }
 
-EXPRESSION_TABLE AssignPatternTable::GetData() {
+
+STMT_VAR_PAIR_LIST PatternManager::GetStmtVarPairOfMatchingAssignments(
+    VAR_NAME v, EXPRESSION e, bool is_full, EXPRESSION_TABLE *data) {
+    if (v.empty() && e.empty()) {
+        STMT_VAR_PAIR_LIST result = STMT_VAR_PAIR_LIST();
+        for (auto tuple: *data) {
+            STMT_VAR_PAIR pair = {tuple.s, tuple.v};
+            result.push_back(pair);
+        }
+        return result;
+    } else if (e.empty()) {
+        STMT_VAR_PAIR_LIST result = STMT_VAR_PAIR_LIST();
+        for (auto tuple: *data) {
+            if (tuple.v == v) {
+                STMT_VAR_PAIR pair = {tuple.s, tuple.v};
+                result.push_back(pair);
+            }
+        }
+        return result;
+    } else if (v.empty()){
+        TNode* qroot = ParseExpression(e);
+        STMT_VAR_PAIR_LIST result = STMT_VAR_PAIR_LIST();
+        for (auto tuple: *data) {
+            if (HasMatchingPattern(tuple.eroot, *qroot, is_full)) {
+                STMT_VAR_PAIR pair = {tuple.s, tuple.v};
+                result.push_back(pair);
+            }
+        }
+        return result;
+    } else {
+        STMT_VAR_PAIR_LIST result = STMT_VAR_PAIR_LIST();
+        TNode* qroot = ParseExpression(e);
+        for (auto tuple: *data) {
+            if (tuple.v == v && HasMatchingPattern(tuple.eroot, *qroot, is_full)) {
+                STMT_VAR_PAIR pair = {tuple.s, tuple.v};
+                result.push_back(pair);
+            }
+        }
+        return result;
+    }
+}
+
+EXPRESSION_TABLE* AssignPatternTable::GetData() {
     return data_;
 }
 
 void AssignPatternTable::Add(STMT_IDX s, VAR_NAME v, TNode root) {
     ASSIGN_PATTERN tuple = {s, v, root};
-    data_.push_back(tuple);
+    data_->push_back(tuple);
+//    //debug
+//    std::cout << "pringing all tuples in AssignPatternTable: " << std::endl;
+//    for (auto tuple: *data_) {
+//        std::cout << "tuple: s = " << tuple.s << ", v = " << tuple.v << std::endl;
+//    }
 }
-
-STMT_IDX_LIST PatternManager::GetStmtIdxSetIntersection(STMT_IDX_SET s1, STMT_IDX_SET s2) {
-    auto output = STMT_IDX_LIST();
-    auto l1 = STMT_IDX_LIST(s1.begin(), s1.end());
-    auto l2 = STMT_IDX_LIST(s2.begin(), s2.end());
-    std::sort(l1.begin(), l1.end());
-    std::sort(l2.begin(), l2.end());
-    std::set_intersection(l1.begin(), l1.end(), l2.begin(), l2.end(), back_inserter(output));
-    return output;
+bool PatternManager::HasMatchingPattern(TNode root, TNode qroot, bool is_full) {
+    return is_full?HasFullMatchingPattern(root, qroot): HasSubMatchingPattern(root, qroot);
 }
-
-STMT_IDX_LIST PatternManager::GetStmtIdxSetIntersection(STMT_IDX_LIST l1, STMT_IDX_SET s2) {
-    auto output = STMT_IDX_LIST();
-    auto l2 = STMT_IDX_LIST(s2.begin(), s2.end());
-    std::sort(l1.begin(), l1.end());
-    std::sort(l2.begin(), l2.end());
-    std::set_intersection(l1.begin(), l1.end(), l2.begin(), l2.end(), back_inserter(output));
-    return output;
-}
-
-bool PatternManager::MatchPattern(TNode root, TNode qroot) {
+bool PatternManager::HasSubMatchingPattern(TNode root, TNode qroot) {
     vector<TNode*> children = root.GetChildrenVector();
     if (!children.empty()) {
         for (TNode* child: children) {
-            MatchPattern(*child, qroot);
+            if (HasSubMatchingPattern(*child, qroot)) {
+                return true;
+            };
         }
     } else {
-        if (qroot.GetNodeType() == root.GetNodeType()) {
-            if (root.GetNodeType() == TNode::NODE_TYPE::varName) {
-                if (*(qroot.GetName()) == *(root.GetName())) {
-                    return true;
-                }
-            } else if (root.GetNodeType() == TNode::NODE_TYPE::constValue) {
-                if (qroot.GetConstValue() == root.GetConstValue()) {
-                    return true;
-                }
+        if (IsMatchingEntRefTNode(root, qroot)) {
+            return true;
+        }
+    }
+    return false;
+}
+bool PatternManager::HasFullMatchingPattern(TNode root, TNode qroot) {
+    vector<TNode*> children = root.GetChildrenVector();
+    for (auto child: children) {
+        if (IsMatchingEntRefTNode(root, qroot)) {
+            return true;
+        }
+    }
+    return false;
+}
+bool PatternManager::IsMatchingEntRefTNode(TNode root, TNode qroot) {
+    if (qroot.GetNodeType() == root.GetNodeType()) {
+        if (root.GetNodeType() == TNode::NODE_TYPE::varName) {
+            if (*(qroot.GetName()) == *(root.GetName())) {
+                return true;
+            }
+        } else if (root.GetNodeType() == TNode::NODE_TYPE::constValue) {
+            if ((int) qroot.GetConstValue() == (int) root.GetConstValue()) {
+                return true;
             }
         }
     }
-
     return false;
 }
+//string PatternManager::RemoveWhiteSpace(EXPRESSION e) {
+//    e.erase(std::remove(e.begin(), e.end(), ' '), e.end());
+//    return e;
+//}
 
-string PatternManager::RemoveWhiteSpace(EXPRESSION e) {
-    e.erase(std::remove(e.begin(), e.end(), ' '), e.end());
-    return e;
-}
-
-TNode* PatternManager::ParseExpression(EXPRESSION e) {
-    string s = RemoveWhiteSpace(e);
+TNode* PatternManager::ParseExpression(EXPRESSION s) {
     if (IsNumber(s)) {
         CONST_VALUE val = (CONST_VALUE) stoi(s);
         TNode* node = new TNode(TNode::NODE_TYPE::constValue);
@@ -116,51 +174,8 @@ bool PatternManager::IsNumber(EXPRESSION s) {
     return !s.empty() && std::find_if(s.begin(),
                                       s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
 }
-STMT_VAR_PAIR_LIST PatternManager::GetAssignStmtVarPairWithFullPattern(VAR_NAME v, EXPRESSION e) {
-    auto data = assign_pattern_table_.GetData();
-    if (v.empty() && e.empty()) {
-        STMT_VAR_PAIR_LIST result = STMT_VAR_PAIR_LIST();
-        for (auto tuple: data) {
-            STMT_VAR_PAIR pair = {tuple.s, tuple.v};
-            result.push_back(pair);
-        }
-        return result;
-    }
-    if (e.empty()) {
-        STMT_VAR_PAIR_LIST result = STMT_VAR_PAIR_LIST();
-        for (auto tuple: data) {
-            if (tuple.v == v) {
-                STMT_VAR_PAIR pair = {tuple.s, tuple.v};
-                result.push_back(pair);
-            }
-        }
-        return result;
-    }
 
-    TNode* qroot = ParseExpression(e);
-    if (v.empty()){
-        STMT_VAR_PAIR_LIST result = STMT_VAR_PAIR_LIST();
-        for (auto tuple: data) {
-            if (MatchPattern(tuple.eroot, *qroot)) {
-                STMT_VAR_PAIR pair = {tuple.s, tuple.v};
-                result.push_back(pair);
-            }
-        }
-        return result;
-    }
-    STMT_VAR_PAIR_LIST result = STMT_VAR_PAIR_LIST();
-    for (auto tuple: data) {
-        if (tuple.v == v && MatchPattern(tuple.eroot, *qroot)) {
-            STMT_VAR_PAIR pair = {tuple.s, tuple.v};
-            result.push_back(pair);
-        }
-    }
-    return result;
-}
 
-STMT_VAR_PAIR_LIST PatternManager::GetAssignStmtVarPairWithSubPattern(VAR_NAME v, EXPRESSION e) {
-    return STMT_VAR_PAIR_LIST();
-}
-STMT_IDX_SET PatternManager::GetAssignWithSubpattern(VAR_NAME v, EXPRESSION e) {
-    return STMT_IDX_SET();
-}
+
+
+
