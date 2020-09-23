@@ -91,7 +91,6 @@ public:
     bool IsStmtModifies(STMT_IDX s, VAR_NAME v);
     bool IsProcModifies(PROC_NAME p, VAR_NAME v);
 
-    STMT_IDX_SET GetAssignWithPattern(VAR_NAME v, EXPRESSION e);
     STMT_IDX_SET GetFollows(STMT_IDX s);
     STMT_IDX_SET GetInverseFollows(STMT_IDX s);
     STMT_STMT_PAIR_LIST GetAllFollows();

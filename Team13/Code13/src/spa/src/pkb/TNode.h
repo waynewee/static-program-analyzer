@@ -75,12 +75,12 @@ public:
     list<TNode*> GetChildrenList();
     vector<TNode*> GetChildrenVector();
     STMT_IDX GetStmtIndex();
+    OPERATOR GetOperator();
     string getData();
     TNode* GetParent();
     CONST_VALUE GetConstValue();
     string* GetName();
     void Print(TNode* root);
 };
-
 
 #endif
