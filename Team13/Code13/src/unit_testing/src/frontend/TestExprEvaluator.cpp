@@ -10,12 +10,8 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <string>
-
-using namespace std;
 
 Token token_var_x = Token("x", TokenType::TOKEN_TYPE::var);
-Token token_var_y = Token("y", TokenType::TOKEN_TYPE::var);
 Token token_const_4 = Token("4", TokenType::TOKEN_TYPE::constant);
 
 Token token_expr_plus = Token(TYPE_EXPR_PLUS, TokenType::TOKEN_TYPE::expr);
@@ -40,23 +36,14 @@ TEST_CASE("Expression evaluator | Evaluates rel expression") {
 	SECTION("Evaluates equality rel expression") {
 		TOKEN_LIST token_list;
 
-		//x == 4
 		token_list.push_back(token_var_x);
 		token_list.push_back(token_rel_expr_eq);
 		token_list.push_back(token_const_4);
 
 		ExprEvaluator evaluator(token_list);
-		TNode* actual_root_node = evaluator.Evaluate();
-		string actual = TreeTraverse::traverse(actual_root_node);
-
-		TNode* expected_root_node = new TNode(TNode::NODE_TYPE::relExpr, TNode::OPERATOR::equal);
-		TNode* expected_left_node_0 = new TNode(TNode::NODE_TYPE::varName, "x");
-		TNode* expected_right_node_0 = new TNode(TNode::NODE_TYPE::constValue, stod("4"));
-
-		expected_root_node->AddChild(expected_left_node_0);
-		expected_root_node->AddChild(expected_right_node_0);
-
-		string expected = TreeTraverse::traverse(expected_root_node);
+		TNode* rootNode = evaluator.Evaluate();
+		string actual = TreeTraverse::traverse(rootNode);
+		string expected = "RelExpr:7VarName:xConstValue:4";
 
 		REQUIRE(actual == expected);
 	}
@@ -64,27 +51,36 @@ TEST_CASE("Expression evaluator | Evaluates rel expression") {
 	SECTION("Evaluates less than rel expression") {
 		TOKEN_LIST token_list;
 
-		//x < 4
 		token_list.push_back(token_var_x);
 		token_list.push_back(token_rel_expr_lt);
 		token_list.push_back(token_const_4);
 
 		ExprEvaluator evaluator(token_list);
-		TNode* actual_root_node = evaluator.Evaluate();
-		string actual = TreeTraverse::traverse(actual_root_node);
-
-		TNode* expected_root_node = new TNode(TNode::NODE_TYPE::relExpr, TNode::OPERATOR::lesser);
-		TNode* expected_left_node_0 = new TNode(TNode::NODE_TYPE::varName, "x");
-		TNode* expected_right_node_0 = new TNode(TNode::NODE_TYPE::constValue, stod("4"));
-
-		expected_root_node->AddChild(expected_left_node_0);
-		expected_root_node->AddChild(expected_right_node_0);
-
-		string expected = TreeTraverse::traverse(expected_root_node);
+		TNode* rootNode = evaluator.Evaluate();
+		string actual = TreeTraverse::traverse(rootNode);
+		string expected = "RelExpr:5VarName:xConstValue:4";
 
 		REQUIRE(actual == expected);
 	}
 
+	SECTION("Evaluates and rel expression") {
+		TOKEN_LIST token_list;
+
+		token_list.push_back(token_punc_open_paran);
+		token_list.push_back(token_var_x);
+		token_list.push_back(token_punc_closed_paran);
+		token_list.push_back(token_cond_expr_and);
+		token_list.push_back(token_punc_open_paran);
+		token_list.push_back(token_const_4);
+		token_list.push_back(token_punc_closed_paran);
+
+		ExprEvaluator evaluator(token_list);
+		TNode* rootNode = evaluator.Evaluate();
+		string actual = TreeTraverse::traverse(rootNode);
+		string expected = "CondExpr:1VarName:xConstValue:4";
+
+		REQUIRE(actual == expected);
+	}
 }
 
 
@@ -94,23 +90,14 @@ TEST_CASE("Expression evaluator | Evaluates plus/minus expression") {
 
 		TOKEN_LIST token_list;
 
-		//x+4
-		token_list.push_back(token_var_x);
-		token_list.push_back(token_expr_plus);
 		token_list.push_back(token_const_4);
+		token_list.push_back(token_expr_plus);
+		token_list.push_back(token_var_x);
 
 		ExprEvaluator evaluator(token_list);
-		TNode* actual_root_node = evaluator.Evaluate();
-		string actual = TreeTraverse::traverse(actual_root_node);
-
-		TNode* expected_root_node = new TNode(TNode::NODE_TYPE::expr, TNode::OPERATOR::plus);
-		TNode* expected_left_node_0 = new TNode(TNode::NODE_TYPE::varName, "x");
-		TNode* expected_right_node_0 = new TNode(TNode::NODE_TYPE::constValue, stod("4"));
-
-		expected_root_node->AddChild(expected_left_node_0);
-		expected_root_node->AddChild(expected_right_node_0);
-
-		string expected = TreeTraverse::traverse(expected_root_node);
+		TNode* rootNode = evaluator.Evaluate();
+		string actual = TreeTraverse::traverse(rootNode);
+		string expected = "Expr:9ConstValue:4VarName:x";
 
 		REQUIRE(actual == expected);
 	
@@ -120,24 +107,14 @@ TEST_CASE("Expression evaluator | Evaluates plus/minus expression") {
 
 		TOKEN_LIST token_list;
 
-		//x-4
-		token_list.push_back(token_var_x);
-		token_list.push_back(token_expr_minus);
 		token_list.push_back(token_const_4);
+		token_list.push_back(token_expr_minus);
+		token_list.push_back(token_var_x);
 
 		ExprEvaluator evaluator(token_list);
-		TNode* actual_root_node = evaluator.Evaluate();
-		string actual = TreeTraverse::traverse(actual_root_node);
-
-		TNode* expected_root_node = new TNode(TNode::NODE_TYPE::expr, TNode::OPERATOR::minus);
-		TNode* expected_left_node_0 = new TNode(TNode::NODE_TYPE::varName, "x");
-		TNode* expected_right_node_0 = new TNode(TNode::NODE_TYPE::constValue, stod("4"));
-
-		expected_root_node->AddChild(expected_left_node_0);
-		expected_root_node->AddChild(expected_right_node_0);
-
-		string expected = TreeTraverse::traverse(expected_root_node);
-
+		TNode* rootNode = evaluator.Evaluate();
+		string actual = TreeTraverse::traverse(rootNode);
+		string expected = "Expr:10ConstValue:4VarName:x";
 
 		REQUIRE(actual == expected);
 
@@ -150,22 +127,14 @@ TEST_CASE("Expression evaluator | Evaluates times/divide expression") {
 	SECTION("Evaluates times expression") {
 		TOKEN_LIST token_list;
 
-		token_list.push_back(token_var_x);
-		token_list.push_back(token_expr_times);
 		token_list.push_back(token_const_4);
+		token_list.push_back(token_expr_times);
+		token_list.push_back(token_var_x);
 
 		ExprEvaluator evaluator(token_list);
-		TNode* actual_root_node = evaluator.Evaluate();
-		string actual = TreeTraverse::traverse(actual_root_node);
-		
-		TNode* expected_root_node = new TNode(TNode::NODE_TYPE::expr, TNode::OPERATOR::times);
-		TNode* expected_left_node_0 = new TNode(TNode::NODE_TYPE::varName, "x");
-		TNode* expected_right_node_0 = new TNode(TNode::NODE_TYPE::constValue, stod("4"));
-
-		expected_root_node->AddChild(expected_left_node_0);
-		expected_root_node->AddChild(expected_right_node_0);
-
-		string expected = TreeTraverse::traverse(expected_root_node);
+		TNode* rootNode = evaluator.Evaluate();
+		string actual = TreeTraverse::traverse(rootNode);
+		string expected = "Expr:11ConstValue:4VarName:x";
 
 		REQUIRE(actual == expected);
 
@@ -174,22 +143,14 @@ TEST_CASE("Expression evaluator | Evaluates times/divide expression") {
 	SECTION("Evaluates divide expression") {
 		TOKEN_LIST token_list;
 
-		token_list.push_back(token_var_x);
-		token_list.push_back(token_expr_divide);
 		token_list.push_back(token_const_4);
+		token_list.push_back(token_expr_divide);
+		token_list.push_back(token_var_x);
 
 		ExprEvaluator evaluator(token_list);
-		TNode* actual_root_node = evaluator.Evaluate();
-		string actual = TreeTraverse::traverse(actual_root_node);
-
-		TNode* expected_root_node = new TNode(TNode::NODE_TYPE::expr, TNode::OPERATOR::divide);
-		TNode* expected_left_node_0 = new TNode(TNode::NODE_TYPE::varName, "x");
-		TNode* expected_right_node_0 = new TNode(TNode::NODE_TYPE::constValue, stod("4"));
-
-		expected_root_node->AddChild(expected_left_node_0);
-		expected_root_node->AddChild(expected_right_node_0);
-
-		string expected = TreeTraverse::traverse(expected_root_node);
+		TNode* rootNode = evaluator.Evaluate();
+		string actual = TreeTraverse::traverse(rootNode);
+		string expected = "Expr:12ConstValue:4VarName:x";
 
 		REQUIRE(actual == expected);
 	}
@@ -201,7 +162,6 @@ TEST_CASE("Expression evaluator | Evaluates expressions containing parantheses")
 	SECTION("Evalutes expression enclosed in parantheses") {
 		TOKEN_LIST token_list;
 
-		//(x + 4)
 		token_list.push_back(token_punc_open_paran);
 		token_list.push_back(token_var_x);
 		token_list.push_back(token_expr_plus);
@@ -209,17 +169,9 @@ TEST_CASE("Expression evaluator | Evaluates expressions containing parantheses")
 		token_list.push_back(token_punc_closed_paran);
 
 		ExprEvaluator evaluator(token_list);
-		TNode* actual_root_node = evaluator.Evaluate();
-		string actual = TreeTraverse::traverse(actual_root_node);
-
-		TNode* expected_root_node = new TNode(TNode::NODE_TYPE::expr, TNode::OPERATOR::plus);
-		TNode* expected_left_node_0 = new TNode(TNode::NODE_TYPE::varName, "x");
-		TNode* expected_right_node_0 = new TNode(TNode::NODE_TYPE::constValue, stod("4"));
-
-		expected_root_node->AddChild(expected_left_node_0);
-		expected_root_node->AddChild(expected_right_node_0);
-
-		string expected = TreeTraverse::traverse(expected_root_node);
+		TNode* rootNode = evaluator.Evaluate();
+		string actual = TreeTraverse::traverse(rootNode);
+		string expected = "Expr:9VarName:xConstValue:4";
 
 		REQUIRE(actual == expected);
 	}
@@ -227,8 +179,6 @@ TEST_CASE("Expression evaluator | Evaluates expressions containing parantheses")
 	SECTION("Evalutes expression with sub-expression enclosed in parantheses") {
 		TOKEN_LIST token_list;
 
-		//(x+(x+4))
-		token_list.push_back(token_punc_open_paran);
 		token_list.push_back(token_var_x);
 		token_list.push_back(token_expr_plus);
 		token_list.push_back(token_punc_open_paran);
@@ -236,24 +186,11 @@ TEST_CASE("Expression evaluator | Evaluates expressions containing parantheses")
 		token_list.push_back(token_expr_plus);
 		token_list.push_back(token_const_4);
 		token_list.push_back(token_punc_closed_paran);
-		token_list.push_back(token_punc_closed_paran);
 
 		ExprEvaluator evaluator(token_list);
-		TNode* actual_root_node = evaluator.Evaluate();
-		string actual = TreeTraverse::traverse(actual_root_node);
-
-		TNode* expected_root_node = new TNode(TNode::NODE_TYPE::expr, TNode::OPERATOR::plus);
-		TNode* expected_left_node_0 = new TNode(TNode::NODE_TYPE::varName, "x");
-		TNode* expected_right_node_0 = new TNode(TNode::NODE_TYPE::expr, TNode::OPERATOR::plus);
-		TNode* expected_left_node_1 = new TNode(TNode::NODE_TYPE::varName, "x");
-		TNode* expected_right_node_1 = new TNode(TNode::NODE_TYPE::constValue, stod("4"));
-
-		expected_root_node->AddChild(expected_left_node_0);
-		expected_root_node->AddChild(expected_right_node_0);
-		expected_right_node_0->AddChild(expected_left_node_1);
-		expected_right_node_0->AddChild(expected_right_node_1);
-
-		string expected = TreeTraverse::traverse(expected_root_node);
+		TNode* rootNode = evaluator.Evaluate();
+		string actual = TreeTraverse::traverse(rootNode);
+		string expected = "Expr:9VarName:xExpr:9VarName:xConstValue:4";
 
 		REQUIRE(actual == expected);
 	}
@@ -262,7 +199,6 @@ TEST_CASE("Expression evaluator | Evaluates expressions containing parantheses")
 
 TEST_CASE("Expression evaluator | Evaluates expression with unary operators") {
 
-	//!(x == 4)
 	SECTION("Evaluates expression with unary not") {
 		TOKEN_LIST token_list;
 
@@ -274,19 +210,9 @@ TEST_CASE("Expression evaluator | Evaluates expression with unary operators") {
 		token_list.push_back(token_punc_closed_paran);
 
 		ExprEvaluator evaluator(token_list);
-		TNode* actual_root_node = evaluator.Evaluate();
-		string actual = TreeTraverse::traverse(actual_root_node);
-
-		TNode* expected_root_node = new TNode(TNode::NODE_TYPE::condExpr, TNode::OPERATOR::notOp);
-		TNode* expected_left_node_0 = new TNode(TNode::NODE_TYPE::relExpr, TNode::OPERATOR::equal);
-		TNode* expected_left_node_1 = new TNode(TNode::NODE_TYPE::varName, "x");
-		TNode* expected_right_node_1 = new TNode(TNode::NODE_TYPE::constValue, stod("4"));
-
-		expected_root_node->AddChild(expected_left_node_0);
-		expected_left_node_0->AddChild(expected_left_node_1);
-		expected_left_node_0->AddChild(expected_right_node_1);
-
-		string expected = TreeTraverse::traverse(expected_root_node);
+		TNode* rootNode = evaluator.Evaluate();
+		string actual = TreeTraverse::traverse(rootNode);
+		string expected = "CondExpr:0RelExpr:7VarName:xConstValue:4";
 
 		REQUIRE(actual == expected);
 	}
@@ -294,51 +220,33 @@ TEST_CASE("Expression evaluator | Evaluates expression with unary operators") {
 
 
 TEST_CASE("Expression evaluator | Evaluates two clause expressions") {
-
-	//(x == 4)&&(y >= 4)
 	TOKEN_LIST token_list;
 
 	token_list.push_back(token_punc_open_paran);
+	token_list.push_back(token_punc_open_paran);
 	token_list.push_back(token_var_x);
-	token_list.push_back(token_rel_expr_eq);
+	token_list.push_back(token_expr_plus);
 	token_list.push_back(token_const_4);
 	token_list.push_back(token_punc_closed_paran);
 	token_list.push_back(token_cond_expr_and);
 	token_list.push_back(token_punc_open_paran);
-	token_list.push_back(token_var_y);
-	token_list.push_back(token_rel_expr_gte);
+	token_list.push_back(token_var_x);
+	token_list.push_back(token_expr_minus);
 	token_list.push_back(token_const_4);
+	token_list.push_back(token_punc_closed_paran);
 	token_list.push_back(token_punc_closed_paran);
 
 	ExprEvaluator evaluator(token_list);
-	TNode* actual_root_node = evaluator.Evaluate();
-	string actual = TreeTraverse::traverse(actual_root_node);
-
-	TNode* expected_root_node = new TNode(TNode::NODE_TYPE::condExpr, TNode::OPERATOR::andOp);
-	TNode* expected_left_node_0 = new TNode(TNode::NODE_TYPE::relExpr, TNode::OPERATOR::equal);
-	TNode* expected_right_node_0 = new TNode(TNode::NODE_TYPE::relExpr, TNode::OPERATOR::geq);
-	TNode* expected_left_node_1 = new TNode(TNode::NODE_TYPE::varName, "x");
-	TNode* expected_right_node_1 = new TNode(TNode::NODE_TYPE::constValue, stod("4"));
-	TNode* expected_left_node_2 = new TNode(TNode::NODE_TYPE::varName, "y");
-	TNode* expected_right_node_2 = new TNode(TNode::NODE_TYPE::constValue, stod("4"));
-
-	expected_root_node->AddChild(expected_left_node_0);
-	expected_root_node->AddChild(expected_right_node_0);
-	expected_left_node_0->AddChild(expected_left_node_1);
-	expected_left_node_0->AddChild(expected_right_node_1);
-	expected_right_node_0->AddChild(expected_left_node_2);
-	expected_right_node_0->AddChild(expected_right_node_2);
-
-	string expected = TreeTraverse::traverse(expected_root_node);
+	TNode* rootNode = evaluator.Evaluate();
+	string actual = TreeTraverse::traverse(rootNode);
+	string expected = "CondExpr:1Expr:9Expr:10VarName:xConstValue:4VarName:xConstValue:4";
 
 	REQUIRE(actual == expected);
-
 }
 
 
 TEST_CASE("Expression Evaluator | Evaluates complex expression") {
 
-	//(!(x == 4) && (x >= 4) || ( x < 4 ))
 	TOKEN_LIST token_list;
 	token_list.push_back(token_punc_open_paran);
 	token_list.push_back(token_unary_not);
@@ -363,36 +271,10 @@ TEST_CASE("Expression Evaluator | Evaluates complex expression") {
 
 	ExprEvaluator evaluator(token_list);
 
-	TNode* actual_root_node = evaluator.Evaluate();
+	TNode* rootNode = evaluator.Evaluate();
 
-	string actual = TreeTraverse::traverse(actual_root_node);
-	
-	TNode* expected_root_node = new TNode(TNode::NODE_TYPE::condExpr, TNode::OPERATOR::orOp);
-	TNode* expected_left_node_0 = new TNode(TNode::NODE_TYPE::condExpr, TNode::OPERATOR::andOp);
-	TNode* expected_right_node_0 = new TNode(TNode::NODE_TYPE::relExpr, TNode::OPERATOR::lesser);
-	TNode* expected_left_node_1 = new TNode(TNode::NODE_TYPE::condExpr, TNode::OPERATOR::notOp);
-	TNode* expected_right_node_1 = new TNode(TNode::NODE_TYPE::relExpr, TNode::OPERATOR::geq);
-	TNode* expected_left_node_2 = new TNode(TNode::NODE_TYPE::varName, "x");
-	TNode* expected_right_node_2 = new TNode(TNode::NODE_TYPE::constValue, stod("4"));
-	TNode* expected_left_node_3 = new TNode(TNode::NODE_TYPE::relExpr, TNode::OPERATOR::equal);
-	TNode* expected_left_node_4 = new TNode(TNode::NODE_TYPE::varName, "x");
-	TNode* expected_right_node_4 = new TNode(TNode::NODE_TYPE::constValue, stod("4"));
-	TNode* expected_left_node_5 = new TNode(TNode::NODE_TYPE::varName, "x");
-	TNode* expected_right_node_5 = new TNode(TNode::NODE_TYPE::constValue, stod("4"));
-
-	expected_root_node->AddChild(expected_left_node_0);
-	expected_root_node->AddChild(expected_right_node_0);
-	expected_left_node_0->AddChild(expected_left_node_1);
-	expected_left_node_0->AddChild(expected_right_node_1);
-	expected_right_node_0->AddChild(expected_left_node_2);
-	expected_right_node_0->AddChild(expected_right_node_2);
-	expected_left_node_1->AddChild(expected_left_node_3);
-	expected_right_node_2->AddChild(expected_left_node_4);
-	expected_right_node_2->AddChild(expected_right_node_4);
-	expected_left_node_3->AddChild(expected_left_node_5);
-	expected_left_node_3->AddChild(expected_right_node_5);
-
-	string expected = TreeTraverse::traverse(expected_root_node);
+	string actual = TreeTraverse::traverse(rootNode);
+	string expected = "CondExpr:2CondExpr:1RelExpr:5CondExpr:0RelExpr:4VarName:xConstValue:4RelExpr:7VarName:xConstValue:4VarName:xConstValue:4";
 
 	REQUIRE(actual == expected);
 

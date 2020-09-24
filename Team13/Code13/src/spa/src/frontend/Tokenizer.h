@@ -97,7 +97,7 @@ public:
 
 	Tokenizer(string input);
 	
-	int Tokenize();
+	void Tokenize();
 
 	Token* AddToken(TokenType::TOKEN_TYPE token_type);
 	void AppendStrToTokenStr(string str);
