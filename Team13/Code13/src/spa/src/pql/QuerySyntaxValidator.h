@@ -20,6 +20,8 @@ public:
 
 	STRING_STRINGLIST_MAP ValidatePatternClause(string s, STRING_STRING_MAP declaredVarNames);
 
+	bool ValidateVariableIsAssign(string s, STRING_STRING_MAP declared_var_names);
+
 	void ValidateExpression(const string& s);
 
 	string TrimLeadingWhitespaces(const string& s);

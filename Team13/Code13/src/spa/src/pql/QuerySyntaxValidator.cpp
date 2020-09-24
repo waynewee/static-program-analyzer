@@ -738,3 +738,16 @@ int QuerySyntaxValidator::NthOccurrence(string* str, const string& target, int n
 	}
 	return pos;
 }
+
+bool QuerySyntaxValidator::ValidateVariableIsAssign(string s, STRING_STRING_MAP declared_var_names) {
+	bool res = false;
+	if (declared_var_names.count(s) != 0) {
+		// variable is assign
+		string str = declared_var_names.at(s);
+		// cout << "IS IT ASSIGN : " << str << endl;
+		if (str.compare("assign") != 0) {
+			throw ("Error : variable after pattern clause must be assign type!");
+		}
+	}
+	return res;
+}

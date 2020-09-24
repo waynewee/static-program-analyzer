@@ -19,16 +19,6 @@
 #define TYPE_STMT_PRINT "print"
 #define TYPE_STMT_READ "read"
 
-#define TYPE_COND_FOLLOWS "Follows"
-#define TYPE_COND_FOLLOWS_T "FollowsT"
-#define TYPE_COND_PARENT "Parent"
-#define TYPE_COND_PARENT_T "ParentT"
-#define TYPE_COND_USES_S "UsesS"
-#define TYPE_COND_USES_P "UsesP"
-#define TYPE_COND_MODIFIES_S "ModifiesS"
-#define TYPE_COND_MODIFIES_P "ModifiesP"
-#define TYPE_COND_PATTERN "pattern"
-
 #define TYPE_REL_EXPR_GT ">"
 #define TYPE_REL_EXPR_GTE ">="
 #define TYPE_REL_EXPR_LT "<"
