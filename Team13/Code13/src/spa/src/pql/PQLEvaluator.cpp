@@ -176,7 +176,6 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 
 			STRING_SET tmp = GetAllSet(var_map.at(key));
 			RemoveIrrelevant(&value, tmp);
-			cout << "VALUE: " << value.size() << endl;
 			if (value.empty()) {
 				if (DEBUG) {
 					cout << "PQLEvaluator - Evaluating one user declared clauses: Empty result set after checking against entity type." << endl;
@@ -228,10 +227,10 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 
 			STRING_SET tmp = GetAllSet(var_map.at(param1));
 			RemoveIrrelevant(&value, tmp, 0);
-			cout << "VALUE: " << value.size() << endl;
+
 			tmp = GetAllSet(var_map.at(param2));
 			RemoveIrrelevant(&value, tmp, 1);
-			cout << "VALUE: " << value.size() << endl;
+
 			if (value.empty()) {
 				if (DEBUG) {
 					cout << "PQLEvaluator - Evaluating two user declared clauses: Empty result set after checking against entity type." << endl;
@@ -333,9 +332,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	// Check if output_var is in consolidatedResults
 	// YES -> return corresponding values AND getALLXXX(output_var_type); NO -> getALLXXX(output_var_type)
 	STRING_SET result;
-	cout << "CONSOLIDATE RESULT SIZE: " << consolidated_results.size() << endl;
 	if (consolidated_results.find(output_var) != consolidated_results.end()) {
-		cout << "FOUND VAR IN CONSOLIDATE RESULT" << endl;
 		STRING_SET r1 = GetAllSet(output_var_type);
 		STRING_SET r2 = consolidated_results.at(output_var);
 		STRING_SET inter_result = GetIntersectResult(r1, r2);
@@ -717,20 +714,13 @@ STRING_STRINGSET_MAP PQLEvaluator::ConsolidateResults(STRING curr_check, STRING_
 			continue;
 		}
 
-		cout << "CHECKING = " << key[0] << endl;
-		cout << "CHECKING = " << key[1] << endl;
-		cout << "TO INSERT = " << to_insert << endl;
-		cout << "POSITION TO CHECK = " << pos_to_check << endl;
-
 		// Check if one_user_result_set contains entity being checked
 		// TRUE -> AND the results
 		// FALSE -> create new entry and add all the values
 		// BOTH -> insert results into consolidatedResults
 		STRING_SET tmp = STRING_SET();
-		if (one_user_result_set.find(curr_check) != one_user_result_set.end()) {
-			cout << "FOUND IN 1USERSET" << endl;
-
-			STRING_SET r1 = one_user_result_set.at(curr_check);
+		if (consolidated_results.find(curr_check) != consolidated_results.end()) {
+			STRING_SET r1 = consolidated_results.at(curr_check);
 			tmp = GetIntersectResult(r1, value, pos_to_check);
 
 			// Remove irrelevant data values from both sets
@@ -740,27 +730,19 @@ STRING_STRINGSET_MAP PQLEvaluator::ConsolidateResults(STRING curr_check, STRING_
 			}
 		}
 		else {
-			cout << "NOT FOUND IN 1USERSET" << endl;
-
 			tmp = GetNewResult(value, pos_to_check);
+			is_changed = true;
 		}
 
 		if (consolidated_results.find(curr_check) == consolidated_results.end()) {
-			cout << "NOT FOUND IN CONSOLIDATED RESULT" << endl;
-
 			consolidated_results.insert({ curr_check, *(new STRING_SET(tmp)) });
 		}
 		else {
-			cout << "FOUND IN CONSOLIDATED RESULT" << endl;
-
 			consolidated_results.at(curr_check) = *(new STRING_SET(tmp));
 		}
 
 		if (is_changed) {
-			cout << "REACHED HERE" << endl;
-
 			related_var.insert(to_insert);
-			is_changed = false;
 		}
 	}
 
@@ -768,7 +750,6 @@ STRING_STRINGSET_MAP PQLEvaluator::ConsolidateResults(STRING curr_check, STRING_
 		auto to_remove = related_var.begin();
 		curr_check = *to_remove;
 		related_var.erase(to_remove);
-		cout << "RELATEDED VAR IS " << curr_check << endl;
 		ConsolidateResults(curr_check, related_var, consolidated_results, one_user_result_set, two_user_result_set);
 	}
 
@@ -820,7 +801,6 @@ STRING_SET PQLEvaluator::GetAllSet(STRING output_var_type) {
 		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::printStatement));
 	}
 	else if (output_var_type.compare(TYPE_STMT_READ) == 0) {
-		cout << "REACHED READ" << endl;
 		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::readStatement));
 	}
 	else if (output_var_type.compare(TYPE_VAR) == 0) {
@@ -920,6 +900,7 @@ BOOLEAN PQLEvaluator::RemoveIrrelevant(STRING_SET* value, STRING_SET tmp) {
 	while (it != value->end()) {
 		if (tmp.find(*it) == tmp.end()) {
 			it = value->erase(it);
+			is_changed = true;
 		}
 		else {
 			it++;
@@ -937,6 +918,7 @@ BOOLEAN PQLEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRING_SET tmp, IN
 		STRING v = (*it)->at(pos_to_check);
 		if (tmp.find(v) == tmp.end()) {
 			it = value->erase(it);
+			is_changed = true;
 		}
 		else {
 			++it;

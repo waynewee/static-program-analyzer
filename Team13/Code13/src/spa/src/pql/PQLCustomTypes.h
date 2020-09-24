@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#define DEBUG true
+#define DEBUG false
 #define UNIT_TESTING false
 
 #define TYPE_COND_FOLLOWS "Follows"
