@@ -111,13 +111,13 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			}
 		}
 	}
-	
+
 	// Evaluate no_user_set -> T/F clauses
 	// FALSE -> return empty; ALL TRUE -> continue
 	for (const STRING_LIST* func : no_user_set) {
 		STRING f_call = (*func)[0];
-		STRING param1 = (*func)[1];
-		STRING param2 = (*func)[2];
+		STRING param1 = IsVar((*func)[1], var_map) ? "" : (*func)[1];
+		STRING param2 = IsVar((*func)[2], var_map) ? "" : (*func)[2];
 
 		BOOLEAN is_true = true;
 
@@ -125,7 +125,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			if (DEBUG) {
 				cout << "PQLEvaluator - Evaluating no user declared clauses: False clause." << endl;
 			}
-			
+
 			is_true = false;
 		}
 
@@ -187,7 +187,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	// Evaluate two_user_set
 	// EMPTY set -> return empty
 	for (const STRING_LIST* func : two_user_set) {
-		STRING_LIST* key =  new STRING_LIST();
+		STRING_LIST* key = new STRING_LIST();
 		STRINGLIST_SET value = STRINGLIST_SET();
 
 		STRING f_call = (*func)[0];
@@ -197,7 +197,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 		key->push_back(param1);
 		key->push_back(param2);
 
-		
+
 		value = EvaluateTwoDeclaredSet(f_call);
 		if (value.empty()) {
 			if (DEBUG) {
@@ -368,7 +368,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateAssignPatternCall(STRING f_call, STRING par
 
 	if (UNIT_TESTING) {
 		cout << "PQLEvaluator - EvaluateAssignPatternCall (1 param to pass) - UNIT TESTING" << endl;
-		
+
 		STRING_LIST* val1 = new STRING_LIST();
 		val1->push_back("1");
 		val1->push_back("v1");
@@ -459,7 +459,7 @@ STRING_SET PQLEvaluator::EvaluateOneDeclaredSet(STRING f_call, STRING param) {
 
 	if (UNIT_TESTING) {
 		cout << "PQLEvaluator - EvaluateOneDeclaredSet - UNIT TESTING" << endl;
-		if (f_call.compare(TYPE_COND_FOLLOWS) == 0 || f_call.compare(TYPE_COND_FOLLOWS_T) == 0 || 
+		if (f_call.compare(TYPE_COND_FOLLOWS) == 0 || f_call.compare(TYPE_COND_FOLLOWS_T) == 0 ||
 			f_call.compare(TYPE_COND_PARENT) == 0 || f_call.compare(TYPE_COND_PARENT_T) == 0) {
 			return { "1", "2", "3" };
 		}
@@ -589,7 +589,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateTwoDeclaredSet(STRING f_call) {
 			val2->push_back("v2");
 
 			return { val1, val2 };
-			
+
 		}
 		else if (f_call.compare(TYPE_COND_USES_P) == 0 || f_call.compare(TYPE_COND_MODIFIES_P) == 0) {
 			STRING_LIST* val1 = new STRING_LIST();
@@ -749,7 +749,7 @@ STRING_SET PQLEvaluator::GetAllSet(STRING output_var_type) {
 		cout << "PQLEvaluator - GetAllSet" << endl;
 		cout << "output_var_type: " << output_var_type << endl;
 	}
-	
+
 	if (UNIT_TESTING) {
 		cout << "PQLEvaluator - GetAllSet - UNIT TESTING" << endl;
 		if (output_var_type == TYPE_VAR) {
@@ -760,37 +760,38 @@ STRING_SET PQLEvaluator::GetAllSet(STRING output_var_type) {
 		}
 		else {
 			result = { "1", "2", "3" };
-			
+
 		}
 
 		return result;
 	}
 
-	if (output_var_type.compare(TYPE_STMT)) {
+	if (output_var_type.compare(TYPE_STMT) == 0) {
 		result = ConvertSet(dm.GetAllStatements());
 	}
-	else if (output_var_type == TYPE_STMT_ASSIGN) {
+	else if (output_var_type.compare(TYPE_STMT_ASSIGN) == 0) {
 		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::assignStatement));
 	}
-	else if (output_var_type == TYPE_STMT_CALL) {
+	else if (output_var_type.compare(TYPE_STMT_CALL) == 0) {
 		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::callStatement));
 	}
-	else if (output_var_type == TYPE_STMT_IF) {
+	else if (output_var_type.compare(TYPE_STMT_IF) == 0) {
 		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::ifStatement));
 	}
-	else if (output_var_type == TYPE_STMT_WHILE) {
+	else if (output_var_type.compare(TYPE_STMT_WHILE) == 0) {
 		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::whileStatement));
 	}
-	else if (output_var_type == TYPE_STMT_PRINT) {
+	else if (output_var_type.compare(TYPE_STMT_PRINT) == 0) {
 		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::printStatement));
 	}
-	else if (output_var_type == TYPE_STMT_READ) {
+	else if (output_var_type.compare(TYPE_STMT_READ) == 0) {
+		cout << "REACHED READ" << endl;
 		result = ConvertSet(dm.GetAllStatements(STATEMENT_TYPE::readStatement));
 	}
-	else if (output_var_type == TYPE_VAR) {
+	else if (output_var_type.compare(TYPE_VAR) == 0) {
 		result = dm.GetAllVariables();
 	}
-	else if (output_var_type == TYPE_PROC) {
+	else if (output_var_type.compare(TYPE_PROC) == 0) {
 		result = dm.GetAllProcedures();
 	}
 	else {
@@ -835,12 +836,12 @@ STRING_SET PQLEvaluator::GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2
 
 STRING_SET PQLEvaluator::GetIntersectResult(STRING_SET val1, STRING_SET val2) {
 	STRING_SET result = *(new STRING_SET());
-	
+
 	for (auto i = val1.begin(); i != val1.end(); i++) {
 		if (val2.find(*i) != val2.end())
 			result.insert(*i);
 	}
-	
+
 	return result;
 }
 
@@ -875,7 +876,7 @@ STRING_SET PQLEvaluator::GetNewResult(STRINGLIST_SET value, INTEGER pos_to_check
 
 BOOLEAN PQLEvaluator::RemoveIrrelevant(STRING_SET value, STRING_SET tmp) {
 	BOOLEAN is_changed = false;
-	
+
 	auto it = value.begin();
 	while (it != value.end()) {
 		if (tmp.find(*it) == tmp.end()) {
@@ -885,7 +886,7 @@ BOOLEAN PQLEvaluator::RemoveIrrelevant(STRING_SET value, STRING_SET tmp) {
 			it++;
 		}
 	}
-	
+
 	return is_changed;
 }
 
@@ -1018,7 +1019,7 @@ BOOLEAN PQLEvaluator::IsWildCard(STRING var) {
 
 
 INTEGER PQLEvaluator::ParsingStmtRef(STRING param) {
-	if (param.compare("_") == 0) {
+	if (param.compare("_") == 0 || param.compare("") == 0) {
 		return -1;
 	}
 	else {
