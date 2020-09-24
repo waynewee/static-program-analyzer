@@ -209,6 +209,9 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 				return final_result;
 			}
 
+			STRING_SET tmp = GetAllSet(var_map.at(param1));
+			RemoveIrrelevant(&value, tmp, 0);
+
 			// Check if KEY exists
 			// TRUE -> AND the results; FALSE -> insert the results
 			STRING_LIST* check_key = IsKey(*key, two_user_result_set);
@@ -293,17 +296,21 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	}
 	
 	// Check if output_var is in consolidatedResults
-	// YES -> return corresponding values; NO -> getALLXXX(output_var_type)
+	// YES -> return corresponding values AND getALLXXX(output_var_type); NO -> getALLXXX(output_var_type)
+	STRING_SET result;
+	cout << "CONSOLIDATE RESULT SIZE: " << consolidated_results.size() << endl;
 	if (consolidated_results.find(output_var) != consolidated_results.end()) {
-		STRING_SET result = *(new STRING_SET(consolidated_results.at(output_var)));
-		final_result.SetResult(result);
+		cout << "FOUND VAR IN CONSOLIDATE RESULT" << endl;
+		STRING_SET inter_result = GetIntersectResult(consolidated_results.at(output_var), GetAllSet(output_var_type));
+		result = *(new STRING_SET(inter_result));
 	}
 	else {
-		STRING_SET result = *(new STRING_SET(GetAllSet(output_var_type)));
-		final_result.SetResult(result);
+		result = *(new STRING_SET(GetAllSet(output_var_type)));
+		
 	}
 
 	// Return result as QueryResult
+	final_result.SetResult(result);
 	return final_result;
 }
 
@@ -466,9 +473,11 @@ STRING_SET PQLEvaluator::EvaluateOneDeclaredSet(STRING f_call, STRING param) {
 		result = ConvertSet(rm.GetParentStars(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_USES_S) == 0) {
+		cout << "Size: " << rm.GetStmtUses(ParsingStmtRef(param)).size() << endl;
 		result = rm.GetStmtUses(ParsingStmtRef(param));
 	}
 	else if (f_call.compare(TYPE_COND_USES_P) == 0) {
+		cout << "Size: " << rm.GetProcUses(ParsingEntRef(param)).size() << endl;
 		result = rm.GetProcUses(ParsingEntRef(param));
 	}
 	else if (f_call.compare(TYPE_COND_MODIFIES_S) == 0) {
@@ -526,9 +535,11 @@ STRING_SET PQLEvaluator::EvaluateInverseOneDeclaredSet(STRING f_call, STRING par
 		result = ConvertSet(rm.GetInverseParentStars(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_USES_S) == 0) {
+		cout << "Size: " << rm.GetInverseStmtUses(ParsingEntRef(param)).size() << endl;
 		result = ConvertSet(rm.GetInverseStmtUses(ParsingEntRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_USES_P) == 0) {
+		cout << "Size: " << rm.GetInverseProcUses(ParsingEntRef(param)).size() << endl;
 		result = rm.GetInverseProcUses(ParsingEntRef(param));
 	}
 	else if (f_call.compare(TYPE_COND_MODIFIES_S) == 0) {
@@ -611,6 +622,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateTwoDeclaredSet(STRING f_call) {
 		result = ConvertSet(rm.GetAllParentStars());
 	}
 	else if (f_call.compare(TYPE_COND_USES_S) == 0) {
+		cout << "Size: " << rm.GetAllStmtUses().size() << endl;
 		result = ConvertSet(rm.GetAllStmtUses());
 	}
 	else if (f_call.compare(TYPE_COND_USES_P) == 0) {
@@ -685,7 +697,7 @@ STRING_STRINGSET_MAP PQLEvaluator::ConsolidateResults(STRING curr_check, STRING_
 
 			// Remove irrelevant data values from both sets
 			// If either removes data, add (PENDING) related var into relatedVar
-			if (RemoveIrrelevant(value, tmp, pos_to_check) || RemoveIrrelevant(r1, tmp)) {
+			if (RemoveIrrelevant(&value, tmp, pos_to_check) || RemoveIrrelevant(&r1, tmp)) {
 				is_changed = true;
 			}
 		}
@@ -862,13 +874,13 @@ STRING_SET PQLEvaluator::GetNewResult(STRINGLIST_SET value, INTEGER pos_to_check
 }
 
 
-BOOLEAN PQLEvaluator::RemoveIrrelevant(STRING_SET value, STRING_SET tmp) {
+BOOLEAN PQLEvaluator::RemoveIrrelevant(STRING_SET* value, STRING_SET tmp) {
 	BOOLEAN is_changed = false;
 	
-	auto it = value.begin();
-	while (it != value.end()) {
+	auto it = value->begin();
+	while (it != value->end()) {
 		if (tmp.find(*it) == tmp.end()) {
-			it = value.erase(it);
+			it = value->erase(it);
 		}
 		else {
 			it++;
@@ -878,14 +890,14 @@ BOOLEAN PQLEvaluator::RemoveIrrelevant(STRING_SET value, STRING_SET tmp) {
 	return is_changed;
 }
 
-BOOLEAN PQLEvaluator::RemoveIrrelevant(STRINGLIST_SET value, STRING_SET tmp, INTEGER pos_to_check) {
+BOOLEAN PQLEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRING_SET tmp, INTEGER pos_to_check) {
 	BOOLEAN is_changed = false;
 
-	auto it = value.begin();
-	while (it != value.end()) {
+	auto it = value->begin();
+	while (it != value->end()) {
 		STRING v = (*it)->at(pos_to_check);
 		if (tmp.find(v) == tmp.end()) {
-			it = value.erase(it);
+			it = value->erase(it);
 		}
 		else {
 			++it;

@@ -21,12 +21,12 @@ public:
 	STRING_SET GetNewResult(STRINGLIST_SET value, INTEGER pos_to_check);
 	STRING_SET GetIntersectResult(STRING_SET existing_val, STRING_SET new_val);
 	STRINGLIST_SET GetIntersectResult(STRINGLIST_SET existing_val, STRINGLIST_SET new_val);
-	STRING_SET GetIntersectResult(STRING_SET r1, STRINGLIST_SET r2, INTEGER pos_to_check);
+	STRING_SET GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2, INTEGER pos_to_check);
 	STRING_SET GetAllSet(STRING output_var_type);
 	STATEMENT_TYPE GetStmtType(STRING output_var_type);
 
-	BOOLEAN RemoveIrrelevant(STRING_SET value, STRING_SET tmp);
-	BOOLEAN RemoveIrrelevant(STRINGLIST_SET value, STRING_SET tmp, INTEGER pos_to_check);
+	BOOLEAN RemoveIrrelevant(STRING_SET* value, STRING_SET tmp);
+	BOOLEAN RemoveIrrelevant(STRINGLIST_SET* value, STRING_SET tmp, INTEGER pos_to_check);
 
 	STRING_SET ConvertSet(INTEGER_SET result_set);
 	STRING_SET ConvertSet(DOUBLE_SET result_set);
