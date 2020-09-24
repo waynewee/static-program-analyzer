@@ -204,6 +204,7 @@ int ExprEvaluator::GetPrecedence(Token t) {
 }
 
 TNode::OPERATOR ExprEvaluator::GetOperator(string op_str) {
+
 	if (op_str == TYPE_COND_EXPR_NOT) {
 		return TNode::OPERATOR::notOp;
 	}

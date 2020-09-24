@@ -11,18 +11,6 @@ using namespace std;
 #define DEBUG true
 #define UNIT_TESTING false
 
-#define TYPE_CONST "constant"
-#define TYPE_PROC "procedure"
-#define TYPE_VAR "variable"
-#define TYPE_STMT "stmt"
-
-#define TYPE_STMT_ASSIGN "assign"
-#define TYPE_STMT_CALL "call"
-#define TYPE_STMT_IF "if"
-#define TYPE_STMT_WHILE "while"
-#define TYPE_STMT_PRINT "print"
-#define TYPE_STMT_READ "read"
-
 #define TYPE_COND_FOLLOWS "Follows"
 #define TYPE_COND_FOLLOWS_T "FollowsT"
 #define TYPE_COND_PARENT "Parent"
