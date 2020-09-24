@@ -153,7 +153,7 @@ TNode* SimpleParser::ParseIfStatement() {
 	TNode* if_node = new TNode(TNode::NODE_TYPE::ifStmt, statement_index_);
 	TNode* expr_node = SimpleParser::ParseExpressionStatement(SimpleParser::expressionType::_if);
 
-	if (expr_node->GetNodeType() != TNode::NODE_TYPE::relExpr) {
+	if (expr_node->GetNodeType() != TNode::NODE_TYPE::relExpr && expr_node->GetNodeType() != TNode::NODE_TYPE::condExpr) {
 		throw logic_error("Invalid expression at line " + statement_index_);
 	}
 
@@ -190,7 +190,7 @@ TNode* SimpleParser::ParseWhileStatement() {
 	TNode* expr_node = SimpleParser::ParseExpressionStatement(SimpleParser::expressionType::_while);
 	TNode* stmt_list_node = SimpleParser::ParseStatementList();
 
-	if (expr_node->GetNodeType() != TNode::NODE_TYPE::relExpr) {
+	if (expr_node->GetNodeType() != TNode::NODE_TYPE::relExpr && expr_node->GetNodeType() != TNode::NODE_TYPE::condExpr) {
 		throw logic_error("Invalid expression at line " + statement_index_);
 	}
 

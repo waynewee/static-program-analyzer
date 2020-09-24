@@ -137,6 +137,7 @@ void Tokenizer::Tokenize() {
 					|| IsPunc(text_.at(pos_ + 1))
 					|| IsRelExprPart(text_.at(pos_ + 1))
 					|| IsCondExprPart(text_.at(pos_ + 1))
+					|| IsExpr(text_.at(pos_+1))
 					)))) {
 
 			if (IsInteger(token_str_)) {
