@@ -42,13 +42,13 @@ void ExprValidator::CheckValid(Token prev_token, Token curr_token) {
 	}
 
 	if (prev_type == TokenType::TOKEN_TYPE::rel_expr) {
-		if (curr_type != TokenType::TOKEN_TYPE::var && curr_type != TokenType::TOKEN_TYPE::constant) {
+		if (curr_type != TokenType::TOKEN_TYPE::var && curr_type != TokenType::TOKEN_TYPE::constant && curr_val != TYPE_PUNC_OPEN_PARAN) {
 			throw logic_error("rel_expr -> var | const");
 		}
 	}
 
 	if (prev_type == TokenType::TOKEN_TYPE::cond_expr) {
-		if (curr_val != TYPE_PUNC_OPEN_PARAN) {
+		if (curr_type != TokenType::TOKEN_TYPE::var && curr_type != TokenType::TOKEN_TYPE::constant && curr_val != TYPE_PUNC_OPEN_PARAN) {
 			throw logic_error("cond_expr -> ( ");
 		}
 	}
@@ -62,7 +62,7 @@ void ExprValidator::CheckValid(Token prev_token, Token curr_token) {
 	if (prev_val == TYPE_PUNC_CLOSED_PARAN) {
 		if (curr_type != TokenType::TOKEN_TYPE::cond_expr && curr_val != TYPE_PUNC_CLOSED_PARAN && curr_type != TokenType::TOKEN_TYPE::expr && curr_type != TokenType::TOKEN_TYPE::rel_expr) {
 			throw logic_error(") -> cond_expr ");
-		}	
+		}
 	}
 
 	if (prev_type == TokenType::TOKEN_TYPE::constant) {
