@@ -137,3 +137,11 @@ CONST_VALUE TNode::GetConstValue() {
 string* TNode::GetName() {
     return name;
 }
+TNode::OPERATOR TNode::GetOperator() {
+    return op;
+}
+bool TNode::InsertChildAtHead(TNode *child) {
+    children.insert(children.begin(), child);
+    return true;
+}
+

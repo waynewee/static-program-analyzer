@@ -1,0 +1,5 @@
+procedure OutsideStatementList {
+  
+}
+
+x = 5;

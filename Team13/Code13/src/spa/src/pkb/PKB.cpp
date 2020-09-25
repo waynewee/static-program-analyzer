@@ -5,23 +5,26 @@ using namespace std;
 #include <PKB.h>
 #include <TNode.h>
 
-DataManager* PKB::data_manager_ = new DataManager();
-RelationManager* PKB::relation_manager_ = new RelationManager();
-PatternManager* PKB::pattern_manager_;
-TNode* PKB::ast_;
-DataManager *PKB::GetDataManager() {
+DataManager PKB::data_manager_ = DataManager();
+RelationManager PKB::relation_manager_ = RelationManager();
+PatternManager PKB::pattern_manager_ = PatternManager();
+TNode PKB::ast_;
+DataManager PKB::GetDataManager() {
     return data_manager_;
 }
-RelationManager* PKB::GetRelationManager() {
+RelationManager PKB::GetRelationManager() {
     return relation_manager_;
 }
-void PKB::SetASTRoot(TNode *root) {
+PatternManager PKB::GetPatternManager() {
+    return pattern_manager_;
+}
+void PKB::SetASTRoot(TNode* root) {
     if (root->GetNodeType() != TNode::NODE_TYPE::program) {
         throw ASTRootTypeUnmatchException();
     }
-    ast_ = root;
+    ast_ = *root;
 }
 
-TNode* PKB::GetASTRoot() {
+TNode PKB::GetASTRoot() {
     return ast_;
 }

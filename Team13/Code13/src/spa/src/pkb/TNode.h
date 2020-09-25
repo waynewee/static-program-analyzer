@@ -65,6 +65,7 @@ public:
 	TNode(NODE_TYPE _type, CONST_VALUE _value); //const value node
 	TNode(NODE_TYPE _type, OPERATOR _op); //operator node
 	TNode(NODE_TYPE _type, STMT_IDX _idx); //statement node
+	bool InsertChildAtHead(TNode* child);
 	bool AddChild(TNode* child);
 	bool SetParent(TNode* newParent);
 	bool SetName(VAR_NAME *newName);
@@ -74,12 +75,12 @@ public:
     list<TNode*> GetChildrenList();
     vector<TNode*> GetChildrenVector();
     STMT_IDX GetStmtIndex();
+    OPERATOR GetOperator();
     string getData();
     TNode* GetParent();
     CONST_VALUE GetConstValue();
     string* GetName();
     void Print(TNode* root);
 };
-
 
 #endif

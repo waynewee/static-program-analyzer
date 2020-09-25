@@ -1,5 +1,6 @@
 #pragma once
 
+#include <PQLCustomTypes.h>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -11,32 +12,32 @@ class PQLParserStorage
 {
 
 private:
-	STANDARD_STRING_STRING_MAP var_map_;
-	STANDARD_STRING_STRINGLISTLIST_MAP rel_ref_map_;
+	STRING_STRING_MAP var_map_;
+	STRING_STRINGLISTLIST_MAP relRef_map_;
 
 	string pattern_var_name_;
 
-	STANDARD_STRINGLIST all_declarations_;
+	STRING_LIST all_declarations_;
 
-	STANDARD_STRING_STRING_MAP all_user_declared_var_;
+	STRING_STRING_MAP all_user_declared_var_;
 
 public:
 	PQLParserStorage();
 	/*Getters*/
-	STANDARD_STRING_STRINGLISTLIST_MAP GetRelRefMap();
-	STANDARD_STRING_STRING_MAP GetVarMap();
+	STRING_STRINGLISTLIST_MAP GetRelRefMap();
+	STRING_STRING_MAP GetVarMap();
 	string GetPatternVarName();
-	STANDARD_STRINGLIST GetAllDeclarations();
-	STANDARD_STRING_STRING_MAP GetAllUserDeclaredVar();
+	STRING_LIST GetAllDeclarations();
+	STRING_STRING_MAP GetAllUserDeclaredVar();
 
 	/*Setters*/
-	void SetRelRefMap(STANDARD_STRING_STRINGLISTLIST_MAP relRef_map);
-	void SetVarMap(STANDARD_STRING_STRING_MAP var_map);
+	void SetRelRefMap(STRING_STRINGLISTLIST_MAP relRef_map);
+	void SetVarMap(STRING_STRING_MAP var_map);
 	void SetPatternVarName(string pattern_var_name);
-	void SetAllDeclarations(STANDARD_STRINGLIST all_declarations);
-	void SetAllUserDeclaredVar(STANDARD_STRING_STRING_MAP all_user_declared_var);
+	void SetAllDeclarations(STRING_LIST all_declarations);
+	void SetAllUserDeclaredVar(STRING_STRING_MAP all_user_declared_var);
 
 	void StoreVariable(pair<string, string> var, string entType);
-	void StoreSuchThatClauseResult(STANDARD_STRING_STRINGLIST_MAP result);
-	void StorePatternClauseResult(STANDARD_STRING_STRINGLIST_MAP result, string pattern_var_name);
+	void StoreSuchThatClauseResult(STRING_STRINGLIST_MAP result);
+	void StorePatternClauseResult(STRING_STRINGLIST_MAP result, string pattern_var_name);
 };

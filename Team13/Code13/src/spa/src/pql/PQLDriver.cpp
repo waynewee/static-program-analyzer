@@ -6,63 +6,41 @@
 #include "QueryResult.h"
 #include <iostream>
 
-STRING_PTR PQLDriver::query(STRING_PTR query_string) {
-	PQLParser* parser = new PQLParser();
-	PQLEvaluator* evaluator = new PQLEvaluator();
-	PQLProjector* projector = new PQLProjector();
+STRING_SET PQLDriver::Query(STRING query_string) {
+	PQLParser parser = PQLParser();
+	PQLEvaluator evaluator = PQLEvaluator();
+	PQLProjector projector = PQLProjector();
 
-	STRING_PTR final_result = new STRING();
+	STRING_SET final_result;
 
-	if (DEBUG) {
-		cout << "PQLDriver - Query: " << query_string << endl;
-	}
-	
-	// PUTTING & AND * HERE BECAUSE PARSER NOT YET REFACTOR. 
-	// ONCE DONE, WILL CHANGE BACK.
-	QueryInfo* parsedInfo = parser->Parse(*query_string);
-	
-	if (!parsedInfo->IsQueryInfoValid()) {
-		// Invalid query
-		if (DEBUG) {
-			cout << "PQLDriver: Query is invalid." << endl;
-		}
-		
-		final_result->assign("");
+	//cout << "Query: " << query_string << endl;
+	QueryInfo parsed_info = parser.Parse(query_string);
+
+	if (!parsed_info.IsQueryInfoValid()) {
+		// Invalid Query
+		//cout << "Query is invalid." << endl;
 		return final_result;
 	}
 
-	// loop: check whats in query info
-	if (DEBUG) {
-		cout << "-----------------PQLDriver: PRINTING QUERY INFO-------------------" << endl;
-		parsedInfo->PrintOutputVar();
-		parsedInfo->PrintRelRefMap();
-		parsedInfo->PrintVarMap();
-	}
-	
-	QueryResult* result = evaluator->Evaluate(parsedInfo);
-	if (result->isEmpty()) {
+	// loop: check whats in Query info
+	/*parsed_info.PrintOutputVar();
+	parsed_info.PrintRelRefMap();
+	parsed_info.PrintVarMap();*/
+
+	QueryResult result = evaluator.Evaluate(parsed_info);
+	if (result.IsEmpty()) {
 		// Empty result
-		if (DEBUG) {
-			cout << "PQLDriver: Result is empty." << endl;
-		}
-
-		final_result->assign("");
+		//cout << "Result is empty." << endl;
 		return final_result;
 	}
 
-	// loop: check whats in query result
+	// loop: check whats in Query result
 
-	final_result = projector->project(result);
-	if (final_result->empty()) {
-		// error
-		if (DEBUG) {
-			cout << "PQLDriver: Projecting result has errors. 'final_result' should not be empty as it is already caught." << endl;
-		}
-	}
+	final_result = projector.Project(result);
 
-	if (DEBUG) {
-		cout << "PQLDriver: Final Result = \"" << final_result << "\"" << std::endl;
-		cout << "________________________________________________________" << endl;
-	}
+	/*if (final_result.empty()) {
+		cout << "Projecting result has errors. 'final_result' should not be empty as it is already caught." << endl;
+	}*/
+
 	return final_result;
 }

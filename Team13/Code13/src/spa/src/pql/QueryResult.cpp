@@ -1,13 +1,13 @@
 #include "QueryResult.h"
 
-STRING_SET_PTR QueryResult::GetResult() {
+STRING_SET QueryResult::GetResult() {
 	return this->result;
 }
 
-void QueryResult::SetResult(STRING_SET_PTR result) {
-	this->result = result;
+VOID QueryResult::SetResult(STRING_SET result) {
+	this->result = *(new STRING_SET(result));
 }
 
-BOOLEAN QueryResult::isEmpty() {
-	return this->result->empty();
+BOOLEAN QueryResult::IsEmpty() {
+	return (this->result).empty();
 }

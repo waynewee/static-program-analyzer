@@ -1,0 +1,5 @@
+procedure SpellWhileWrong {
+  whlie (x < 4){
+    x = x + 1;
+  }
+}

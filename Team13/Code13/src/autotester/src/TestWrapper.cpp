@@ -33,22 +33,25 @@ TestWrapper::TestWrapper() {
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(string filename) {
-
 	try {
 		FileReader fileReader(filename);
 
-		string* input = fileReader.ReadFile();
+		string input = fileReader.ReadFile();
 
 		Tokenizer tokenizer(input);
 
 		TOKEN_LIST tokenList = tokenizer.GetTokenList();
 
 		SimpleParser parser = SimpleParser();
-	
+
 		TestWrapper::pkb->SetASTRoot(parser.Parse(tokenList));
 
-		ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
-		ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
+		DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
+        DesignExtractor::ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
+        DesignExtractor::ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
+        DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
+        DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
+        DesignExtractor::ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
 	}
 	catch (logic_error& e) {
 		cout << e.what() << endl;
@@ -57,14 +60,15 @@ void TestWrapper::parse(string filename) {
 }
 
 // method to evaluating a query
-void TestWrapper::evaluate(string query, list<string>& results){
+void TestWrapper::Evaluate(string query, list<string>& results){
 	// call your evaluator to evaluate the query here
 	// ...code to evaluate query...
 	PQLDriver* main = new PQLDriver();
-	STRING_PTR query_ptr = new STRING(query);
-	STRING_PTR evaluated_result = main->query(query_ptr);
+	STRING_SET evaluated_result = main->Query(query);
 
 	// store the answers to the query in the results list (it is initially empty)
 	// each result must be a string.
-	results.push_back(*evaluated_result);
+	for (string res : evaluated_result) {
+		results.push_back(res);
+	}
 }

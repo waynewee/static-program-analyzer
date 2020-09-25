@@ -8,17 +8,19 @@ using namespace std;
 class QuerySyntaxValidator
 {
 public:
-	STANDARD_STRING_STRING_MAP ValidateDeclaration(string decl);
+	STRING_STRING_MAP ValidateDeclaration(string decl);
 
 	void ValidateSelectClauseStartsWithSelect(string s);
 
 	bool ValidateVariableName(string s);
 
-	bool ValidateVariableExists(string s, STANDARD_STRING_STRING_MAP varNames);
+	bool ValidateVariableExists(string s, STRING_STRING_MAP varNames);
 
-	STANDARD_STRING_STRINGLIST_MAP ValidateSuchThatClause(string s, STANDARD_STRING_STRING_MAP declaredVarNames);
+	STRING_STRINGLIST_MAP ValidateSuchThatClause(string s, STRING_STRING_MAP declaredVarNames);
 
-	STANDARD_STRING_STRINGLIST_MAP ValidatePatternClause(string s, STANDARD_STRING_STRING_MAP declaredVarNames);
+	STRING_STRINGLIST_MAP ValidatePatternClause(string s, STRING_STRING_MAP declaredVarNames);
+
+	bool ValidateVariableIsAssign(string s, STRING_STRING_MAP declared_var_names);
 
 	void ValidateExpression(const string& s);
 
@@ -30,13 +32,13 @@ public:
 
 	bool IsInteger(string i);
 
-	bool IsEntRef(string s, STANDARD_STRING_STRING_MAP declaredVars);
+	bool IsEntRef(string s, STRING_STRING_MAP declaredVars);
 
 	bool IsOperator(char c);
 
 	bool IsUnderscore(string s);
 
-	int nthOccurrence(string* str, const string& target, int nth);
+	int NthOccurrence(string* str, const string& target, int nth);
 
 };
 

@@ -5,9 +5,9 @@
 class QueryResult
 {
 public:
-	STRING_SET_PTR result;
+	STRING_SET result;
 
-	STRING_SET_PTR GetResult();
-	void SetResult(STRING_SET_PTR result);
-	BOOLEAN isEmpty();
+	STRING_SET GetResult();
+	VOID SetResult(STRING_SET result);
+	BOOLEAN IsEmpty();
 };

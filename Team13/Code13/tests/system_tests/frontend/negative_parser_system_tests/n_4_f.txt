@@ -1,0 +1,7 @@
+procedure SpellCallWrong {
+  fi (x ==5) then {
+    clal procB;
+  } else {
+    clal procC;
+  }
+}
