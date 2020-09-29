@@ -8,6 +8,9 @@ class PQLEvaluator
 public:
 	QueryResult Evaluate(QueryInfo query_info);
 
+	VOID Print(STRING curr_check, STRING_SET related_var, STRING_STRINGSET_MAP one_user_result_set,
+		STRINGLIST_STRINGLISTSET_MAP two_user_result_set);
+
 	STRING_SET EvaluateAssignPatternCall(STRING f_call, STRING param1, STRING param2);
 	STRINGLIST_SET EvaluateAssignPatternCall(STRING f_call, STRING param);
 	BOOLEAN EvaluateNoUserDeclaredSet(STRING f_call, STRING param1, STRING param2);
@@ -15,14 +18,14 @@ public:
 	STRING_SET EvaluateInverseOneDeclaredSet(STRING f_call, STRING param);
 	STRINGLIST_SET EvaluateTwoDeclaredSet(STRING output_var_type);
 	STRING_STRINGSET_MAP ConsolidateResults(STRING curr_check, STRING_SET related_var,
-		STRING_STRINGSET_MAP consolidated_results, STRING_STRINGSET_MAP one_user_result_set,
-		STRINGLIST_STRINGLISTSET_MAP two_user_result_set);
+		STRING_STRINGSET_MAP consolidated_results, STRINGLIST_STRINGLISTSET_MAP two_user_result_set);
 
 	STRING_SET GetNewResult(STRINGLIST_SET value, INTEGER pos_to_check);
 	STRING_SET GetIntersectResult(STRING_SET existing_val, STRING_SET new_val);
 	STRINGLIST_SET GetIntersectResult(STRINGLIST_SET existing_val, STRINGLIST_SET new_val);
 	STRING_SET GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2, INTEGER pos_to_check);
 	STRING_SET GetAllSet(STRING output_var_type);
+	STRING_SET GetAllKeys(STRING_STRINGSET_MAP one_user_result_set);
 	STATEMENT_TYPE GetStmtType(STRING output_var_type);
 
 	BOOLEAN RemoveIrrelevant(STRING_SET* value, STRING_SET tmp);

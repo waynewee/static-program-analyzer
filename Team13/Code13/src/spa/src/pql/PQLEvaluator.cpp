@@ -176,12 +176,18 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 
 			STRING_SET tmp = GetAllSet(var_map.at(key));
 			RemoveIrrelevant(&value, tmp);
+
 			if (value.empty()) {
 				if (DEBUG) {
 					cout << "PQLEvaluator - Evaluating one user declared clauses: Empty result set after checking against entity type." << endl;
 				}
 				final_result.SetResult({});
 				return final_result;
+			}
+
+
+			if (DEBUG) {
+				cout << "PQLEvaluator - Evaluating one user declared clauses - Size of VALUE: " << value.size() << endl;
 			}
 
 			// Check if KEY exists
@@ -215,7 +221,6 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			key->push_back(param1);
 			key->push_back(param2);
 
-
 			value = EvaluateTwoDeclaredSet(f_call);
 			if (value.empty()) {
 				if (DEBUG) {
@@ -237,6 +242,10 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 				}
 				final_result.SetResult({});
 				return final_result;
+			}
+
+			if (DEBUG) {
+				cout << "PQLEvaluator - Evaluating two user declared clauses - Size of VALUE: " << value.size() << endl;
 			}
 
 			// Check if KEY exists
@@ -267,11 +276,15 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 				STRINGLIST_SET value = EvaluateAssignPatternCall(f_call, param2);
 				if (value.empty()) {
 					if (DEBUG) {
-						cout << "PQLEvaluator - Evaluating pattern clauses: Empty result set (1 param)." << endl;
+						cout << "PQLEvaluator - Evaluating pattern clauses: Empty result set (2 user declared)." << endl;
 					}
 
 					final_result.SetResult({});
 					return final_result;
+				}
+
+				if (DEBUG) {
+					cout << "PQLEvaluator - Evaluating pattern clauses (2 user declared): Inserting into two_user_result_set." << endl;
 				}
 
 				// Check if KEY exists
@@ -290,11 +303,15 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 				STRING_SET value = EvaluateAssignPatternCall(f_call, param1, param2);
 				if (value.empty()) {
 					if (DEBUG) {
-						cout << "PQLEvaluator - Evaluating pattern clauses: Empty result set (2 params)." << endl;
+						cout << "PQLEvaluator - Evaluating pattern clauses: Empty result set (1 user declared)." << endl;
 					}
 
 					final_result.SetResult({});
 					return final_result;
+				}
+
+				if (DEBUG) {
+					cout << "PQLEvaluator - Evaluating pattern clauses (1 user declared): Inserting into 1_user_result_set." << endl;
 				}
 
 				// Check if KEY exists
@@ -318,35 +335,85 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			return final_result;
 		}
 
-		// Consolidate results
-		consolidated_results = one_user_result_set;
-		if (two_user_result_set.size() != 0) {
-			STRING_SET relatedVar = STRING_SET();
-			consolidated_results = ConsolidateResults(output_var, relatedVar, consolidated_results, one_user_result_set, two_user_result_set);
-		}/*
+		// Add output variable to one_user_result_set
+		// If exist -> INTERSECT, else -> ADD
+		STRING_SET value = GetAllSet(output_var_type);
+		if (one_user_result_set.find(output_var) == one_user_result_set.end()) {
+			one_user_result_set.insert({ output_var, value });
+		}
 		else {
+			one_user_result_set.at(output_var) = GetIntersectResult(one_user_result_set.at(output_var), value);
+		}
+
+		// Consolidate results
+		if (two_user_result_set.empty()) {
 			consolidated_results = one_user_result_set;
-		}*/
+		}
+		else {
+			STRING_SET relatedVar = GetAllKeys(one_user_result_set);
+			
+			consolidated_results = ConsolidateResults(output_var, relatedVar, one_user_result_set, two_user_result_set);
+
+			if (consolidated_results.empty()) {
+				if (DEBUG) {
+					cout << "PQLEvaluator: Consolidated results are empty." << endl;
+				}
+				final_result.SetResult({});
+				return final_result;
+			}
+		}
+		
 	}
 
 	// Check if output_var is in consolidatedResults
 	// YES -> return corresponding values AND getALLXXX(output_var_type); NO -> getALLXXX(output_var_type)
 	STRING_SET result;
 	if (consolidated_results.find(output_var) != consolidated_results.end()) {
-		STRING_SET r1 = GetAllSet(output_var_type);
-		STRING_SET r2 = consolidated_results.at(output_var);
-		STRING_SET inter_result = GetIntersectResult(r1, r2);
-		result = *(new STRING_SET(inter_result));
+		result = *(new STRING_SET(consolidated_results.at(output_var)));
 	}
 	else {
-		STRING_SET inter_result = GetAllSet(output_var_type);
-		result = *(new STRING_SET(inter_result));
-
+		result = *(new STRING_SET(GetAllSet(output_var_type)));
 	}
 
 	// Return result as QueryResult
 	final_result.SetResult(result);
 	return final_result;
+}
+
+VOID PQLEvaluator::Print(STRING curr_check, STRING_SET related_var, STRING_STRINGSET_MAP one_user_result_set,
+	STRINGLIST_STRINGLISTSET_MAP two_user_result_set) {
+	cout << "--------------------------------------------------------------------" << endl;
+	cout << "CURRENT CHECK VAR: " << endl;
+	cout << curr_check << endl;
+	cout << "--------------------------------------------------------------------" << endl;
+	cout << "RELATED VAR: " << endl;
+	for (STRING s : related_var) {
+		cout << s << " " << endl;
+	}
+	cout << endl;
+	cout << "--------------------------------------------------------------------" << endl;
+	cout << "CONSOLIDATED RESULTS: " << endl;
+	for (auto r2 = one_user_result_set.cbegin(); r2 != one_user_result_set.cend(); r2++) {
+		cout << (*r2).first << ": ";
+		for (STRING s : (*r2).second) {
+			cout << s << " ";
+		}
+	}
+	cout << endl;
+	cout << "--------------------------------------------------------------------" << endl;
+	cout << "2USERSET: " << endl;
+	for (auto r2 = two_user_result_set.cbegin(); r2 != two_user_result_set.cend(); r2++) {
+		STRING_LIST key = *((*r2).first);
+		STRINGLIST_SET value = (*r2).second;
+
+		cout << key[0] << "," << key[1] << ": ";
+		for (STRING_LIST* s : value) {
+			cout << s->at(0) << ", " << s->at(1) << " ";
+		}
+		cout << endl;
+	}
+	cout << endl;
+	cout << "--------------------------------------------------------------------" << endl;
 }
 
 STRING_SET PQLEvaluator::EvaluateAssignPatternCall(STRING f_call, STRING param1, STRING param2) {
@@ -683,17 +750,17 @@ STRINGLIST_SET PQLEvaluator::EvaluateTwoDeclaredSet(STRING f_call) {
 	return result;
 }
 
-STRING_STRINGSET_MAP PQLEvaluator::ConsolidateResults(STRING curr_check, STRING_SET related_var, STRING_STRINGSET_MAP consolidated_results,
-	STRING_STRINGSET_MAP one_user_result_set, STRINGLIST_STRINGLISTSET_MAP two_user_result_set) {
+STRING_STRINGSET_MAP PQLEvaluator::ConsolidateResults(STRING curr_check, STRING_SET related_var, STRING_STRINGSET_MAP one_user_result_set,
+	STRINGLIST_STRINGLISTSET_MAP two_user_result_set) {
 
 	if (DEBUG) {
 		cout << "PQLEvaluator - ConsolidateResults" << endl;
+		Print(curr_check, related_var, one_user_result_set, two_user_result_set);
 	}
 
 	BOOLEAN is_changed = false;
 
 	for (auto r2 = two_user_result_set.cbegin(); r2 != two_user_result_set.cend(); r2++) {
-
 		STRING_LIST key = *((*r2).first);
 		STRINGLIST_SET value = (*r2).second;
 		STRING to_insert = "";
@@ -717,28 +784,46 @@ STRING_STRINGSET_MAP PQLEvaluator::ConsolidateResults(STRING curr_check, STRING_
 		// Check if one_user_result_set contains entity being checked
 		// TRUE -> AND the results
 		// FALSE -> create new entry and add all the values
-		// BOTH -> insert results into consolidatedResults
+		// BOTH -> insert results into one_user_result_set
 		STRING_SET tmp = STRING_SET();
-		if (consolidated_results.find(curr_check) != consolidated_results.end()) {
-			STRING_SET r1 = consolidated_results.at(curr_check);
+		if (one_user_result_set.find(curr_check) != one_user_result_set.end()) {
+			STRING_SET r1 = one_user_result_set.at(curr_check);
 			tmp = GetIntersectResult(r1, value, pos_to_check);
 
-			// Remove irrelevant data values from both sets
-			// If either removes data, add (PENDING) related var into relatedVar
-			if (RemoveIrrelevant(&value, tmp, pos_to_check) || RemoveIrrelevant(&r1, tmp)) {
+			if (tmp.empty()) {
+				// Empty result
+				if (DEBUG) {
+					cout << "PQLEvaluator - ConsolidateResults - GetIntersectResult: Empty result after intersecting" << endl;
+				}
+				return {};
+			}
+
+			// Remove irrelevant data values from two_user_result_set
+			// If removes data, add (PENDING) related var into relatedVar
+			if (RemoveIrrelevant(&value, tmp, pos_to_check)) {
+
+				if (value.empty()) {
+					// Empty result
+					if (DEBUG) {
+						cout << "PQLEvaluator - ConsolidateResults - RemoveIrrelevant: Empty result after removing irrelevant" << endl;
+					}
+					return {};
+				}
+
+				two_user_result_set.at((*r2).first) = value;
 				is_changed = true;
 			}
+
+			if (r1.size() != tmp.size()) {
+				is_changed = true;
+			}
+
+			one_user_result_set.at(curr_check) = *(new STRING_SET(tmp));
 		}
 		else {
 			tmp = GetNewResult(value, pos_to_check);
+			one_user_result_set.insert({ curr_check, *(new STRING_SET(tmp)) });
 			is_changed = true;
-		}
-
-		if (consolidated_results.find(curr_check) == consolidated_results.end()) {
-			consolidated_results.insert({ curr_check, *(new STRING_SET(tmp)) });
-		}
-		else {
-			consolidated_results.at(curr_check) = *(new STRING_SET(tmp));
 		}
 
 		if (is_changed) {
@@ -746,14 +831,18 @@ STRING_STRINGSET_MAP PQLEvaluator::ConsolidateResults(STRING curr_check, STRING_
 		}
 	}
 
+	if (DEBUG) {
+		Print(curr_check, related_var, one_user_result_set, two_user_result_set);
+	}
+
 	if (!related_var.empty()) {
 		auto to_remove = related_var.begin();
 		curr_check = *to_remove;
 		related_var.erase(to_remove);
-		ConsolidateResults(curr_check, related_var, consolidated_results, one_user_result_set, two_user_result_set);
+		one_user_result_set = ConsolidateResults(curr_check, related_var, one_user_result_set, two_user_result_set);
 	}
 
-	return consolidated_results;
+	return one_user_result_set;
 }
 
 STRING_SET PQLEvaluator::GetAllSet(STRING output_var_type) {
@@ -825,6 +914,17 @@ STRING_SET PQLEvaluator::GetAllSet(STRING output_var_type) {
 	}
 	return result;
 }
+
+STRING_SET PQLEvaluator::GetAllKeys(STRING_STRINGSET_MAP one_user_result_set) {
+	STRING_SET keys = *(new STRING_SET());
+
+	for (auto f = one_user_result_set.cbegin(); f != one_user_result_set.cend(); f++) {
+		keys.insert((*f).first);
+	}
+
+	return keys;
+}
+
 
 STATEMENT_TYPE PQLEvaluator::GetStmtType(STRING output_var_type) {
 	if (output_var_type.compare(TYPE_STMT_ASSIGN)) {
@@ -944,7 +1044,9 @@ STRING_SET PQLEvaluator::ConvertSet(DOUBLE_SET result_set) {
 
 	if (!result_set.empty()) {
 		for (DOUBLE k : result_set) {
-			final_result.insert(to_string(((INTEGER)(k))));
+			char convert_to_str[50];
+			sprintf(convert_to_str, "%.0f", k);
+			final_result.insert(convert_to_str);
 		}
 	}
 	return final_result;
