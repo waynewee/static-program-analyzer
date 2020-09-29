@@ -1967,3 +1967,46 @@ TEST_CASE("Test ADDITIONAL") {
 
 	requireBool(are_similar);
 }
+
+/*
+First argument underscore :
+assign a1; variable v1; Select a1 pattern a1 (v1, _)
+*/
+TEST_CASE("Test ADDITIONAL 2") {
+
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "assign a1; variable v1; Select a1 pattern a1(v1, \"a\")";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	query_info_expected.SetOutputVar("a1");
+
+	unordered_map<string, string> expected_var_map;
+	expected_var_map["a1"] = "assign";
+	expected_var_map["v1"] = "variable";
+	query_info_expected.SetVarMap(expected_var_map);
+
+	unordered_map<string, vector<vector<string>>> expected_relRef_map;
+	vector<vector<string>> all_arguments; // if multiple of same type of function e.g. multiple modifies
+	vector<string> arguments; // for a single clause
+	arguments.push_back("v1");
+	arguments.push_back("\"a\"");
+	arguments.push_back("a1");
+
+	all_arguments.push_back(arguments);
+
+	expected_relRef_map["pattern_f"] = all_arguments;
+
+	query_info_expected.SetRelRefMap(expected_relRef_map);
+
+	cout << "FROM ADDITIONAL TEST : " << endl;
+	query_info_actual.PrintRelRefMap();
+	query_info_expected.PrintRelRefMap();
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	requireBool(are_similar);
+}

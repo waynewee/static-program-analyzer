@@ -517,21 +517,6 @@ STRING_STRINGLIST_MAP QuerySyntaxValidator::ValidatePatternClause(string s, STRI
 	second_argument = TrimLeadingWhitespaces(second_argument);
 	second_argument = TrimTrailingWhitespaces(second_argument);
 
-
-	// cout << "pattern second arg : " << second_argument << endl;
-	//arguments.push_back(second_argument);
-
-	// first arg in pattern can be in ""
-	/*
-	if (!validateVariableExists(first_argument, declaredVarNames)) {
-		if (!isUnderscore(first_argument)) {
-			if (!isEntRef(first_argument)) {
-				throw ("Error : Invalid pattern expression");
-			}
-		}
-	}
-	*/
-
 	if (!IsEntRef(first_argument, declaredVarNames)) {
 		// cout << "first argument " << first_argument << "is not an entity ref" << endl;
 		if (!IsUnderscore(first_argument)) {
