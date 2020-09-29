@@ -41,6 +41,10 @@ void PQLParserStorage::SetAllUserDeclaredVar(STRING_STRING_MAP all_user_declared
 }
 
 void PQLParserStorage::StoreVariable(pair<string, string> var, string entType) {
+	if (this->var_map_.count(var.first) != 0) {
+		// var map already has this variable name... gg
+		throw ("Error : Variable has been redeclared, in separate declarations");
+	}
 	this->all_user_declared_var_.insert(var);
 	this->var_map_[var.first] = entType;
 }

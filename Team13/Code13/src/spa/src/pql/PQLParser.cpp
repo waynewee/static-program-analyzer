@@ -88,6 +88,7 @@ QueryInfo PQLParser::Parse(string s) {
             if (current_clause.compare("pattern") == 0) {
                 STRING_STRINGLIST_MAP patternClauseResult;
                 string pattern_var_name = DeleteByOpenBracketAndRetrieveIt(&query);
+                query_syntax_validator->ValidateVariableIsAssign(pattern_var_name, PQL_parser_storage->GetVarMap());
                 //cout << "pattern var name : " << pattern_var_name << endl;
                 //cout << "QUERY PATTERN : " << query << endl;
                 patternClauseResult = ParsePatternClause(&query, PQL_parser_storage->GetAllUserDeclaredVar(), query_syntax_validator);
