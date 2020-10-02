@@ -13,12 +13,16 @@ STRING_SET PQLDriver::Query(STRING query_string) {
 
 	STRING_SET final_result;
 
-	//cout << "Query: " << query_string << endl;
+	if (DEBUG) {
+		cout << "Query: " << query_string << endl;
+	}
 	QueryInfo parsed_info = parser.Parse(query_string);
 
 	if (!parsed_info.IsQueryInfoValid()) {
 		// Invalid Query
-		//cout << "Query is invalid." << endl;
+		if (DEBUG) {
+			cout << "Query is invalid." << endl;
+		}
 		return final_result;
 	}
 
@@ -30,7 +34,9 @@ STRING_SET PQLDriver::Query(STRING query_string) {
 	QueryResult result = evaluator.Evaluate(parsed_info);
 	if (result.IsEmpty()) {
 		// Empty result
-		//cout << "Result is empty." << endl;
+		if (DEBUG) {
+			cout << "Result is empty." << endl;
+		}
 		return final_result;
 	}
 
