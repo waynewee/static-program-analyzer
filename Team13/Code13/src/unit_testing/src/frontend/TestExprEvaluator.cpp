@@ -1,8 +1,8 @@
 #include <CustomTypes.h>
-#include <frontend/ExprEvaluator.h>
+#include <ExprParser.h>
 #include <frontend/FrontendTypes.h>
 #include <frontend/Token.h>
-#include <frontend/Tokenizer.h>
+#include <Tokenizer.h>
 #include <pkb/TNode.h>
 #include <testUtils/TreeTraverse.h>
 

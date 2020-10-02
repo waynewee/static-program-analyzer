@@ -1,5 +1,5 @@
 
-#include <frontend/Tokenizer.h>
+#include <Tokenizer.h>
 #include <frontend/Token.h>
 #include <frontend/TokenType.h>
 

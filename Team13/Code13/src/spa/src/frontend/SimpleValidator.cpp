@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "SimpleValidator.h"
+#include <ExprValidator.h>
 #include <TokenType.h>
 #include <Token.h>
 #include <FrontendTypes.h>
@@ -116,7 +117,7 @@ bool SimpleValidator::IsValidCallStmt() {
 }
 
 bool SimpleValidator::IsValidIfBlock() {
-	if (SimpleValidator::IsValidExpressionStmt(expressionType::_if)) {
+	if (SimpleValidator::IsValidExpression(token_list_)) {
 		throw "Invalid expression at line " + statement_index_;
 	}
 	
@@ -136,7 +137,7 @@ bool SimpleValidator::IsValidIfBlock() {
 }
 
 bool SimpleValidator::IsValidWhileBlock() {
-	if (SimpleValidator::IsValidExpressionStmt(expressionType::_while)) {
+	if (SimpleValidator::IsValidExpression(token_list_)) {
 		throw "Invalid expression at line " + statement_index_;
 	}
 
@@ -149,14 +150,13 @@ bool SimpleValidator::IsValidAssignment(Token name_token) {
 		throw "Missing '=' at line " + statement_index_;
 	}
 
-	SimpleValidator::IsValidExpressionStmt(expressionType::_assign);
+	SimpleValidator::IsValidExpression(token_list_);
 
 	if (SimpleValidator::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
 		throw "Missing ';' at line " + statement_index_;
 	}
 	return true;
 }
-
 
 
 bool SimpleValidator::IsValidStmtList() {
@@ -174,11 +174,7 @@ bool SimpleValidator::IsValidStmtList() {
 }
 
 bool SimpleValidator::IsValidExpression(TOKEN_LIST expr_list) {
-	return true;
-}
-
-bool SimpleValidator::IsValidExpressionStmt(expressionType expr_type) {
-	return true;
+	return ExprValidator::Validate(expr_list);
 }
 
 // Returns the number of tokens inside a statement list

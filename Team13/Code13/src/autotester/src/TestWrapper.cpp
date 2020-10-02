@@ -5,7 +5,7 @@
 #include <PKB.h>
 #include "TestWrapper.h"
 #include "frontend/SimpleParser.h"
-#include "frontend/Tokenizer.h"
+#include "Tokenizer.h"
 #include "frontend/FileReader.h"
 #include "pql/PQLDriver.h"
 #include "pkb/DesignExtractor.h"

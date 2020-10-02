@@ -29,7 +29,6 @@ private:
 
 	//hmmmm??
 	bool IsValidStmtList();
-	bool IsValidExpressionStmt(expressionType expr_type);
 	bool IsValidExpression(TOKEN_LIST expr_list);
 
 	Token GetNextToken();
