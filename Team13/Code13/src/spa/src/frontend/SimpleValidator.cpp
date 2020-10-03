@@ -117,7 +117,7 @@ bool SimpleValidator::IsValidCallStmt() {
 }
 
 bool SimpleValidator::IsValidIfBlock() {
-	if (SimpleValidator::IsValidExpression(token_list_)) {
+	if (!SimpleValidator::IsValidExpression(token_list_)) {
 		throw "Invalid expression at line " + statement_index_;
 	}
 	
