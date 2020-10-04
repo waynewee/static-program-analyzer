@@ -52,13 +52,13 @@ public:
 
 class ConstTable {
 private:
-    CONST_VALUE_SET data_;
+    INT_SET data_;
 public:
     ConstTable() {
-        data_ = CONST_VALUE_SET();
+        data_ = INT_SET();
     }
     bool Add(CONST_VALUE cv);
-    CONST_VALUE_SET GetAll();
+    INT_SET GetAll();
 };
 
 #endif // DATA_TABLES_H
