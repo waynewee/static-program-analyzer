@@ -31,6 +31,9 @@ private:
 	bool IsValidStmtList();
 	bool IsValidExpression(TOKEN_LIST expr_list);
 
+	vector<Token> GetExpressionTokens(expressionType expr_type);
+	int GetEndIndxOfExpression(expressionType expr_type);
+
 	Token GetNextToken();
 	Token PeekNextToken();
 	int GetEndIndxOfStatementList();

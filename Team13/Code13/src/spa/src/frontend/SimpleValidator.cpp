@@ -8,7 +8,7 @@
 #include <stack>
 #include <vector>
 
-#include "SimpleValidator.h"
+#include <SimpleValidator.h>
 #include <ExprValidator.h>
 #include <TokenType.h>
 #include <Token.h>
@@ -117,7 +117,7 @@ bool SimpleValidator::IsValidCallStmt() {
 }
 
 bool SimpleValidator::IsValidIfBlock() {
-	if (!SimpleValidator::IsValidExpression(token_list_)) {
+	if (!SimpleValidator::IsValidExpression(GetExpressionTokens(expressionType::_if))) {
 		throw "Invalid expression at line " + statement_index_;
 	}
 	
@@ -137,7 +137,7 @@ bool SimpleValidator::IsValidIfBlock() {
 }
 
 bool SimpleValidator::IsValidWhileBlock() {
-	if (SimpleValidator::IsValidExpression(token_list_)) {
+	if (SimpleValidator::IsValidExpression(GetExpressionTokens(expressionType::_while))) {
 		throw "Invalid expression at line " + statement_index_;
 	}
 
@@ -150,7 +150,7 @@ bool SimpleValidator::IsValidAssignment(Token name_token) {
 		throw "Missing '=' at line " + statement_index_;
 	}
 
-	SimpleValidator::IsValidExpression(token_list_);
+	SimpleValidator::IsValidExpression(GetExpressionTokens(_assign));
 
 	if (SimpleValidator::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
 		throw "Missing ';' at line " + statement_index_;
@@ -223,4 +223,35 @@ Token SimpleValidator::PeekNextToken() {
 	}
 }
 
+vector<Token> SimpleValidator::GetExpressionTokens(expressionType expr_type) {
+	vector<Token> expr_list;
+	int EndIndexOfTokens = GetEndIndxOfExpression(expr_type);
+	while (token_index_ < EndIndexOfTokens) {
+		expr_list.push_back(GetNextToken());
+	}
+	return expr_list;
+}
 
+int SimpleValidator::GetEndIndxOfExpression(expressionType expr_type) {
+	int end_index = token_index_;
+	string delimiter;
+	if (expr_type == expressionType::_if) {
+		// End index is before 'then' token
+		delimiter = "then";
+	}
+	else if (expr_type == expressionType::_assign) {
+		// End index is before ';' token
+		delimiter = ";";
+	}
+	else if (expr_type == expressionType::_while) {
+		// End index is before '{' token
+		delimiter = "{";
+	}
+	else {
+		throw "Unhandled delimiter in SimpleValidator";
+	}
+	while (token_list_[end_index + 1].GetValue() != delimiter) {
+		end_index++;
+	}
+	return end_index;
+}

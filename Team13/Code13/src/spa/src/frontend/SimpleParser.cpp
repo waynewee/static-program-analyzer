@@ -297,7 +297,7 @@ TNode* SimpleParser::ParseExpression(vector<Token> expr_list) {
 
 // Returns the number of tokens inside a statement list
 int SimpleParser::GetEndIndxOfStatementList() {
-	stack <Token> bracket_matcher;
+	stack<Token> bracket_matcher;
 	Token first_token = SimpleParser::PeekNextToken();
 	int counter = 1;
 

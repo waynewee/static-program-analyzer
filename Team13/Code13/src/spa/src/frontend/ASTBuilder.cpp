@@ -215,54 +215,8 @@ TNode* ASTBuilder::BuildStmtListNode() {
 	return stmt_list_node;
 }
 
-TNode* ASTBuilder::BuildExpressionNode(expressionType exprType) {
-	/**
-	* An assign expression looks like
-	* x + 1;
-	*/
-	vector<Token> expr_list;
-
-	Token next_token;
-
-	if (exprType == _FRONTENDTYPES_H_::expressionType::_assign) {
-
-		while (ASTBuilder::PeekNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
-			next_token = ASTBuilder::GetNextToken();
-			expr_list.push_back(next_token);
-		}
-	}
-	else if (exprType == _FRONTENDTYPES_H_::expressionType::_if || exprType == _FRONTENDTYPES_H_::expressionType::_while) {
-
-		if (ASTBuilder::PeekNextToken().GetValue() != TYPE_PUNC_OPEN_PARAN) {
-			throw logic_error("Invalid IF/WHILE statement");
-		}
-
-		if (exprType == _FRONTENDTYPES_H_::expressionType::_if) {
-
-			while (ASTBuilder::PeekNextToken().GetValue() != TYPE_STMT_IF_THEN) {
-				next_token = ASTBuilder::GetNextToken();
-				expr_list.push_back(next_token);
-			}
-
-			ASTBuilder::GetNextToken();
-
-		}
-		else {
-			while (ASTBuilder::PeekNextToken().GetValue() != TYPE_PUNC_OPEN_BRACKET) {
-				next_token = ASTBuilder::GetNextToken();
-				expr_list.push_back(next_token);
-			}
-		}
-	}
-	TNode* expr_node = ASTBuilder::BuildExpression(expr_list);
-	return expr_node;
-
-}
-
-TNode* ASTBuilder::BuildExpression(vector<Token> expr_list) {
-	ExprEvaluator expr_evaluator(expr_list);
-	TNode* root_node = expr_evaluator.Evaluate();
-	return root_node;
+TNode* ASTBuilder::BuildExpression(expressionType expr_type) {
+	vector<Token> expr_tokens = 
 }
 
 // Returns the number of tokens inside a statement list
@@ -308,4 +262,37 @@ Token ASTBuilder::PeekNextToken() {
 	else {
 		throw out_of_range("Out of range.");
 	}
+}
+
+vector<Token> ASTBuilder::GetExpressionTokens(expressionType expr_type) {
+	vector<Token> expr_list;
+	int EndIndexOfTokens = GetEndIndxOfExpression(expr_type);
+	while (token_index_ < EndIndexOfTokens) {
+		expr_list.push_back(GetNextToken());
+	}
+	return expr_list;
+}
+
+int ASTBuilder::GetEndIndxOfExpression(expressionType expr_type) {
+	int end_index = token_index_;
+	string delimiter;
+	if (expr_type == expressionType::_if) {
+		// End index is before 'then' token
+		delimiter = "then";
+	}
+	else if (expr_type == expressionType::_assign) {
+		// End index is before ';' token
+		delimiter = ";";
+	}
+	else if (expr_type == expressionType::_while) {
+		// End index is before '{' token
+		delimiter = "{";
+	}
+	else {
+		throw "Unhandled delimiter in SimpleValidator";
+	}
+	while (token_list_[end_index + 1].GetValue() != delimiter) {
+		end_index++;
+	}
+	return end_index;
 }

@@ -30,14 +30,13 @@ private:
 	TNode* BuildCallNode();
 	TNode* BuildAssignNode(Token name_token);
 	TNode* BuildStmtListNode();
-	TNode* BuildExpressionNode(expressionType expr_type);
-	TNode* BuildExpression(TOKEN_LIST expr_list);
+	TNode* BuildExpression(expressionType expr_type);
+
+	vector<Token> GetExpressionTokens(expressionType expr_type);
+	int GetEndIndxOfExpression(expressionType expr_type);
 
 	Token GetNextToken();
 	Token PeekNextToken();
-	void PopSemicolon();
-	void PopThenKeyword();
-	void PopElseKeyword();
 	int GetEndIndxOfStatementList();
 };
 
