@@ -39,6 +39,8 @@ void CFGBuilder::TraverseAST(vector<TNode*> stmt_list) {
 
 	}
 
+	int i = 0;
+
 	for (TNode* child : stmt_list_filtered) {
 		for (TNode* g_node : child->GetChildrenVector()) {
 			if (IsStmtList(g_node)) {
@@ -52,11 +54,25 @@ void CFGBuilder::TraverseAST(vector<TNode*> stmt_list) {
 					TNode* g_child_first = g_stmt_list_filtered.at(0);
 					//add edge from parent to first child
 					cfg_->AddEdge(child->GetStmtIndex(), g_child_first->GetStmtIndex());
+
+					TNode* g_child_last = g_stmt_list_filtered.at(g_stmt_list_filtered.size() - 1);
+					
+					if (child->GetNodeType() == TNode::NODE_TYPE::whileStmt) {
+						cfg_->AddEdge(g_child_last->GetStmtIndex(), child->GetStmtIndex());
+					}
+
+					if (child->GetNodeType() == TNode::NODE_TYPE::ifStmt && i < stmt_list_filtered.size() - 1) {
+						TNode* child_next = stmt_list_filtered.at(i + 1);
+						cfg_->AddEdge(g_child_last->GetStmtIndex(), child_next->GetStmtIndex());
+						//cfg_->RemoveEdge(child->GetStmtIndex(), child_next->GetStmtIndex());
+					}
 				}
 
 				TraverseAST(g_stmt_list);
 			}
 		}
+
+		i += 1;
 	}
 
 
@@ -94,11 +110,24 @@ vector<TNode*> CFGBuilder::FilterStmts(vector<TNode*> stmt_list) {
 
 void CFGBuilder::PrintCFG() {
 
-	if (cfg_->HasEdge(6, 8)) {
-		cout << "TRUE";
+	/*std::unordered_map<STMT_IDX, STMT_IDX_SET*> data_;
+	bool AddEdge(STMT_IDX s1, STMT_IDX s2);
+	STMT_IDX_SET GetAllEdges(STMT_IDX s1);
+	bool HasEdge(STMT_IDX s1, STMT_IDX s2);*/
+
+	unordered_map<STMT_IDX, STMT_IDX_SET*> m = cfg_->data_;
+
+	string edge = "----->";
+
+	for (auto const& pair : m) {
+		for (STMT_IDX idx : *pair.second) {
+			cout << pair.first;
+			cout << edge;
+			cout << idx << endl;
+		}
+
+		cout << endl;
 	}
-	else {
-		cout << "FALSE" << endl;
-	}
+	
 
 }
