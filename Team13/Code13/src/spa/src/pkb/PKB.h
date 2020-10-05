@@ -7,11 +7,12 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <CFG.h>
 #include <CustomTypes.h>
 #include <DataManager.h>
-#include <RelationManager.h>
 #include <DesignExtractor.h>
 #include <PatternManager.h>
+#include <RelationManager.h>
 
 using namespace std;
 
@@ -22,15 +23,18 @@ class PKB {
     static RelationManager relation_manager_;
     static PatternManager pattern_manager_;
     static TNode ast_;
+    static CFG cfg_;
 public:
     PKB() {
     }
+    TNode GetASTRoot();
     DataManager GetDataManager();
     RelationManager GetRelationManager();
     PatternManager GetPatternManager();
+    CFG GetCFG(CFG cfg);
 
     void SetASTRoot(TNode* root);
-    TNode GetASTRoot();
+    void SetCFG(CFG cfg);
 };
 
 class ASTRootTypeUnmatchException: public exception {
