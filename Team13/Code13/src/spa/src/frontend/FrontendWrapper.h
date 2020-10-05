@@ -15,7 +15,7 @@ public:
 	TOKEN_LIST token_list_;
 
 	TNode* GetAST();
-	//CFGNode* GetCFG();
+	void GetCFG(TNode* ast_root_node);
 
 private:
 };

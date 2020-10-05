@@ -7,9 +7,9 @@ bool CFG::AddEdge(STMT_IDX s1, STMT_IDX s2) {
     auto pair = data_.find(s1);
     if (pair == data_.end()) {
         auto set = new STMT_IDX_SET();
-        set->insert(s2);
-        return set->insert(s2).second && data_.insert({s1, set}).second;
-    } else {
+        return set->insert(s2).second && data_.insert({ s1, set }).second;
+    }
+    else {
         auto set = pair->second;
         return set->insert(s2).second;
     }

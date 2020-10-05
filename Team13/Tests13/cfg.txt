@@ -1,26 +1,18 @@
 procedure Example {
-	x =1;
-	call x;
-	while (( x < 1)) {
-		y = 5;
+
+	while(x == 1){
+		x = 5;
+		while( y == 2){	
+			x = 4;
+		}
+		y =2;
 	}
 
-	if ( x == 1) then {
-		if( x == 2 ) then {
-			x = 3;
-		} else {
-			y = 4;
-		}
-	} else {
+	if( x == 2 ) then {
 		y = 2;
+	} else {
 		z = 5;
 	}
 
-	read x;
-	print y;
-}
-
-procedure ExampleOne {
 	x = 2;
-	x = 5;
-} 
+}
