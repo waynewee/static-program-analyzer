@@ -1,9 +1,7 @@
 #ifndef CFG_H
 #define CFG_H
 
-#include <iostream>
-#include <cstdlib>
-#include <map>
+#include <unordered_map>
 #include <CustomTypes.h>
 
 class CFG {

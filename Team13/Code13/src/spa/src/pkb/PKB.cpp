@@ -5,10 +5,11 @@ using namespace std;
 #include <PKB.h>
 #include <TNode.h>
 
-DataManager PKB::data_manager_ = DataManager();
-RelationManager PKB::relation_manager_ = RelationManager();
-PatternManager PKB::pattern_manager_ = PatternManager();
+DataManager PKB::data_manager_;
+RelationManager PKB::relation_manager_;
+PatternManager PKB::pattern_manager_;
 TNode PKB::ast_;
+CFG PKB::cfg_;
 DataManager PKB::GetDataManager() {
     return data_manager_;
 }
