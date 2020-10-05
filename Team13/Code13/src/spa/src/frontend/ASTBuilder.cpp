@@ -20,7 +20,7 @@ TNode* ASTBuilder::BuildMainPrgNode(TOKEN_LIST token_list) {
 	token_index_ = -1;
 	statement_index_ = 0;
 
-	TNode* main_prg = new TNode(TNode::NODE_TYPE::program);
+	TNode* program_node = new TNode(TNode::NODE_TYPE::program);
 
 	while (token_index_ < (int)token_list_.size() - 1) {
 		Token proc_token = GetNextToken();
@@ -30,12 +30,12 @@ TNode* ASTBuilder::BuildMainPrgNode(TOKEN_LIST token_list) {
 		}
 
 		TNode* proc_node = ASTBuilder::BuildProcNode();
-		main_prg->AddChild(proc_node);
+		program_node->AddChild(proc_node);
 	}
 
-	// main_prg->Print(main_prg);
+	program_node->Print(program_node);
 
-	return main_prg;
+	return program_node;
 }
 
 // Returns a statement node
@@ -45,6 +45,7 @@ TNode* ASTBuilder::BuildStmtNode() {
 
 	switch (first_token.GetTokenType()) {
 	case TokenType::TOKEN_TYPE::stmt:
+		cout << first_token.GetValue() << endl;
 		switch (first_token.GetStmtType()) {
 		case TokenType::STMT_TYPE::_read:
 			return ASTBuilder::BuildReadNode();
@@ -57,13 +58,16 @@ TNode* ASTBuilder::BuildStmtNode() {
 		case TokenType::STMT_TYPE::_while:
 			return ASTBuilder::BuildWhileNode();
 		case TokenType::STMT_TYPE::_procedure:
+			cout << "problem1" << endl;
 			throw "Cannot define a procedure within a procedure";
 		default:
+			cout << "problem2" << endl;
 			throw "Validation error thrown in ASTBuilder at line " + statement_index_;
 		}
 	case TokenType::TOKEN_TYPE::var: // For assignment statements
 		return ASTBuilder::BuildAssignNode(first_token);
 	default:
+		cout << "problem3" << endl;
 		throw "Validation error thrown in ASTBuilder for the token: " + first_token.GetValue();
 	}
 }
@@ -132,7 +136,6 @@ TNode* ASTBuilder::BuildIfNode() {
 	if (expr_node->GetNodeType() != TNode::NODE_TYPE::relExpr && expr_node->GetNodeType() != TNode::NODE_TYPE::condExpr) {
 		throw "Invalid expression at " + statement_index_;
 	}
-
 	TNode* thenStmtListNode = ASTBuilder::BuildStmtListNode();
 
 	for (TNode* child : thenStmtListNode->GetChildrenVector()) {
@@ -144,9 +147,9 @@ TNode* ASTBuilder::BuildIfNode() {
 	}
 
 	ASTBuilder::GetNextToken(); // Pop 'else' token
-
+	
 	TNode* elseStmtListNode = ASTBuilder::BuildStmtListNode();
-
+	
 	for (TNode* child : elseStmtListNode->GetChildrenVector()) {
 		child->SetParent(if_node);
 	}
@@ -200,23 +203,30 @@ TNode* ASTBuilder::BuildAssignNode(Token name_token) {
 // Returns a stmtList node
 TNode* ASTBuilder::BuildStmtListNode() {
 	int end_index = ASTBuilder::GetEndIndxOfStatementList();
-	TNode* stmt_list_node = new TNode(TNode::NODE_TYPE::stmtList);
+	
+ 	TNode* stmt_list_node = new TNode(TNode::NODE_TYPE::stmtList);
 	// Parse the whole statement block
+	
 	while ((token_index_) < end_index) {
+
 		if (PeekNextToken().GetValue() == TYPE_PUNC_OPEN_BRACKET ||
 			PeekNextToken().GetValue() == TYPE_PUNC_CLOSED_BRACKET) {
 			GetNextToken();
 			continue;
 		}
-
+	
 		stmt_list_node->AddChild(ASTBuilder::BuildStmtNode());
 	}
 
 	return stmt_list_node;
 }
 
-TNode* ASTBuilder::BuildExpression(expressionType expr_type) {
-	vector<Token> expr_tokens = 
+TNode* ASTBuilder::BuildExpressionNode(expressionType expr_type) {
+	TOKEN_LIST expr_tokens = GetExpressionTokens(expr_type);
+
+	ExprParser expr_parser(expr_tokens);
+
+	return expr_parser.Parse();
 }
 
 // Returns the number of tokens inside a statement list
@@ -278,7 +288,7 @@ int ASTBuilder::GetEndIndxOfExpression(expressionType expr_type) {
 	string delimiter;
 	if (expr_type == expressionType::_if) {
 		// End index is before 'then' token
-		delimiter = "then";
+		delimiter = "{";
 	}
 	else if (expr_type == expressionType::_assign) {
 		// End index is before ';' token

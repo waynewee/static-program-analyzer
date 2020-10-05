@@ -1,0 +1,26 @@
+procedure Example {
+	x =1;
+	call x;
+	while (( x < 1)) {
+		y = 5;
+	}
+
+	if ( x == 1) then {
+		if( x == 2 ) then {
+			x = 3;
+		} else {
+			y = 4;
+		}
+	} else {
+		y = 2;
+		z = 5;
+	}
+
+	read x;
+	print y;
+}
+
+procedure ExampleOne {
+	x = 2;
+	x = 5;
+} 

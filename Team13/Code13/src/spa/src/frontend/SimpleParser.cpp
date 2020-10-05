@@ -246,10 +246,7 @@ TNode* SimpleParser::ParseStatementList() {
 }
 
 TNode* SimpleParser::ParseExpressionStatement(expressionType exprType) {
-	/**
-	* An assign expression looks like
-	* x + 1;
-	*/
+	
 	vector<Token> expr_list;
 
 	Token next_token;
@@ -290,8 +287,8 @@ TNode* SimpleParser::ParseExpressionStatement(expressionType exprType) {
 }
 
 TNode* SimpleParser::ParseExpression(vector<Token> expr_list) {
-	ExprEvaluator expr_evaluator(expr_list);
-	TNode* root_node = expr_evaluator.Evaluate();
+	ExprParser expr_evaluator(expr_list);
+	TNode* root_node = expr_evaluator.Parse();
 	return root_node;
 }
 
