@@ -28,3 +28,9 @@ void PKB::SetASTRoot(TNode* root) {
 TNode PKB::GetASTRoot() {
     return ast_;
 }
+CFG PKB::GetCFG(CFG cfg) {
+    return cfg_;
+}
+void PKB::SetCFG(CFG cfg) {
+    cfg_ = cfg;
+}
