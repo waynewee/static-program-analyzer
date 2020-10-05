@@ -23,4 +23,10 @@ bool CFG::HasEdge(STMT_IDX s1, STMT_IDX s2) {
         return false;
     }
     return pair->second->find(s2) != pair->second->end();
+
 }
+bool CFG::RemoveEdge(STMT_IDX s1, STMT_IDX s2) {
+    auto pair = data_.find(s1);
+    return pair != data_.end() && pair->second->erase(s2);
+}
+

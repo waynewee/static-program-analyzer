@@ -64,7 +64,7 @@ void CFGBuilder::TraverseAST(vector<TNode*> stmt_list) {
 					if (child->GetNodeType() == TNode::NODE_TYPE::ifStmt && i < stmt_list_filtered.size() - 1) {
 						TNode* child_next = stmt_list_filtered.at(i + 1);
 						cfg_->AddEdge(g_child_last->GetStmtIndex(), child_next->GetStmtIndex());
-						//cfg_->RemoveEdge(child->GetStmtIndex(), child_next->GetStmtIndex());
+						cfg_->RemoveEdge(child->GetStmtIndex(), child_next->GetStmtIndex());
 					}
 				}
 
