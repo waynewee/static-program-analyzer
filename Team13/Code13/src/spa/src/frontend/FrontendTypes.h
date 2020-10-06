@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Token.h"
-
+#define PROC_KEYWORD = "procedure"
 #define TYPE_STMT_IF_THEN "then"
 #define TYPE_STMT_IF_ELSE "else"
 
@@ -20,5 +20,11 @@
 typedef vector<string> STMT_NAME_LIST;
 typedef vector<Token> TOKEN_LIST;
 typedef vector<string> STR_LIST;
+
+enum expressionType {
+	_if,
+	_while,
+	_assign
+};
 
 #endif

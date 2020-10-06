@@ -1,5 +1,7 @@
 #include "PatternManager.h"
 
+#include <ExprParser.h>
+#include <Tokenizer.h>
 
 void PatternManager::AddAssignPattern(STMT_IDX s, VAR_NAME v, TNode root) {
     assign_pattern_table_.Add(s, v, root);
@@ -182,7 +184,13 @@ bool PatternManager::AreTwoNodesEqual(TNode root, TNode query_root) {
 //}
 
 TNode* PatternManager::ParseExpression(EXPRESSION s) {
-    if (IsNumber(s)) {
+    
+    Tokenizer tokenizer = Tokenizer(s);
+    ExprParser expr_parser = ExprParser(tokenizer.token_list_);
+    TNode* node = expr_parser.Parse();
+
+    return node;
+    /*if (IsNumber(s)) {
         CONST_VALUE val = (CONST_VALUE) stoi(s);
         auto node = new TNode(TNode::NODE_TYPE::constValue, val);
         return node;
@@ -190,7 +198,7 @@ TNode* PatternManager::ParseExpression(EXPRESSION s) {
     else {
         auto node = new TNode(TNode::NODE_TYPE::varName, s);
         return node;
-    }
+    }*/
 }
 
 

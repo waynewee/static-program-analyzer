@@ -7,8 +7,9 @@ bool CFG::AddEdge(STMT_IDX s1, STMT_IDX s2) {
     auto pair = data_.find(s1);
     if (pair == data_.end()) {
         auto set = new STMT_IDX_SET();
-        return set->insert(s2).second && data_.insert({s1, set}).second;
-    } else {
+        return set->insert(s2).second && data_.insert({ s1, set }).second;
+    }
+    else {
         auto set = pair->second;
         return set->insert(s2).second;
     }
@@ -22,8 +23,10 @@ bool CFG::HasEdge(STMT_IDX s1, STMT_IDX s2) {
         return false;
     }
     return pair->second->find(s2) != pair->second->end();
+
 }
 bool CFG::RemoveEdge(STMT_IDX s1, STMT_IDX s2) {
     auto pair = data_.find(s1);
     return pair != data_.end() && pair->second->erase(s2);
 }
+
