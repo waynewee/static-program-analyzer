@@ -2,7 +2,7 @@ procedure Example {
 
   while( x == 2){
     if( x == 2) then {
-      x = 3;
+      x = 3; 
     } else {
       x = 4;
     }

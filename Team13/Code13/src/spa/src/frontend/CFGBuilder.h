@@ -22,6 +22,8 @@ public:
 	bool IsStmt(TNode* ast_node);
 	bool IsStmtList(TNode* ast_node);
 	vector<TNode*> FilterStmts(vector<TNode*> stmt_list);
+	vector<TNode*> FilterStmtsAndStmtLists(vector<TNode*> stmt_list);
+	void GetLeafNodes(vector<TNode*>* leaf_nodes, TNode* root_node);
 
 	void PrintCFG();
 private:

@@ -58,7 +58,17 @@ void CFGBuilder::TraverseAST(vector<TNode*> stmt_list) {
 					TNode* g_child_last = g_stmt_list_filtered.at(g_stmt_list_filtered.size() - 1);
 					
 					if (child->GetNodeType() == TNode::NODE_TYPE::whileStmt) {
-						cfg_->AddEdge(g_child_last->GetStmtIndex(), child->GetStmtIndex());
+						
+						//initialise vector pointer to leaf_nodes
+						vector<TNode*>* leaf_nodes = new vector<TNode*>{};
+
+						GetLeafNodes(leaf_nodes, g_child_last);
+
+						for (TNode* leaf : *leaf_nodes) {
+							cfg_->AddEdge(leaf->GetStmtIndex(), child->GetStmtIndex());
+						}
+
+
 					}
 
 					if (child->GetNodeType() == TNode::NODE_TYPE::ifStmt && i < stmt_list_filtered.size() - 1) {
@@ -108,6 +118,18 @@ vector<TNode*> CFGBuilder::FilterStmts(vector<TNode*> stmt_list) {
 	return filtered_list;
 }
 
+vector<TNode*> CFGBuilder::FilterStmtsAndStmtLists(vector<TNode*>stmt_list) {
+	vector<TNode*> filtered_list;
+
+	for (TNode* stmt : stmt_list) {
+		if (IsStmt(stmt) || IsStmtList(stmt)) {
+			filtered_list.push_back(stmt);
+		}
+	}
+
+	return filtered_list;
+}
+
 void CFGBuilder::PrintCFG() {
 
 	/*std::unordered_map<STMT_IDX, STMT_IDX_SET*> data_;
@@ -125,9 +147,36 @@ void CFGBuilder::PrintCFG() {
 			cout << edge;
 			cout << idx << endl;
 		}
-
-		cout << endl;
 	}
 	
+
+}
+
+void CFGBuilder::GetLeafNodes(vector<TNode*>* leaf_nodes, TNode* root_node) {
+
+	if (root_node->GetNodeType() == TNode::NODE_TYPE::whileStmt 
+	|| FilterStmtsAndStmtLists(root_node->GetChildrenVector()).size() == 0) {
+		leaf_nodes->push_back(root_node);
+	}
+	else {
+
+		vector<TNode*> children = root_node->GetChildrenVector();
+
+		vector<TNode*> filtered_children = FilterStmtsAndStmtLists(children);
+
+		for (TNode* stmt : filtered_children) {
+
+			vector<TNode*> g_children = stmt->GetChildrenVector();
+
+			TNode* last_child = g_children.at(g_children.size() - 1);
+
+			if (last_child->GetNodeType() != TNode::NODE_TYPE::whileStmt) {
+				GetLeafNodes(leaf_nodes, last_child);
+			}
+
+		}
+
+
+	}
 
 }

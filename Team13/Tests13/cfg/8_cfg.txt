@@ -1,0 +1,31 @@
+procedure ABC {
+1    i=1;
+2    b=200 ;
+3    c= a;
+4    if (!(a==2)) then {
+5      while (beta>=beta) {
+6        oSCar  = 1 * beta + tmp;
+7        while (tmp == 1) {
+8              oSCar = I - (k + j1k * chArlie);
+        }
+      }
+
+9      while (x == 1) {
+10        x = x + 1;
+11       if ((left>=left)    || (left < left)) then {
+12        while (right == left){
+13            Romeo = Romeo - 1;
+14            b = 0;
+15            c = delta + l  * width + Romeo; 
+          }
+        } else {
+16            while (!(c==c)) {
+17              c = c -1;
+            }
+18            x = x+ 1; 
+        }
+      }
+    } else {
+19      a= 2;
+  }
+}
