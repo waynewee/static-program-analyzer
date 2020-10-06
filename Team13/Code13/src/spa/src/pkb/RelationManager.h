@@ -22,6 +22,8 @@ private:
     static PROC_MODIFIES_TABLE* proc_modifies_table_;
     static INVERSE_STMT_MODIFIES_TABLE* inverse_stmt_modifies_table_;
     static INVERSE_PROC_MODIFIES_TABLE* inverse_proc_modifies_table_;
+    static CALLS_TABLE* calls_table_;
+    static INVERSE_CALLS_TABLE* inverse_calls_table_;
     static STMT_STMT_PAIR_LIST* all_follows_;
     static STMT_STMT_PAIR_LIST* all_follows_star_;
     static STMT_STMT_PAIR_LIST* all_parent_;
