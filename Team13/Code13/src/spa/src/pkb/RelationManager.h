@@ -23,7 +23,11 @@ private:
     static INVERSE_STMT_MODIFIES_TABLE* inverse_stmt_modifies_table_;
     static INVERSE_PROC_MODIFIES_TABLE* inverse_proc_modifies_table_;
     static CALLS_TABLE* calls_table_;
+    static CALLS_STAR_TABLE* calls_star_table_;
     static INVERSE_CALLS_TABLE* inverse_calls_table_;
+    static INVERSE_CALLS_STAR_TABLE* inverse_calls_star_table_;
+
+
     static STMT_STMT_PAIR_LIST* all_follows_;
     static STMT_STMT_PAIR_LIST* all_follows_star_;
     static STMT_STMT_PAIR_LIST* all_parent_;
@@ -32,6 +36,9 @@ private:
     static PROC_VAR_PAIR_LIST* all_proc_uses_;
     static STMT_VAR_PAIR_LIST* all_stmt_modifies_;
     static PROC_VAR_PAIR_LIST* all_proc_modifies_;
+    static PROC_PROC_PAIR_LIST* all_calls_;
+    static PROC_PROC_PAIR_LIST* all_calls_star_;
+
     static STMT_IDX_SET* all_follows_keys_;
     static STMT_IDX_SET* all_inverse_follows_keys_;
     static STMT_IDX_SET* all_follows_star_keys_;
@@ -48,16 +55,22 @@ private:
     static VAR_NAME_SET* all_inverse_stmt_modifies_keys_;
     static PROC_NAME_SET* all_proc_modifies_keys_;
     static VAR_NAME_SET* all_inverse_proc_modifies_keys_;
+    static PROC_NAME_SET* all_calls_keys_;
+    static PROC_NAME_SET* all_inverse_calls_keys_;
+    static PROC_NAME_SET* all_calls_star_keys_;
+    static PROC_NAME_SET* all_inverse_calls_star_keys_;
 
     bool InsertStmtStmtRelation(STMT_STMT_RELATION_TABLE* set, STMT_IDX s1, STMT_IDX s2);
     bool InsertStmtVarRelation(STMT_VAR_RELATION_TABLE* set, STMT_IDX s, VAR_NAME v);
     bool InsertProcVarRelation(PROC_VAR_RELATION_TABLE* set, PROC_NAME p, VAR_NAME v);
     bool InsertVarStmtRelation(VAR_STMT_RELATION_TABLE* set, VAR_NAME v, STMT_IDX s);
     bool InsertVarProcRelation(VAR_PROC_RELATION_TABLE* set, VAR_NAME v, PROC_NAME p);
+    bool InsertProcProcRelation(PROC_PROC_RELATION_TABLE* set, PROC_NAME p1, PROC_NAME p2);
 
     void InsertStmtStmtTuple(STMT_STMT_PAIR_LIST* set, STMT_IDX s1, STMT_IDX s2);
     void InsertStmtVarTuple(STMT_VAR_PAIR_LIST* set, STMT_IDX s, VAR_NAME v);
     void InsertProcVarTuple(PROC_VAR_PAIR_LIST* set, PROC_NAME p, VAR_NAME v);
+    void InsertProcProcTuple(PROC_PROC_PAIR_LIST* set, PROC_NAME p1, PROC_NAME p2);
 
     bool InsertStmtKey(STMT_IDX_SET* set, STMT_IDX s);
     bool InsertProcKey(PROC_NAME_SET* set, PROC_NAME p);
@@ -66,6 +79,7 @@ private:
     bool CheckStmtStmtRelation(STMT_STMT_RELATION_TABLE* set, STMT_STMT_RELATION_TABLE* inv_set, STMT_IDX s1, STMT_IDX s2);
     bool CheckStmtVarRelation(STMT_VAR_RELATION_TABLE* set, VAR_STMT_RELATION_TABLE* inv_set, STMT_IDX s, VAR_NAME v);
     bool CheckProcVarRelation(PROC_VAR_RELATION_TABLE* set, VAR_PROC_RELATION_TABLE* inv_set, PROC_NAME p, VAR_NAME v);
+    bool CheckProcProcRelation(PROC_PROC_RELATION_TABLE* set, PROC_PROC_RELATION_TABLE *inv_set, PROC_NAME p1, PROC_NAME p2);
     bool CheckVarStmtRelation(VAR_STMT_RELATION_TABLE* set, VAR_NAME v, STMT_IDX s);
     bool CheckVarProcRelation(VAR_PROC_RELATION_TABLE* set, VAR_NAME v, PROC_NAME p);
 
@@ -74,6 +88,7 @@ private:
     VAR_NAME_SET GetProcVarRelationVal(PROC_VAR_RELATION_TABLE* set, VAR_NAME_SET* var_keys, PROC_NAME p);
     STMT_IDX_SET GetVarStmtRelationVal(VAR_STMT_RELATION_TABLE* set, STMT_IDX_SET* stmt_keys, VAR_NAME v);
     PROC_NAME_SET GetVarProcRelationVal(VAR_PROC_RELATION_TABLE* set, PROC_NAME_SET* proc_keys, VAR_NAME v);
+    PROC_NAME_SET GetProcProcRelationVal(PROC_PROC_RELATION_TABLE* set, PROC_NAME_SET* proc_keys, PROC_NAME p);
 public:
     bool AddFollows(STMT_IDX s1, STMT_IDX s2);
     bool AddFollowsStar(STMT_IDX s1, STMT_IDX s2);
@@ -83,6 +98,8 @@ public:
     bool AddProcUses(PROC_NAME p, VAR_NAME v);
     bool AddStmtModifies(STMT_IDX s, VAR_NAME v);
     bool AddProcModifies(PROC_NAME p, VAR_NAME v);
+    bool AddCalls(PROC_NAME p1, PROC_NAME p2);
+    bool AddCallsStar(PROC_NAME p1, PROC_NAME p2);
 
     bool IsFollows(STMT_IDX s1, STMT_IDX s2);
     bool IsFollowsStar(STMT_IDX s1, STMT_IDX s2);
@@ -92,6 +109,8 @@ public:
     bool IsProcUses(PROC_NAME p, VAR_NAME v);
     bool IsStmtModifies(STMT_IDX s, VAR_NAME v);
     bool IsProcModifies(PROC_NAME p, VAR_NAME v);
+    bool IsCalls(PROC_NAME p1, PROC_NAME p2);
+    bool IsCallsStar(PROC_NAME p1, PROC_NAME p2);
 
     STMT_IDX_SET GetFollows(STMT_IDX s);
     STMT_IDX_SET GetInverseFollows(STMT_IDX s);
@@ -117,6 +136,13 @@ public:
     VAR_NAME_SET GetProcModifies(PROC_NAME p);
     PROC_NAME_SET GetInverseProcModifies(VAR_NAME v);
     PROC_VAR_PAIR_LIST GetAllProcModifies();
+    PROC_NAME_SET GetCalls(PROC_NAME p);
+    PROC_NAME_SET GetInverseCalls(PROC_NAME p);
+    PROC_PROC_PAIR_LIST GetAllCalls();
+    PROC_NAME_SET GetCallsStars(PROC_NAME p);
+    PROC_NAME_SET GetInverseCallsStars(PROC_NAME p);
+    PROC_PROC_PAIR_LIST GetAllCallsStar();
+
 
 };
 
