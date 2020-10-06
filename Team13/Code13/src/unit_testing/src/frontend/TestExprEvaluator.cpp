@@ -1,8 +1,8 @@
 #include <CustomTypes.h>
-#include <frontend/ExprEvaluator.h>
+#include <ExprParser.h>
 #include <frontend/FrontendTypes.h>
 #include <frontend/Token.h>
-#include <frontend/Tokenizer.h>
+#include <Tokenizer.h>
 #include <pkb/TNode.h>
 #include <testUtils/TreeTraverse.h>
 
@@ -31,39 +31,39 @@ Token token_punc_closed_paran = Token(TYPE_PUNC_CLOSED_PARAN, TokenType::TOKEN_T
 
 Token token_unary_not = Token(TYPE_COND_EXPR_NOT, TokenType::TOKEN_TYPE::cond_expr, true);
 
-TEST_CASE("Expression evaluator | Evaluates rel expression") {
+TEST_CASE("Expression parser | Parses rel expression") {
 
-	SECTION("Evaluates equality rel expression") {
+	SECTION("Parses equality rel expression") {
 		TOKEN_LIST token_list;
 
 		token_list.push_back(token_var_x);
 		token_list.push_back(token_rel_expr_eq);
 		token_list.push_back(token_const_4);
 
-		ExprEvaluator evaluator(token_list);
-		TNode* rootNode = evaluator.Evaluate();
+		ExprParser parser(token_list);
+		TNode* rootNode = parser.Parse();
 		string actual = TreeTraverse::traverse(rootNode);
 		string expected = "RelExpr:7VarName:xConstValue:4";
 
 		REQUIRE(actual == expected);
 	}
 
-	SECTION("Evaluates less than rel expression") {
+	SECTION("Parses less than rel expression") {
 		TOKEN_LIST token_list;
 
 		token_list.push_back(token_var_x);
 		token_list.push_back(token_rel_expr_lt);
 		token_list.push_back(token_const_4);
 
-		ExprEvaluator evaluator(token_list);
-		TNode* rootNode = evaluator.Evaluate();
+		ExprParser parser(token_list);
+		TNode* rootNode = parser.Parse();
 		string actual = TreeTraverse::traverse(rootNode);
 		string expected = "RelExpr:5VarName:xConstValue:4";
 
 		REQUIRE(actual == expected);
 	}
 
-	SECTION("Evaluates and rel expression") {
+	SECTION("Parses and rel expression") {
 		TOKEN_LIST token_list;
 
 		token_list.push_back(token_punc_open_paran);
@@ -74,8 +74,8 @@ TEST_CASE("Expression evaluator | Evaluates rel expression") {
 		token_list.push_back(token_const_4);
 		token_list.push_back(token_punc_closed_paran);
 
-		ExprEvaluator evaluator(token_list);
-		TNode* rootNode = evaluator.Evaluate();
+		ExprParser parser(token_list);
+		TNode* rootNode = parser.Parse();
 		string actual = TreeTraverse::traverse(rootNode);
 		string expected = "CondExpr:1VarName:xConstValue:4";
 
@@ -84,9 +84,9 @@ TEST_CASE("Expression evaluator | Evaluates rel expression") {
 }
 
 
-TEST_CASE("Expression evaluator | Evaluates plus/minus expression") {
+TEST_CASE("Expression parser | Parses plus/minus expression") {
 
-	SECTION("Evaluates plus expression") {
+	SECTION("Parses plus expression") {
 
 		TOKEN_LIST token_list;
 
@@ -94,8 +94,8 @@ TEST_CASE("Expression evaluator | Evaluates plus/minus expression") {
 		token_list.push_back(token_expr_plus);
 		token_list.push_back(token_var_x);
 
-		ExprEvaluator evaluator(token_list);
-		TNode* rootNode = evaluator.Evaluate();
+		ExprParser parser(token_list);
+		TNode* rootNode = parser.Parse();
 		string actual = TreeTraverse::traverse(rootNode);
 		string expected = "Expr:9ConstValue:4VarName:x";
 
@@ -103,7 +103,7 @@ TEST_CASE("Expression evaluator | Evaluates plus/minus expression") {
 	
 	}
 
-	SECTION("Evaluates minus expression") {
+	SECTION("Parses minus expression") {
 
 		TOKEN_LIST token_list;
 
@@ -111,8 +111,8 @@ TEST_CASE("Expression evaluator | Evaluates plus/minus expression") {
 		token_list.push_back(token_expr_minus);
 		token_list.push_back(token_var_x);
 
-		ExprEvaluator evaluator(token_list);
-		TNode* rootNode = evaluator.Evaluate();
+		ExprParser parser(token_list);
+		TNode* rootNode = parser.Parse();
 		string actual = TreeTraverse::traverse(rootNode);
 		string expected = "Expr:10ConstValue:4VarName:x";
 
@@ -122,17 +122,17 @@ TEST_CASE("Expression evaluator | Evaluates plus/minus expression") {
 
 }
 
-TEST_CASE("Expression evaluator | Evaluates times/divide expression") {
+TEST_CASE("Expression parser | Parses times/divide expression") {
 
-	SECTION("Evaluates times expression") {
+	SECTION("Parses times expression") {
 		TOKEN_LIST token_list;
 
 		token_list.push_back(token_const_4);
 		token_list.push_back(token_expr_times);
 		token_list.push_back(token_var_x);
 
-		ExprEvaluator evaluator(token_list);
-		TNode* rootNode = evaluator.Evaluate();
+		ExprParser parser(token_list);
+		TNode* rootNode = parser.Parse();
 		string actual = TreeTraverse::traverse(rootNode);
 		string expected = "Expr:11ConstValue:4VarName:x";
 
@@ -140,15 +140,15 @@ TEST_CASE("Expression evaluator | Evaluates times/divide expression") {
 
 	}
 
-	SECTION("Evaluates divide expression") {
+	SECTION("Parses divide expression") {
 		TOKEN_LIST token_list;
 
 		token_list.push_back(token_const_4);
 		token_list.push_back(token_expr_divide);
 		token_list.push_back(token_var_x);
 
-		ExprEvaluator evaluator(token_list);
-		TNode* rootNode = evaluator.Evaluate();
+		ExprParser parser(token_list);
+		TNode* rootNode = parser.Parse();
 		string actual = TreeTraverse::traverse(rootNode);
 		string expected = "Expr:12ConstValue:4VarName:x";
 
@@ -157,7 +157,7 @@ TEST_CASE("Expression evaluator | Evaluates times/divide expression") {
 
 }
 
-TEST_CASE("Expression evaluator | Evaluates expressions containing parantheses") {
+TEST_CASE("Expression parser | Parses expressions containing parantheses") {
 
 	SECTION("Evalutes expression enclosed in parantheses") {
 		TOKEN_LIST token_list;
@@ -168,8 +168,8 @@ TEST_CASE("Expression evaluator | Evaluates expressions containing parantheses")
 		token_list.push_back(token_const_4);
 		token_list.push_back(token_punc_closed_paran);
 
-		ExprEvaluator evaluator(token_list);
-		TNode* rootNode = evaluator.Evaluate();
+		ExprParser parser(token_list);
+		TNode* rootNode = parser.Parse();
 		string actual = TreeTraverse::traverse(rootNode);
 		string expected = "Expr:9VarName:xConstValue:4";
 
@@ -187,8 +187,8 @@ TEST_CASE("Expression evaluator | Evaluates expressions containing parantheses")
 		token_list.push_back(token_const_4);
 		token_list.push_back(token_punc_closed_paran);
 
-		ExprEvaluator evaluator(token_list);
-		TNode* rootNode = evaluator.Evaluate();
+		ExprParser parser(token_list);
+		TNode* rootNode = parser.Parse();
 		string actual = TreeTraverse::traverse(rootNode);
 		string expected = "Expr:9VarName:xExpr:9VarName:xConstValue:4";
 
@@ -197,9 +197,9 @@ TEST_CASE("Expression evaluator | Evaluates expressions containing parantheses")
 
 }
 
-TEST_CASE("Expression evaluator | Evaluates expression with unary operators") {
+TEST_CASE("Expression parser | Parses expression with unary operators") {
 
-	SECTION("Evaluates expression with unary not") {
+	SECTION("Parses expression with unary not") {
 		TOKEN_LIST token_list;
 
 		token_list.push_back(token_unary_not);
@@ -209,8 +209,8 @@ TEST_CASE("Expression evaluator | Evaluates expression with unary operators") {
 		token_list.push_back(token_const_4);
 		token_list.push_back(token_punc_closed_paran);
 
-		ExprEvaluator evaluator(token_list);
-		TNode* rootNode = evaluator.Evaluate();
+		ExprParser parser(token_list);
+		TNode* rootNode = parser.Parse();
 		string actual = TreeTraverse::traverse(rootNode);
 		string expected = "CondExpr:0RelExpr:7VarName:xConstValue:4";
 
@@ -219,7 +219,7 @@ TEST_CASE("Expression evaluator | Evaluates expression with unary operators") {
 }
 
 
-TEST_CASE("Expression evaluator | Evaluates two clause expressions") {
+TEST_CASE("Expression parser | Parses two clause expressions") {
 	TOKEN_LIST token_list;
 
 	token_list.push_back(token_punc_open_paran);
@@ -236,8 +236,8 @@ TEST_CASE("Expression evaluator | Evaluates two clause expressions") {
 	token_list.push_back(token_punc_closed_paran);
 	token_list.push_back(token_punc_closed_paran);
 
-	ExprEvaluator evaluator(token_list);
-	TNode* rootNode = evaluator.Evaluate();
+	ExprParser parser(token_list);
+	TNode* rootNode = parser.Parse();
 	string actual = TreeTraverse::traverse(rootNode);
 	string expected = "CondExpr:1Expr:9Expr:10VarName:xConstValue:4VarName:xConstValue:4";
 
@@ -245,7 +245,7 @@ TEST_CASE("Expression evaluator | Evaluates two clause expressions") {
 }
 
 
-TEST_CASE("Expression Evaluator | Evaluates complex expression") {
+TEST_CASE("Expression Evaluator | Parses complex expression") {
 
 	TOKEN_LIST token_list;
 	token_list.push_back(token_punc_open_paran);
@@ -269,9 +269,9 @@ TEST_CASE("Expression Evaluator | Evaluates complex expression") {
 	token_list.push_back(token_punc_closed_paran);
 	token_list.push_back(token_punc_closed_paran);
 
-	ExprEvaluator evaluator(token_list);
+	ExprParser parser(token_list);
 
-	TNode* rootNode = evaluator.Evaluate();
+	TNode* rootNode = parser.Parse();
 
 	string actual = TreeTraverse::traverse(rootNode);
 	string expected = "CondExpr:2CondExpr:1RelExpr:5CondExpr:0RelExpr:4VarName:xConstValue:4RelExpr:7VarName:xConstValue:4VarName:xConstValue:4";
