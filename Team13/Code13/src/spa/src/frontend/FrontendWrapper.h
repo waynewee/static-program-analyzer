@@ -10,7 +10,7 @@ using namespace std;
 
 class FrontendWrapper {
 public:
-	FrontendWrapper::FrontendWrapper(string file_name);
+	FrontendWrapper(string file_name);
 
 	TOKEN_LIST token_list_;
 

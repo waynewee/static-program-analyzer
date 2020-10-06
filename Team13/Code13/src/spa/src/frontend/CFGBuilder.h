@@ -16,7 +16,7 @@ public:
 	TNode* ast_root_;
 	CFG* cfg_;
 
-	CFGBuilder::CFGBuilder(TNode* proc_node);
+	CFGBuilder(TNode* proc_node);
 	void BuildCFG();
 	void TraverseAST(vector<TNode*> stmt_list);
 	bool IsStmt(TNode* ast_node);
