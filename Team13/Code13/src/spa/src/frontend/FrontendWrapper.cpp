@@ -3,6 +3,7 @@
 #include <FrontendWrapper.h>
 #include <Tokenizer.h>
 #include <TNode.h>
+#include <SimpleValidator.h>
 
 FrontendWrapper::FrontendWrapper(string file_name) {
 	FileReader fileReader(file_name);
@@ -12,6 +13,14 @@ FrontendWrapper::FrontendWrapper(string file_name) {
 	Tokenizer tokenizer(input);
 
 	token_list_ = tokenizer.GetTokenList();
+	try {
+		SimpleValidator simple_validator;
+		simple_validator.IsValid(tokenizer.GetTokenList());
+	}
+	catch (string exception) {
+		std::cout << exception << std::endl;
+		exit(1);
+	}
 	
 }
 

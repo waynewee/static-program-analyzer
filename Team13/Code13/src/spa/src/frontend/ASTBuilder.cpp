@@ -131,7 +131,7 @@ TNode* ASTBuilder::BuildCallNode() {
 
 TNode* ASTBuilder::BuildIfNode() {
 	TNode* if_node = new TNode(TNode::NODE_TYPE::ifStmt, statement_index_);
-	TNode* expr_node = ASTBuilder::BuildExpressionNode(_FRONTENDTYPES_H_::expressionType::_if);
+	TNode* expr_node = ASTBuilder::BuildExpressionNode(_FRONTENDTYPES_H_::ExpressionType::_if);
 	// Hmm wrong place to put? 
 	if (expr_node->GetNodeType() != TNode::NODE_TYPE::relExpr && expr_node->GetNodeType() != TNode::NODE_TYPE::condExpr) {
 		throw "Invalid expression at " + statement_index_;
@@ -163,7 +163,7 @@ TNode* ASTBuilder::BuildIfNode() {
 
 TNode* ASTBuilder::BuildWhileNode() {
 	TNode* whleNode = new TNode(TNode::NODE_TYPE::whileStmt, statement_index_);
-	TNode* expr_node = ASTBuilder::BuildExpressionNode(_FRONTENDTYPES_H_::expressionType::_while);
+	TNode* expr_node = ASTBuilder::BuildExpressionNode(_FRONTENDTYPES_H_::ExpressionType::_while);
 	TNode* stmt_list_node = ASTBuilder::BuildStmtListNode();
 
 	if (expr_node->GetNodeType() != TNode::NODE_TYPE::relExpr && expr_node->GetNodeType() != TNode::NODE_TYPE::condExpr) {
@@ -188,7 +188,7 @@ TNode* ASTBuilder::BuildAssignNode(Token name_token) {
 	
 	ASTBuilder::GetNextToken(); // Pop '=' token
 
-	TNode* expr_node = ASTBuilder::BuildExpressionNode(_FRONTENDTYPES_H_::expressionType::_assign);
+	TNode* expr_node = ASTBuilder::BuildExpressionNode(_FRONTENDTYPES_H_::ExpressionType::_assign);
 
 	ASTBuilder::GetNextToken(); // Pop ';' token
 	
@@ -221,7 +221,7 @@ TNode* ASTBuilder::BuildStmtListNode() {
 	return stmt_list_node;
 }
 
-TNode* ASTBuilder::BuildExpressionNode(expressionType expr_type) {
+TNode* ASTBuilder::BuildExpressionNode(ExpressionType expr_type) {
 	TOKEN_LIST expr_tokens = GetExpressionTokens(expr_type);
 
 	ExprParser expr_parser(expr_tokens);
@@ -274,7 +274,7 @@ Token ASTBuilder::PeekNextToken() {
 	}
 }
 
-vector<Token> ASTBuilder::GetExpressionTokens(expressionType expr_type) {
+vector<Token> ASTBuilder::GetExpressionTokens(ExpressionType expr_type) {
 	vector<Token> expr_list;
 	int EndIndexOfTokens = GetEndIndxOfExpression(expr_type);
 	while (token_index_ < EndIndexOfTokens) {
@@ -283,18 +283,18 @@ vector<Token> ASTBuilder::GetExpressionTokens(expressionType expr_type) {
 	return expr_list;
 }
 
-int ASTBuilder::GetEndIndxOfExpression(expressionType expr_type) {
+int ASTBuilder::GetEndIndxOfExpression(ExpressionType expr_type) {
 	int end_index = token_index_;
 	string delimiter;
-	if (expr_type == expressionType::_if) {
+	if (expr_type == ExpressionType::_if) {
 		// End index is before 'then' token
 		delimiter = "{";
 	}
-	else if (expr_type == expressionType::_assign) {
+	else if (expr_type == ExpressionType::_assign) {
 		// End index is before ';' token
 		delimiter = ";";
 	}
-	else if (expr_type == expressionType::_while) {
+	else if (expr_type == ExpressionType::_while) {
 		// End index is before '{' token
 		delimiter = "{";
 	}

@@ -4,7 +4,6 @@
 
 #include <PKB.h>
 #include "TestWrapper.h"
-#include "frontend/SimpleParser.h"
 #include "Tokenizer.h"
 #include <FrontendWrapper.h>
 #include "frontend/FileReader.h"
