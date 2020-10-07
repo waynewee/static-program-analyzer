@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include <queue>
 
 using namespace std;
 
@@ -21,6 +22,15 @@ using namespace std;
 #define TYPE_COND_MODIFIES_P "ModifiesP"
 #define TYPE_COND_PATTERN_P "pattern_p"
 #define TYPE_COND_PATTERN_F "pattern_f"
+#define TYPE_COND_CALLS "Calls"
+#define TYPE_COND_CALLS_T "CallsT"
+#define TYPE_COND_NEXT "Next"
+#define TYPE_COND_NEXT_T "NextT"
+#define TYPE_COND_AFFECTS "Affects"
+#define TYPE_COND_AFFECTS_T "AffectsT"
+
+#define FALSE "false"
+#define TRUE "true"
 
 typedef string STRING;
 typedef int INTEGER;
@@ -28,21 +38,32 @@ typedef double DOUBLE;
 typedef bool BOOLEAN;
 typedef void VOID;
 
+typedef pair<STRING, STRING> STRING_PAIR;
+typedef pair<INTEGER, INTEGER> INTEGER_PAIR;
+
 typedef vector<STRING> STRING_LIST;
+typedef vector<INTEGER> INTEGER_LIST;
 typedef vector<STRING_LIST> STRINGLIST_LIST;
+typedef vector<INTEGER_LIST> INTEGERLIST_LIST;
 
 typedef unordered_set<STRING> STRING_SET;
-typedef unordered_set<STRING_LIST*> STRINGLIST_SET;
-
 typedef unordered_set<INTEGER> INTEGER_SET;
 typedef unordered_set<DOUBLE> DOUBLE_SET;
+typedef unordered_set<STRING_LIST*> STRINGLIST_SET;
+typedef unordered_set<STRING_PAIR*> STRINGPAIR_SET;
+typedef unordered_set<INTEGER_PAIR*> INTEGERPAIR_SET;
 
 typedef unordered_map<STRING, STRING> STRING_STRING_MAP;
+typedef unordered_map<STRING, INTEGER> STRING_INTEGER_MAP;
 typedef unordered_map<STRING, STRING_LIST> STRING_STRINGLIST_MAP;
 typedef unordered_map<STRING, STRING_SET> STRING_STRINGSET_MAP;
 typedef unordered_map<STRING, STRINGLIST_LIST> STRING_STRINGLISTLIST_MAP;
-
 typedef unordered_map<STRING_LIST*, STRING_LIST> STRINGLIST_STRINGLIST_MAP;
 typedef unordered_map<STRING_LIST*, STRINGLIST_SET> STRINGLIST_STRINGLISTSET_MAP;
+typedef unordered_map<STRING_LIST*, STRING_SET> STRINGLIST_STRINGSET_MAP;
+typedef unordered_map<STRING_SET*, STRINGLIST_SET> STRINGSET_STRINGLISTSET_MAP;
 
 #endif
+
+
+
