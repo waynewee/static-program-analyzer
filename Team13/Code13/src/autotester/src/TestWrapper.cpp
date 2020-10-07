@@ -33,7 +33,17 @@ TestWrapper::TestWrapper() {
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(string filename) {
-	try {
+	FrontendWrapper frontend_wrapper(filename);
+
+	TestWrapper::pkb->SetASTRoot(frontend_wrapper.GetAST());
+
+	DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
+	/*try {
 		FrontendWrapper frontend_wrapper(filename);
 
 		TestWrapper::pkb->SetASTRoot(frontend_wrapper.GetAST());
@@ -47,7 +57,7 @@ void TestWrapper::parse(string filename) {
 	}
 	catch (logic_error& e) {
 		cout << e.what() << endl;
-	}
+	}*/
 
 }
 

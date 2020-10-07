@@ -78,11 +78,10 @@ bool SimpleValidator::IsValidStmt() {
 
 bool SimpleValidator::IsValidProc() {
 	Token name_token = SimpleValidator::GetNextToken();
-	
 	if (proc_adj_list_.count(name_token.GetValue()) != 0) {
 		throw "Redefining procedure at line " + statement_index_;
 	}
-
+	curr_proc_ = name_token.GetValue();
 	proc_adj_list_.insert({name_token.GetValue(), vector<DFS_NODE>()});
 
 	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
@@ -277,6 +276,19 @@ int SimpleValidator::GetEndIndxOfExpression(ExpressionType expr_type) {
 }
 
 void SimpleValidator::UpdateAdjList() {
+	/*std::cout << "Adj List: " << std::endl;
+	for (map<DFS_NODE, vector<DFS_NODE>>::iterator it = proc_adj_list_.begin();
+		it != proc_adj_list_.end(); it++)
+	{
+		std::cout << it->first  // string (key)
+			<< std::endl;
+	}
+
+	std::cout << "Caller Callee Pair: " << std::endl;
+	for (pair<string, string> caller_callee_pair : calls_list_) {
+		std::cout << "Caller: " << caller_callee_pair.first
+			<< " , Callee: " << caller_callee_pair.second << std::endl;
+	}*/
 	for (pair<string, string> caller_callee_pair : calls_list_) {
 		vector<string> lst = proc_adj_list_.at(caller_callee_pair.first);
 		lst.push_back(caller_callee_pair.second);
@@ -305,8 +317,29 @@ void SimpleValidator::CheckForCyclicCalls() {
 	curr_node = *white_set.begin();
 	white_set.erase(white_set.begin()); // Popping first item from set
 	gray_set.insert(curr_node);
+	cout << "Node count: " << node_count << endl;
 
-	while (!black_set.size() != node_count && !cycleDetected) {
+	while ((black_set.size() != node_count) && !cycleDetected) {
+		cout << "Blackie's size: " << black_set.size() << endl;
+		std::cout << "white set: ";
+		for (set<DFS_NODE>::iterator it = white_set.begin();
+			it != white_set.end(); it++)
+		{
+			std::cout << *it << " ";
+		}
+		std::cout << std::endl << "gray set: ";
+		for (set<DFS_NODE>::iterator it = gray_set.begin();
+			it != gray_set.end(); it++)
+		{
+			std::cout << *it << " ";
+		}
+		std::cout << std::endl << "black set: ";
+		for (set<DFS_NODE>::iterator it = black_set.begin();
+			it != black_set.end(); it++)
+		{
+			std::cout << *it << " ";
+		}
+		std::cout << std::endl;
 		vector<DFS_NODE> adj_list = proc_adj_list_.at(curr_node);
 		bool node_visited = false;
 		for (DFS_NODE node : adj_list) {
@@ -318,7 +351,7 @@ void SimpleValidator::CheckForCyclicCalls() {
 				node_visited = true;
 				break;
 			}
-			else if (gray_set.find(node) != gray_set.end()) {
+			else if (gray_set.count(node) > 0 ) {
 				cycleDetected = true;
 				break;
 			}
@@ -328,9 +361,12 @@ void SimpleValidator::CheckForCyclicCalls() {
 			// Node has been fully processed, add to black set
 			black_set.insert(curr_node);
 			gray_set.erase(gray_set.find(curr_node));
-			curr_node = *(--gray_set.end());
-			continue;
+			curr_node = *(gray_set.rbegin());
+
 		} 
+
+		cout << "node_visited: " << node_visited << endl;
+		cout << endl;
 	}
 	if (cycleDetected) {
 		throw "Recursive call detected";

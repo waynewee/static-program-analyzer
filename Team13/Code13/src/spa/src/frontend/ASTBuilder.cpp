@@ -33,7 +33,7 @@ TNode* ASTBuilder::BuildMainPrgNode(TOKEN_LIST token_list) {
 		program_node->AddChild(proc_node);
 	}
 
-	program_node->Print(program_node);
+	//program_node->Print(program_node);
 
 	return program_node;
 }
