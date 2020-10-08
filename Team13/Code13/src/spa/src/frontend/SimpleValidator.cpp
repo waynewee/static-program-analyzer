@@ -7,6 +7,8 @@
 #include <stdexcept>
 #include <stack>
 #include <vector>
+#include <map>
+#include <set>
 
 #include <SimpleValidator.h>
 #include <ExprValidator.h>
@@ -27,13 +29,23 @@ bool SimpleValidator::IsValid(TOKEN_LIST token_list) {
 		throw "Program cannot be empty";
 	}
 
-	while (token_index_ < (int) token_list_.size() - 1) {
-}		if (SimpleValidator::GetNextToken().GetValue() != "procedure") {
+	while (token_index_ < (int)token_list_.size() - 1) {
+		if (SimpleValidator::GetNextToken().GetValue() != "procedure") {
 			throw "Missing procedure";
 		}
-
 		SimpleValidator::IsValidProc();
 	}
+
+	// Checking if functioned called exists
+	for (pair<string, string> caller_callee_pair: calls_list_) {
+		if (proc_adj_list_.count(caller_callee_pair.second) == 0) {
+			throw("Calling undefined procedure " + caller_callee_pair.second);
+		}
+	}
+
+	UpdateAdjList();
+	CheckForCyclicCalls();
+}
 
 bool SimpleValidator::IsValidStmt() {
 	Token first_token = SimpleValidator::GetNextToken();
@@ -66,7 +78,12 @@ bool SimpleValidator::IsValidStmt() {
 
 bool SimpleValidator::IsValidProc() {
 	Token name_token = SimpleValidator::GetNextToken();
-	
+	if (proc_adj_list_.count(name_token.GetValue()) != 0) {
+		throw "Redefining procedure at line " + statement_index_;
+	}
+	curr_proc_ = name_token.GetValue();
+	proc_adj_list_.insert({name_token.GetValue(), vector<DFS_NODE>()});
+
 	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
 		throw "Invalid procedure name at line " + statement_index_;
 	}
@@ -104,6 +121,8 @@ bool SimpleValidator::IsValidPrintStmt() {
 
 bool SimpleValidator::IsValidCallStmt() {
 	Token name_token = SimpleValidator::GetNextToken();
+	
+	calls_list_.push_back(make_pair(curr_proc_, name_token.GetValue()));
 
 	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
 		throw "Invalid variable name for call statement at line " + statement_index_;
@@ -117,7 +136,7 @@ bool SimpleValidator::IsValidCallStmt() {
 }
 
 bool SimpleValidator::IsValidIfBlock() {
-	if (!SimpleValidator::IsValidExpression(GetExpressionTokens(expressionType::_if))) {
+	if (!SimpleValidator::IsValidExpression(GetExpressionTokens(ExpressionType::_if))) {
 		throw "Invalid expression at line " + statement_index_;
 	}
 	
@@ -137,7 +156,7 @@ bool SimpleValidator::IsValidIfBlock() {
 }
 
 bool SimpleValidator::IsValidWhileBlock() {
-	if (SimpleValidator::IsValidExpression(GetExpressionTokens(expressionType::_while))) {
+	if (SimpleValidator::IsValidExpression(GetExpressionTokens(ExpressionType::_while))) {
 		throw "Invalid expression at line " + statement_index_;
 	}
 
@@ -223,7 +242,7 @@ Token SimpleValidator::PeekNextToken() {
 	}
 }
 
-vector<Token> SimpleValidator::GetExpressionTokens(expressionType expr_type) {
+vector<Token> SimpleValidator::GetExpressionTokens(ExpressionType expr_type) {
 	vector<Token> expr_list;
 	int EndIndexOfTokens = GetEndIndxOfExpression(expr_type);
 	while (token_index_ < EndIndexOfTokens) {
@@ -232,18 +251,18 @@ vector<Token> SimpleValidator::GetExpressionTokens(expressionType expr_type) {
 	return expr_list;
 }
 
-int SimpleValidator::GetEndIndxOfExpression(expressionType expr_type) {
+int SimpleValidator::GetEndIndxOfExpression(ExpressionType expr_type) {
 	int end_index = token_index_;
 	string delimiter;
-	if (expr_type == expressionType::_if) {
+	if (expr_type == ExpressionType::_if) {
 		// End index is before 'then' token
 		delimiter = "then";
 	}
-	else if (expr_type == expressionType::_assign) {
+	else if (expr_type == ExpressionType::_assign) {
 		// End index is before ';' token
 		delimiter = ";";
 	}
-	else if (expr_type == expressionType::_while) {
+	else if (expr_type == ExpressionType::_while) {
 		// End index is before '{' token
 		delimiter = "{";
 	}
@@ -254,4 +273,102 @@ int SimpleValidator::GetEndIndxOfExpression(expressionType expr_type) {
 		end_index++;
 	}
 	return end_index;
+}
+
+void SimpleValidator::UpdateAdjList() {
+	/*std::cout << "Adj List: " << std::endl;
+	for (map<DFS_NODE, vector<DFS_NODE>>::iterator it = proc_adj_list_.begin();
+		it != proc_adj_list_.end(); it++)
+	{
+		std::cout << it->first  // string (key)
+			<< std::endl;
+	}
+
+	std::cout << "Caller Callee Pair: " << std::endl;
+	for (pair<string, string> caller_callee_pair : calls_list_) {
+		std::cout << "Caller: " << caller_callee_pair.first
+			<< " , Callee: " << caller_callee_pair.second << std::endl;
+	}*/
+	for (pair<string, string> caller_callee_pair : calls_list_) {
+		vector<string> lst = proc_adj_list_.at(caller_callee_pair.first);
+		lst.push_back(caller_callee_pair.second);
+		proc_adj_list_.at(caller_callee_pair.first) = lst;
+	}
+}
+
+void SimpleValidator::CheckForCyclicCalls() {
+	int node_count = 0;
+	set<DFS_NODE> white_set; // Univisited
+	set<DFS_NODE> gray_set; // Visiting
+	set<DFS_NODE> black_set; // Visited
+
+	map<DFS_NODE, DFS_NODE> parent_map;
+
+	// const bool is_in = container.find(element) != container.end();
+
+	for (map<string, vector<string>>::iterator it = proc_adj_list_.begin(); 
+		it != proc_adj_list_.end(); ++it ) { // Adding all nodes to white set
+		white_set.insert(it->first);
+		node_count++;
+	}
+
+	bool cycleDetected = false;
+	DFS_NODE curr_node;
+	curr_node = *white_set.begin();
+	white_set.erase(white_set.begin()); // Popping first item from set
+	gray_set.insert(curr_node);
+	cout << "Node count: " << node_count << endl;
+
+	while ((black_set.size() != node_count) && !cycleDetected) {
+		cout << "Blackie's size: " << black_set.size() << endl;
+		std::cout << "white set: ";
+		for (set<DFS_NODE>::iterator it = white_set.begin();
+			it != white_set.end(); it++)
+		{
+			std::cout << *it << " ";
+		}
+		std::cout << std::endl << "gray set: ";
+		for (set<DFS_NODE>::iterator it = gray_set.begin();
+			it != gray_set.end(); it++)
+		{
+			std::cout << *it << " ";
+		}
+		std::cout << std::endl << "black set: ";
+		for (set<DFS_NODE>::iterator it = black_set.begin();
+			it != black_set.end(); it++)
+		{
+			std::cout << *it << " ";
+		}
+		std::cout << std::endl;
+		vector<DFS_NODE> adj_list = proc_adj_list_.at(curr_node);
+		bool node_visited = false;
+		for (DFS_NODE node : adj_list) {
+			if (white_set.count(node) > 0) { // Node has not been visited
+				parent_map.insert({node, curr_node}); // callee, caller
+				curr_node = node;
+				white_set.erase(white_set.find(node));
+				gray_set.insert(node);
+				node_visited = true;
+				break;
+			}
+			else if (gray_set.count(node) > 0 ) {
+				cycleDetected = true;
+				break;
+			}
+			// Last case is if it's in the black_set, and dunnid to handle so just ignore
+		}
+		if (!node_visited) {
+			// Node has been fully processed, add to black set
+			black_set.insert(curr_node);
+			gray_set.erase(gray_set.find(curr_node));
+			curr_node = *(gray_set.rbegin());
+
+		} 
+
+		cout << "node_visited: " << node_visited << endl;
+		cout << endl;
+	}
+	if (cycleDetected) {
+		throw "Recursive call detected";
+	}
 }

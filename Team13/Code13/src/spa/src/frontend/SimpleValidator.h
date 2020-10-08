@@ -2,7 +2,6 @@
 #define _SIMPLEVALIDATOR_H_
 
 #include <vector>
-
 #include "FrontendTypes.h"
 
 using namespace std;
@@ -13,7 +12,11 @@ public:
 
 	int token_index_;
 	int statement_index_;
+
+	string curr_proc_;
 	TOKEN_LIST token_list_;
+	CALLS_LIST calls_list_;
+	PROC_ADJ_LIST proc_adj_list_;
 
 	bool IsValid(TOKEN_LIST token_list);
 
@@ -26,17 +29,18 @@ private:
 	bool IsValidWhileBlock();
 	bool IsValidCallStmt();
 	bool IsValidAssignment(Token name_token);
-
-	//hmmmm??
 	bool IsValidStmtList();
 	bool IsValidExpression(TOKEN_LIST expr_list);
 
-	vector<Token> GetExpressionTokens(expressionType expr_type);
-	int GetEndIndxOfExpression(expressionType expr_type);
+	vector<Token> GetExpressionTokens(ExpressionType expr_type);
+	int GetEndIndxOfExpression(ExpressionType expr_type);
 
 	Token GetNextToken();
 	Token PeekNextToken();
 	int GetEndIndxOfStatementList();
+
+	void UpdateAdjList();
+	void CheckForCyclicCalls();
 };
 
 #endif

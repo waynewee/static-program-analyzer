@@ -1,4 +1,3 @@
-#include <frontend/SimpleParser.h>
 #include <Tokenizer.h>
 #include <testUtils/Statement.h>
 #include <catch.hpp>
@@ -6,7 +5,7 @@
 #include <queue>
 
 #include "ParserTestCases.h"
-
+/*
 SimpleParser parser = SimpleParser();
 vector<TNode*> InOrderTraversal(TNode* root) {
 
@@ -199,4 +198,4 @@ TEST_CASE("Parsing call statement with wrong spelling") {
 	Tokenizer tokenizer(*(InvalidReadCase1.SourceProgram));
 	tokenizer.Tokenize();
 	REQUIRE_THROWS_AS(parser.Parse(tokenizer.GetTokenList()), std::logic_error);
-}
+}*/
