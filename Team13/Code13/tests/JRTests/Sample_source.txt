@@ -13,6 +13,7 @@ procedure C {
 }
 
 procedure D {
+    call E;
     call F;
 }
 
@@ -21,4 +22,6 @@ procedure E {
 }
 
 procedure F {
+    print hi;
+
 }

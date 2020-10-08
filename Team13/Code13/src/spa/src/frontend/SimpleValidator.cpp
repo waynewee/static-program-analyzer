@@ -339,6 +339,7 @@ void SimpleValidator::CheckForCyclicCalls() {
 	cout << "Node count: " << node_count << endl;
 
 	while ((black_set.size() != node_count) && !cycleDetected) {
+		cout << "Curr node: " << curr_node << endl;
 		/*std::cout << "white set: ";
 		for (set<DFS_NODE>::iterator it = white_set.begin();
 			it != white_set.end(); it++)
@@ -378,9 +379,11 @@ void SimpleValidator::CheckForCyclicCalls() {
 		if (!node_visited) {
 			// Node has been fully processed, add to black set
 			black_set.insert(curr_node);
+			if (black_set.size() == node_count) {
+				break;
+			}
 			gray_set.erase(gray_set.find(curr_node));
 			curr_node = *(gray_set.rbegin());
-
 		} 
 	}
 	if (cycleDetected) {
