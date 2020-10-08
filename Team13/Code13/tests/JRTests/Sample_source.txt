@@ -1,5 +1,7 @@
 procedure A {
     call B;
+    call C;
+    call D;
 }
 
 procedure B {
@@ -7,5 +9,16 @@ procedure B {
 }
 
 procedure C {
-    call A;
+    print hello;
+}
+
+procedure D {
+    call F;
+}
+
+procedure E {
+    call F;
+}
+
+procedure F {
 }
