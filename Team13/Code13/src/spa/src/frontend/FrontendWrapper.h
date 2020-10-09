@@ -10,12 +10,12 @@ using namespace std;
 
 class FrontendWrapper {
 public:
-	FrontendWrapper::FrontendWrapper(string file_name);
+	FrontendWrapper(string file_name);
 
 	TOKEN_LIST token_list_;
 
 	TNode* GetAST();
-	//CFGNode* GetCFG();
+	void GetCFG(TNode* ast_root_node);
 
 private:
 };

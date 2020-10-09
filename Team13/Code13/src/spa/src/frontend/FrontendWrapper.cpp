@@ -1,4 +1,5 @@
 #include <ASTBuilder.h>
+#include <CFGBuilder.h>
 #include <FileReader.h>
 #include <FrontendWrapper.h>
 #include <Tokenizer.h>
@@ -7,11 +8,8 @@
 
 FrontendWrapper::FrontendWrapper(string file_name) {
 	FileReader fileReader(file_name);
-
 	string input = fileReader.ReadFile();
-
 	Tokenizer tokenizer(input);
-
 	token_list_ = tokenizer.GetTokenList();
 	try {
 		SimpleValidator simple_validator;
@@ -21,7 +19,6 @@ FrontendWrapper::FrontendWrapper(string file_name) {
 		std::cout << exception << std::endl;
 		exit(1);
 	}
-	
 }
 
 TNode* FrontendWrapper::GetAST() {
@@ -30,4 +27,12 @@ TNode* FrontendWrapper::GetAST() {
 	TNode* ast_root_node = ast_builder.BuildMainPrgNode(token_list_);
 
 	return ast_root_node;
+}
+
+void FrontendWrapper::GetCFG(TNode* ast_root_node) {
+
+	for (TNode* proc_node: ast_root_node->GetChildrenVector()) {
+		CFGBuilder cfg_builder(proc_node);
+		cfg_builder.BuildCFG();
+	}
 }

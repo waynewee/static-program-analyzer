@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <queue>
 #include "CustomTypes.h"
 #include "PatternManager.h"
 #include "PKB.h"
@@ -19,6 +20,7 @@ public:
     static bool ExtractParent(RelationManager manager, TNode root);
     static bool ExtractModifies(RelationManager manager, TNode root);
     static bool ExtractUses(RelationManager manager, TNode root);
+    static bool ExtractCalls(RelationManager manager, TNode root);
     static bool ExtractData(DataManager manager, TNode root);
     static bool ExtractPattern(PatternManager manager, TNode root);
 

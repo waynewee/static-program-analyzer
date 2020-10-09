@@ -46,13 +46,16 @@ void TestWrapper::parse(string filename) {
 	/*try {
 		FrontendWrapper frontend_wrapper(filename);
 
-		TestWrapper::pkb->SetASTRoot(frontend_wrapper.GetAST());
+		TNode* ast_root_node = frontend_wrapper.GetAST();
+		frontend_wrapper.GetCFG(ast_root_node);
+		TestWrapper::pkb->SetASTRoot(ast_root_node);
 
 		DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
         DesignExtractor::ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
         DesignExtractor::ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
         DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
         DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
+		DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
         DesignExtractor::ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
 	}
 	catch (logic_error& e) {

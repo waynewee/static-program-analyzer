@@ -23,6 +23,10 @@ STMT_MODIFIES_TABLE* RelationManager::stmt_modifies_table_ = new STMT_MODIFIES_T
 PROC_MODIFIES_TABLE* RelationManager::proc_modifies_table_ = new PROC_MODIFIES_TABLE();
 INVERSE_STMT_MODIFIES_TABLE* RelationManager::inverse_stmt_modifies_table_ = new INVERSE_STMT_MODIFIES_TABLE();
 INVERSE_PROC_MODIFIES_TABLE* RelationManager::inverse_proc_modifies_table_ = new INVERSE_PROC_MODIFIES_TABLE();
+CALLS_TABLE* RelationManager::calls_table_ = new CALLS_TABLE();
+INVERSE_CALLS_TABLE* RelationManager::inverse_calls_table_ = new INVERSE_CALLS_TABLE();
+CALLS_STAR_TABLE* RelationManager::calls_star_table_ = new CALLS_TABLE();
+INVERSE_CALLS_STAR_TABLE* RelationManager::inverse_calls_star_table_ = new INVERSE_CALLS_TABLE();
 
 STMT_STMT_PAIR_LIST* RelationManager::all_follows_ = new STMT_STMT_PAIR_LIST();
 STMT_STMT_PAIR_LIST* RelationManager::all_follows_star_ = new STMT_STMT_PAIR_LIST();
@@ -32,6 +36,8 @@ STMT_VAR_PAIR_LIST* RelationManager::all_stmt_uses_ = new STMT_VAR_PAIR_LIST();
 PROC_VAR_PAIR_LIST* RelationManager::all_proc_uses_ = new PROC_VAR_PAIR_LIST();
 STMT_VAR_PAIR_LIST* RelationManager::all_stmt_modifies_ = new STMT_VAR_PAIR_LIST();
 PROC_VAR_PAIR_LIST* RelationManager::all_proc_modifies_ = new PROC_VAR_PAIR_LIST();
+PROC_PROC_PAIR_LIST* RelationManager::all_calls_ = new PROC_PROC_PAIR_LIST();
+PROC_PROC_PAIR_LIST* RelationManager::all_calls_star_ = new PROC_PROC_PAIR_LIST();
 
 STMT_IDX_SET* RelationManager::all_follows_keys_ = new STMT_IDX_SET();
 STMT_IDX_SET* RelationManager::all_inverse_follows_keys_ = new STMT_IDX_SET();
@@ -49,6 +55,10 @@ STMT_IDX_SET* RelationManager::all_stmt_modifies_keys_ = new STMT_IDX_SET();
 VAR_NAME_SET* RelationManager::all_inverse_stmt_modifies_keys_ = new VAR_NAME_SET();
 PROC_NAME_SET* RelationManager::all_proc_modifies_keys_ = new PROC_NAME_SET();
 VAR_NAME_SET* RelationManager::all_inverse_proc_modifies_keys_ = new VAR_NAME_SET();
+PROC_NAME_SET* RelationManager::all_calls_keys_ = new PROC_NAME_SET();
+PROC_NAME_SET* RelationManager::all_inverse_calls_keys_ = new PROC_NAME_SET();
+PROC_NAME_SET* RelationManager::all_calls_star_keys_ = new PROC_NAME_SET();
+PROC_NAME_SET* RelationManager::all_inverse_calls_star_keys_ = new PROC_NAME_SET();
 
 bool RelationManager::AddFollows(STMT_IDX s1, STMT_IDX s2) {
     bool can_add_follows =  InsertStmtStmtRelation(follows_table_, s1, s2);
@@ -147,12 +157,38 @@ bool RelationManager::AddProcModifies(PROC_NAME p, VAR_NAME v) {
     InsertVarKey(all_inverse_proc_modifies_keys_, v);
     return can_add_modifies && can_add_inverse_modifies;
 }
+bool RelationManager::AddCalls(PROC_NAME p1, PROC_NAME p2) {
+    bool can_add_calls = InsertProcProcRelation(calls_table_, p1, p2);
+    bool can_add_inverse_calls = InsertProcProcRelation(inverse_calls_table_, p2, p1);
+    bool can_add_calls_star = InsertProcProcRelation(calls_star_table_, p1, p2);
+    bool can_add_inverse_calls_star = InsertProcProcRelation(inverse_calls_star_table_, p2, p1);
+    if (can_add_calls) {
+        InsertProcProcTuple(all_calls_, p1, p2);
+    }
+    if (can_add_calls_star) {
+        InsertProcProcTuple(all_calls_star_, p1, p2);
+    }
+    InsertProcKey(all_calls_keys_, p1);
+    InsertProcKey(all_inverse_calls_keys_, p2);
+    InsertProcKey(all_calls_star_keys_, p1);
+    InsertProcKey(all_inverse_calls_star_keys_, p2);
+    return can_add_calls && can_add_inverse_calls && can_add_calls_star && can_add_inverse_calls_star;
+}
 
+bool RelationManager::AddCallsStar(PROC_NAME p1, PROC_NAME p2) {
+    bool can_add_calls_star = InsertProcProcRelation(calls_star_table_, p1, p2);
+    bool can_add_inverse_calls_star = InsertProcProcRelation(inverse_calls_star_table_, p2, p1);
+    if (can_add_calls_star) {
+        InsertProcProcTuple(all_calls_star_, p1, p2);
+    }
+    InsertProcKey(all_calls_star_keys_, p1);
+    InsertProcKey(all_inverse_calls_star_keys_, p2);
+    return can_add_calls_star && can_add_inverse_calls_star;
+}
 
 bool RelationManager::IsFollows(STMT_IDX s1, STMT_IDX s2) {
     return CheckStmtStmtRelation(follows_table_, inverse_follows_table_, s1, s2);
 }
-
 bool RelationManager::IsFollowsStar(STMT_IDX s1, STMT_IDX s2) {
     return CheckStmtStmtRelation(follows_star_table_, inverse_follows_star_table_, s1, s2);
 }
@@ -173,6 +209,12 @@ bool RelationManager::IsStmtModifies(STMT_IDX s, VAR_NAME v) {
 }
 bool RelationManager::IsProcModifies(PROC_NAME p, VAR_NAME v) {
     return CheckProcVarRelation(proc_modifies_table_, inverse_proc_modifies_table_, p, v);
+}
+bool RelationManager::IsCalls(PROC_NAME p1, PROC_NAME p2) {
+    return CheckProcProcRelation(calls_table_, inverse_calls_table_, p1, p2);
+}
+bool RelationManager::IsCallsStar(PROC_NAME p1, PROC_NAME p2) {
+    return CheckProcProcRelation(calls_star_table_, inverse_calls_star_table_, p1, p2);
 }
 
 STMT_IDX_SET RelationManager::GetFollows(STMT_IDX s) {
@@ -223,6 +265,19 @@ VAR_NAME_SET RelationManager::GetProcModifies(PROC_NAME p) {
 PROC_NAME_SET  RelationManager::GetInverseProcModifies(VAR_NAME v) {
     return GetVarProcRelationVal(inverse_proc_modifies_table_, all_proc_modifies_keys_, v);
 }
+PROC_NAME_SET RelationManager::GetCalls(PROC_NAME p) {
+    return GetProcProcRelationVal(calls_table_, all_inverse_calls_keys_, p);
+}
+PROC_NAME_SET RelationManager::GetInverseCalls(PROC_NAME p) {
+    return GetProcProcRelationVal(inverse_calls_table_, all_calls_keys_, p);
+}
+PROC_NAME_SET RelationManager::GetCallsStars(PROC_NAME p) {
+    return GetProcProcRelationVal(calls_star_table_, all_inverse_calls_star_keys_, p);
+}
+PROC_NAME_SET RelationManager::GetInverseCallsStars(PROC_NAME p) {
+    return GetProcProcRelationVal(inverse_calls_star_table_, all_calls_star_keys_, p);
+}
+
 STMT_STMT_PAIR_LIST RelationManager::GetAllFollows() {
     return *all_follows_;
 }
@@ -246,6 +301,12 @@ STMT_VAR_PAIR_LIST RelationManager::GetAllStmtModifies() {
 }
 PROC_VAR_PAIR_LIST RelationManager::GetAllProcModifies() {
     return *all_proc_modifies_;
+}
+PROC_PROC_PAIR_LIST RelationManager::GetAllCalls() {
+    return *all_calls_;
+}
+PROC_PROC_PAIR_LIST RelationManager::GetAllCallsStar() {
+    return *all_calls_star_;
 }
 
 bool RelationManager::InsertStmtStmtRelation(STMT_STMT_RELATION_TABLE* set, STMT_IDX s1, STMT_IDX s2) {
@@ -299,6 +360,17 @@ bool RelationManager::InsertVarProcRelation(VAR_PROC_RELATION_TABLE *set, VAR_NA
         return set->at(v)->insert(p).second;
     }
 }
+
+bool RelationManager::InsertProcProcRelation(VAR_PROC_RELATION_TABLE *set, PROC_NAME p1, PROC_NAME p2) {
+    auto iter = set->find(p1);
+    if (iter == set->end()) {
+        PROC_NAME_SET* proc_name_set = new PROC_NAME_SET();
+        return set->insert({p1, proc_name_set}).second && proc_name_set->insert(p2).second;
+    } else {
+        return set->at(p1)->insert(p2).second;
+    }
+}
+
 bool RelationManager::CheckStmtStmtRelation(STMT_STMT_RELATION_TABLE *set, STMT_STMT_RELATION_TABLE *inv_set, STMT_IDX s1, STMT_IDX s2) {
     //If s1 and s2 are both wildcard, then just check if program contains such relation
     if (s1 < 0 && s2 < 0) {
@@ -349,6 +421,23 @@ bool RelationManager::CheckProcVarRelation(PROC_VAR_RELATION_TABLE *set, VAR_PRO
     return iter != set->end() && iter->second->find(v) != iter->second->end();
 }
 
+bool RelationManager::CheckProcProcRelation(PROC_PROC_RELATION_TABLE *set, PROC_PROC_RELATION_TABLE *inv_set, PROC_NAME p1, PROC_NAME p2) {
+    //If p1 and p2 are both wildcard, then just check if program contains such relation
+    if (p1.empty() && p2.empty()) {
+        return !set->empty();
+    }
+    if (p1.empty()) {
+        auto iter = inv_set->find(p2);
+        return iter != inv_set->end() && !(iter->second->empty());
+    }
+    if (p2.empty()) {
+        auto iter = set->find(p1);
+        return iter != set->end() && !(iter->second->empty());
+    }
+    auto iter = set->find(p1);
+    return iter != set->end() && iter->second->find(p2) != iter->second->end();
+}
+
 bool RelationManager::CheckVarStmtRelation(VAR_STMT_RELATION_TABLE *set, VAR_NAME v, STMT_IDX s) {
     auto iter = set->find(v);
     return iter != set->end() && iter->second->find(s) != iter->second->end();
@@ -358,6 +447,7 @@ bool RelationManager::CheckVarProcRelation(VAR_PROC_RELATION_TABLE *set, VAR_NAM
     auto iter = set->find(v);
     return iter != set->end() && iter->second->find(p) != iter->second->end();
 }
+
 
 STMT_IDX_SET RelationManager::GetStmtStmtRelationVal(STMT_STMT_RELATION_TABLE *set, STMT_IDX_SET *stmt_keys, STMT_IDX s) {
     if (s < 0) {
@@ -411,6 +501,18 @@ PROC_NAME_SET RelationManager::GetVarProcRelationVal(VAR_PROC_RELATION_TABLE *se
     }
     return PROC_NAME_SET();
 }
+
+PROC_NAME_SET RelationManager::GetProcProcRelationVal(PROC_PROC_RELATION_TABLE *set, PROC_NAME_SET *proc_keys, PROC_NAME p) {
+    if (p.empty()) {
+        return *proc_keys;
+    }
+    auto iter = set->find(p);
+    if (iter != set->end())  {
+        return *(iter->second);
+    }
+    return PROC_NAME_SET();
+}
+
 void RelationManager::InsertStmtStmtTuple(STMT_STMT_PAIR_LIST *set, STMT_IDX s1, STMT_IDX s2) {
     STMT_STMT_PAIR pair = {s1, s2};
     set->push_back(pair);
@@ -421,6 +523,10 @@ void RelationManager::InsertStmtVarTuple(STMT_VAR_PAIR_LIST *set, STMT_IDX s, VA
 }
 void RelationManager::InsertProcVarTuple(PROC_VAR_PAIR_LIST *set, PROC_NAME p, VAR_NAME v) {
     PROC_VAR_PAIR pair = {p, v};
+    set->push_back(pair);
+}
+void RelationManager::InsertProcProcTuple(PROC_PROC_PAIR_LIST *set, PROC_NAME p1, PROC_NAME p2) {
+    PROC_PROC_PAIR pair = {p1, p2};
     set->push_back(pair);
 }
 bool RelationManager::InsertStmtKey(STMT_IDX_SET *set, STMT_IDX s) {

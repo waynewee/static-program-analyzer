@@ -151,7 +151,7 @@ bool SimpleValidator::IsValidCallStmt() {
 bool SimpleValidator::IsValidIfBlock() {
 	if (!SimpleValidator::IsValidExpression(GetExpressionTokens(ExpressionType::_if))) {
 		cout << "(Line: " << statement_index_ << ") ";
-		throw "Invalid expression";
+		throw "Invalid expression in if block";
 	}
 	
 	if (SimpleValidator::GetNextToken().GetValue() != TYPE_STMT_IF_THEN) {
@@ -174,7 +174,7 @@ bool SimpleValidator::IsValidIfBlock() {
 bool SimpleValidator::IsValidWhileBlock() {
 	if (SimpleValidator::IsValidExpression(GetExpressionTokens(ExpressionType::_while))) {
 		cout << "(Line: " << statement_index_ << ") ";
-		throw "Invalid expression";
+		throw "Invalid expression in while block";
 	}
 
 	SimpleValidator::IsValidStmtList();
@@ -264,9 +264,14 @@ Token SimpleValidator::PeekNextToken() {
 vector<Token> SimpleValidator::GetExpressionTokens(ExpressionType expr_type) {
 	vector<Token> expr_list;
 	int EndIndexOfTokens = GetEndIndxOfExpression(expr_type);
+	//cout << "Tokens List: ";
 	while (token_index_ < EndIndexOfTokens) {
-		expr_list.push_back(GetNextToken());
+		Token next_token = GetNextToken();
+		//cout << next_token.GetValue() + " ";
+		expr_list.push_back(next_token);
+		
 	}
+	//cout << endl;
 	return expr_list;
 }
 
