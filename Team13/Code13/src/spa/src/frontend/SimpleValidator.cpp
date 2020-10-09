@@ -271,12 +271,6 @@ vector<Token> SimpleValidator::GetExpressionTokens(ExpressionType expr_type) {
 		expr_list.push_back(GetNextToken());
 		
 	}
-	cout << "Tokens List: ";
-
-	for (Token t : expr_list) {
-		cout << t.GetValue() + " ";
-	}
-	cout << endl;
 	return expr_list;
 }
 
