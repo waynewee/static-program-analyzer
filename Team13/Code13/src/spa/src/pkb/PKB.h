@@ -7,7 +7,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
 #include <CFG.h>
+#include <CFGManager.h>
 #include <CustomTypes.h>
 #include <DataManager.h>
 #include <DesignExtractor.h>
@@ -22,8 +24,8 @@ class PKB {
     static DataManager data_manager_;
     static RelationManager relation_manager_;
     static PatternManager pattern_manager_;
+    static CFGManager cfg_manager_;
     static TNode ast_;
-    static CFG cfg_;
 public:
     PKB() {
     }
@@ -31,10 +33,11 @@ public:
     DataManager GetDataManager();
     RelationManager GetRelationManager();
     PatternManager GetPatternManager();
-    CFG GetCFG(CFG cfg);
+    CFGManager GetCFGManager();
+    CFG& GetCFG();
 
     void SetASTRoot(TNode* root);
-    void SetCFG(CFG cfg);
+    void SetCFG(CFG& cfg);
 };
 
 class ASTRootTypeUnmatchException: public exception {

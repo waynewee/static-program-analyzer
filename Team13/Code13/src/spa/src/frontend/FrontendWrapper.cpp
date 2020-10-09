@@ -16,11 +16,10 @@ FrontendWrapper::FrontendWrapper(string file_name) {
 		SimpleValidator simple_validator;
 		simple_validator.IsValid(tokenizer.GetTokenList());
 	}
-	catch (string exception) {
+	catch (char* exception) {
 		std::cout << exception << std::endl;
 		exit(1);
 	}
-	
 }
 
 TNode* FrontendWrapper::GetAST() {

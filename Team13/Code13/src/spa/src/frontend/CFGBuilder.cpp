@@ -137,7 +137,7 @@ void CFGBuilder::PrintCFG() {
 	STMT_IDX_SET GetAllEdges(STMT_IDX s1);
 	bool HasEdge(STMT_IDX s1, STMT_IDX s2);*/
 
-	unordered_map<STMT_IDX, STMT_IDX_SET*> m = cfg_->data_;
+	unordered_map<STMT_IDX, STMT_IDX_SET*> m = cfg_->GetAdjacencyList();
 
 	string edge = "----->";
 
