@@ -8,12 +8,13 @@ private:
     CFG_ADJACENCY_LIST next_star_cache_;
     CFG_ADJACENCY_LIST inverse_next_star_cache_;
     STMT_STMT_PAIR_LIST all_next_star_edge_cache_;
-    STMT_STMT_PAIR_LIST all_inverse_next_star_cache_;
     STMT_IDX_SET* DFS(CFG_ADJACENCY_LIST& table, STMT_IDX s);
     void AddAllInverseNext();
     void InsertCache(CFG_ADJACENCY_LIST &table, STMT_STMT_PAIR_LIST &edges, STMT_IDX_SET *result, STMT_IDX s);
+    void InsertCache(CFG_ADJACENCY_LIST &table, STMT_IDX_SET *result, STMT_IDX s);
 public:
     void SetCFG(CFG& cfg);
+    CFG& GetCFG();
     STMT_IDX_SET GetNext(STMT_IDX s);
     STMT_IDX_SET GetNextStar(STMT_IDX s);
     STMT_IDX_SET GetInverseNext(STMT_IDX s);

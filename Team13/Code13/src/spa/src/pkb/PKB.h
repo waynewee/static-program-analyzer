@@ -26,7 +26,6 @@ class PKB {
     static PatternManager pattern_manager_;
     static CFGManager cfg_manager_;
     static TNode ast_;
-    static CFG cfg_;
 public:
     PKB() {
     }

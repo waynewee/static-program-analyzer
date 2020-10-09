@@ -1,7 +1,7 @@
 //
 // Created by Xu Lin on 5/10/20.
 //
-
+#include <iostream>
 #include "CFG.h"
 bool CFG::AddEdge(STMT_IDX s1, STMT_IDX s2) {
     auto result = AddEdgeUtil(data_, all_edges_, s1, s2);
@@ -30,10 +30,18 @@ STMT_IDX_SET CFG::GetAllInverseAdjacencyListKeys() {
     return inverse_data_keys_;
 }
 STMT_IDX_SET CFG::GetAllNeighbors(STMT_IDX s1) {
-    return *data_.at(s1);
+    auto iter = data_.find(s1);
+    if(iter != data_.end()) {
+        return *(iter->second);
+    }
+    return STMT_IDX_SET();
 }
 STMT_IDX_SET CFG::GetAllInverseNeighbors(STMT_IDX s1) {
-    return *inverse_data_.at(s1);
+    auto iter = inverse_data_.find(s1);
+    if(iter != inverse_data_.end()) {
+        return *(iter->second);
+    }
+    return STMT_IDX_SET();
 }
 bool CFG::HasEdge(STMT_IDX s1, STMT_IDX s2) {
     return HasEdgeUtil(data_, s1, s2);
@@ -46,8 +54,8 @@ bool CFG::RemoveEdge(STMT_IDX s1, STMT_IDX s2) {
     if (iter != data_.end()) {
         auto result = iter->second->erase(s2);
         if (iter->second->empty()) {
-            iter = data_.erase(iter);
-            return result && iter->second;
+            data_.erase(iter);
+            return result && data_.find(s1) == data_.end();
         }
         return result;
     }
@@ -59,7 +67,7 @@ CFG_ADJACENCY_LIST& CFG::GetAdjacencyList() {
 CFG_ADJACENCY_LIST& CFG::GetInverseAdjacencyList() {
     return inverse_data_;
 }
-bool CFG::AddEdgeUtil(CFG_ADJACENCY_LIST &table, STMT_STMT_PAIR_LIST pairs, STMT_IDX s1, STMT_IDX s2) {
+bool CFG::AddEdgeUtil(CFG_ADJACENCY_LIST &table, STMT_STMT_PAIR_LIST& pairs, STMT_IDX s1, STMT_IDX s2) {
     auto iter = table.find(s1);
     bool result = true;
     if (iter == table.end()) {

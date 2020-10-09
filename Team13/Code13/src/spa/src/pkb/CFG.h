@@ -14,7 +14,7 @@ private:
 
     STMT_STMT_PAIR_LIST all_edges_;
 
-    bool AddEdgeUtil(CFG_ADJACENCY_LIST &table, STMT_STMT_PAIR_LIST pairs, STMT_IDX s1, STMT_IDX s2);
+    bool AddEdgeUtil(CFG_ADJACENCY_LIST &table, STMT_STMT_PAIR_LIST& pairs, STMT_IDX s1, STMT_IDX s2);
     bool AddEdgeUtil(CFG_ADJACENCY_LIST &table, STMT_IDX s1, STMT_IDX s2);
     bool AddKeyUtil(STMT_IDX_SET& keys, STMT_IDX s);
     bool HasEdgeUtil(CFG_ADJACENCY_LIST& table, STMT_IDX s1, STMT_IDX s2);

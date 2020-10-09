@@ -2,6 +2,7 @@
 // Created by Xu Lin on 9/10/20.
 //
 #include <stack>
+#include <iostream>
 #include "CFGManager.h"
 void CFGManager::SetCFG(CFG& cfg) {
     cfg_ = cfg;
@@ -30,11 +31,18 @@ STMT_IDX_SET CFGManager::GetNextStar(STMT_IDX s) {
         return cfg_.GetAllInverseAdjacencyListKeys();
     }
     STMT_IDX_SET *result = nullptr;
-    auto cached_result = next_star_cache_.find(s);
-    if (cached_result == next_star_cache_.end()) {
+    auto cache_iter = next_star_cache_.find(s);
+    if (cache_iter == next_star_cache_.end()) {
         result = DFS(cfg_.GetAdjacencyList(), s);
         InsertCache(next_star_cache_, all_next_star_edge_cache_, result, s);
+    } else {
+        result = cache_iter->second;
     }
+    //debug
+//    std::cout << "DFS next star" << std::endl;
+//    for (auto element: *result) {
+//        std::cout << element << " ";
+//    }
     return *result;
 }
 STMT_IDX_SET CFGManager::GetInverseNext(STMT_IDX s) {
@@ -48,11 +56,18 @@ STMT_IDX_SET CFGManager::GetInverseNextStar(STMT_IDX s) {
         return cfg_.GetAllAdjacencyListKeys();
     }
     STMT_IDX_SET *result = nullptr;
-    auto cached_result = inverse_next_star_cache_.find(s);
-    if (cached_result == inverse_next_star_cache_.end()) {
+    auto cache_iter = inverse_next_star_cache_.find(s);
+    if (cache_iter == inverse_next_star_cache_.end()) {
         result = DFS(cfg_.GetInverseAdjacencyList(), s);
-        InsertCache(inverse_next_star_cache_, all_inverse_next_star_cache_, result, s);
+        InsertCache(inverse_next_star_cache_, result, s);
+    } else {
+        result = cache_iter->second;
     }
+    //debug
+//    std::cout << "DFS inverse next star" << std::endl;
+//    for (auto element: *result) {
+//        std::cout << element << " ";
+//    }
     return *result;
 }
 STMT_IDX_SET CFGManager::GetAffects(STMT_IDX s) {
@@ -116,7 +131,7 @@ STMT_STMT_PAIR_LIST CFGManager::GetAllNextStar() {
     for (auto node: nodes) {
         auto cache_iter = next_star_cache_.find(node);
         if (cache_iter == next_star_cache_.end()) {
-            auto next_star_of_node = GetAllNextStar();
+            auto next_star_of_node = GetNextStar(node);
         }
     }
     return all_next_star_edge_cache_;
@@ -137,11 +152,10 @@ STMT_IDX_SET* CFGManager::DFS(CFG_ADJACENCY_LIST& table, STMT_IDX s) {
     auto neighbors = value->second;
     for (auto n: *neighbors) {
         stack.push(n);
+        result->insert(n);
     }
-
     while (!stack.empty()){
-        auto node = stack.top();
-        result->insert(node);
+        s = stack.top();
         stack.pop();
         value = table.find(s);
         if (value == table.end()) {
@@ -152,9 +166,14 @@ STMT_IDX_SET* CFGManager::DFS(CFG_ADJACENCY_LIST& table, STMT_IDX s) {
             //node has not been visited yet
             if (result->find(n) == result->end()) {
                 stack.push(n);
+                result->insert(n);
             }
         }
     }
+    //debug
+//    for (auto element: *result) {
+//        std::cout << element << " ";
+//    }
     return result;
 }
 void CFGManager::InsertCache(CFG_ADJACENCY_LIST &table, STMT_STMT_PAIR_LIST &edges, STMT_IDX_SET *result, STMT_IDX s) {
@@ -177,6 +196,22 @@ void CFGManager::InsertCache(CFG_ADJACENCY_LIST &table, STMT_STMT_PAIR_LIST &edg
             }
         }
     }
+}
+void CFGManager::InsertCache(CFG_ADJACENCY_LIST &table, STMT_IDX_SET *result, STMT_IDX s) {
+    if (result->empty()) {
+        return;
+    }
+    auto value = table.find(s);
+    if (value == table.end()) {
+        table.insert({s, result});
+    } else {
+        for (auto node: *result) {
+            table.at(s)->insert(node);
+        }
+    }
+}
+CFG &CFGManager::GetCFG() {
+    return cfg_;
 }
 
 
