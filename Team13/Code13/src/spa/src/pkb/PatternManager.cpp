@@ -184,21 +184,11 @@ bool PatternManager::AreTwoNodesEqual(TNode root, TNode query_root) {
 //}
 
 TNode* PatternManager::ParseExpression(EXPRESSION s) {
-    
     Tokenizer tokenizer = Tokenizer(s);
     ExprParser expr_parser = ExprParser(tokenizer.token_list_);
     TNode* node = expr_parser.Parse();
 
     return node;
-    /*if (IsNumber(s)) {
-        CONST_VALUE val = (CONST_VALUE) stoi(s);
-        auto node = new TNode(TNode::NODE_TYPE::constValue, val);
-        return node;
-    }
-    else {
-        auto node = new TNode(TNode::NODE_TYPE::varName, s);
-        return node;
-    }*/
 }
 
 
