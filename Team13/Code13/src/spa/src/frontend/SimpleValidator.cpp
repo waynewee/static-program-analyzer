@@ -172,7 +172,7 @@ bool SimpleValidator::IsValidIfBlock() {
 }
 
 bool SimpleValidator::IsValidWhileBlock() {
-	if (SimpleValidator::IsValidExpression(GetExpressionTokens(ExpressionType::_while))) {
+	if (!SimpleValidator::IsValidExpression(GetExpressionTokens(ExpressionType::_while))) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid expression in while block";
 	}
@@ -212,6 +212,15 @@ bool SimpleValidator::IsValidStmtList() {
 }
 
 bool SimpleValidator::IsValidExpression(TOKEN_LIST expr_list) {
+
+	cout << "Expression" << endl;
+
+	for (Token token : expr_list) {
+		cout << token.GetValue();
+	}
+
+	cout << "\nEnd Expression" << endl;
+
 	return ExprValidator::Validate(expr_list);
 }
 
@@ -271,7 +280,7 @@ vector<Token> SimpleValidator::GetExpressionTokens(ExpressionType expr_type) {
 		expr_list.push_back(next_token);
 		
 	}
-	//cout << endl;
+
 	return expr_list;
 }
 

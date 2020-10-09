@@ -8,6 +8,10 @@ using namespace std;
 
 bool ExprValidator::Validate(TOKEN_LIST token_list) {
 
+	for (Token token : token_list) {
+		cout << token.GetValue() << endl;
+	}
+
 	int prev_index = -1;
 	int curr_index = 0;
 
@@ -17,7 +21,7 @@ bool ExprValidator::Validate(TOKEN_LIST token_list) {
 			Token prev_token = token_list.at(prev_index);
 			Token curr_token = token_list.at(curr_index);
 
-			if (!ExprValidator::CheckValid(prev_token, curr_token)) {
+			if (!ExprValidator::CheckValid(prev_token, curr_token)){
 				return false;
 			}
 		}
@@ -25,6 +29,8 @@ bool ExprValidator::Validate(TOKEN_LIST token_list) {
 		prev_index++;
 		curr_index++;
 	}
+
+	cout << "valid" << endl;
 
 	return true;
 
@@ -79,4 +85,6 @@ bool ExprValidator::CheckValid(Token prev_token, Token curr_token) {
 			return false;
 		}
 	}
+
+	return true;
 }
