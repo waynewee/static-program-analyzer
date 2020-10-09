@@ -7,19 +7,28 @@ using namespace std;
 class PQLParser
 {
 public:
-	QueryInfo Parse(string s);
+	QueryInfo Parse(STRING query);
 
-	void TrimLeadingWhitespaces(string* s);
+	STRING_LIST SplitBySemicolons(STRING* query);
 
-	void TrimTrailingWhitespaces(string* s);
+	STRING RetrieveToken(STRING* str);
 
-	STRING_LIST SplitBySemicolons(string* query);
+	STRING RetrieveTokenByOpenBracket(STRING* str);
 
-	string DeleteOneWordAndRetrieveIt(string* str);
-
-	string DeleteByOpenBracketAndRetrieveIt(string* str);
+	STRING RetrieveTokenByClosingAngleBracket(STRING* str);
 
 	STRING_STRINGLIST_MAP ParsePatternClause(string* clause, STRING_STRING_MAP all_user_declared_var,
 		QuerySyntaxValidator* query_syntax_validator);
+
+	STRING_STRING_MAP ParseDeclaration(STRING decl);
+
+	VOID ParseResultClauseElem(STRING token, STRING_LIST* output_list);
+
+	VOID ParseResultClauseTuple(STRING token, STRING_LIST* output_list);
+
+	STRING_LIST ExtractArguments(STRING token);
+
+	BOOLEAN IsPatternPartial(STRING token);
+
 };
 

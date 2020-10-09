@@ -4,10 +4,12 @@
 
 class QueryResult
 {
-public:
-	STRING_SET result;
+private:
+	STRINGLIST_SET result;
 
-	STRING_SET GetResult();
-	VOID SetResult(STRING_SET result);
-	BOOLEAN IsEmpty();
+public:
+	QueryResult();
+
+	STRINGLIST_SET GetResult();
+	VOID SetResult(STRINGLIST_SET result);
 };

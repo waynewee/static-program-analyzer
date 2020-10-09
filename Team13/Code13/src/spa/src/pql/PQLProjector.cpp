@@ -3,7 +3,7 @@
 #include <sstream>
 
 STRING_SET PQLProjector::Project(QueryResult query_result) {
-	STRING_SET result = query_result.GetResult();
+	// STRINGLIST result = query_result.GetResult();
 
 	/*
 	stringstream inter_result;
@@ -16,5 +16,5 @@ STRING_SET PQLProjector::Project(QueryResult query_result) {
 	}
 	*/
 
-	return result;
+	return {};
 }

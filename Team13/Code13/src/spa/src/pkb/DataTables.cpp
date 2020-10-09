@@ -67,8 +67,8 @@ bool VariableTable::Add(VAR_NAME v) {
     return data_.insert(v).second;
 }
 bool ConstTable::Add(CONST_VALUE cv) {
-    return data_.insert(cv).second;
+    return data_.insert((int) cv).second;
 }
-CONST_VALUE_SET ConstTable::GetAll() {
+INT_SET ConstTable::GetAll() {
     return data_;
 }

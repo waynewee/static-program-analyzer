@@ -1,4 +1,5 @@
 #include "PQLCustomTypes.h"
+#include "QueryRules.h"
 #include <string>
 #include <unordered_set>
 #include <unordered_map>
@@ -7,38 +8,25 @@ using namespace std;
 #pragma once
 class QuerySyntaxValidator
 {
+private:
+	QueryRules query_rules_;
+
 public:
-	STRING_STRING_MAP ValidateDeclaration(string decl);
+	QuerySyntaxValidator();
 
-	void ValidateSelectClauseStartsWithSelect(string s);
+	BOOLEAN ValidateDeclaration(STRING decl);
 
-	bool ValidateVariableName(string s);
+	BOOLEAN ValidateSelect(STRING token);
 
-	bool ValidateVariableExists(string s, STRING_STRING_MAP varNames);
+	BOOLEAN ValidateResultClause(STRING token, STRING_STRING_MAP user_declared_vars);
 
-	STRING_STRINGLIST_MAP ValidateSuchThatClause(string s, STRING_STRING_MAP declaredVarNames);
+	BOOLEAN ValidateSuchthatClause(STRING token, STRING_STRING_MAP user_declared_vars);
 
-	STRING_STRINGLIST_MAP ValidatePatternClause(string s, STRING_STRING_MAP declaredVarNames);
+	STRING GetValidRelRefType(STRING token, STRING_STRING_MAP user_declared_vars);
 
-	bool ValidateVariableIsAssign(string s, STRING_STRING_MAP declared_var_names);
+	BOOLEAN ValidatePatternClause(STRING token, STRING_STRING_MAP user_declared_vars);
 
-	void ValidateExpression(const string& s);
-
-	string TrimLeadingWhitespaces(const string& s);
-
-	string TrimTrailingWhitespaces(const string& s);
-
-	string TrimAllWhitespaces(const string& s);
-
-	bool IsInteger(string i);
-
-	bool IsEntRef(string s, STRING_STRING_MAP declaredVars);
-
-	bool IsOperator(char c);
-
-	bool IsUnderscore(string s);
-
-	int NthOccurrence(string* str, const string& target, int nth);
+	BOOLEAN ValidateWithClause(STRING token, STRING_STRING_MAP user_declared_vars);
 
 };
 

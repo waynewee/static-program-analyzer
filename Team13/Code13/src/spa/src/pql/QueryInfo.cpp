@@ -7,15 +7,11 @@ STRING_STRINGLISTLIST_MAP QueryInfo::GetStMap() {
 	return this->st_map_;
 }
 
-STRING_STRINGLISTLIST_MAP QueryInfo::GetPPatternMap() {
-	return this->p_pattern_map_;
+STRING_STRINGLISTLIST_MAP QueryInfo::GetPatternMap() {
+	return this->pattern_map_;
 }
 
-STRING_STRINGLISTLIST_MAP QueryInfo::GetFPatternMap() {
-	return this->f_pattern_map_;
-}
-
-STRING_STRINGLIST_MAP QueryInfo::GetWithMap() {
+STRINGPAIR_SET QueryInfo::GetWithMap() {
 	return this->with_map_;
 }
 
@@ -36,15 +32,11 @@ VOID QueryInfo::SetStMap(STRING_STRINGLISTLIST_MAP rel_ref_map) {
 	this->st_map_ = rel_ref_map;
 }
 
-VOID QueryInfo::SetPPatternMap(STRING_STRINGLISTLIST_MAP p_pattern_map) {
-	this->p_pattern_map_ = p_pattern_map;
+VOID QueryInfo::SetPatternMap(STRING_STRINGLISTLIST_MAP pattern_map) {
+	this->pattern_map_ = pattern_map;
 }
 
-VOID QueryInfo::SetFPatternMap(STRING_STRINGLISTLIST_MAP f_pattern_map) {
-	this->f_pattern_map_ = f_pattern_map;
-}
-
-VOID QueryInfo::SetWithMap(STRING_STRINGLIST_MAP with_map) {
+VOID QueryInfo::SetWithMap(STRINGPAIR_SET with_map) {
 	this->with_map_ = with_map;
 }
 
@@ -64,33 +56,14 @@ VOID QueryInfo::SetValidToFalse() {
 VOID QueryInfo::PrintClausesMap() {
 	cout << "----- Clauses ----- " << endl;
 	PrintStMap();
-	PrintPPatternMap();
-	PrintFPatternMap();
+	PrintPatternMap();
 	PrintWithMap();
 	cout << "-------------------- " << endl;
 }
 
-VOID QueryInfo::PrintFPatternMap() {
-	cout << "----- Full Pattern Clauses ----- " << endl;
-	for (auto const& pair : this->f_pattern_map_) {
-		cout << " { " << pair.first << " , ";
-		for (STRING_LIST v : pair.second) {
-			cout << " < ";
-			for (auto i : v) {
-				cout << i << ", ";
-			}/*
-			else {
-				cout << "{ " << *(v->at(0)) << " " << *(v->at(1)) << "} ";
-			}*/
-		}
-
-	}
-	cout << "-------------------- " << endl;
-}
-
-VOID QueryInfo::PrintPPatternMap() {
-	cout << "----- Partial Pattern Clauses ----- " << endl;
-	for (auto const& pair : this->p_pattern_map_) {
+VOID QueryInfo::PrintPatternMap() {
+	cout << "----- Pattern Clauses ----- " << endl;
+	for (auto const& pair : this->pattern_map_) {
 		cout << " { " << pair.first << " , ";
 		for (STRING_LIST v : pair.second) {
 			cout << " < ";
@@ -125,21 +98,21 @@ VOID QueryInfo::PrintStMap() {
 }
 
 VOID QueryInfo::PrintWithMap() {
-	cout << "----- St Clauses ----- " << endl;
-	for (auto const& pair : this->with_map_) {
-		cout << " { " << pair.first << " , ";
-		for (STRING v : pair.second) {
-			cout << " < ";
-			for (auto i : v) {
-				cout << i << ", ";
-			}/*
-			else {
-				cout << "{ " << *(v->at(0)) << " " << *(v->at(1)) << "} ";
-			}*/
-		}
+	//cout << "----- St Clauses ----- " << endl;
+	//for (auto const& pair : this->with_map_) {
+	//	cout << " { " << pair.first << " , ";
+	//	for (STRING v : pair.second) {
+	//		cout << " < ";
+	//		for (auto i : v) {
+	//			cout << i << ", ";
+	//		}/*
+	//		else {
+	//			cout << "{ " << *(v->at(0)) << " " << *(v->at(1)) << "} ";
+	//		}*/
+	//	}
 
-	}
-	cout << "-------------------- " << endl;
+	//}
+	//cout << "-------------------- " << endl;
 }
 
 VOID QueryInfo::PrintEntityMap() {

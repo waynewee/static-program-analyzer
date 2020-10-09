@@ -11,6 +11,7 @@
 #define TYPE_PROC "procedure"
 #define TYPE_VAR "variable"
 #define TYPE_STMT "stmt"
+#define TYPE_PROG_LINE "prog_line"
 
 #define TYPE_STMT_ASSIGN "assign"
 #define TYPE_STMT_CALL "call"
@@ -59,12 +60,13 @@ typedef struct {
 
 
 typedef std::vector<VAR_NAME> VAR_NAME_LIST;
-typedef std::vector<PROC_NAME*> PROC_NAME_LIST;
+typedef std::vector<PROC_NAME> PROC_NAME_LIST;
 typedef std::vector<STMT_IDX> STMT_IDX_LIST;
 typedef std::unordered_set<VAR_NAME> VAR_NAME_SET;
 typedef std::unordered_set<PROC_NAME> PROC_NAME_SET;
 typedef std::unordered_set<STMT_IDX> STMT_IDX_SET;
 typedef std::unordered_set<CONST_VALUE> CONST_VALUE_SET;
+typedef std::unordered_set<int> INT_SET;
 typedef std::vector<STMT_STMT_PAIR> STMT_STMT_PAIR_LIST;
 typedef std::vector<STMT_VAR_PAIR> STMT_VAR_PAIR_LIST;
 typedef std::vector<PROC_VAR_PAIR> PROC_VAR_PAIR_LIST;

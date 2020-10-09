@@ -32,7 +32,7 @@ PROC_NAME_SET DataManager::GetAllProcedures() {
 bool DataManager::AddConstant(CONST_VALUE c) {
     return const_table_.Add(c);
 }
-CONST_VALUE_SET DataManager::GetAllConstants() {
+INT_SET DataManager::GetAllConstants() {
     return const_table_.GetAll();
 }
 ConstTable DataManager::GetConstTable() {
