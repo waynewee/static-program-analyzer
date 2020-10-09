@@ -187,7 +187,10 @@ bool SimpleValidator::IsValidAssignment(Token name_token) {
 		throw "Missing '='";
 	}
 
-	SimpleValidator::IsValidExpression(GetExpressionTokens(_assign));
+	if (!SimpleValidator::IsValidExpression(GetExpressionTokens(_assign))) {
+		cout << "(Line: " << statement_index_ << ") ";
+		throw "Invalid expression in assignment";
+	}
 
 	if (SimpleValidator::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
 		cout << "(Line: " << statement_index_ << ") ";
@@ -264,14 +267,16 @@ Token SimpleValidator::PeekNextToken() {
 vector<Token> SimpleValidator::GetExpressionTokens(ExpressionType expr_type) {
 	vector<Token> expr_list;
 	int EndIndexOfTokens = GetEndIndxOfExpression(expr_type);
-	//cout << "Tokens List: ";
 	while (token_index_ < EndIndexOfTokens) {
-		Token next_token = GetNextToken();
-		//cout << next_token.GetValue() + " ";
-		expr_list.push_back(next_token);
+		expr_list.push_back(GetNextToken());
 		
 	}
-	//cout << endl;
+	cout << "Tokens List: ";
+
+	for (Token t : expr_list) {
+		cout << t.GetValue() + " ";
+	}
+	cout << endl;
 	return expr_list;
 }
 
