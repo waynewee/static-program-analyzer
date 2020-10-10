@@ -93,6 +93,7 @@ QueryInfo PQLParser::Parse(STRING s) {
         regex r("such that|pattern|with|and");
         STRING current_clause_type;
         BOOLEAN current_is_and_clause = false;
+        BOOLEAN first_passed = false;
         while (query.find_first_not_of(' ') != STRING::npos && !query.empty()) {
             STRING current_token;
             STRING clause_type;
@@ -119,7 +120,7 @@ QueryInfo PQLParser::Parse(STRING s) {
                     current_clause_type = TYPE_WITH_CLAUSE;
                     current_is_and_clause = false;
                 }
-                else if (clause_type.compare(TYPE_AND_CLAUSE) == 0) {
+                else if (clause_type.compare(TYPE_AND_CLAUSE) == 0 && first_passed) {
                     clause_type = current_clause_type;
                     current_is_and_clause = true;
                 }
@@ -129,6 +130,7 @@ QueryInfo PQLParser::Parse(STRING s) {
                     throw ("Error : Clause type is not suchthat/with/and/pattern");
                 }
             }
+            first_passed = true;  // first clause has parsed, now 'and' can be allowed in place of such that / pattern / with
 
             // cout << "remainingQuery:" << query << endl;
             STRING clause_arguments;
