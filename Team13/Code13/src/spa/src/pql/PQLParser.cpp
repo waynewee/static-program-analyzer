@@ -197,8 +197,11 @@ QueryInfo PQLParser::Parse(STRING s) {
                     STRING_LIST pattern_result = ExtractArguments(full_clause);
                     pattern_result.push_back(pattern_select_var);
                     STRINGLIST_LIST list_of_pattern_result;
-                    list_of_pattern_result.push_back(pattern_result);
                     if (IsPatternPartial(full_clause)) {
+                        STRING expr_spec = pattern_result.at(1);
+                        expr_spec = expr_spec.substr(1, expr_spec.length() - 2);
+                        pattern_result.at(1) = expr_spec;
+                        list_of_pattern_result.push_back(pattern_result);
                         if (pattern_map.count(TYPE_COND_PATTERN_P) == 0) {
                             pattern_map[TYPE_COND_PATTERN_P] = list_of_pattern_result;
                         }
@@ -207,6 +210,7 @@ QueryInfo PQLParser::Parse(STRING s) {
                         }
                     }
                     else {
+                        list_of_pattern_result.push_back(pattern_result);
                         if (pattern_map.count(TYPE_COND_PATTERN_F) == 0) {
                             pattern_map[TYPE_COND_PATTERN_F] = list_of_pattern_result;
                         }
