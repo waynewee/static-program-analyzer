@@ -25,7 +25,7 @@ TNode* SimpleParser::Parse(TOKEN_LIST token_list) {
 		throw logic_error("Program cannot be empty");
 	}
 
-	while (token_index_ < (int) token_list_.size() - 1) {
+	while (token_index_ < (int)token_list_.size() - 1) {
 		Token proc_token = SimpleParser::GetNextToken();
 
 		if (proc_token.GetValue() != TYPE_PROC) {
@@ -35,7 +35,7 @@ TNode* SimpleParser::Parse(TOKEN_LIST token_list) {
 		TNode* proc_node = SimpleParser::ParseProcStatement();
 		main_prg->AddChild(proc_node);
 	}
-	
+
 	// main_prg->Print(main_prg);
 
 	return main_prg;
@@ -77,9 +77,9 @@ TNode* SimpleParser::ParseProcStatement() {
 		TokenType::GetStmtType(name_token.GetValue());
 	}
 
-	TNode * proc_node = new TNode(TNode::NODE_TYPE::procedure);
-	TNode * proc_name_node = new TNode(TNode::NODE_TYPE::procName, name_token.GetValue());
-	TNode * stmt_list_node = SimpleParser::ParseStatementList();
+	TNode* proc_node = new TNode(TNode::NODE_TYPE::procedure);
+	TNode* proc_name_node = new TNode(TNode::NODE_TYPE::procName, name_token.GetValue());
+	TNode* stmt_list_node = SimpleParser::ParseStatementList();
 
 	if (!proc_node->AddChild(proc_name_node) || !proc_node->AddChild((stmt_list_node))) {
 		throw logic_error("Null node added to child of proc node");
@@ -96,8 +96,8 @@ TNode* SimpleParser::ParseReadStatement() {
 		TokenType::GetStmtType(var_token.GetValue());
 	}
 
-	TNode * read_node = new TNode(TNode::NODE_TYPE::readStmt, statement_index_);
-	TNode * var_node = new TNode(TNode::NODE_TYPE::varName, var_token.GetValue());
+	TNode* read_node = new TNode(TNode::NODE_TYPE::readStmt, statement_index_);
+	TNode* var_node = new TNode(TNode::NODE_TYPE::varName, var_token.GetValue());
 
 	if (SimpleParser::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
 		throw logic_error("Missing ';' in read statement");
@@ -116,8 +116,8 @@ TNode* SimpleParser::ParsePrintStatement() {
 		TokenType::GetStmtType(var_token.GetValue());
 	}
 
-	TNode * print_node = new TNode (TNode::NODE_TYPE::printStmt, statement_index_);
-	TNode * var_node = new TNode(TNode::NODE_TYPE::varName, var_token.GetValue());
+	TNode* print_node = new TNode(TNode::NODE_TYPE::printStmt, statement_index_);
+	TNode* var_node = new TNode(TNode::NODE_TYPE::varName, var_token.GetValue());
 
 	if (SimpleParser::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
 		// throw error for invalid statement
@@ -137,10 +137,10 @@ TNode* SimpleParser::ParseCallStatement() {
 		TokenType::GetStmtType(proc_name_token.GetValue());
 	}
 
-	TNode * call_node = new TNode(TNode::NODE_TYPE::callStmt, statement_index_);
-	TNode * proc_name_node = new TNode(TNode::NODE_TYPE::procName, proc_name_token.GetValue());
+	TNode* call_node = new TNode(TNode::NODE_TYPE::callStmt, statement_index_);
+	TNode* proc_name_node = new TNode(TNode::NODE_TYPE::procName, proc_name_token.GetValue());
 
-	if (SimpleParser::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON){
+	if (SimpleParser::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
 		throw logic_error("Missing ; in line: " + statement_index_);
 	}
 
@@ -173,9 +173,9 @@ TNode* SimpleParser::ParseIfStatement() {
 	}
 
 	GetNextToken(); // Iterating through 'else' keyword
-	TNode * elseStmtListNode = SimpleParser::ParseStatementList();
+	TNode* elseStmtListNode = SimpleParser::ParseStatementList();
 
-	for (TNode* child :	 elseStmtListNode->GetChildrenVector()) {
+	for (TNode* child : elseStmtListNode->GetChildrenVector()) {
 		child->SetParent(if_node);
 	}
 
@@ -208,7 +208,7 @@ TNode* SimpleParser::ParseWhileStatement() {
 
 
 TNode* SimpleParser::ParseAssignStatement(Token name_token) {
-	TNode* assign_node = new TNode(TNode::NODE_TYPE::assignStmt,  statement_index_);
+	TNode* assign_node = new TNode(TNode::NODE_TYPE::assignStmt, statement_index_);
 	TNode* name_node = new TNode(TNode::NODE_TYPE::varName, name_token.GetValue());
 	if (SimpleParser::GetNextToken().GetValue() != TYPE_EQUALS) {
 		throw logic_error("Expected '=' token in line " + statement_index_);
@@ -303,7 +303,7 @@ int SimpleParser::GetEndIndxOfStatementList() {
 	if (first_token.GetValue() == TYPE_PUNC_OPEN_BRACKET) {
 		bracket_matcher.push(first_token);
 		while (!bracket_matcher.empty()) {
-			if (token_index_ + 1 + counter > (int) token_list_.size()) {
+			if (token_index_ + 1 + counter > (int)token_list_.size()) {
 				// throw Exception for incomplete statement block
 				throw logic_error("Incomplete statement block");
 			}
@@ -320,14 +320,14 @@ int SimpleParser::GetEndIndxOfStatementList() {
 	return token_index_ + counter;
 }
 Token SimpleParser::GetNextToken() {
-  token_index_++;
+	token_index_++;
 
-  if (token_index_ < token_list_.size()) {
-    return token_list_[token_index_];
-  }
-  else {
-    throw out_of_range("Out of range.");
-  }
+	if (token_index_ < token_list_.size()) {
+		return token_list_[token_index_];
+	}
+	else {
+		throw out_of_range("Out of range.");
+	}
 }
 
 Token SimpleParser::PeekNextToken() {
