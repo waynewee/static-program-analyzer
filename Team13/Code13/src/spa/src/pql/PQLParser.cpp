@@ -167,7 +167,8 @@ QueryInfo PQLParser::Parse(STRING s) {
                     full_clause.erase(0, 9); // erase such that away
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause);
                     STRING relref_type = query_syntax_validator->GetValidRelRefType(full_clause, entity_map);
-                    full_clause.erase(0, relref_type.length()); // erase relref away
+                    full_clause.erase(0, full_clause.find_first_of("(")); // erase relref away
+                    // cout << "full clause should have the opening bracket" << full_clause << endl;
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause);
                     // cout << "FULLCLAUSE ARGUMENTS:" << full_clause << "|" << endl;
                     STRING_LIST arguments = ExtractArguments(full_clause);
@@ -259,12 +260,12 @@ QueryInfo PQLParser::Parse(STRING s) {
         query_info.SetStMap(st_map);
         query_info.SetPatternMap(pattern_map);
     }
-    /*
+    
     query_info.PrintEntityMap();
     query_info.PrintOutputList();
     query_info.PrintStMap();
     query_info.PrintPatternMap();
-    */
+    
     return query_info;
 }
 
@@ -301,8 +302,9 @@ STRING_STRING_MAP PQLParser::ParseDeclaration(STRING decl) {
         WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&decl_clone);
     }
     temp_results.push_back(decl_clone); // last declaration after the ending comma
-
+    // cout << "trying to call front" << endl;
     STRING entity_synonym = temp_results.front(); // this is "assign a" in "assign a, b, c"
+    // cout << "front called" << endl;
     temp_results.erase(temp_results.begin());
 
     STRING entity_type = entity_synonym.substr(0, entity_synonym.find_first_of(" "));
@@ -378,6 +380,7 @@ STRING_LIST PQLParser::ExtractArguments(STRING token) {
     // takes a bracket with two arguments , e.g. ( s1, s2) with any amount of whitespace. If argument has "", trim the whitespace inside.
     STRING temp_token = token;
     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
+    // cout << "temp token:" << temp_token << endl;
     temp_token = temp_token.substr(1, temp_token.length() - 2); // erasing opening and closing brackets
     // cout << "Trimmed temp_token:" << temp_token << endl;
     INTEGER comma_count = 0;
@@ -389,6 +392,7 @@ STRING_LIST PQLParser::ExtractArguments(STRING token) {
         // ONLY TWO ARGS
         STRING first_arg = temp_token.substr(0, temp_token.find_first_of(","));
         STRING second_arg = temp_token.substr(temp_token.find_first_of(",") + 1, temp_token.length());
+        // cout << "EXTRACTING FIRST ARG: " << first_arg << endl;
         // cout << "1st arg:" << first_arg << endl;
         // cout << "2nd arg:" << second_arg << endl;
         WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
@@ -414,6 +418,8 @@ STRING_LIST PQLParser::ExtractArguments(STRING token) {
             WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
             // cout << "1st arg: " << first_arg << "|" << endl;
             // append back " "
+            // cout << "PUTTING BACK ARGS:" << endl;
+            // cout << "first Arg : " << first_arg << endl;
             STRING first_arg_result = "\"";
             first_arg_result.append(first_arg);
             first_arg_result.append("\"");
