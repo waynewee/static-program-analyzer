@@ -7,6 +7,10 @@ typedef struct{
 }TestCase;
 
 extern TestCase CyclicTestCase1; 
+extern TestCase CyclicTestCase2;
+extern TestCase CyclicTestCase3;
+extern TestCase CyclicTestCase4;
+
 extern TestCase AssgnTest1;
 extern TestCase AssgnTest2;
 extern TestCase AssgnTest3;

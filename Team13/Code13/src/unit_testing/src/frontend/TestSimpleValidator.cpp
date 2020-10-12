@@ -3,8 +3,20 @@
 #include <Tokenizer.h>
 #include <catch.hpp>
 
-TEST_CASE("Testing if SimpleValidator catches cyclic calls") {
+TEST_CASE("Testing if SimpleValidator catches cyclic call A->B->C->A") {
 	Tokenizer tokenizer(*(CyclicTestCase1.SourceProgram));
+	SimpleValidator simple_validator;
+	CHECK_THROWS(simple_validator.IsValid(tokenizer.GetTokenList()));
+}
+
+TEST_CASE("Testing if SimpleValidator catches cyclc call A->A") {
+	Tokenizer tokenizer(*(CyclicTestCase2.SourceProgram));
+	SimpleValidator simple_validator;
+	REQUIRE(simple_validator.IsValid(tokenizer.GetTokenList()));
+}
+
+TEST_CASE("Testing if SimpleValidator catches cyclic call for more complex graph") {
+	Tokenizer tokenizer(*(CyclicTestCase3.SourceProgram));
 	SimpleValidator simple_validator;
 	REQUIRE(simple_validator.IsValid(tokenizer.GetTokenList()));
 }
