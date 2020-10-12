@@ -1,7 +1,7 @@
 #include <TNode.h>
 #include <queue>
 
-#include "ParserTestCases.h"
+#include "ASTBuilderTestCases.h"
 
 using namespace std;
 

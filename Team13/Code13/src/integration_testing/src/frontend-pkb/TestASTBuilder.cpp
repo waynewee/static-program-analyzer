@@ -4,7 +4,7 @@
 #include <TNode.h>
 #include <queue>
 
-#include "ParserTestCases.h"
+#include "ASTBuilderTestCases.h"
 /*
 SimpleParser parser = SimpleParser();
 vector<TNode*> InOrderTraversal(TNode* root) {
