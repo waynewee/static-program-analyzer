@@ -51,6 +51,8 @@ public:
 	BOOLEAN IsFollowsT(STRING token, STRING_STRING_MAP declared_var_names);
 	BOOLEAN IsNext(STRING token, STRING_STRING_MAP declared_var_names);
 	BOOLEAN IsNextT(STRING token, STRING_STRING_MAP declared_var_names);
+	BOOLEAN IsAffects(STRING token, STRING_STRING_MAP declared_var_names);
+	BOOLEAN IsAffectsT(STRING token, STRING_STRING_MAP declared_var_names);
 
 	BOOLEAN IsPatternCond(STRING token, STRING_STRING_MAP declared_var_names);
 	BOOLEAN IsPattern(STRING token, STRING_STRING_MAP declared_var_names);
