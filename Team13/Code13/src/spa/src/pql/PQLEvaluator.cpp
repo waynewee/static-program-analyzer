@@ -4,7 +4,6 @@
 #include "pkb/PKB.h"
 
 QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
-	cout << "reached" << endl;
 	// Final result to be returned
 	STRINGLIST_SET final_result_set = *(new STRINGLIST_SET());
 
@@ -104,10 +103,10 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 					c_key.push_back(param2);
 					c_value = EvaluateTwoSynonymSet(f_call);
 
-					STRINGLIST_SET tmp = EvaluateAllCall(entity_map.at(param2));
+					STRINGLIST_SET tmp = EvaluateAllCall(entity_map.at(param1));
 					RemoveIrrelevant(&c_value, tmp, 0);
 
-					tmp = EvaluateAllCall(entity_map.at(param1));
+					tmp = EvaluateAllCall(entity_map.at(param2));
 					RemoveIrrelevant(&c_value, tmp, 1);
 				}
 				else if (!IsVar(param1) && IsVar(param2)) {
@@ -307,7 +306,8 @@ BOOLEAN PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET
 		STRINGLIST_LIST all_params = (*f).second;
 
 		for (STRING_LIST p : all_params) {
-			if (p[0].compare(p[1]) == 0) {
+			if (p[0].compare(p[1]) == 0 && !IsUnderscore(p[0])) {
+				// same parameter & not _
 				if (DEBUG) {
 					cout << "PQLEvaluator - Evaluating such that clauses: Same parameters." << endl;
 				}
@@ -573,8 +573,14 @@ BOOLEAN PQLEvaluator::EvaluateNoSynonymSet(STRING f_call, STRING param1, STRING 
 	else if (f_call.compare(TYPE_COND_MODIFIES_P) == 0) {
 		return rm.IsProcModifies(ParsingEntRef(param1), ParsingEntRef(param2));
 	}
+	else if (f_call.compare(TYPE_COND_CALLS) == 0) {
+		return rm.IsCalls(ParsingEntRef(param1), ParsingEntRef(param2));
+	}
+	else if (f_call.compare(TYPE_COND_CALLS_STAR) == 0) {
+		return rm.IsCallsStar(ParsingEntRef(param1), ParsingEntRef(param2));
+	}
 	else if (f_call.compare(TYPE_COND_NEXT) == 0) {
-		//return rm.IsNext(ParsingStmtRef(param1), ParsingStmtRef(param2));
+		// return rm.IsNext(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_NEXT_T) == 0) {
 		//return rm.IsNextStar(ParsingStmtRef(param1), ParsingStmtRef(param2));
@@ -769,10 +775,10 @@ STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(STRING f_call, STRING param) 
 		result = ConvertSet(rm.GetProcModifies(ParsingEntRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_CALLS) == 0) {
-		// result = rm.GetCalls(ParsingStmtRef(param));
+		result = ConvertSet(rm.GetCalls(ParsingEntRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_CALLS_T) == 0) {
-		// result = rm.GetCallsStar(ParsingStmtRef(param));
+		result = ConvertSet(rm.GetCallsStars(ParsingEntRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_NEXT) == 0) {
 		// result = rm.GetNext(ParsingStmtRef(param));
@@ -836,10 +842,10 @@ STRINGLIST_SET PQLEvaluator::EvaluateInverseOneSynonymSet(STRING f_call, STRING 
 		result = ConvertSet(rm.GetInverseProcModifies(ParsingEntRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_CALLS) == 0) {
-		// result = rm.GetInverseCalls(ParsingStmtRef(param));
+		result = ConvertSet(rm.GetInverseCalls(ParsingEntRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_CALLS_T) == 0) {
-		// result = rm.GetInverseCallsStar(ParsingStmtRef(param));
+		result = ConvertSet(rm.GetInverseCallsStars(ParsingEntRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_NEXT) == 0) {
 		// result = rm.GetInverseNext(ParsingStmtRef(param));
@@ -938,10 +944,10 @@ STRINGLIST_SET PQLEvaluator::EvaluateTwoSynonymSet(STRING f_call) {
 		result = ConvertSet(rm.GetAllProcModifies());
 	}
 	else if (f_call.compare(TYPE_COND_CALLS) == 0) {
-		// result = ConvertSet(rm.GetAllCalls());
+		result = ConvertSet(rm.GetAllCalls());
 	}
 	else if (f_call.compare(TYPE_COND_CALLS_T) == 0) {
-		// result = ConvertSet(rm.GetAllCallsStar());
+		result = ConvertSet(rm.GetAllCallsStar());
 	}
 	else if (f_call.compare(TYPE_COND_NEXT) == 0) {
 		// result = ConvertSet(rm.GetAllNext());
@@ -1084,6 +1090,7 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_STMT_PAIR_LIST result_set) {
 		}
 	}
 
+	cout << "returned" << endl;
 	return final_result;
 }
 
@@ -1113,6 +1120,25 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_VAR_PAIR_LIST result_set) {
 		for (PROC_VAR_PAIR k : result_set) {
 			STRING first = k.p;
 			STRING second = k.v;
+
+			STRING_LIST* value = new STRING_LIST();
+			value->push_back(first);
+			value->push_back(second);
+
+			final_result.insert(value);
+		}
+	}
+
+	return final_result;
+}
+
+STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_PROC_PAIR_LIST result_set) {
+	STRINGLIST_SET final_result = *(new STRINGLIST_SET());
+
+	if (!result_set.empty()) {
+		for (PROC_PROC_PAIR k : result_set) {
+			STRING first = k.p1;
+			STRING second = k.p2;
 
 			STRING_LIST* value = new STRING_LIST();
 			value->push_back(first);
@@ -1414,23 +1440,24 @@ STRINGLIST_SET PQLEvaluator::GetCombinedResult(STRINGLIST_STRINGLISTSET_MAP resu
 }
 
 BOOLEAN PQLEvaluator::IsVar(STRING var) {
-	if (var[0] == '\"' && var[var.length() - 1] == '\"') {
-		return false;
-	}
-	else {
-		return true;
-	}
+	return IsString(var) || IsInteger(var) || IsUnderscore(var) ? false : true;
+}
 
-	;
+BOOLEAN PQLEvaluator::IsString(STRING var) {
+	return var[0] == '\"' && var[var.length() - 1] == '\"' ? true : false;
+}
+
+BOOLEAN PQLEvaluator::IsInteger(STRING var) {
+	return !var.empty() && find_if(var.begin(),
+		var.end(), [](unsigned char c) { return !isdigit(c); }) == var.end();
+}
+
+BOOLEAN PQLEvaluator::IsUnderscore(STRING var) {
+	return var.compare("_") == 0 ? true : false;
 }
 
 BOOLEAN PQLEvaluator::IsBooleanOutput(STRING_LIST output_list) {
-	if (output_list.size() == 1 && output_list[0] == "BOOLEAN") {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return output_list.size() == 1 && output_list[0] == "BOOLEAN" ? true : false;
 }
 
 BOOLEAN PQLEvaluator::IsOutputSynonyms(STRING_LIST synonyms, STRING_LIST output_list) {
@@ -1446,12 +1473,7 @@ BOOLEAN PQLEvaluator::IsOutputSynonyms(STRING_LIST synonyms, STRING_LIST output_
 }
 
 INTEGER PQLEvaluator::ParsingStmtRef(STRING param) {
-	if (param.compare("_") == 0 || param.compare("") == 0) {
-		return -1;
-	}
-	else {
-		return stoi(param);
-	}
+	return param.compare("_") == 0 || param.compare("") == 0 ? -1 : stoi(param);
 }
 
 STRING PQLEvaluator::ParsingEntRef(STRING param) {

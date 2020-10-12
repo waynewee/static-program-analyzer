@@ -3,18 +3,20 @@
 #include <sstream>
 
 STRING_SET PQLProjector::Project(QueryResult query_result) {
-	// STRINGLIST result = query_result.GetResult();
+	STRINGLIST_SET result = query_result.GetResult();
+	STRING_SET final_result = *(new STRING_SET());
 
-	/*
-	stringstream inter_result;
-	copy(result.begin(), result.end(), ostream_iterator<STRING>(inter_result, ", "));
+	for (auto f = result.cbegin(); f != result.cend(); f++) {
+		STRING_LIST values = *(*f);
+		STRING converted_value = "";
 
-	STRING final_result = inter_result.str();
+		for (STRING v : values) {
+			converted_value.append(v).append(" ");
+		}
 
-	if (!final_result.empty()) {
-		final_result = final_result.substr(0, final_result.length() - 2); // trim trailing space
+		converted_value = converted_value.substr(0, converted_value.length() - 1);
+		final_result.insert(converted_value);
 	}
-	*/
 
-	return {};
+	return final_result;
 }

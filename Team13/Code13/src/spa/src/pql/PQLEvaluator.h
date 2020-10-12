@@ -35,6 +35,7 @@ public:
 	STRINGLIST_SET ConvertSet(STMT_STMT_PAIR_LIST result_set);
 	STRINGLIST_SET ConvertSet(STMT_VAR_PAIR_LIST result_set);
 	STRINGLIST_SET ConvertSet(PROC_VAR_PAIR_LIST result_set);
+	STRINGLIST_SET ConvertSet(PROC_PROC_PAIR_LIST result_set);
 
 	// VOID CheckConstraints(STRINGPAIR_SET constraints, STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST key, STRING_SET* value);
 	BOOLEAN CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING_MAP entity_map, STRING_LIST key, STRINGLIST_SET* value);
@@ -57,6 +58,9 @@ public:
 	VOID AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP* results_map);
 
 	BOOLEAN IsVar(STRING var);
+	BOOLEAN IsString(STRING var);
+	BOOLEAN IsInteger(STRING var);
+	BOOLEAN IsUnderscore(STRING var);
 	BOOLEAN IsBooleanOutput(STRING_LIST output_list);
 	BOOLEAN IsOutputSynonyms(STRING_LIST synonyms, STRING_LIST output_list);
 
