@@ -4,11 +4,12 @@
 #include <stack>
 #include <vector>
 
-#include "ExprEvaluator.h"
+#include "ExprParser.h"
 #include "SimpleParser.h"
 #include <TNode.h>
 #include "TokenType.h"
 #include "Token.h"
+#include <FrontendTypes.h>
 
 using namespace std;
 
@@ -152,7 +153,7 @@ TNode* SimpleParser::ParseCallStatement() {
 
 TNode* SimpleParser::ParseIfStatement() {
 	TNode* if_node = new TNode(TNode::NODE_TYPE::ifStmt, statement_index_);
-	TNode* expr_node = SimpleParser::ParseExpressionStatement(SimpleParser::expressionType::_if);
+	TNode* expr_node = SimpleParser::ParseExpressionStatement(_FRONTENDTYPES_H_::expressionType::_if);
 
 	if (expr_node->GetNodeType() != TNode::NODE_TYPE::relExpr && expr_node->GetNodeType() != TNode::NODE_TYPE::condExpr) {
 		throw logic_error("Invalid expression at line " + statement_index_);
@@ -188,7 +189,7 @@ TNode* SimpleParser::ParseIfStatement() {
 
 TNode* SimpleParser::ParseWhileStatement() {
 	TNode* whleNode = new TNode(TNode::NODE_TYPE::whileStmt, statement_index_);
-	TNode* expr_node = SimpleParser::ParseExpressionStatement(SimpleParser::expressionType::_while);
+	TNode* expr_node = SimpleParser::ParseExpressionStatement(_FRONTENDTYPES_H_::expressionType::_while);
 	TNode* stmt_list_node = SimpleParser::ParseStatementList();
 
 	if (expr_node->GetNodeType() != TNode::NODE_TYPE::relExpr && expr_node->GetNodeType() != TNode::NODE_TYPE::condExpr) {
@@ -214,7 +215,7 @@ TNode* SimpleParser::ParseAssignStatement(Token name_token) {
 		throw logic_error("Expected '=' token in line " + statement_index_);
 	}
 
-	TNode* expr_node = SimpleParser::ParseExpressionStatement(SimpleParser::expressionType::_assign);
+	TNode* expr_node = SimpleParser::ParseExpressionStatement(_FRONTENDTYPES_H_::expressionType::_assign);
 
 	if (SimpleParser::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
 		throw logic_error("Missing ; in line: " + statement_index_);
@@ -244,29 +245,26 @@ TNode* SimpleParser::ParseStatementList() {
 	return stmt_list_node;
 }
 
-TNode* SimpleParser::ParseExpressionStatement(SimpleParser::expressionType exprType) {
-	/**
-	* An assign expression looks like
-	* x + 1;
-	*/
+TNode* SimpleParser::ParseExpressionStatement(expressionType exprType) {
+	
 	vector<Token> expr_list;
 
 	Token next_token;
 
-	if (exprType == SimpleParser::expressionType::_assign) {
+	if (exprType == _FRONTENDTYPES_H_::expressionType::_assign) {
 
 		while (SimpleParser::PeekNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
 			next_token = SimpleParser::GetNextToken();
 			expr_list.push_back(next_token);
 		}
 	}
-	else if (exprType == SimpleParser::expressionType::_if || exprType == SimpleParser::expressionType::_while) {
+	else if (exprType == _FRONTENDTYPES_H_::expressionType::_if || exprType == _FRONTENDTYPES_H_::expressionType::_while) {
 
 		if (SimpleParser::PeekNextToken().GetValue() != TYPE_PUNC_OPEN_PARAN) {
 			throw logic_error("Invalid IF/WHILE statement");
 		}
 
-		if (exprType == SimpleParser::expressionType::_if) {
+		if (exprType == _FRONTENDTYPES_H_::expressionType::_if) {
 
 			while (SimpleParser::PeekNextToken().GetValue() != TYPE_STMT_IF_THEN) {
 				next_token = SimpleParser::GetNextToken();
@@ -289,14 +287,14 @@ TNode* SimpleParser::ParseExpressionStatement(SimpleParser::expressionType exprT
 }
 
 TNode* SimpleParser::ParseExpression(vector<Token> expr_list) {
-	ExprEvaluator expr_evaluator(expr_list);
-	TNode* root_node = expr_evaluator.Evaluate();
+	ExprParser expr_evaluator(expr_list);
+	TNode* root_node = expr_evaluator.Parse();
 	return root_node;
 }
 
 // Returns the number of tokens inside a statement list
 int SimpleParser::GetEndIndxOfStatementList() {
-	stack <Token> bracket_matcher;
+	stack<Token> bracket_matcher;
 	Token first_token = SimpleParser::PeekNextToken();
 	int counter = 1;
 

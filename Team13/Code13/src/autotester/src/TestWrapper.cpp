@@ -5,7 +5,8 @@
 #include <PKB.h>
 #include "TestWrapper.h"
 #include "frontend/SimpleParser.h"
-#include "frontend/Tokenizer.h"
+#include "Tokenizer.h"
+#include <FrontendWrapper.h>
 #include "frontend/FileReader.h"
 #include "pql/PQLDriver.h"
 #include "pkb/DesignExtractor.h"
@@ -34,23 +35,18 @@ TestWrapper::TestWrapper() {
 // method for parsing the SIMPLE source
 void TestWrapper::parse(string filename) {
 	try {
-		FileReader fileReader(filename);
+		FrontendWrapper frontend_wrapper(filename);
 
-		string input = fileReader.ReadFile();
-
-		Tokenizer tokenizer(input);
-
-		TOKEN_LIST tokenList = tokenizer.GetTokenList();
-
-		SimpleParser parser = SimpleParser();
-
-		TestWrapper::pkb->SetASTRoot(parser.Parse(tokenList));
+		TNode* ast_root_node = frontend_wrapper.GetAST();
+		frontend_wrapper.GetCFG(ast_root_node);
+		TestWrapper::pkb->SetASTRoot(ast_root_node);
 
 		DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
         DesignExtractor::ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
         DesignExtractor::ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
         DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
         DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
+		DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
         DesignExtractor::ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
 	}
 	catch (logic_error& e) {

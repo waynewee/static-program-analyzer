@@ -1,5 +1,5 @@
-#ifndef _EXPREVALUATOR_H_
-#define _EXPREVALUATOR_H_
+#ifndef _EXPRPARSER_H
+#define _EXPRPARSER_H
 
 #include <queue>
 #include <unordered_map>
@@ -23,11 +23,11 @@ using namespace std;
 typedef unordered_map<string, int> PRECEDENCE_MAP;
 typedef queue<tuple<Token, TNode*>> SHUNTING_QUEUE;
 
-class ExprEvaluator {
+class ExprParser {
 public:
-	ExprEvaluator(TOKEN_LIST expr_list);
+	ExprParser(TOKEN_LIST expr_list);
 
-	TNode* Evaluate();
+	TNode* Parse();
 
 	PRECEDENCE_MAP precedence_map_ = {
 	{TYPE_PUNC_OPEN_PARAN, PRECEDENCE_PARAN},
@@ -63,11 +63,10 @@ private:
 	
 	int CompareOpPrecedence(Token a, Token b);
 	TNode* ConvertTokenToNode(Token t);
-	TNode* EvaluateQueue(SHUNTING_QUEUE shunted_queue);
+	TNode* ParseQueue(SHUNTING_QUEUE shunted_queue);
 	TNode::OPERATOR GetOperator(string op_str);
 	int GetPrecedence(Token t);
 	bool IsLeftAssoc(Token t);
-	bool IsUnaryOp(Token curr, Token prev);
 	SHUNTING_QUEUE Shunt();
 };
 

@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <CustomTypes.h>
-#include <ExprEvaluator.h>
+#include <ExprParser.h>
 #include <ExprValidator.h>
 #include <FrontendTypes.h>
 #include <pkb/TNode.h>
@@ -14,18 +14,18 @@
 
 using namespace std;
 
-ExprEvaluator::ExprEvaluator(TOKEN_LIST expr_list) {
+ExprParser::ExprParser(TOKEN_LIST expr_list) {
 
 	ExprValidator::Validate(expr_list);
 
 	token_list_ = expr_list;
 }
 
-TNode* ExprEvaluator::Evaluate() {
-	return EvaluateQueue(Shunt());
+TNode* ExprParser::Parse() {
+	return ParseQueue(Shunt());
 }
 
-TNode* ExprEvaluator::EvaluateQueue( queue<tuple<Token, TNode*>> shunted_queue ) {
+TNode* ExprParser::ParseQueue( SHUNTING_QUEUE shunted_queue ) {
 
 	stack<tuple<Token, TNode*>> t_stack;
 
@@ -92,7 +92,7 @@ TNode* ExprEvaluator::EvaluateQueue( queue<tuple<Token, TNode*>> shunted_queue )
 
 }
 
-queue<tuple<Token, TNode*>> ExprEvaluator::Shunt() {
+queue<tuple<Token, TNode*>> ExprParser::Shunt() {
 	queue<tuple<Token, TNode*>> output_queue;
 	stack<Token> op_stack;
 
@@ -163,7 +163,7 @@ queue<tuple<Token, TNode*>> ExprEvaluator::Shunt() {
 	return output_queue;
 }
 
-bool ExprEvaluator::IsLeftAssoc(Token t) {
+bool ExprParser::IsLeftAssoc(Token t) {
 
 	string val = t.GetValue();
 
@@ -177,7 +177,7 @@ bool ExprEvaluator::IsLeftAssoc(Token t) {
 
 }
 
-int ExprEvaluator::CompareOpPrecedence(Token a, Token b) {
+int ExprParser::CompareOpPrecedence(Token a, Token b) {
 
 	int a_precedence = GetPrecedence(a);
 	int b_precedence = GetPrecedence(b);
@@ -193,7 +193,7 @@ int ExprEvaluator::CompareOpPrecedence(Token a, Token b) {
 	}
 }
 
-int ExprEvaluator::GetPrecedence(Token t) {
+int ExprParser::GetPrecedence(Token t) {
 	string val = t.GetValue();
 
 	if (t.is_unary_op_) {
@@ -203,7 +203,7 @@ int ExprEvaluator::GetPrecedence(Token t) {
 	return precedence_map_[val];
 }
 
-TNode::OPERATOR ExprEvaluator::GetOperator(string op_str) {
+TNode::OPERATOR ExprParser::GetOperator(string op_str) {
 
 	if (op_str == TYPE_COND_EXPR_NOT) {
 		return TNode::OPERATOR::notOp;
@@ -253,7 +253,7 @@ TNode::OPERATOR ExprEvaluator::GetOperator(string op_str) {
 
 }
 
-TNode* ExprEvaluator::ConvertTokenToNode(Token t) {
+TNode* ExprParser::ConvertTokenToNode(Token t) {
 
 	//token can only be expr (+, -, * etc), rel_expr (&&, || etc), variable, constant
 

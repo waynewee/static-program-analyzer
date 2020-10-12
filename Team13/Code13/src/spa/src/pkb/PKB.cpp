@@ -8,8 +8,8 @@ using namespace std;
 DataManager PKB::data_manager_;
 RelationManager PKB::relation_manager_;
 PatternManager PKB::pattern_manager_;
+CFGManager PKB::cfg_manager_;
 TNode PKB::ast_;
-CFG PKB::cfg_;
 DataManager PKB::GetDataManager() {
     return data_manager_;
 }
@@ -29,9 +29,12 @@ void PKB::SetASTRoot(TNode* root) {
 TNode PKB::GetASTRoot() {
     return ast_;
 }
-CFG PKB::GetCFG(CFG cfg) {
-    return cfg_;
+CFG& PKB::GetCFG() {
+    return cfg_manager_.GetCFG();
 }
-void PKB::SetCFG(CFG cfg) {
-    cfg_ = cfg;
+void PKB::SetCFG(CFG& cfg) {
+    cfg_manager_.SetCFG(cfg);
+}
+CFGManager PKB::GetCFGManager() {
+    return cfg_manager_;
 }

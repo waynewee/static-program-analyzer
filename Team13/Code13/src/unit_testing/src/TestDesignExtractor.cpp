@@ -380,6 +380,83 @@ TEST_CASE("Test Modifies with call") {
     REQUIRE(!falseProcModifies);
 }
 
+TEST_CASE("Test Calls") {
+    TNode* program = new TNode(TNode::NODE_TYPE::program);
+
+    TNode* proc = new TNode(TNode::NODE_TYPE::procedure);
+    TNode* procname = new TNode(TNode::NODE_TYPE::procName, "pp");
+    TNode* proclst = new TNode(TNode::NODE_TYPE::stmtList);
+    TNode* procassign = new TNode(TNode::NODE_TYPE::assignStmt, 1);
+    TNode* var = new TNode(TNode::NODE_TYPE::varName, "v1");
+    TNode* expr = new TNode(TNode::NODE_TYPE::varName, "v2");
+    TNode* procprint = new TNode(TNode::NODE_TYPE::readStmt, 2);
+    TNode* printvar = new TNode(TNode::NODE_TYPE::varName, "read_vv");
+    TNode* proccall = new TNode(TNode::NODE_TYPE::callStmt, 3);
+    TNode* callname = new TNode(TNode::NODE_TYPE::procName, "proc3");
+    procprint->AddChild(printvar);
+    procassign->AddChild(var);
+    procassign->AddChild(expr);
+    proccall->AddChild(callname);
+    proclst->AddChild(procassign);
+    proclst->AddChild(procprint);
+    proclst->AddChild(proccall);
+    proc->AddChild(procname);
+    proc->AddChild(proclst);
+
+    TNode* proc2 = new TNode(TNode::NODE_TYPE::procedure);
+    TNode* procname2 = new TNode(TNode::NODE_TYPE::procName, "proc2");
+    TNode* proclst2 = new TNode(TNode::NODE_TYPE::stmtList);
+    TNode* procprint2 = new TNode(TNode::NODE_TYPE::readStmt, 4);
+    TNode* printvar2 = new TNode(TNode::NODE_TYPE::varName, "read_vv2");
+    procprint2->AddChild(printvar2);
+    proclst2->AddChild(procprint2);
+    proc2->AddChild(procname2);
+    proc2->AddChild(proclst2);
+
+    TNode* proc3 = new TNode(TNode::NODE_TYPE::procedure);
+    TNode* procname3 = new TNode(TNode::NODE_TYPE::procName, "proc3");
+    TNode* proclst3 = new TNode(TNode::NODE_TYPE::stmtList);
+    TNode* proccall3 = new TNode(TNode::NODE_TYPE::callStmt, 5);
+    TNode* callname3 = new TNode(TNode::NODE_TYPE::procName, "pp");
+    TNode* proccall33 = new TNode(TNode::NODE_TYPE::callStmt, 6);
+    TNode* callname33 = new TNode(TNode::NODE_TYPE::procName, "proc2");
+    proccall3->AddChild(callname3);
+    proclst3->AddChild(proccall3);
+    proccall33->AddChild(callname33);
+    proclst3->AddChild(proccall33);
+    proc3->AddChild(procname3);
+    proc3->AddChild(proclst3);
+
+    program->AddChild(proc);
+    program->AddChild(proc2);
+    program->AddChild(proc3);
+
+    PKB pkb;
+    RelationManager manager = pkb.GetRelationManager();
+    DesignExtractor::ExtractCalls(manager, *program);
+
+    //auto all_mods = manager.GetAllStmtModifies();
+    //for (auto mod : all_mods) {
+    //    cout << mod.s << " " << mod.v << "\n";
+    //}
+
+    //auto all_proc_mods = manager.GetAllProcModifies();
+    //for (auto mod : all_proc_mods) {
+    //    cout << mod.p << " " << mod.v << "\n";
+    //}
+
+
+    bool trueCalls = manager.IsCalls("proc3", "proc2");
+    bool falseCalls = manager.IsCalls("proc2", "proc3");
+    bool trueCallsStar = manager.IsCallsStar("pp", "proc2");
+    bool falseCallsStar= manager.IsCallsStar("proc2", "pp");
+
+    REQUIRE(trueCalls);
+    REQUIRE(!falseCalls);
+    REQUIRE(trueCallsStar);
+    REQUIRE(!falseCallsStar);
+}
+
 /*
 TEST_CASE("Test extract Pattern") {
     PKB* pkb = new PKB();

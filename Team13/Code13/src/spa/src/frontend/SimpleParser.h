@@ -11,11 +11,7 @@ using namespace std;
 
 class SimpleParser {
 public:
-	enum expressionType { 
-		_if, 
-		_while, 
-		_assign 
-	};
+	
 
 	SimpleParser();
 
