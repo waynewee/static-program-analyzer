@@ -44,7 +44,6 @@ extern TestCase IfTestCase3 = {
 	"}}")
 };
 
-
 extern TestCase InvalidIfTestCase1 = {
 	new string("procedure IfTestCase3 {"
 	"if (x < 7) then {"
@@ -79,16 +78,12 @@ extern TestCase InvalidWhileTestCase1 = {
 	"}}")
 };
 
-
-
 extern TestCase InvalidWhileTestCase2 = {
 	new string("procedure WhileTestCase3 {"
 	"while (x < 7) then {"
 	"print hello;"
 	"}}")
 };
-
-
 
 extern TestCase ExtraTokensCase1 = {
 	new string("procedure ExtraTokensCase1 {"
@@ -136,7 +131,7 @@ extern TestCase InvalidCallCase1 = {
 	"cal HarukiMurakami;}")
 };
 
-extern TestCase cyclic_test_case_1 = { new string("procedure A {"
+extern TestCase CyclicTestCase1 = { new string("procedure A {"
 	"call B;}"
 	"procedure B { call C;}"
 	"procedure C { call A; }") 
