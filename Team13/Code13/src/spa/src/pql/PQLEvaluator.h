@@ -13,8 +13,7 @@ public:
 
 	QueryResult SetResult(BOOLEAN is_boolean_output, STRING bool_result, STRINGLIST_SET result);
 		
-	BOOLEAN ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints, STRINGLIST_STRINGLISTSET_MAP* results_map);
-	BOOLEAN ParseClauses(QueryInfo query_info, STRINGLIST_SET* no_synonym_set, STRINGSET_STRINGLISTSET_MAP* synonyms_map);
+	BOOLEAN ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints);
 	BOOLEAN ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MAP* synonyms_map);
 
 	STRING_SET* GetRelatedSynonyms(STRING synonym, STRINGSET_STRINGLISTSET_MAP synonyms_map);
@@ -37,8 +36,8 @@ public:
 	STRINGLIST_SET ConvertSet(STMT_VAR_PAIR_LIST result_set);
 	STRINGLIST_SET ConvertSet(PROC_VAR_PAIR_LIST result_set);
 
-	VOID CheckConstraints(STRINGPAIR_SET constraints, STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST key, STRING_SET* value);
-	VOID CheckConstraints(STRINGPAIR_SET constraints, STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST key, STRINGLIST_SET* value);
+	// VOID CheckConstraints(STRINGPAIR_SET constraints, STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST key, STRING_SET* value);
+	BOOLEAN CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING_MAP entity_map, STRING_LIST key, STRINGLIST_SET* value);
 	
 	BOOLEAN RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, INTEGER pos_to_check);
 

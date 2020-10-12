@@ -9,21 +9,9 @@
 
 using namespace std;
 
-#define DEBUG false
+#define DEBUG true
 #define UNIT_TESTING false
 
-/*
-#define TYPE_COND_FOLLOWS "Follows"
-#define TYPE_COND_FOLLOWS_T "FollowsT"
-#define TYPE_COND_PARENT "Parent"
-#define TYPE_COND_PARENT_T "ParentT"
-#define TYPE_COND_USES_S "UsesS"
-#define TYPE_COND_USES_P "UsesP"
-#define TYPE_COND_MODIFIES_S "ModifiesS"
-#define TYPE_COND_MODIFIES_P "ModifiesP"
-#define TYPE_COND_PATTERN_P "pattern_p"
-#define TYPE_COND_PATTERN_F "pattern_f"
-*/
 #define TYPE_COND_FOLLOWS "Follows"
 #define TYPE_COND_FOLLOWS_T "FollowsT"
 #define TYPE_COND_FOLLOWS_STAR "Follows*"
@@ -40,14 +28,6 @@ using namespace std;
 #define TYPE_COND_PATTERN_P "pattern_p"
 #define TYPE_COND_PATTERN_F "pattern_f"
 
-/*
-#define TYPE_COND_CALLS "Calls"
-#define TYPE_COND_CALLS_T "CallsT"
-#define TYPE_COND_NEXT "Next"
-#define TYPE_COND_NEXT_T "NextT"
-#define TYPE_COND_AFFECTS "Affects"
-#define TYPE_COND_AFFECTS_T "AffectsT"
-*/
 #define TYPE_COND_CALLS "Calls"
 #define TYPE_COND_CALLS_STAR "Calls*"
 #define TYPE_COND_CALLS_T "CallsT"
