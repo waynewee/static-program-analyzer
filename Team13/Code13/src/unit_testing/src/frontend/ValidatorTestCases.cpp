@@ -140,3 +140,19 @@ extern TestCase CyclicTestCase1 = { new string("procedure A {"
 extern TestCase CyclicTestCase2 = { new string("procedure A {"
 	"call A;}")
 };
+
+extern TestCase CyclicTestCase3 = { new string("procedure A {"
+	"call B;"
+	"call C;"
+	"call D;}"
+	"procedure B {"
+	"call C;}"
+	"procedure C {"
+	"print hello;}"
+	"procedure D {"
+	"call E;}"
+	"procedure E {"
+	"call F;}"
+	"procedure F{"
+	"call D;}"
+) };
