@@ -5,6 +5,7 @@
 
 #include <FrontendTypes.h>
 #include <TNode.h>
+#include <CFG.h>
 
 using namespace std;
 
@@ -15,7 +16,7 @@ public:
 	TOKEN_LIST token_list_;
 
 	TNode* GetAST();
-	void GetCFG(TNode* ast_root_node);
+	vector<CFG*> GetCFG(TNode* ast_root_node);
 
 private:
 };

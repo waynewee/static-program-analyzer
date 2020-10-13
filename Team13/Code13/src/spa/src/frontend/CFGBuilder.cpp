@@ -11,7 +11,7 @@ CFGBuilder::CFGBuilder(TNode* proc_node) {
 	cfg_ = new CFG();
 }
 
-void CFGBuilder::BuildCFG() {
+CFG* CFGBuilder::BuildCFG() {
 
 	TNode* first_stmt_list_node = ast_root_->GetChildrenVector().at(1);
 	vector<TNode*> first_stmt_list = first_stmt_list_node->GetChildrenVector();
@@ -24,6 +24,8 @@ void CFGBuilder::BuildCFG() {
 	TraverseAST(first_stmt_list);
 
 	PrintCFG();
+
+	return cfg_;
 }
 
 void CFGBuilder::TraverseAST(vector<TNode*> stmt_list) {

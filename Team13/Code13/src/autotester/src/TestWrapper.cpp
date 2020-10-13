@@ -2,6 +2,7 @@
 #include <string>
 #include <stdexcept>
 
+#include <CFG.h>
 #include <PKB.h>
 #include "TestWrapper.h"
 #include "frontend/SimpleParser.h"
@@ -38,7 +39,7 @@ void TestWrapper::parse(string filename) {
 		FrontendWrapper frontend_wrapper(filename);
 
 		TNode* ast_root_node = frontend_wrapper.GetAST();
-		frontend_wrapper.GetCFG(ast_root_node);
+		CFG* cfg = frontend_wrapper.GetCFG(ast_root_node);
 		TestWrapper::pkb->SetASTRoot(ast_root_node);
 
 		DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
