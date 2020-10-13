@@ -231,13 +231,26 @@ BOOLEAN QueryRules::IsResultClause(STRING token, STRING_STRING_MAP declared_var_
 
 BOOLEAN QueryRules::IsTuple(STRING token, STRING_STRING_MAP declared_var_names) {
 	BOOLEAN result = false;
-	if (IsElem(token)) {
+	STRING temp_token = token;
+	// cout << "temp_token:" << temp_token << endl;
+	if (IsElem(temp_token)) {
+		// cout << "yes is elem" << endl;
 		// element must be declared by user
+		if (IsAttrRef(temp_token)) {
+			// cout << "yes is attrRef" << endl;
+			// there is a dot
+			STRING synonym_subtoken = temp_token.substr(0, temp_token.find_first_of("."));
+			// cout << "synonym_st" << synonym_subtoken << endl;
+			if (declared_var_names.count(synonym_subtoken) == 1) {
+				result = true;
+				return result;
+			}
+		}
 		if (declared_var_names.count(token) == 1) {
 			result = true;
+			return result;
 		}
 	}
-	STRING temp_token = token;
 	STRING sub_token;
 	STRING comma = ",";
 	size_t pos = 0;
@@ -247,22 +260,61 @@ BOOLEAN QueryRules::IsTuple(STRING token, STRING_STRING_MAP declared_var_names) 
 			sub_token = temp_token.substr(0, pos);
 			// cout << "subtoken:" << sub_token << "|" << endl;
 			WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&sub_token);
-			if (!IsElem(sub_token)) {
-				break;
+
+			if (IsAttrRef(sub_token)) {
+				STRING synonym_subtoken = sub_token.substr(0, sub_token.find_first_of("."));
+				// cout << "synonym_st" << synonym_subtoken << endl;
+				if (declared_var_names.count(synonym_subtoken) != 1) {
+					result = false;
+					return result; // synonym not declared.
+				}
+				else {
+					result = true;
+				}
 			}
-			if (declared_var_names.count(sub_token) != 1) {
-				// element not declared by user
-				break;
+			else if (IsSynonym(sub_token)) {
+				if (declared_var_names.count(sub_token) != 1) {
+					result = false;
+					return result;
+				}
+				else {
+					result = true;
+				}
+			}
+			else {
+				// if not attrRef or synonym, return false.
+				result = false;
+				return result;
 			}
 			temp_token.erase(0, temp_token.find_first_of(",") + 1);
 		}
 		// last token : 
+		cout << "we reach last token. " << endl;
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
-		if (IsElem(temp_token)) {
-			// element must be declared by user
-			if (declared_var_names.count(temp_token) == 1) {
+		cout << "last token:" << temp_token << endl;
+		if (IsAttrRef(temp_token)) {
+			STRING synonym_subtoken = temp_token.substr(0, temp_token.find_first_of("."));
+			// cout << "synonym_st" << synonym_subtoken << endl;
+			if (declared_var_names.count(synonym_subtoken) != 1) {
+				result = false;
+				return result; // synonym not declared.
+			}
+			else {
 				result = true;
 			}
+		}
+		else if (IsSynonym(temp_token)) {
+			if (declared_var_names.count(temp_token) != 1) {
+				result = false;
+				return result;
+			}
+			else {
+				result = true;
+			}
+		}
+		else {
+			result = false;
+			return result;
 		}
 	}
 	if (DEBUG) {
@@ -507,6 +559,14 @@ BOOLEAN QueryRules::IsRelRef(STRING token, STRING_STRING_MAP declared_var_names)
 		result = true;
 		return result;
 	}
+	if (IsAffects(token, declared_var_names)) {
+		result = true;
+		return result;
+	}
+	if (IsAffectsT(token, declared_var_names)) {
+		result = true;
+		return result;
+	}
 	return result;
 }
 
@@ -560,6 +620,14 @@ STRING QueryRules::GetRelRefType(STRING token, STRING_STRING_MAP declared_var_na
 	}
 	if (IsNextT(token, declared_var_names)) {
 		type = TYPE_COND_NEXT_T;
+		return type;
+	}
+	if (IsAffects(token, declared_var_names)) {
+		type = TYPE_COND_AFFECTS;
+		return type;
+	}
+	if (IsAffectsT(token, declared_var_names)) {
+		type = TYPE_COND_AFFECTS_T;
 		return type;
 	}
 	return type;
@@ -1143,6 +1211,100 @@ BOOLEAN QueryRules::IsNextT(STRING token, STRING_STRING_MAP declared_var_names) 
 		second_arg_type = declared_var_names.at(second_arg);
 	}
 	if (!IsLineRef(second_arg, second_arg_type) && !IsStmtRef(second_arg, second_arg_type)) {
+		result = false;
+		return result;
+	}
+	return result;
+}
+
+BOOLEAN QueryRules::IsAffects(STRING token, STRING_STRING_MAP declared_var_names) {
+	BOOLEAN result = true;
+	STRING temp_token = token;
+	STRING parent_star_token = temp_token.substr(0, temp_token.find_first_of("("));
+	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&parent_star_token);
+	STRING first_arg;
+	STRING second_arg;
+	if (parent_star_token.compare(TYPE_COND_AFFECTS) != 0) {
+		result = false;
+		return result;
+	}
+	temp_token.erase(0, temp_token.find_first_of("("));
+	if (temp_token.front() != '(' || temp_token.back() != ')') {
+		result = false;
+		return result;
+	}
+	temp_token.erase(0, 1); // Erase opening bracket away
+	first_arg = temp_token.substr(0, temp_token.find_first_of(","));
+	temp_token.erase(0, temp_token.find_first_of(",") + 1);
+	// cout << "TT:" << temp_token << endl;
+	second_arg = temp_token.substr(0, temp_token.length() - 1);
+
+	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
+	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
+	// cout << "First arg:" << first_arg << "|" << endl;
+	// cout << "2nd arg:" << second_arg << "|" << endl;
+	// First argument must be an entRef
+	STRING first_arg_type = "none";
+	if (declared_var_names.count(first_arg) == 1) {
+		first_arg_type = declared_var_names.at(first_arg);
+	}
+	if (!IsStmtRef(first_arg, first_arg_type) && !IsLineRef(first_arg, first_arg_type)) {
+		result = false;
+		return result;
+	}
+	// Second argument must be an entRef
+	STRING second_arg_type = "none";
+	if (declared_var_names.count(second_arg) == 1) {
+		second_arg_type = declared_var_names.at(second_arg);
+	}
+	if (!IsStmtRef(second_arg, second_arg_type) && !IsLineRef(second_arg, second_arg_type)) {
+		result = false;
+		return result;
+	}
+	return result;
+}
+
+BOOLEAN QueryRules::IsAffectsT(STRING token, STRING_STRING_MAP declared_var_names) {
+	BOOLEAN result = true;
+	STRING temp_token = token;
+	STRING parent_star_token = temp_token.substr(0, temp_token.find_first_of("("));
+	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&parent_star_token);
+	STRING first_arg;
+	STRING second_arg;
+	if (parent_star_token.compare(TYPE_COND_AFFECTS_STAR) != 0) {
+		result = false;
+		return result;
+	}
+	temp_token.erase(0, temp_token.find_first_of("("));
+	if (temp_token.front() != '(' || temp_token.back() != ')') {
+		result = false;
+		return result;
+	}
+	temp_token.erase(0, 1); // Erase opening bracket away
+	first_arg = temp_token.substr(0, temp_token.find_first_of(","));
+	temp_token.erase(0, temp_token.find_first_of(",") + 1);
+	// cout << "TT:" << temp_token << endl;
+	second_arg = temp_token.substr(0, temp_token.length() - 1);
+
+	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
+	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
+	// cout << "First arg:" << first_arg << "|" << endl;
+	// cout << "2nd arg:" << second_arg << "|" << endl;
+	// First argument must be an entRef
+	STRING first_arg_type = "none";
+	if (declared_var_names.count(first_arg) == 1) {
+		first_arg_type = declared_var_names.at(first_arg);
+	}
+	if (!IsStmtRef(first_arg, first_arg_type) && !IsLineRef(first_arg, first_arg_type)) {
+		result = false;
+		return result;
+	}
+	// Second argument must be an entRef
+	STRING second_arg_type = "none";
+	if (declared_var_names.count(second_arg) == 1) {
+		second_arg_type = declared_var_names.at(second_arg);
+	}
+	if (!IsStmtRef(second_arg, second_arg_type) && !IsLineRef(second_arg, second_arg_type)) {
 		result = false;
 		return result;
 	}
