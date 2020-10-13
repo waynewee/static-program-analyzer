@@ -1,13 +1,4 @@
 #include "PQLParser.h"
-#include "QueryInfo.h"
-#include "QuerySyntaxValidator.h"
-#include "WhitespaceHandler.h"
-#include <vector>
-#include <unordered_set>
-#include <sstream>
-#include <iostream>
-#include <regex>
-#include <string>
 using namespace std;
 
 /*
@@ -31,24 +22,26 @@ QueryInfo PQLParser::Parse(STRING s) {
     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&query);
 
     try {
-        STRING_LIST all_declarations = SplitBySemicolons(&query);
-        for (auto decl : all_declarations) {
-            WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&decl);
-            STRING design_entity_type = decl.substr(0, decl.find_first_of(" "));
-            // VALIDATION
-            if (!query_syntax_validator->ValidateDeclaration(decl)) {
-                is_query_valid = false;
-            }
-            // Get the result for each declaration
-            STRING_STRING_MAP declaration_result;
-            declaration_result = ParseDeclaration(decl);
+        if (query.find(";") != STRING::npos) {
+            STRING_LIST all_declarations = PQLTokenizer::TokenizeBySemicolons(&query);
+            for (auto decl : all_declarations) {
+                WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&decl);
+                STRING design_entity_type = decl.substr(0, decl.find_first_of(" "));
+                // VALIDATION
+                if (!query_syntax_validator->ValidateDeclaration(decl)) {
+                    is_query_valid = false;
+                }
+                // Get the result for each declaration
+                STRING_STRING_MAP declaration_result;
+                declaration_result = ParseDeclaration(decl);
 
-            for (STRING_PAIR var : declaration_result) {
-                entity_map[var.first] = var.second;
+                for (STRING_PAIR var : declaration_result) {
+                    entity_map[var.first] = var.second;
+                }
             }
         }
 
-        STRING supposed_select_token = RetrieveToken(&query);
+        STRING supposed_select_token = PQLTokenizer::RetrieveToken(&query);
 
         if (!query_syntax_validator->ValidateSelect(supposed_select_token)) {
             // cout << "NOT SELECT!" << endl;
@@ -61,7 +54,7 @@ QueryInfo PQLParser::Parse(STRING s) {
         if (query.find(">") != STRING::npos) {
             // found >, so we know that tuple has multiple elems : e.g. Select <s1, s2>
             // cout << "FOUND > " << endl;
-            supposed_result_cl = RetrieveTokenByClosingAngleBracket(&query);
+            supposed_result_cl = PQLTokenizer::RetrieveTokenByClosingAngleBracket(&query);
             if (!query_syntax_validator->ValidateResultClause(supposed_result_cl, entity_map)) {
                 is_query_valid = false;
                 throw ("Error : At PQLParser, Validating Result Clause");
@@ -73,7 +66,7 @@ QueryInfo PQLParser::Parse(STRING s) {
             // didn't find >, so we know that it's just one elem : e.g. Select s1
             // cout << "didnt find" << endl;
 
-            supposed_result_cl = RetrieveToken(&query);
+            supposed_result_cl = PQLTokenizer::RetrieveToken(&query);
             if (!query_syntax_validator->ValidateResultClause(supposed_result_cl, entity_map)) {
                 is_query_valid = false;
                 throw ("Error : At PQLParser, Validating Result Clause");
@@ -106,12 +99,12 @@ QueryInfo PQLParser::Parse(STRING s) {
             if (supposed_such_that.compare(TYPE_SUCH_THAT_CLAUSE) == 0) {
                 clause_type = TYPE_SUCH_THAT_CLAUSE;
                 current_clause_type = TYPE_SUCH_THAT_CLAUSE;
-                RetrieveToken(&query); // delete 'such' from the query
-                RetrieveToken(&query); // delete 'that' from the query
+                PQLTokenizer::RetrieveToken(&query); // delete 'such' from the query
+                PQLTokenizer::RetrieveToken(&query); // delete 'that' from the query
                 current_is_and_clause = false;
             }
             else {
-                clause_type = RetrieveToken(&query);
+                clause_type = PQLTokenizer::RetrieveToken(&query);
                 if (clause_type.compare(TYPE_PATTERN_CLAUSE) == 0) {
                     current_clause_type = TYPE_PATTERN_CLAUSE;
                     current_is_and_clause = false;
@@ -193,7 +186,8 @@ QueryInfo PQLParser::Parse(STRING s) {
                 if (query_syntax_validator->ValidatePatternClause(full_clause, entity_map)) {
                     full_clause.erase(0, full_clause.find_first_of(" "));
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause); // pattern is erased away
-                    STRING pattern_select_var = RetrieveToken(&full_clause);
+                    STRING pattern_select_var = PQLTokenizer::RetrieveTokenByOpenBracket(&full_clause);
+                    WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&pattern_select_var);
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause);
                     STRING_LIST pattern_result = ExtractArguments(full_clause);
                     pattern_result.push_back(pattern_select_var);
@@ -230,7 +224,21 @@ QueryInfo PQLParser::Parse(STRING s) {
                 if (query_syntax_validator->ValidateWithClause(full_clause, entity_map)) {
                     full_clause.erase(0, full_clause.find_first_of(" "));
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause); // erase with clause
-
+                    // remaining is xxx = yyy
+                    STRING first_arg = full_clause.substr(0, full_clause.find_first_of("="));
+                    STRING second_arg = full_clause.substr(full_clause.find_first_of("=") + 1, full_clause.length());
+                    STRING_PAIR result_with;
+                    WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
+                    WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
+                    result_with.first = first_arg;
+                    result_with.second = second_arg;
+                    // cout << "resultwithFirst:" << result_with.first << endl;
+                    // cout << "resultwithSEcond:" << result_with.second << endl;
+                    with_map.insert(&result_with);
+                }
+                else {
+                    is_query_valid = false;
+                    throw ("Invalid Query : at with clause");
                 }
             }
         }
@@ -267,23 +275,6 @@ QueryInfo PQLParser::Parse(STRING s) {
     query_info.PrintPatternMap();
     
     return query_info;
-}
-
-STRING_LIST PQLParser::SplitBySemicolons(string* query) {
-    string delimiter = ";";
-    size_t pos = 0;
-    string token;
-    STRING_LIST all_declarations;
-    if ((pos = query->find(delimiter)) == string::npos) {
-        throw "Error : Invalid format, ';' not found";
-    }
-
-    while ((pos = query->find(delimiter)) != string::npos) {
-        token = query->substr(0, pos);
-        all_declarations.push_back(token);
-        query->erase(0, pos + delimiter.length());
-    }
-    return all_declarations;
 }
 
 STRING_STRING_MAP PQLParser::ParseDeclaration(STRING decl) {
@@ -323,34 +314,6 @@ STRING_STRING_MAP PQLParser::ParseDeclaration(STRING decl) {
     }
     */
     return variable_names_declared;
-}
-
-
-STRING PQLParser::RetrieveToken(STRING* str) {
-    WhitespaceHandler::TrimLeadingWhitespaces(str);
-    STRING next_word = str->substr(0, str->find_first_of(" "));
-    str->erase(0, str->find_first_of(" "));
-    WhitespaceHandler::TrimLeadingWhitespaces(str);
-    WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&next_word);
-    return next_word;
-}
-
-STRING PQLParser::RetrieveTokenByOpenBracket(STRING* str) {
-    WhitespaceHandler::TrimLeadingWhitespaces(str);
-    STRING next_word = str->substr(0, str->find_first_of("("));
-    str->erase(0, str->find_first_of("("));
-    WhitespaceHandler::TrimLeadingWhitespaces(str);
-    WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&next_word);
-    return next_word;
-}
-
-STRING PQLParser::RetrieveTokenByClosingAngleBracket(STRING* str) {
-    WhitespaceHandler::TrimLeadingWhitespaces(str);
-    STRING next_word = str->substr(0, str->find_first_of(">") + 1);
-    str->erase(0, str->find_first_of(">") + 1);
-    WhitespaceHandler::TrimLeadingWhitespaces(str);
-    WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&next_word);
-    return next_word;
 }
 
 VOID PQLParser::ParseResultClauseElem(STRING token, STRING_LIST* output_list) {
@@ -521,40 +484,3 @@ BOOLEAN PQLParser::IsPatternPartial(STRING token) {
 
     return is_partial;
 }
-
-
-/*
-STRING_STRINGLIST_MAP PQLParser::ParsePatternClause(string* clause, STRING_STRING_MAP all_user_declared_var,
-    QuerySyntaxValidator* query_syntax_validator) {
-    STRING_STRINGLIST_MAP patternClauseResult;
-    if (clause->find("\"") != string::npos && clause->find("\"") < clause->find_first_of(")")) {
-        int endOfPatternClause = query_syntax_validator->NthOccurrence(clause, "\"", 2);
-
-        string temp = clause->substr(endOfPatternClause, clause->length());
-
-        int distanceToClosedBracket = temp.find_first_of(")") + 1;
-
-        string pattern_clause = clause->substr(0, endOfPatternClause + distanceToClosedBracket);
-
-        // cout << "pattern clause : " << pattern_clause << endl;
-
-        clause->erase(0, endOfPatternClause + distanceToClosedBracket);
-
-        patternClauseResult = query_syntax_validator->ValidatePatternClause(pattern_clause, all_user_declared_var);
-    }
-    else {
-        // cannot find ", so pattern variables are blank. we can find by next closing bracket
-        int endOfPatternClause = clause->find_first_of(")") + 1;
-
-        string pattern_clause = clause->substr(0, endOfPatternClause);
-
-        // cout << "pattern clause : " << pattern_clause << endl;
-
-        clause->erase(0, endOfPatternClause);
-
-        patternClauseResult = query_syntax_validator->ValidatePatternClause(pattern_clause, all_user_declared_var);
-    }
-
-    return patternClauseResult;
-}
-*/
