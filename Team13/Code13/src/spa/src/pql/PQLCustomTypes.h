@@ -56,8 +56,8 @@ using namespace std;
 #define TYPE_SELECT_CLAUSE "Select"
 #define TYPE_AND_CLAUSE "and"
 
-#define FALSE "false"
-#define TRUE "true"
+#define FALSE "FALSE"
+#define TRUE "TRUE"
 
 typedef string STRING;
 typedef int INTEGER;

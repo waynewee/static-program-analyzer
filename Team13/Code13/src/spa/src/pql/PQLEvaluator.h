@@ -11,6 +11,10 @@ class PQLEvaluator
 public:
 	QueryResult Evaluate(QueryInfo query_info);
 
+	VOID Print(STRINGLIST_SET to_print);
+	VOID Print(STRINGLIST_STRINGLISTSET_MAP to_print);
+	
+	VOID AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP* results_map);
 	QueryResult SetResult(BOOLEAN is_boolean_output, STRING bool_result, STRINGLIST_SET result);
 		
 	BOOLEAN ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints);
@@ -37,25 +41,21 @@ public:
 	STRINGLIST_SET ConvertSet(PROC_VAR_PAIR_LIST result_set);
 	STRINGLIST_SET ConvertSet(PROC_PROC_PAIR_LIST result_set);
 
-	// VOID CheckConstraints(STRINGPAIR_SET constraints, STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST key, STRING_SET* value);
-	BOOLEAN CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING_MAP entity_map, STRING_LIST key, STRINGLIST_SET* value);
-	
+	BOOLEAN CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING_MAP entity_map, STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST key, STRINGLIST_SET* value);
+	BOOLEAN CheckConstraints(STRING_SET lhs_values, STRING_SET rhs_values, STRING lhs_attr, STRING rhs_attr, STRING lhs_type, STRING rhs_type);
+
 	BOOLEAN RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, INTEGER pos_to_check);
 
-	STRING_SET GetIntersectResult(STRING_SET existing_val, STRING_SET new_val);
-	STRINGLIST_SET GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2, INTEGER pos_to_check);
-	
+	INTEGER GetCommonSynonymsIndex(STRING_LIST large_keys, STRING synonym);
+	INTEGERLIST_LIST GetCommonSynonymsIndex(STRING_LIST large_keys, STRING_LIST small_keys);
 	STRING_SET GetNewResult(STRINGLIST_SET value, INTEGER pos_to_check);
 	STRINGLIST_SET GetNewResult(STRINGLIST_SET value, INTEGER_SET pos_to_check);
-	
-	INTEGERLIST_LIST GetCommonSynonymsIndex(STRING_LIST large_keys, STRING_LIST small_keys);
-	
 	STRINGLIST_SET GetCombinedResult(STRINGLIST_SET large_values, STRINGLIST_SET small_values, INTEGERLIST_LIST indexes);
-	STRINGLIST_SET GetCombinedResult(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list);
-	STRINGLIST_SET GetCombinedResult(STRINGLIST_SET results, STRINGLIST_SET to_combine);
-	STRINGLIST_SET GetCombinedResult(STRINGLIST_SET results, STRINGLIST_SET values, INTEGER pos_to_add, INTEGERPAIR_SET to_check);
+	STRINGLIST_SET GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list);
+	STRINGLIST_SET GetNoDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values);
+	STRINGLIST_SET GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, INTEGER pos_to_add, INTEGERPAIR_SET to_check);
 	
-	VOID AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP* results_map);
+	STRING_SET GetAlternateResult(STRING_SET values, STRING type);
 
 	BOOLEAN IsVar(STRING var);
 	BOOLEAN IsString(STRING var);
@@ -63,7 +63,13 @@ public:
 	BOOLEAN IsUnderscore(STRING var);
 	BOOLEAN IsBooleanOutput(STRING_LIST output_list);
 	BOOLEAN IsOutputSynonyms(STRING_LIST synonyms, STRING_LIST output_list);
+	BOOLEAN IsDuplicate(STRINGLIST_SET set, STRING_LIST value);
+	BOOLEAN IsDependencyStatisfied(STRING_LIST result1, STRING_LIST result2, INTEGERPAIR_SET to_check);
+	BOOLEAN IsSameEntityType(STRING type, STRING check);
 
 	INTEGER ParsingStmtRef(STRING param);
 	STRING ParsingEntRef(STRING param);
-};
+	STRING ParsingSynonym(STRING synonym);
+	STRING ParsingSynonymAttribute(STRING synonym);
+
+}; 
