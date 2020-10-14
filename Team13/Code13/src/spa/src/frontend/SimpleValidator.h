@@ -15,7 +15,6 @@ public:
 
 	string curr_proc_;
 	TOKEN_LIST token_list_;
-	CALLS_LIST calls_list_;
 	PROC_ADJ_LIST proc_adj_list_;
 
 	bool IsValid(TOKEN_LIST token_list);
@@ -39,7 +38,6 @@ private:
 	Token PeekNextToken();
 	int GetEndIndxOfStatementList();
 
-	void UpdateAdjList();
 	void CheckForCyclicCalls();
 };
 

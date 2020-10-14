@@ -23,7 +23,6 @@ using namespace std;
 typedef vector<string> STMT_NAME_LIST;
 typedef vector<Token> TOKEN_LIST;
 typedef vector<string> STR_LIST;
-typedef vector<pair<string,string>> CALLS_LIST; // pair<Caller, Callee>
 
 typedef string DFS_NODE;
 

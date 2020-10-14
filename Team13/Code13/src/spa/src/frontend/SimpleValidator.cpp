@@ -37,17 +37,19 @@ bool SimpleValidator::IsValid(TOKEN_LIST token_list) {
 		SimpleValidator::IsValidProc();
 	}
 
-	
+	map<string, vector<string>>::iterator it;
 
-	UpdateAdjList();
-	// Checking if functioned called exists
-	for (pair<string, string> caller_callee_pair : calls_list_) {
-		if (proc_adj_list_.count(caller_callee_pair.second) == 0) {
-			cout << "(Name: " << caller_callee_pair.second << ") ";
-			throw "Undefined procedure called";
+	for (it = proc_adj_list_.begin(); it != proc_adj_list_.end(); it++) {
+		for (int i = 0; i < it->second.size(); i++) {
+			if (!proc_adj_list_.count(it->second[i])) {
+				// Key does not exist
+				cout << "(" << it->second[i] << ") ";
+				throw "Undefined procedure ";
+			}
 		}
 	}
 	CheckForCyclicCalls();
+	return true;
 }
 
 bool SimpleValidator::IsValidStmt() {
@@ -133,12 +135,15 @@ bool SimpleValidator::IsValidPrintStmt() {
 bool SimpleValidator::IsValidCallStmt() {
 	Token name_token = SimpleValidator::GetNextToken();
 	
-	calls_list_.push_back(make_pair(curr_proc_, name_token.GetValue()));
-
 	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid variable name for call statement";
 	}
+
+	// Updating proc_adj_list
+	vector<string> lst = proc_adj_list_.at(curr_proc_);
+	lst.push_back(name_token.GetValue());
+	proc_adj_list_.at(curr_proc_) = lst;
 
 	if (SimpleValidator::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
 		cout << "(Line: " << statement_index_ << ") ";
@@ -216,15 +221,18 @@ bool SimpleValidator::IsValidStmtList() {
 
 bool SimpleValidator::IsValidExpression(TOKEN_LIST expr_list) {
 
-	cout << "Expression" << endl;
+	/*cout << "Expression" << endl;
 
 	for (Token token : expr_list) {
 		cout << token.GetValue();
-	}
+	}*/
 
 	cout << "\nEnd Expression" << endl;
-
-	return ExprValidator::Validate(expr_list);
+	if (!ExprValidator::Validate(expr_list)) {
+		cout << "(Line: " << statement_index_ << ") ";
+		throw "Invalid expression";
+	}
+	return true;
 }
 
 // Returns the number of tokens inside a statement list
@@ -305,27 +313,6 @@ int SimpleValidator::GetEndIndxOfExpression(ExpressionType expr_type) {
 		end_index++;
 	}
 	return end_index;
-}
-
-void SimpleValidator::UpdateAdjList() {
-	/*std::cout << "Adj List: " << std::endl;
-	for (map<DFS_NODE, vector<DFS_NODE>>::iterator it = proc_adj_list_.begin();
-		it != proc_adj_list_.end(); it++)
-	{
-		std::cout << it->first  // string (key)
-			<< std::endl;
-	}
-
-	std::cout << "Caller Callee Pair: " << std::endl;
-	for (pair<string, string> caller_callee_pair : calls_list_) {
-		std::cout << "Caller: " << caller_callee_pair.first
-			<< " , Callee: " << caller_callee_pair.second << std::endl;
-	}*/
-	for (pair<string, string> caller_callee_pair : calls_list_) {
-		vector<string> lst = proc_adj_list_.at(caller_callee_pair.first);
-		lst.push_back(caller_callee_pair.second);
-		proc_adj_list_.at(caller_callee_pair.first) = lst;
-	}
 }
 
 void SimpleValidator::CheckForCyclicCalls() {
