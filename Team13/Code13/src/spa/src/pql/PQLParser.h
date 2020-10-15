@@ -2,24 +2,30 @@
 using namespace std;
 #include "QueryInfo.h"
 #include "QuerySyntaxValidator.h"
+#include "WhitespaceHandler.h"
+#include "PQLTokenizer.h"
+#include <vector>
+#include <unordered_set>
+#include <sstream>
+#include <iostream>
+#include <regex>
+#include <string>
 
 #pragma once
 class PQLParser
 {
 public:
-	QueryInfo Parse(string s);
+	QueryInfo Parse(STRING query);
 
-	void TrimLeadingWhitespaces(string* s);
+	STRING_STRING_MAP ParseDeclaration(STRING decl);
 
-	void TrimTrailingWhitespaces(string* s);
+	VOID ParseResultClauseElem(STRING token, STRING_LIST* output_list);
 
-	STRING_LIST SplitBySemicolons(string* query);
+	VOID ParseResultClauseTuple(STRING token, STRING_LIST* output_list);
 
-	string DeleteOneWordAndRetrieveIt(string* str);
+	STRING_LIST ExtractArguments(STRING token);
 
-	string DeleteByOpenBracketAndRetrieveIt(string* str);
+	BOOLEAN IsPatternPartial(STRING token);
 
-	STRING_STRINGLIST_MAP ParsePatternClause(string* clause, STRING_STRING_MAP all_user_declared_var,
-		QuerySyntaxValidator* query_syntax_validator);
 };
 

@@ -27,18 +27,18 @@ STRING_SET PQLDriver::Query(STRING query_string) {
 	}
 
 	// loop: check whats in Query info
-	/*parsed_info.PrintOutputVar();
-	parsed_info.PrintRelRefMap();
-	parsed_info.PrintVarMap();*/
+	/*parsed_info.PrintOutputList();
+	parsed_info.PrintClausesMap();
+	parsed_info.PrintEntityMap();*/
 
 	QueryResult result = evaluator.Evaluate(parsed_info);
-	if (result.IsEmpty()) {
-		// Empty result
-		if (DEBUG) {
-			cout << "Result is empty." << endl;
-		}
-		return final_result;
-	}
+	//if (result.IsEmpty()) {
+	//	// Empty result
+	//	if (DEBUG) {
+	//		cout << "Result is empty." << endl;
+	//	}
+	//	return final_result;
+	//}
 
 	// loop: check whats in Query result
 
