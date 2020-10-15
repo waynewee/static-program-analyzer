@@ -1,19 +1,9 @@
 #include <TNode.h>
 #include <queue>
 
-#include "ParserTestCases.h"
+#include "ASTBuilderTestCases.h"
 
 using namespace std;
-
-
-template<typename TNode*, typename... Args>
-TNode* AddChildren(TNode* parent, std::vector<TNode*> children) {
-	for (TNode* child : children) {
-		parent->AddChild(child);
-	}
-	return parent;
-}
-
 
 TNode* buildAssgnTestCase1() {
 	TNode* mainPrg = new TNode(TNode::NODE_TYPE::program);

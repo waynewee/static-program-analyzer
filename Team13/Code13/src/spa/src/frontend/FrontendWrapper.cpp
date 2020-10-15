@@ -4,12 +4,22 @@
 #include <FrontendWrapper.h>
 #include <Tokenizer.h>
 #include <TNode.h>
+#include <SimpleValidator.h>
 
 FrontendWrapper::FrontendWrapper(string file_name) {
 	FileReader fileReader(file_name);
 	string input = fileReader.ReadFile();
 	Tokenizer tokenizer(input);
 	token_list_ = tokenizer.GetTokenList();
+
+	try {
+		SimpleValidator simple_validator;
+		simple_validator.IsValid(tokenizer.GetTokenList());
+	}
+	catch (char* exception) {
+		std::cout << exception << std::endl;
+		exit(1);
+	}
 }
 
 TNode* FrontendWrapper::GetAST() {
