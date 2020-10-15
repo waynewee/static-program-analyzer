@@ -22,7 +22,7 @@ public:
 	Token();
 	Token(string token_val, TokenType::TOKEN_TYPE token_type);
 	Token(string token_val, TokenType::TOKEN_TYPE token_type, bool is_unary_op);
-	
+
 	bool is_unary_op_;
 	TokenType::STMT_TYPE stmt_type_;
 	TokenType::TOKEN_TYPE type_;

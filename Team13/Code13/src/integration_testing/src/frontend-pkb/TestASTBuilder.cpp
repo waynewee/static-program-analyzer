@@ -6,6 +6,8 @@
 #include <ASTBuilder.h>
 #include "ASTBuilderTestCases.h"
 
+using namespace std;
+
 ASTBuilder astbuilder = ASTBuilder();
 vector<TNode*> InOrderTraversal(TNode* root) {
 
@@ -106,6 +108,9 @@ TEST_CASE("Parsing regular while statement") {
 TEST_CASE("Parsing regular while statement with complex expression program") {
 	Tokenizer tokenizer(*(WhileTestCase4.SourceProgram));
 	tokenizer.Tokenize();
+	cout << "Expected Tree:" << endl;
+	WhileTestCase4.root->Print(WhileTestCase4.root);
+	cout << endl << endl << "Actual Tree:" << endl;
 	TNode* actualRoot = astbuilder.BuildMainPrgNode(tokenizer.GetTokenList());
 
 	REQUIRE(SameAST(InOrderTraversal(actualRoot), InOrderTraversal(WhileTestCase4.root)));
