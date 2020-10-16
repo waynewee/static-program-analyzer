@@ -31,7 +31,8 @@ public:
     STMT_IDX_SET GetAllStatements();
     VAR_NAME_SET GetAllVariables();
     PROC_NAME_SET GetAllProcedures();
-    CONST_VALUE_SET GetAllConstants();
+    INT_SET GetAllConstants();
+
 };
 
 #endif // DATA_MANAGER_H

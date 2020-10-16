@@ -45,11 +45,11 @@ TEST_CASE("PATTERN") {
 
 	// ONE user-declared entities - pattern user-declared(xx, xx)
 	pkb_one_result = pql.ConvertSet(pkb_st.GetPatternManager().GetAssignWithSubPattern("v1", ""));
-	pql_one_result = pql.EvaluateOneDeclaredSet(TYPE_COND_MODIFIES_P, "v1");
+	pql_one_result = pql.EvaluateOneSynonymSet(TYPE_COND_MODIFIES_P, "v1");
 	REQUIRE(pkb_one_result == pql_one_result);
 
 	pkb_one_result = pql.ConvertSet(pkb_st.GetPatternManager().GetAssignWithFullPattern("v1", ""));
-	pql_one_result = pql.EvaluateOneDeclaredSet(TYPE_COND_MODIFIES_P, "v1");
+	pql_one_result = pql.EvaluateOneSynonymSet(TYPE_COND_MODIFIES_P, "v1");
 	REQUIRE(pkb_one_result == pql_one_result);
 
 
@@ -57,16 +57,16 @@ TEST_CASE("PATTERN") {
 
 
 	pkb_one_result = pkb_st.GetPatternManager().GetAssignStmtVarPairWithSubPattern("v2");
-	pql_one_result = pql.EvaluateInverseOneDeclaredSet(TYPE_COND_MODIFIES_P, "v2");
+	pql_one_result = pql.EvaluateInverseOneSynonymSet(TYPE_COND_MODIFIES_P, "v2");
 	REQUIRE(pkb_one_result == pql_one_result);
 
 	pkb_one_result = pkb_st.GetPatternManager().GetAssignStmtVarPairWithFullPattern("");
-	pql_one_result = pql.EvaluateInverseOneDeclaredSet(TYPE_COND_MODIFIES_P, "_");
+	pql_one_result = pql.EvaluateInverseOneSynonymSet(TYPE_COND_MODIFIES_P, "_");
 	REQUIRE(pkb_one_result == pql_one_result);
 
 	// TWO user-declared entities - pattern user-declared(user-declared, xx)
 	unordered_set<vector<string>*> pkb_two_result = pql.ConvertSet(pkb_st.GetRelationManager().GetAllProcModifies());
-	unordered_set<vector<string>*> pql_two_result = pql.EvaluateTwoDeclaredSet(TYPE_COND_MODIFIES_P);
+	unordered_set<vector<string>*> pql_two_result = pql.EvaluateTwoSynonymSet(TYPE_COND_MODIFIES_P);
 	isSameResult(pkb_two_result, pql_two_result);
 
 

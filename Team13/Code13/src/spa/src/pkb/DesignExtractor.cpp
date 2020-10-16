@@ -289,6 +289,82 @@ bool DesignExtractor::ExtractModifies(RelationManager manager, TNode program) {
     return true;
 }
 
+// returns the list of procs called by this proc
+list<PROC_NAME> ExtractCallsRecursive(TNode root) {
+    vector<TNode*> children = root.GetChildrenVector();
+    list<PROC_NAME> lst;
+
+    if (children.empty()) {
+        return lst;
+    }
+
+    if (root.GetNodeType() == TNode::callStmt) {
+        lst.push_back(*(root.GetChildrenVector().at(0)->GetName()));
+    }
+
+    for (TNode* child : children) {
+        list<PROC_NAME> new_lst = ExtractCallsRecursive(*child);
+        lst.splice(lst.end(), new_lst);
+    }
+
+    return lst;
+}
+
+bool DesignExtractor::ExtractCalls(RelationManager manager, TNode program) {
+    vector<TNode*> procs = program.GetChildrenVector();
+    unordered_map < PROC_NAME, list<PROC_NAME> > proc_calls;                                     
+
+    for (TNode* proc : procs) {
+        vector<STMT_IDX> vec;
+        PROC_NAME* procName = (proc->GetChildrenVector()).at(0)->GetName();
+        list<PROC_NAME> calls = ExtractCallsRecursive(*proc);
+        proc_calls.insert(make_pair(*procName, calls));
+    }
+
+    // Do BFS for every proc call to extract call stars
+    for (pair < PROC_NAME, list<PROC_NAME> > call : proc_calls) {
+        PROC_NAME caller = call.first;
+        list<PROC_NAME> callees = call.second;
+        queue<PROC_NAME> frontier;
+        unordered_set<PROC_NAME> explored;
+
+        for (PROC_NAME callee : callees) {
+            manager.AddCalls(caller, callee);
+            manager.AddCallsStar(caller, callee);
+            frontier.push(callee); 
+        }
+
+        explored.insert(caller);
+        while (!frontier.empty()) {
+            PROC_NAME to_explore = frontier.front();
+
+            if (explored.count(to_explore) == 1) { // Already explored this node
+                frontier.pop();
+                continue;
+            }
+
+            frontier.pop();
+            explored.insert(to_explore);
+
+            auto iterator = proc_calls.find(to_explore);
+            if (iterator == proc_calls.end()) { // NOTHING to explore for this node
+                continue;
+            }
+
+            callees = iterator->second;
+            for (PROC_NAME callee : callees) {
+                manager.AddCallsStar(caller, callee);
+                if (explored.count(callee) == 0) {
+                    frontier.push(callee);
+                }
+            }
+            
+        }
+    }
+
+    return true;
+}
+
 
 bool DesignExtractor::ExtractData(DataManager manager, TNode root) {
     vector<TNode*> children = root.GetChildrenVector();
