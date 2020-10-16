@@ -3,6 +3,7 @@
 #include <stdexcept>
 
 #include <CFG.h>
+#include <CFGBuilder.h>
 #include <PKB.h>
 #include "TestWrapper.h"
 #include "Tokenizer.h"
@@ -37,6 +38,8 @@ void TestWrapper::parse(string filename) {
 	FrontendWrapper frontend_wrapper(filename);
 
 	TestWrapper::pkb->SetASTRoot(frontend_wrapper.GetAST());
+
+	frontend_wrapper.GetCFG(frontend_wrapper.GetAST());
 
 	DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());

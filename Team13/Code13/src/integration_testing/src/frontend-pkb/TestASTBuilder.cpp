@@ -4,7 +4,7 @@
 #include <TNode.h>
 #include <queue>
 #include <ASTBuilder.h>
-#include "ASTBuilderTestCases.h"
+#include "TestCases.h"
 
 using namespace std;
 

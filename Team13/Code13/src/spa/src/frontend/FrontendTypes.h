@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "Token.h"
+#include "CFG.h"
 
 using namespace std;
 
@@ -23,6 +24,7 @@ using namespace std;
 typedef vector<string> STMT_NAME_LIST;
 typedef vector<Token> TOKEN_LIST;
 typedef vector<string> STR_LIST;
+typedef vector<CFG*> CFG_LIST;
 
 typedef string DFS_NODE;
 
