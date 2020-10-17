@@ -32,13 +32,8 @@ TNode* FrontendWrapper::GetAST() {
 
 vector<CFG*> FrontendWrapper::GetCFG(TNode* ast_root_node) {
 
-	vector<CFG*> cfgs;
-
-	for (TNode* proc_node: ast_root_node->GetChildrenVector()) {
-		CFGBuilder cfg_builder(proc_node);
-		CFG* cfg = cfg_builder.BuildCFG();
-		cfgs.push_back(cfg);
-	}
+	CFGBuilder cfg_builder = CFGBuilder(ast_root_node);
+	CFG_LIST cfgs = cfg_builder.GetCFGs();
 
 	return cfgs;
 }

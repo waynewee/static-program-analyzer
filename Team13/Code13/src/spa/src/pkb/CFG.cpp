@@ -3,6 +3,8 @@
 //
 #include <iostream>
 #include "CFG.h"
+
+using namespace std;
 bool CFG::AddEdge(STMT_IDX s1, STMT_IDX s2) {
     auto result = AddEdgeUtil(data_, all_edges_, s1, s2);
     if (result) {
