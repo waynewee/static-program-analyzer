@@ -4,14 +4,13 @@
     "\\Team13",
     "\\Team13\\Code13",
     "\\Team13\\Code13\\src",
-    "\\Team13\\Code13\\src\\autotester",
-    "\\Team13\\Code13\\src\\autotester\\src",
     "\\Team13\\Code13\\src\\spa",
     "\\Team13\\Code13\\src\\spa\\src",
+    "\\Team13\\Code13\\src\\spa\\src\\pkb",
     "\\Team13\\Code13\\src\\unit_testing",
     "\\Team13\\Code13\\src\\unit_testing\\src",
     "\\Team13\\Code13\\src\\unit_testing\\src\\frontend"
   ],
-  "SelectedNode": "\\Team13\\Code13\\src\\autotester\\src\\TestWrapper.cpp",
+  "SelectedNode": "\\Team13\\Code13\\src\\spa\\src\\pkb\\PKB.h",
   "PreviewInSolutionExplorer": false
 }

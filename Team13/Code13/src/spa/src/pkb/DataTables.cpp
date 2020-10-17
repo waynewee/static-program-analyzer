@@ -13,7 +13,7 @@ bool CallsTable::Add(PROC_NAME pname, STMT_IDX s) {
 PROC_NAME CallsTable::GetCalledBy(STMT_IDX s) {
     auto got = data_.find(s);
     if (got == data_.end()) {
-        return "not found_";
+        return "";
     }
     else {
         return got->second;
