@@ -380,6 +380,7 @@ bool DesignExtractor::ExtractData(DataManager manager, TNode root) {
         break;
     case TNode::callStmt:
         manager.AddStatement(callStatement, root.GetStmtIndex());
+        manager.AddCall(*(root.GetChildrenVector().at(0)->GetName()), root.GetStmtIndex());
         break;
     case TNode::ifStmt:
         manager.AddStatement(ifStatement, root.GetStmtIndex());

@@ -13,6 +13,7 @@ protected:
     static StatementTable stmt_table_;
     static VariableTable var_table_;
     static ProcedureTable proc_table_;
+    static CallsTable calls_table_;
 
 public:
     DataManager() {
@@ -26,12 +27,14 @@ public:
     bool AddVariable(VAR_NAME v);
     bool AddProcedure(PROC_NAME p);
     bool AddConstant(CONST_VALUE c);
+    bool AddCall(PROC_NAME p, STMT_IDX s);
 
     STMT_IDX_SET GetAllStatements(STATEMENT_TYPE t);
     STMT_IDX_SET GetAllStatements();
     VAR_NAME_SET GetAllVariables();
     PROC_NAME_SET GetAllProcedures();
     INT_SET GetAllConstants();
+    PROC_NAME GetCalledByStmt(STMT_IDX s);
 
 };
 

@@ -6,6 +6,20 @@
 
 using namespace std;
 
+bool CallsTable::Add(PROC_NAME pname, STMT_IDX s) {
+    return data_.insert(make_pair(s, pname)).second;
+}
+
+PROC_NAME CallsTable::GetCalledBy(STMT_IDX s) {
+    auto got = data_.find(s);
+    if (got == data_.end()) {
+        return "not found_";
+    }
+    else {
+        return got->second;
+    }
+}
+
 PROC_NAME_SET ProcedureTable::GetAll() {
     return data_;
 }
