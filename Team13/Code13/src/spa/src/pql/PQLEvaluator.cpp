@@ -1173,7 +1173,7 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_PROC_PAIR_LIST result_set) {
 BOOLEAN PQLEvaluator::CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING_MAP entity_map, 
 	STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST key, STRINGLIST_SET* value) {
 	BOOLEAN is_checked = true;
-	/*
+	
 	for (STRING_PAIR* check : constraints) {
 		STRING lhs = check->first;
 		STRING rhs = check->second;
@@ -1251,7 +1251,7 @@ BOOLEAN PQLEvaluator::CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING
 			}
 		}
 	}
-	*/
+	
 	return is_checked;
 }
 
@@ -1278,6 +1278,15 @@ STRING_SET PQLEvaluator::GetAlternateResult(STRING_SET values, STRING type) {
 		}
 		else {
 			// calls
+			STRING new_value = PKB().GetDataManager().GetCalledByStmt(ParsingStmtRef(v));
+			if (new_value.compare("") != 0) {
+				new_values.insert(new_value);
+			}
+		}
+
+		if (new_values.empty()) {
+			results.clear();
+			break;
 		}
 
 		results.insert(new_values.begin(), new_values.end());
@@ -1346,7 +1355,6 @@ INTEGER PQLEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, STRING syno
 
 	return results;
 }
-
 
 STRING_SET PQLEvaluator::GetNewResult(STRINGLIST_SET value, INTEGER pos_to_check) {
 	if (DEBUG) {
