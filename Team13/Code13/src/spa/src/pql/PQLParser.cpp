@@ -227,14 +227,14 @@ QueryInfo PQLParser::Parse(STRING s) {
                     // remaining is xxx = yyy
                     STRING first_arg = full_clause.substr(0, full_clause.find_first_of("="));
                     STRING second_arg = full_clause.substr(full_clause.find_first_of("=") + 1, full_clause.length());
-                    STRING_PAIR result_with;
+                    STRING_PAIR* result_with = new STRING_PAIR();
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
-                    result_with.first = first_arg;
-                    result_with.second = second_arg;
+                    result_with->first = first_arg;
+                    result_with->second = second_arg;
                     // cout << "resultwithFirst:" << result_with.first << endl;
                     // cout << "resultwithSEcond:" << result_with.second << endl;
-                    with_map.insert(&result_with);
+                    with_map.insert(result_with);
                 }
                 else {
                     is_query_valid = false;
@@ -267,12 +267,14 @@ QueryInfo PQLParser::Parse(STRING s) {
         query_info.SetOutputList(output_list);
         query_info.SetStMap(st_map);
         query_info.SetPatternMap(pattern_map);
+        query_info.SetWithMap(with_map);
     }
     
     query_info.PrintEntityMap();
     query_info.PrintOutputList();
     query_info.PrintStMap();
     query_info.PrintPatternMap();
+    query_info.PrintWithMap();
     
     return query_info;
 }
