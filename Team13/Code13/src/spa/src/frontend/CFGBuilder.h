@@ -14,12 +14,12 @@ class CFGBuilder {
 public:
 
 	TNode* ast_root_;
-	CFG_LIST cfg_list_;
+	CFG* cfg_;
 
 	CFGBuilder(TNode* root_node);
-	CFG* BuildCFG(TNode* proc_node);
-	CFG_LIST GetCFGs();
-	void TraverseAST(vector<TNode*> stmt_list, CFG* cfg);
+	void BuildCFG(TNode* proc_node);
+	CFG* GetCFG();
+	void TraverseAST(vector<TNode*> stmt_list);
 	bool IsStmt(TNode* ast_node);
 	bool IsStmtList(TNode* ast_node);
 	vector<TNode*> FilterStmts(vector<TNode*> stmt_list);

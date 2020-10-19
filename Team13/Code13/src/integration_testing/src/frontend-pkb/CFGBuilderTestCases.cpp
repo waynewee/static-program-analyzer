@@ -8,38 +8,31 @@
 using namespace std;
 
 
-CFG_LIST buildSingleStmtTestCase() {
-	CFG_LIST cfg_list;
-	CFG* cfg_1 = new CFG();
-	cfg_list.push_back(cfg_1);
-	return cfg_list;
+CFG* buildSingleStmtTestCase() {
+	CFG* cfg = new CFG();
+	return cfg;
 }
 
 extern CFGTestCase SingleStmtTest = {
 	new string("procedure SingleStmtTest {x = x + 1;}"),
 	buildSingleStmtTestCase() };
 
-CFG_LIST buildDoubleStmtTestCase() {
-	CFG_LIST cfg_list;
-	CFG* cfg_1 = new CFG();
-	cfg_1->AddEdge(1, 2);
-	cfg_list.push_back(cfg_1);
-	return cfg_list;
+CFG* buildDoubleStmtTestCase() {
+	CFG* cfg = new CFG();
+	cfg->AddEdge(1, 2);
+	return cfg;
 }
 
 extern CFGTestCase DoubleStmtTest = {
 	new string("procedure DoubleStmtTest {x = x + 1; x = x + 2;}"),
 	buildDoubleStmtTestCase() };
 
-CFG_LIST buildIfStmtTestCase() {
-	CFG_LIST cfg_list;
-	CFG* cfg_1 = new CFG();
+CFG* buildIfStmtTestCase() {
+	CFG* cfg = new CFG();
 
-	cfg_1->AddEdge(1, 2);
-	cfg_1->AddEdge(1, 3);
-
-	cfg_list.push_back(cfg_1);
-	return cfg_list;
+	cfg->AddEdge(1, 2);
+	cfg->AddEdge(1, 3);
+	return cfg;
 }
 
 extern CFGTestCase IfStmtTest = {
@@ -52,17 +45,16 @@ extern CFGTestCase IfStmtTest = {
 	),
 	buildIfStmtTestCase() };
 
-CFG_LIST buildIfStmtWithExitTestCase() {
-	CFG_LIST cfg_list;
-	CFG* cfg_1 = new CFG();
+CFG* buildIfStmtWithExitTestCase() {
 
-	cfg_1->AddEdge(1, 2);
-	cfg_1->AddEdge(1, 3);
-	cfg_1->AddEdge(2, 4);
-	cfg_1->AddEdge(3, 4);
+	CFG* cfg = new CFG();
 
-	cfg_list.push_back(cfg_1);
-	return cfg_list;
+	cfg->AddEdge(1, 2);
+	cfg->AddEdge(1, 3);
+	cfg->AddEdge(2, 4);
+	cfg->AddEdge(3, 4);
+
+	return cfg;
 }
 
 extern CFGTestCase IfStmtWithExitTest = {
@@ -77,15 +69,13 @@ extern CFGTestCase IfStmtWithExitTest = {
 	),
 	buildIfStmtWithExitTestCase() };
 
-CFG_LIST buildWhileStmtTestCase() {
-	CFG_LIST cfg_list;
-	CFG* cfg_1 = new CFG();
+CFG* buildWhileStmtTestCase() {
+	CFG* cfg = new CFG();
 
-	cfg_1->AddEdge(1, 2);
-	cfg_1->AddEdge(2, 1);
+	cfg->AddEdge(1, 2);
+	cfg->AddEdge(2, 1);
 
-	cfg_list.push_back(cfg_1);
-	return cfg_list;
+	return cfg;
 }
 
 extern CFGTestCase WhileStmtTest = {
@@ -96,16 +86,14 @@ extern CFGTestCase WhileStmtTest = {
 	),
 	buildWhileStmtTestCase() }; 
 
-CFG_LIST buildWhileStmtWithExitTest() {
-	CFG_LIST cfg_list;
-	CFG* cfg_1 = new CFG();
+CFG* buildWhileStmtWithExitTest() {
+	CFG* cfg = new CFG();
 
-	cfg_1->AddEdge(1, 2);
-	cfg_1->AddEdge(2, 1);
-	cfg_1->AddEdge(1, 3);
+	cfg->AddEdge(1, 2);
+	cfg->AddEdge(2, 1);
+	cfg->AddEdge(1, 3);
 
-	cfg_list.push_back(cfg_1);
-	return cfg_list;
+	return cfg;
 }
 
 extern CFGTestCase WhileStmtWithExitTest = {
@@ -117,17 +105,16 @@ extern CFGTestCase WhileStmtWithExitTest = {
 	),
 	buildWhileStmtWithExitTest() };
 
-CFG_LIST buildNestedIfWhileStmtTest() {
-	CFG_LIST cfg_list;
-	CFG* cfg_1 = new CFG();
+CFG* buildNestedIfWhileStmtTest() {
 
-	cfg_1->AddEdge(1, 2);
-	cfg_1->AddEdge(1, 4);
-	cfg_1->AddEdge(2, 3);
-	cfg_1->AddEdge(3, 2);
+	CFG* cfg = new CFG();
 
-	cfg_list.push_back(cfg_1);
-	return cfg_list;
+	cfg->AddEdge(1, 2);
+	cfg->AddEdge(1, 4);
+	cfg->AddEdge(2, 3);
+	cfg->AddEdge(3, 2);
+
+	return cfg;
 }
 
 extern CFGTestCase NestedIfWhileStmtTest = {
@@ -142,18 +129,17 @@ extern CFGTestCase NestedIfWhileStmtTest = {
 	),
 	buildNestedIfWhileStmtTest() };
 
-CFG_LIST buildNestedWhileIfStmtTest() {
-	CFG_LIST cfg_list;
-	CFG* cfg_1 = new CFG();
+CFG* buildNestedWhileIfStmtTest() {
 
-	cfg_1->AddEdge(1, 2);
-	cfg_1->AddEdge(2, 3);
-	cfg_1->AddEdge(2, 4);
-	cfg_1->AddEdge(3, 1);
-	cfg_1->AddEdge(4, 1);
+	CFG* cfg = new CFG();
 
-	cfg_list.push_back(cfg_1);
-	return cfg_list;
+	cfg->AddEdge(1, 2);
+	cfg->AddEdge(2, 3);
+	cfg->AddEdge(2, 4);
+	cfg->AddEdge(3, 1);
+	cfg->AddEdge(4, 1);
+
+	return cfg;
 }
 
 extern CFGTestCase NestedWhileIfStmtTest = {
@@ -167,19 +153,18 @@ extern CFGTestCase NestedWhileIfStmtTest = {
 	),
 	buildNestedWhileIfStmtTest() };
 
-CFG_LIST buildMultipleNestedIfTest() {
-	CFG_LIST cfg_list;
-	CFG* cfg_1 = new CFG();
+CFG* buildMultipleNestedIfTest() {
 
-	cfg_1->AddEdge(1, 2);
-	cfg_1->AddEdge(1, 7);
-	cfg_1->AddEdge(2, 3);
-	cfg_1->AddEdge(2, 6);
-	cfg_1->AddEdge(3, 4);
-	cfg_1->AddEdge(3, 5);
+	CFG* cfg = new CFG();
 
-	cfg_list.push_back(cfg_1);
-	return cfg_list;
+	cfg->AddEdge(1, 2);
+	cfg->AddEdge(1, 7);
+	cfg->AddEdge(2, 3);
+	cfg->AddEdge(2, 6);
+	cfg->AddEdge(3, 4);
+	cfg->AddEdge(3, 5);
+
+	return cfg;
 }
 
 extern CFGTestCase MultipleNestedIfTest = {
@@ -198,19 +183,17 @@ extern CFGTestCase MultipleNestedIfTest = {
 	),
 	buildMultipleNestedIfTest() };
 
-CFG_LIST buildMultipleNestedWhileTest() {
-	CFG_LIST cfg_list;
-	CFG* cfg_1 = new CFG();
+CFG* buildMultipleNestedWhileTest() {
+	CFG* cfg = new CFG();
 
-	cfg_1->AddEdge(1, 2);
-	cfg_1->AddEdge(2, 1);
-	cfg_1->AddEdge(2, 3);
-	cfg_1->AddEdge(3, 2);
-	cfg_1->AddEdge(3, 4);
-	cfg_1->AddEdge(4, 3);
+	cfg->AddEdge(1, 2);
+	cfg->AddEdge(2, 1);
+	cfg->AddEdge(2, 3);
+	cfg->AddEdge(3, 2);
+	cfg->AddEdge(3, 4);
+	cfg->AddEdge(4, 3);
 
-	cfg_list.push_back(cfg_1);
-	return cfg_list;
+	return cfg;
 }
 
 extern CFGTestCase MultipleNestedWhileTest = {
@@ -223,22 +206,21 @@ extern CFGTestCase MultipleNestedWhileTest = {
 	),
 	buildMultipleNestedWhileTest() };
 
-CFG_LIST buildMultipleNestedIfWhileTest() {
-	CFG_LIST cfg_list;
-	CFG* cfg_1 = new CFG();
+CFG* buildMultipleNestedIfWhileTest() {
 
-	cfg_1->AddEdge(1, 2);
-	cfg_1->AddEdge(1, 6);
-	cfg_1->AddEdge(2, 3);
-	cfg_1->AddEdge(2, 7);
-	cfg_1->AddEdge(3, 4);
-	cfg_1->AddEdge(3, 5);
-	cfg_1->AddEdge(4, 2);
-	cfg_1->AddEdge(5, 2);
-	cfg_1->AddEdge(6, 7);
+	CFG* cfg = new CFG();
 
-	cfg_list.push_back(cfg_1);
-	return cfg_list;
+	cfg->AddEdge(1, 2);
+	cfg->AddEdge(1, 6);
+	cfg->AddEdge(2, 3);
+	cfg->AddEdge(2, 7);
+	cfg->AddEdge(3, 4);
+	cfg->AddEdge(3, 5);
+	cfg->AddEdge(4, 2);
+	cfg->AddEdge(5, 2);
+	cfg->AddEdge(6, 7);
+
+	return cfg;
 }
 
 extern CFGTestCase MultipleNestedIfWhileTest = {
@@ -254,21 +236,14 @@ extern CFGTestCase MultipleNestedIfWhileTest = {
 	),
 	buildMultipleNestedIfWhileTest() };
 
-CFG_LIST buildMultipleProcTest() {
-	CFG_LIST cfg_list;
-	CFG* cfg_1 = new CFG();
-	CFG* cfg_2 = new CFG();
-	CFG* cfg_3 = new CFG();
+CFG* buildMultipleProcTest() {
+	CFG* cfg = new CFG();
 
-	cfg_1->AddEdge(1, 2);
-	cfg_2->AddEdge(3, 4);
-	cfg_3->AddEdge(5, 6);
-
-	cfg_list.push_back(cfg_1);
-	cfg_list.push_back(cfg_2);
-	cfg_list.push_back(cfg_3);
+	cfg->AddEdge(1, 2);
+	cfg->AddEdge(3, 4);
+	cfg->AddEdge(5, 6);
 	
-	return cfg_list;
+	return cfg;
 }
 
 extern CFGTestCase MultipleProcTest = {
