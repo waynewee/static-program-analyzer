@@ -13,8 +13,8 @@ QuerySyntaxValidator::QuerySyntaxValidator() {
 	this->query_rules_ = query_rules;
 }
 
-BOOLEAN QuerySyntaxValidator::ValidateDeclaration(STRING token) {
-	return this->query_rules_.IsDeclaration(token);
+BOOLEAN QuerySyntaxValidator::ValidateDeclaration(STRING token, STRING_STRING_MAP entity_map) {
+	return this->query_rules_.IsDeclaration(token, entity_map);
 }
 
 BOOLEAN QuerySyntaxValidator::ValidateSelect(STRING token) {

@@ -28,7 +28,7 @@ QueryInfo PQLParser::Parse(STRING s) {
                 WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&decl);
                 STRING design_entity_type = decl.substr(0, decl.find_first_of(" "));
                 // VALIDATION
-                if (!query_syntax_validator->ValidateDeclaration(decl)) {
+                if (!query_syntax_validator->ValidateDeclaration(decl, entity_map)) {
                     is_query_valid = false;
                 }
                 // Get the result for each declaration

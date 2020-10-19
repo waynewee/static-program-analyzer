@@ -45,10 +45,10 @@ public:
 	STRINGLIST_SET ConvertSet(PROC_PROC_PAIR_LIST result_set);
 
 	BOOLEAN CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING_MAP entity_map, STRINGLIST_STRINGLISTSET_MAP* results_map, STRING_LIST key, STRINGLIST_SET* value);
-	BOOLEAN CheckConstraints(STRINGLIST_SET* lhs_values, STRINGLIST_SET* rhs_values, STRING lhs_attr, STRING rhs_attr, STRING lhs_type, STRING rhs_type);
+	// BOOLEAN CheckConstraints(STRINGLIST_SET* lhs_values, STRINGLIST_SET* rhs_values, STRING lhs_attr, STRING rhs_attr, STRING lhs_type, STRING rhs_type);
 
 	BOOLEAN RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, INTEGER pos_to_check);
-	BOOLEAN RemoveIrrelevant(STRINGLIST_SET* value, STRING tmp, INTEGER pos_to_check);
+	// BOOLEAN RemoveIrrelevant(STRINGLIST_SET* value, STRING tmp, INTEGER pos_to_check);
 
 	INTEGER GetCommonSynonymsIndex(STRING_LIST large_keys, STRING synonym);
 	INTEGERPAIR_SET GetCommonSynonymsIndex(STRING_LIST large_keys, STRING_LIST small_keys);
@@ -60,6 +60,10 @@ public:
 	STRINGLIST_SET GetNoDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values);
 	STRINGLIST_SET GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, INTEGER pos_to_add, INTEGERPAIR_SET to_check);
 	
+	STRING_SET GetIntersectResult(STRING_SET val1, STRING_SET val2);
+	// STRING_SET GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2, INTEGER pos_to_check);
+
+	STRING_SET GetAlternateResult(STRING values, STRING type);
 	STRING_SET GetAlternateResult(STRING_SET values, STRING type);
 	STRING_SET GetAlternateResult(STRINGLIST_SET values, STRING type);
 	STRINGLIST_SET GetAlternateOutputResult(STRING_SET values, STRING type);
