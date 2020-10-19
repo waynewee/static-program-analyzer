@@ -16,7 +16,7 @@ public:
 	TOKEN_LIST token_list_;
 
 	TNode* GetAST();
-	vector<CFG*> GetCFG(TNode* ast_root_node);
+	CFG* GetCFG(TNode* ast_root_node);
 
 private:
 };

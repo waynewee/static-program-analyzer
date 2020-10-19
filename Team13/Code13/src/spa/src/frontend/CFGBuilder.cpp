@@ -7,28 +7,27 @@
 using namespace std;
 
 CFGBuilder::CFGBuilder(TNode* root_node) {
+
+	cfg_ = new CFG();
+
 	for (TNode* proc_node : root_node->GetChildrenVector()) {
-		cfg_list_.push_back(BuildCFG(proc_node));
+		BuildCFG(proc_node);
 	}
 }
 
-CFG_LIST CFGBuilder::GetCFGs() {
-	return cfg_list_;
+CFG* CFGBuilder::GetCFG() {
+	return cfg_;
 }
 
-CFG* CFGBuilder::BuildCFG(TNode* proc_node) {
-
-	CFG* cfg = new CFG();
+void CFGBuilder::BuildCFG(TNode* proc_node) {
 
 	TNode* first_stmt_list_node = proc_node->GetChildrenVector().at(1);
 	vector<TNode*> first_stmt_list = first_stmt_list_node->GetChildrenVector();
 
-	TraverseAST(first_stmt_list, cfg);
-
-	return cfg;
+	TraverseAST(first_stmt_list);
 }
 
-void CFGBuilder::TraverseAST(vector<TNode*> stmt_list, CFG* cfg) {
+void CFGBuilder::TraverseAST(vector<TNode*> stmt_list) {
 
 	vector<TNode*> stmt_list_filtered = FilterStmts(stmt_list);
 
@@ -37,7 +36,7 @@ void CFGBuilder::TraverseAST(vector<TNode*> stmt_list, CFG* cfg) {
 		TNode* child = stmt_list_filtered.at(i);
 		TNode* child_next = stmt_list_filtered.at(i + 1);
 
-		cfg->AddEdge(child->GetStmtIndex(), child_next->GetStmtIndex());
+		cfg_->AddEdge(child->GetStmtIndex(), child_next->GetStmtIndex());
 
 	}
 
@@ -59,7 +58,7 @@ void CFGBuilder::TraverseAST(vector<TNode*> stmt_list, CFG* cfg) {
 
 					TNode* g_child_first = g_stmt_list_filtered.at(0);
 					//add edge from parent to first child
-					cfg->AddEdge(child->GetStmtIndex(), g_child_first->GetStmtIndex());
+					cfg_->AddEdge(child->GetStmtIndex(), g_child_first->GetStmtIndex());
 
 					TNode* g_child_last = g_stmt_list_filtered.at(g_stmt_list_filtered.size() - 1);
 					
@@ -71,19 +70,19 @@ void CFGBuilder::TraverseAST(vector<TNode*> stmt_list, CFG* cfg) {
 						GetLeafNodes(leaf_nodes, g_child_last);
 
 						for (TNode* leaf : *leaf_nodes) {
-							cfg->AddEdge(leaf->GetStmtIndex(), child->GetStmtIndex());
+							cfg_->AddEdge(leaf->GetStmtIndex(), child->GetStmtIndex());
 						}
 
 
 					}
 
 					if (child->GetNodeType() == TNode::NODE_TYPE::ifStmt && child_next != NULL) {
-						cfg->AddEdge(g_child_last->GetStmtIndex(), child_next->GetStmtIndex());
-						cfg->RemoveEdge(child->GetStmtIndex(), child_next->GetStmtIndex());
+						cfg_->AddEdge(g_child_last->GetStmtIndex(), child_next->GetStmtIndex());
+						cfg_->RemoveEdge(child->GetStmtIndex(), child_next->GetStmtIndex());
 					}
 				}
 
-				TraverseAST(g_stmt_list, cfg);
+				TraverseAST(g_stmt_list);
 			}
 		}
 

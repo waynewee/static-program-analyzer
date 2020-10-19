@@ -37,9 +37,11 @@ TestWrapper::TestWrapper() {
 void TestWrapper::parse(string filename) {
 	FrontendWrapper frontend_wrapper(filename);
 
-	TestWrapper::pkb->SetASTRoot(frontend_wrapper.GetAST());
+	TNode* ast_root = frontend_wrapper.GetAST();
+	CFG* cfg = frontend_wrapper.GetCFG(ast_root);
 
-	frontend_wrapper.GetCFG(frontend_wrapper.GetAST());
+	TestWrapper::pkb->SetASTRoot(ast_root);
+	TestWrapper::pkb->SetCFG(*cfg);
 
 	DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
