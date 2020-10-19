@@ -11,9 +11,12 @@ class PQLEvaluator
 public:
 	QueryResult Evaluate(QueryInfo query_info);
 
+	VOID Print(STRING_LIST to_print);
+	VOID Print(STRING_SET to_print);
 	VOID Print(STRINGLIST_SET to_print);
 	VOID Print(STRINGLIST_STRINGLISTSET_MAP to_print);
-	
+	VOID Print(STRINGSET_STRINGLISTSET_MAP to_print);
+
 	VOID AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP* results_map);
 	QueryResult SetResult(BOOLEAN is_boolean_output, STRING bool_result, STRINGLIST_SET result);
 		
