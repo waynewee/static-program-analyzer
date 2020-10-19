@@ -3,7 +3,7 @@
 #include "CustomTypes.h"
 #include "DesignExtractor.h"
 #include "PKB.h"
-#include "../TestUtils.h"
+#include "TestUtils.h"
 #include "TNode.h"
 
 using namespace std;
