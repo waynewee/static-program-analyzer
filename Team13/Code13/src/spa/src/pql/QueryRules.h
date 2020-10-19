@@ -23,7 +23,7 @@ public:
 
 	// Grammar Rules
 	BOOLEAN IsSelect(STRING token);
-	BOOLEAN IsDeclaration(STRING token);
+	BOOLEAN IsDeclaration(STRING token, STRING_STRING_MAP entity_map);
 	BOOLEAN IsResultClause(STRING token, STRING_STRING_MAP declared_var_names);
 	BOOLEAN IsTuple(STRING token, STRING_STRING_MAP declared_var_names);
 	BOOLEAN IsWithClause(STRING token, STRING_STRING_MAP declared_var_names);
