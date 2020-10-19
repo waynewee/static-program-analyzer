@@ -44,15 +44,16 @@ public:
 	STRINGLIST_SET ConvertSet(PROC_VAR_PAIR_LIST result_set);
 	STRINGLIST_SET ConvertSet(PROC_PROC_PAIR_LIST result_set);
 
-	BOOLEAN CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING_MAP entity_map, STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST key, STRINGLIST_SET* value);
-	BOOLEAN CheckConstraints(STRING_SET lhs_values, STRING_SET rhs_values, STRING lhs_attr, STRING rhs_attr, STRING lhs_type, STRING rhs_type);
+	BOOLEAN CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING_MAP entity_map, STRINGLIST_STRINGLISTSET_MAP* results_map, STRING_LIST key, STRINGLIST_SET* value);
+	BOOLEAN CheckConstraints(STRINGLIST_SET* lhs_values, STRINGLIST_SET* rhs_values, STRING lhs_attr, STRING rhs_attr, STRING lhs_type, STRING rhs_type);
 
 	BOOLEAN RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, INTEGER pos_to_check);
+	BOOLEAN RemoveIrrelevant(STRINGLIST_SET* value, STRING tmp, INTEGER pos_to_check);
 
 	INTEGER GetCommonSynonymsIndex(STRING_LIST large_keys, STRING synonym);
 	INTEGERPAIR_SET GetCommonSynonymsIndex(STRING_LIST large_keys, STRING_LIST small_keys);
 	STRING_SET GetNewResult(STRINGLIST_SET value, INTEGER pos_to_check);
-	STRINGLIST_SET GetNewResult(STRINGLIST_SET value, INTEGER_SET pos_to_check);
+	STRINGLIST_SET GetNewResult(STRINGLIST_SET value, INTEGER_LIST pos_to_check);
 	STRINGLIST_SET GetCombinedResult(STRINGLIST_SET large_values, STRINGLIST_SET small_values, INTEGERLIST_LIST indexes);
 	STRINGLIST_SET GetCombinedResult(STRINGLIST_SET output_result, STRINGLIST_SET result, INTEGER pos_to_compare);
 	STRINGLIST_SET GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list);
