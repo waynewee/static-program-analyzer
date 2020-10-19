@@ -98,20 +98,12 @@ VOID QueryInfo::PrintStMap() {
 }
 
 VOID QueryInfo::PrintWithMap() {
-	//cout << "----- St Clauses ----- " << endl;
-	//for (auto const& pair : this->with_map_) {
-	//	cout << " { " << pair.first << " , ";
-	//	for (STRING v : pair.second) {
-	//		cout << " < ";
-	//		for (auto i : v) {
-	//			cout << i << ", ";
-	//		}/*
-	//		else {
-	//			cout << "{ " << *(v->at(0)) << " " << *(v->at(1)) << "} ";
-	//		}*/
-	//	}
+	cout << "----- With map ----- " << endl;
+	for (auto const& pair : this->with_map_) {
+		cout << " { " << pair->first << " , ";
+		cout << pair->second << endl;
 
-	//}
+	}
 	//cout << "-------------------- " << endl;
 }
 

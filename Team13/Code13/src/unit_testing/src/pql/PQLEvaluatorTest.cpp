@@ -1,3 +1,4 @@
+/*
 #include "pql/PQLEvaluator.h"
 #include "catch.hpp"
 #include <iostream>
@@ -22,11 +23,16 @@ TEST_CASE("lazy testing") {
 	pql.Query("procedure p1; variable v1; Select v1 such that Modifies(p1, v1)");
 	pql.Query("assign a1; variable v1; Select a1 pattern a1(v1, _)");
 	pql.Query("stmt s1; assign a1; variable v1; Select v1 such that Follows(s1, a1) pattern a1(v1, _)");
-	/*pql.Query("assign a1; variable v1; Select a1 pattern a1(v1, _\"x+x\"_)");
+
+	*/
+// here above uncomment
+	/*pql.Query("assign a1; variable v1; Select a1 pattern a1(v1, _\"x+x\"_)"); 
 	pql.Query("stmt s1; assign a1; variable v1; Select v1 such that Follows(s1, a1) pattern a1(v1, _\"x+x\"_)");
 	pql.Query("assign a1; variable v1; Select a1 pattern a1(v1, \"x+x\")");
 	pql.Query("stmt s1; assign a1; variable v1; Select v1 such that Follows(s1, a1) pattern a1(v1, \"x+x\")");*/
-	cout << "__________________________________________________" << endl;
+// here below uncomment
+	/*
+cout << "__________________________________________________" << endl;
 
 }
 
@@ -312,3 +318,4 @@ TEST_CASE("no clauses || return stmts") {
 	result = evaluator.Evaluate(queryInfo);
 	REQUIRE(result.GetResult() == expectedResult);
 }
+*/
