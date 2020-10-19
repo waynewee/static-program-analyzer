@@ -45,7 +45,6 @@ TNode* ASTBuilder::BuildStmtNode() {
 
 	switch (first_token.GetTokenType()) {
 	case TokenType::TOKEN_TYPE::stmt:
-		cout << first_token.GetValue() << endl;
 		switch (first_token.GetStmtType()) {
 		case TokenType::STMT_TYPE::_read:
 			return ASTBuilder::BuildReadNode();
