@@ -2,9 +2,10 @@
 #include <string>
 #include <stdexcept>
 
+#include <CFG.h>
+#include <CFGBuilder.h>
 #include <PKB.h>
 #include "TestWrapper.h"
-#include "frontend/SimpleParser.h"
 #include "Tokenizer.h"
 #include <FrontendWrapper.h>
 #include "frontend/FileReader.h"
@@ -34,11 +35,26 @@ TestWrapper::TestWrapper() {
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(string filename) {
-	try {
+	FrontendWrapper frontend_wrapper(filename);
+
+	TNode* ast_root = frontend_wrapper.GetAST();
+	CFG* cfg = frontend_wrapper.GetCFG(ast_root);
+
+	TestWrapper::pkb->SetASTRoot(ast_root);
+	TestWrapper::pkb->SetCFG(*cfg);
+
+	DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
+	/*try {
 		FrontendWrapper frontend_wrapper(filename);
 
 		TNode* ast_root_node = frontend_wrapper.GetAST();
-		frontend_wrapper.GetCFG(ast_root_node);
+		CFG* cfg = frontend_wrapper.GetCFG(ast_root_node);
 		TestWrapper::pkb->SetASTRoot(ast_root_node);
 
 		DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
@@ -51,7 +67,7 @@ void TestWrapper::parse(string filename) {
 	}
 	catch (logic_error& e) {
 		cout << e.what() << endl;
-	}
+	}*/
 
 }
 

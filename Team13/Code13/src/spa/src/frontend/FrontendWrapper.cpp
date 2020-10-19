@@ -4,12 +4,22 @@
 #include <FrontendWrapper.h>
 #include <Tokenizer.h>
 #include <TNode.h>
+#include <SimpleValidator.h>
 
 FrontendWrapper::FrontendWrapper(string file_name) {
 	FileReader fileReader(file_name);
 	string input = fileReader.ReadFile();
 	Tokenizer tokenizer(input);
 	token_list_ = tokenizer.GetTokenList();
+
+	try {
+		SimpleValidator simple_validator;
+		simple_validator.IsValid(tokenizer.GetTokenList());
+	}
+	catch (char* exception) {
+		std::cout << exception << std::endl;
+		exit(1);
+	}
 }
 
 TNode* FrontendWrapper::GetAST() {
@@ -20,10 +30,10 @@ TNode* FrontendWrapper::GetAST() {
 	return ast_root_node;
 }
 
-void FrontendWrapper::GetCFG(TNode* ast_root_node) {
+CFG* FrontendWrapper::GetCFG(TNode* ast_root_node) {
 
-	for (TNode* proc_node: ast_root_node->GetChildrenVector()) {
-		CFGBuilder cfg_builder(proc_node);
-		cfg_builder.BuildCFG();
-	}
+	CFGBuilder cfg_builder = CFGBuilder(ast_root_node);
+	CFG* cfg = cfg_builder.GetCFG();
+
+	return cfg;
 }

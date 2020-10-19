@@ -1,0 +1,10 @@
+procedure voidcall {
+    a = a + b;
+    if (w == x) then {
+        x = x + 1;
+    } else {
+        call nonexistantproc;
+        b = b - 222;
+    }
+}
+

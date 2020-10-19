@@ -6,6 +6,14 @@
 #include <vector>
 #include <CustomTypes.h>
 
+class CallsTable {
+private:
+    std::unordered_map<STMT_IDX, PROC_NAME> data_;
+public:
+    bool Add(PROC_NAME pname, STMT_IDX s);
+    PROC_NAME GetCalledBy(STMT_IDX s);
+};
+
 class ProcedureTable {
 private:
     PROC_NAME_SET data_;

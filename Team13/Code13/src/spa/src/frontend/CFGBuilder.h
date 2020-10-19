@@ -16,8 +16,9 @@ public:
 	TNode* ast_root_;
 	CFG* cfg_;
 
-	CFGBuilder(TNode* proc_node);
-	void BuildCFG();
+	CFGBuilder(TNode* root_node);
+	void BuildCFG(TNode* proc_node);
+	CFG* GetCFG();
 	void TraverseAST(vector<TNode*> stmt_list);
 	bool IsStmt(TNode* ast_node);
 	bool IsStmtList(TNode* ast_node);
@@ -25,7 +26,6 @@ public:
 	vector<TNode*> FilterStmtsAndStmtLists(vector<TNode*> stmt_list);
 	void GetLeafNodes(vector<TNode*>* leaf_nodes, TNode* root_node);
 
-	void PrintCFG();
 private:
 	
 };

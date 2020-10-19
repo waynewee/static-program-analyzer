@@ -6,24 +6,25 @@
 
 using namespace std;
 
-CFGBuilder::CFGBuilder(TNode* proc_node) {
-	ast_root_ = proc_node;
+CFGBuilder::CFGBuilder(TNode* root_node) {
+
 	cfg_ = new CFG();
+
+	for (TNode* proc_node : root_node->GetChildrenVector()) {
+		BuildCFG(proc_node);
+	}
 }
 
-void CFGBuilder::BuildCFG() {
+CFG* CFGBuilder::GetCFG() {
+	return cfg_;
+}
 
-	TNode* first_stmt_list_node = ast_root_->GetChildrenVector().at(1);
+void CFGBuilder::BuildCFG(TNode* proc_node) {
+
+	TNode* first_stmt_list_node = proc_node->GetChildrenVector().at(1);
 	vector<TNode*> first_stmt_list = first_stmt_list_node->GetChildrenVector();
 
-	for (TNode* child : first_stmt_list) {
-		cout << child->getData() << endl;
-	}
-
-
 	TraverseAST(first_stmt_list);
-
-	PrintCFG();
 }
 
 void CFGBuilder::TraverseAST(vector<TNode*> stmt_list) {
@@ -42,6 +43,10 @@ void CFGBuilder::TraverseAST(vector<TNode*> stmt_list) {
 	int i = 0;
 
 	for (TNode* child : stmt_list_filtered) {
+		TNode* child_next = NULL;
+		if (i + 1 < stmt_list_filtered.size()) {
+			child_next = stmt_list_filtered.at(i + 1);
+		}
 		for (TNode* g_node : child->GetChildrenVector()) {
 			if (IsStmtList(g_node)) {
 
@@ -71,8 +76,7 @@ void CFGBuilder::TraverseAST(vector<TNode*> stmt_list) {
 
 					}
 
-					if (child->GetNodeType() == TNode::NODE_TYPE::ifStmt && i < stmt_list_filtered.size() - 1) {
-						TNode* child_next = stmt_list_filtered.at(i + 1);
+					if (child->GetNodeType() == TNode::NODE_TYPE::ifStmt && child_next != NULL) {
 						cfg_->AddEdge(g_child_last->GetStmtIndex(), child_next->GetStmtIndex());
 						cfg_->RemoveEdge(child->GetStmtIndex(), child_next->GetStmtIndex());
 					}
@@ -128,28 +132,6 @@ vector<TNode*> CFGBuilder::FilterStmtsAndStmtLists(vector<TNode*>stmt_list) {
 	}
 
 	return filtered_list;
-}
-
-void CFGBuilder::PrintCFG() {
-
-	/*std::unordered_map<STMT_IDX, STMT_IDX_SET*> data_;
-	bool AddEdge(STMT_IDX s1, STMT_IDX s2);
-	STMT_IDX_SET GetAllEdges(STMT_IDX s1);
-	bool HasEdge(STMT_IDX s1, STMT_IDX s2);*/
-
-	unordered_map<STMT_IDX, STMT_IDX_SET*> m = cfg_->GetAdjacencyList();
-
-	string edge = "----->";
-
-	for (auto const& pair : m) {
-		for (STMT_IDX idx : *pair.second) {
-			cout << pair.first;
-			cout << edge;
-			cout << idx << endl;
-		}
-	}
-	
-
 }
 
 void CFGBuilder::GetLeafNodes(vector<TNode*>* leaf_nodes, TNode* root_node) {

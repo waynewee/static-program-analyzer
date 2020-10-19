@@ -30,10 +30,10 @@ private:
 	TNode* BuildCallNode();
 	TNode* BuildAssignNode(Token name_token);
 	TNode* BuildStmtListNode();
-	TNode* BuildExpressionNode(expressionType expr_type);
+	TNode* BuildExpressionNode(ExpressionType expr_type);
 
-	vector<Token> GetExpressionTokens(expressionType expr_type);
-	int GetEndIndxOfExpression(expressionType expr_type);
+	vector<Token> GetExpressionTokens(ExpressionType expr_type);
+	int GetEndIndxOfExpression(ExpressionType expr_type);
 
 	Token GetNextToken();
 	Token PeekNextToken();

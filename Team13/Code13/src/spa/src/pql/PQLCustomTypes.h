@@ -56,8 +56,8 @@ using namespace std;
 #define TYPE_SELECT_CLAUSE "Select"
 #define TYPE_AND_CLAUSE "and"
 
-#define FALSE "false"
-#define TRUE "true"
+#define FALSE "FALSE"
+#define TRUE "TRUE"
 
 typedef string STRING;
 typedef int INTEGER;
@@ -73,6 +73,8 @@ typedef vector<STRING> STRING_LIST;
 typedef vector<INTEGER> INTEGER_LIST;
 typedef vector<STRING_LIST> STRINGLIST_LIST;
 typedef vector<INTEGER_LIST> INTEGERLIST_LIST;
+typedef vector<STRING_PAIR> STRINGPAIR_LIST;
+typedef vector<INTEGER_PAIR> INTEGERPAIR_LIST;
 
 typedef unordered_set<STRING> STRING_SET;
 typedef unordered_set<INTEGER> INTEGER_SET;

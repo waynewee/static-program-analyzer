@@ -1,0 +1,50 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>Tests13</name><parsing_time_taken>263.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="Modifies - synonym, synonym - related output">1</id><querystr><![CDATA[variable v; procedure p; Select v such that Modifies (p, v)]]></querystr>
+<stuans>x,y,a,i,v</stuans>
+<correct>a,i,v,x,y</correct>
+<time_taken>62.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="Modifies - synonym, string - related output">2</id><querystr><![CDATA[procedure p; Select p such that Modifies (p, "x")]]></querystr>
+<stuans>System,Test</stuans>
+<correct>System,Test</correct>
+<time_taken>68.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="Modifies - string, synonym - related output">3</id><querystr><![CDATA[variable v; Select v such that Modifies ("Iteration", v)]]></querystr>
+<stuans>v,a</stuans>
+<correct>a,v</correct>
+<time_taken>98.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Modifies="1" UnnamedVar="1" SuchThat="1" CondNum="4" RelNum="1" comment="Modifies - synonym, wildcard - related output">4</id><querystr><![CDATA[procedure p; Select p such that Modifies (p, _)]]></querystr>
+<stuans>Iteration,System,Test</stuans>
+<correct>Iteration,System,Test</correct>
+<time_taken>84.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Modifies="1" SuchThat="1" CondNum="3" RelNum="1" comment="Modifies - string, string - non-related output">5</id><querystr><![CDATA[stmt s1; Select s1 such that Modifies ("System", "x")]]></querystr>
+<stuans>9,1,2,3,4,5,6,7,8,15,13,10,11,14,12,17,16</stuans>
+<correct>1,10,11,12,13,14,15,16,17,2,3,4,5,6,7,8,9</correct>
+<time_taken>51.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Modifies="1" UnnamedVar="1" SuchThat="1" CondNum="4" RelNum="1" comment="Modifies - string, wildcard - non-related output">6</id><querystr><![CDATA[variable v; Select v such that Modifies ("Test", _)]]></querystr>
+<stuans>c,b,x,a,y,i,v</stuans>
+<correct>a,b,c,i,v,x,y</correct>
+<time_taken>65.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>

@@ -7,6 +7,15 @@ ConstTable DataManager::const_table_ = ConstTable();
 StatementTable DataManager::stmt_table_ = StatementTable();
 VariableTable DataManager::var_table_ = VariableTable();
 ProcedureTable DataManager::proc_table_ = ProcedureTable();
+CallsTable DataManager::calls_table_ = CallsTable();
+
+bool DataManager::AddCall(PROC_NAME p, STMT_IDX s) {
+    return calls_table_.Add(p, s);
+}
+
+PROC_NAME DataManager::GetCalledByStmt(STMT_IDX s) {
+    return calls_table_.GetCalledBy(s);
+}
 
 bool DataManager::AddStatement(STATEMENT_TYPE t, STMT_IDX s) {
     return stmt_table_.Add(t, s);

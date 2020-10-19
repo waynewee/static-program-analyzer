@@ -30,6 +30,48 @@ TEST_CASE("Test Add Follows") {
     REQUIRE(falseFollow == false);
 }
 
+TEST_CASE("Test GetCalledBy") {
+    PKB pkb;
+    DataManager manager = pkb.GetDataManager();
+
+    VAR_NAME* v1 = new string("test_var1");
+    VAR_NAME* v2 = new string("test_var2");
+    PROC_NAME* procn = new string("test_proc");
+
+    TNode* program = new TNode(TNode::NODE_TYPE::program);
+
+    TNode* proc = new TNode(TNode::NODE_TYPE::procedure);
+    TNode* procname = new TNode(TNode::NODE_TYPE::procName, *procn);
+    TNode* proclst = new TNode(TNode::NODE_TYPE::stmtList);
+    TNode* procassign = new TNode(TNode::NODE_TYPE::assignStmt, 1);
+    TNode* var = new TNode(TNode::NODE_TYPE::varName, *v1);
+    TNode* expr = new TNode(TNode::NODE_TYPE::varName, *v2);
+
+    TNode* proccall = new TNode(TNode::NODE_TYPE::callStmt, 2);
+    TNode* callname = new TNode(TNode::NODE_TYPE::procName, "ppp1");
+
+    proccall->AddChild(callname);
+
+    procassign->AddChild(var);
+    procassign->AddChild(expr);
+    proclst->AddChild(procassign);
+    proclst->AddChild(proccall);
+    proc->AddChild(procname);
+    proc->AddChild(proclst);
+    program->AddChild(proc);
+
+    // program->Print(program);
+    // REQUIRE(false);
+    
+    DesignExtractor::ExtractData(manager, *program);
+    
+    bool trueCalls = manager.GetCalledByStmt(2) == "ppp1";
+    bool falseCalls = manager.GetCalledByStmt(1) == "ppp1";
+
+    REQUIRE(trueCalls);
+    REQUIRE(!falseCalls);
+}
+
 // only tested for vars and procs, TODO: consts and stmts
 TEST_CASE("Test Data Manager") {
     PKB pkb;
