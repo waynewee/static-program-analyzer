@@ -365,13 +365,6 @@ VOID PQLEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_S
 			}
 		}
 
-		cout << "VALUE: " << endl;
-		for (STRING k : *check_key) {
-			cout << k << " ";
-		}
-		cout << ": ";
-		Print(value);
-
 		STRINGLIST_SET tmp_result = results_map->at(check_key);
 		STRING_LIST new_key = *(new STRING_LIST(*check_key));
 		
@@ -389,14 +382,8 @@ VOID PQLEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_S
 			}
 		}
 		
-
-		cout << "RESULT: " << endl;
-		Print(tmp_result);
 		results_map->erase(check_key);
 		results_map->insert({ new STRING_LIST(new_key), tmp_result });
-
-		cout << "RESULT MAP" << endl;
-		Print(*results_map);
 	}
 }
 
