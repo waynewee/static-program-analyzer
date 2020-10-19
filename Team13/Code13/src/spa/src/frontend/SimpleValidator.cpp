@@ -91,7 +91,8 @@ bool SimpleValidator::IsValidProc() {
 	curr_proc_ = name_token.GetValue();
 	proc_adj_list_.insert({name_token.GetValue(), vector<DFS_NODE>()});
 
-	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
+	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var &&
+		name_token.GetTokenType() != TokenType::TOKEN_TYPE::stmt) {
 		cout << "(Line: " << statement_index_ << ") ";
 
 		throw "Invalid procedure name";
@@ -103,7 +104,8 @@ bool SimpleValidator::IsValidProc() {
 bool SimpleValidator::IsValidReadStmt() {
 	Token name_token = SimpleValidator::GetNextToken();
 
-	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
+	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var &&
+		name_token.GetTokenType() != TokenType::TOKEN_TYPE::stmt) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid variable name for read statement";
 	}
@@ -119,7 +121,8 @@ bool SimpleValidator::IsValidReadStmt() {
 bool SimpleValidator::IsValidPrintStmt() {
 	Token name_token = SimpleValidator::GetNextToken();
 
-	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
+	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var &&
+		name_token.GetTokenType() != TokenType::TOKEN_TYPE::stmt) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid variable name for print statement";
 	}
@@ -135,7 +138,8 @@ bool SimpleValidator::IsValidPrintStmt() {
 bool SimpleValidator::IsValidCallStmt() {
 	Token name_token = SimpleValidator::GetNextToken();
 	
-	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var) {
+	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var &&
+		name_token.GetTokenType() != TokenType::TOKEN_TYPE::stmt) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid variable name for call statement";
 	}
@@ -226,8 +230,6 @@ bool SimpleValidator::IsValidExpression(TOKEN_LIST expr_list) {
 	for (Token token : expr_list) {
 		cout << token.GetValue();
 	}*/
-
-	cout << "\nEnd Expression" << endl;
 	if (!ExprValidator::Validate(expr_list)) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid expression";
@@ -320,10 +322,17 @@ void SimpleValidator::CheckForCyclicCalls() {
 	set<DFS_NODE> white_set; // Univisited
 	set<DFS_NODE> gray_set; // Visiting
 	set<DFS_NODE> black_set; // Visited
-
+	/*for (PROC_ADJ_LIST::const_iterator it = proc_adj_list_.begin();
+		it != proc_adj_list_.end(); ++it)
+	{
+		std::cout << it->first << ": "; 
+		for (std::vector<DFS_NODE>::const_iterator i = it->second.begin(); i != it->second.end(); ++i) {
+			cout << *i << ' ';
+		}
+		cout << endl;
+	}	
+	cout << endl;*/
 	map<DFS_NODE, DFS_NODE> parent_map;
-
-	// const bool is_in = container.find(element) != container.end();
 
 	for (map<string, vector<string>>::iterator it = proc_adj_list_.begin(); 
 		it != proc_adj_list_.end(); ++it ) { // Adding all nodes to white set
@@ -336,11 +345,10 @@ void SimpleValidator::CheckForCyclicCalls() {
 	curr_node = *white_set.begin();
 	white_set.erase(white_set.begin()); // Popping first item from set
 	gray_set.insert(curr_node);
-	cout << "Node count: " << node_count << endl;
 
 	while ((black_set.size() != node_count) && !cycleDetected) {
-		cout << "Curr node: " << curr_node << endl;
-		/*std::cout << "white set: ";
+		/*cout << "Curr node: " << curr_node << endl;
+		std::cout << "white set: ";
 		for (set<DFS_NODE>::iterator it = white_set.begin();
 			it != white_set.end(); it++)
 		{
@@ -368,6 +376,7 @@ void SimpleValidator::CheckForCyclicCalls() {
 				white_set.erase(white_set.find(node));
 				gray_set.insert(node);
 				node_visited = true;
+				// cout << "Addded " + node << endl;
 				break;
 			}
 			else if (gray_set.count(node) > 0 ) {
@@ -383,7 +392,14 @@ void SimpleValidator::CheckForCyclicCalls() {
 				break;
 			}
 			gray_set.erase(gray_set.find(curr_node));
-			curr_node = *(gray_set.rbegin());
+			if (gray_set.empty()) {
+				curr_node = *white_set.begin();
+				white_set.erase(white_set.begin()); // Popping first item from set		
+				gray_set.insert(curr_node);
+			}
+			else {
+				curr_node = *(gray_set.rbegin());
+			}
 		} 
 	}
 	if (cycleDetected) {
