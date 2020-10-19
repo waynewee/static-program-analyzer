@@ -1,70 +1,70 @@
 <?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
 <test_results>
 <info>
-<name>Tests13</name><parsing_time_taken>289.000000</parsing_time_taken>
+<name>Tests13</name><parsing_time_taken>172.000000</parsing_time_taken>
 </info>
 <queries>
 <query>
 <id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="pattern - assign - string, partial - related output">1</id><querystr><![CDATA[assign a1; Select a1 pattern a1 ("x", _"x"_)]]></querystr>
-<stuans>9,7,8,5,6</stuans>
+<stuans>5,9,8,6,7</stuans>
 <correct>5,6,7,8,9</correct>
-<time_taken>40.000000</time_taken>
+<time_taken>39.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="pattern - assign - synonym, partial - related output">2</id><querystr><![CDATA[assign a1; variable v; Select a1 pattern a1 (v, _"x"_)]]></querystr>
-<stuans>7,17,6,5,8,9</stuans>
+<stuans>5,9,17,6,7,8</stuans>
 <correct>17,5,6,7,8,9</correct>
-<time_taken>43.000000</time_taken>
+<time_taken>58.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" UnnamedVar="2" Pattern="1" CondNum="4" RelNum="0" comment="pattern - assign - wildcard, partial - related output">3</id><querystr><![CDATA[assign a1; Select a1 pattern a1 (_, _"x"_)]]></querystr>
-<stuans>9,5,17,6,7,8</stuans>
+<stuans>5,7,6,17,8,9</stuans>
 <correct>17,5,6,7,8,9</correct>
-<time_taken>45.000000</time_taken>
-<passed/>
-</query>
-<query>
-<id ReturnTuple="1" Pattern="1" CondNum="2" RelNum="0" comment="pattern - assign - string, full - related output">4</id><querystr><![CDATA[assign a1; Select a1 pattern a1 ("x", "x + 1")]]></querystr>
-<stuans>5,8,6,7,9</stuans>
-<correct>5,6,7,8,9</correct>
 <time_taken>40.000000</time_taken>
 <passed/>
 </query>
 <query>
-<id ReturnTuple="1" Pattern="1" CondNum="2" RelNum="0" comment="pattern - assign - synonym, full - related output">5</id><querystr><![CDATA[assign a1; variable v; Select a1 pattern a1 (v, "x + 1")]]></querystr>
-<stuans>9,7,5,6,8</stuans>
+<id ReturnTuple="1" Pattern="1" CondNum="2" RelNum="0" comment="pattern - assign - string, full - related output">4</id><querystr><![CDATA[assign a1; Select a1 pattern a1 ("x", "x + 1")]]></querystr>
+<stuans>5,9,6,7,8</stuans>
 <correct>5,6,7,8,9</correct>
 <time_taken>42.000000</time_taken>
 <passed/>
 </query>
 <query>
-<id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="pattern - assign - wildcard, full - related output">6</id><querystr><![CDATA[assign a1; Select a1 pattern a1 (_, "x + 1")]]></querystr>
-<stuans>5,7,8,6,9</stuans>
+<id ReturnTuple="1" Pattern="1" CondNum="2" RelNum="0" comment="pattern - assign - synonym, full - related output">5</id><querystr><![CDATA[assign a1; variable v; Select a1 pattern a1 (v, "x + 1")]]></querystr>
+<stuans>5,6,8,9,7</stuans>
 <correct>5,6,7,8,9</correct>
-<time_taken>43.000000</time_taken>
+<time_taken>50.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="pattern - assign - wildcard, full - related output">6</id><querystr><![CDATA[assign a1; Select a1 pattern a1 (_, "x + 1")]]></querystr>
+<stuans>9,8,6,5,7</stuans>
+<correct>5,6,7,8,9</correct>
+<time_taken>46.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="pattern - assign - string, wildcard - related output">7</id><querystr><![CDATA[assign a1; Select a1 pattern a1 ("x", _)]]></querystr>
-<stuans>6,9,1,5,7,8</stuans>
+<stuans>9,1,7,8,5,6</stuans>
 <correct>1,5,6,7,8,9</correct>
-<time_taken>38.000000</time_taken>
+<time_taken>51.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" UnnamedVar="1" Pattern="1" CondNum="3" RelNum="0" comment="pattern - assign - synonym, wildcard - related output">8</id><querystr><![CDATA[assign a1; variable v; Select a1 pattern a1 (v, _)]]></querystr>
-<stuans>9,1,16,7,15,6,5,3,8,14,17</stuans>
+<stuans>9,1,14,5,3,6,17,7,8,16,15</stuans>
 <correct>1,14,15,16,17,3,5,6,7,8,9</correct>
-<time_taken>45.000000</time_taken>
+<time_taken>49.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" UnnamedVar="2" Pattern="1" CondNum="4" RelNum="0" comment="pattern - assign - wildcard, wildcard - related output">9</id><querystr><![CDATA[assign a1; Select a1 pattern a1 (_, _)]]></querystr>
-<stuans>16,7,1,9,3,15,5,8,14,6,17</stuans>
+<stuans>1,9,3,17,15,14,7,8,6,5,16</stuans>
 <correct>1,14,15,16,17,3,5,6,7,8,9</correct>
-<time_taken>45.000000</time_taken>
+<time_taken>37.000000</time_taken>
 <passed/>
 </query>
 </queries>

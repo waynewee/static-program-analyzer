@@ -4,12 +4,17 @@
 #include "pkb/PKB.h"
 
 QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
-	// Final result to be returned
+		// Final result to be returned
 	STRINGLIST_SET final_result_set = *(new STRINGLIST_SET());
 
 	// Expected output list
 	STRING_LIST output_list = query_info.GetOutputList();
 	BOOLEAN is_boolean_output = IsBooleanOutput(output_list);
+
+	// Check if QueryInfo is valid
+	if (!query_info.IsQueryInfoValid()) {
+		return SetResult(is_boolean_output, FALSE, *(new STRINGLIST_SET()));
+	}
 
 	// Unevaluated clauses & constraints
 	STRINGSET_STRINGLISTSET_MAP synonyms_map = STRINGSET_STRINGLISTSET_MAP();
@@ -60,25 +65,19 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			
 			if (f_call.compare(TYPE_COND_PATTERN_F) == 0 || f_call.compare(TYPE_COND_PATTERN_P) == 0) {
 				STRING param3 = (*c)[3];
+				if (c->size() == 5) {
+					param3 = (*c)[4];
+				}
 				c_key.push_back(param3);
 
 				if (IsVar(param1)) {
 					// first param = synonym
 					c_key.push_back(param1);
 					c_value = EvaluatePatternCall(f_call, param2, entity_map.at(param3));
-
-					STRINGLIST_SET tmp = EvaluateAllCall(entity_map.at(param3));
-					RemoveIrrelevant(&c_value, tmp, 0);
-
-					tmp = EvaluateAllCall(entity_map.at(param1));
-					RemoveIrrelevant(&c_value, tmp, 1);
 				}
 				else {
 					// first param != synonym
 					c_value = EvaluatePatternCall(f_call, param1, param2, entity_map.at(param3));
-
-					STRINGLIST_SET tmp = EvaluateAllCall(entity_map.at(param3));
-					RemoveIrrelevant(&c_value, tmp, 0);
 				}
 			}
 			else {
@@ -135,7 +134,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			STRINGLIST_SET values = (*tmp_entry).second;
 
 			// Check constraints
-			BOOLEAN is_dependency_checked = CheckConstraints(constraints, entity_map, results_map, *keys, &values);
+			BOOLEAN is_dependency_checked = CheckConstraints(constraints, entity_map, &results_map, *keys, &values);
 
 			if (!is_dependency_checked) {
 				AddResult(*keys, values, &results_map);
@@ -165,46 +164,121 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	}	
 
 	// Get output_list's results from results_map
-	STRING_LIST output_left = output_list;
+	INTEGER_SET retrieved_output_index = INTEGER_SET();
 	for (auto result_entry = results_map.cbegin(); result_entry != results_map.cend(); result_entry++) {
 		STRING_LIST* result_key = (*result_entry).first;
 		STRING_LIST* key = new STRING_LIST();
-		INTEGER_SET index_to_extract = INTEGER_SET();
+		INTEGER_LIST index_to_extract = INTEGER_LIST();
 
 		for (INTEGER i = 0; i < result_key->size(); i++) {
-			for (STRING output_synonym : output_list) {
-				if (result_key->at(i).compare(output_synonym) == 0) {
-					key->push_back(output_synonym);
-					index_to_extract.insert(i);	
-					
-					auto it = output_left.begin();
-					
-					while (it != output_left.end()) {
-						if (output_synonym.compare((*it)) == 0) {
-							break;
-						}
+			for (INTEGER o = 0; o < output_list.size(); o++) {
+				STRING parsed_output_synonym = ParsingSynonym(output_list.at(o));
+
+				if (retrieved_output_index.find(o) == retrieved_output_index.end()) {
+					cout << "Parsed output: " << parsed_output_synonym << endl;
+					cout << "key: " << result_key->at(i) << endl;
+
+					if (result_key->at(i).compare(parsed_output_synonym) == 0) {
+						cout << "reached" << endl;
+						key->push_back(output_list.at(o));
+
+						// Add index of value to extract to list
+						index_to_extract.push_back(i);
+
+						// Add index of retrieved output synonym to list
+						retrieved_output_index.insert(o);
 					}
-					output_left.erase(it);
 				}
 			}
+
+			if (retrieved_output_index.size() == output_list.size()) {
+				break;
+			}
 		}
+
 		if (!key->empty()) {
 			// Has >=1 expected output synonym(s)
+			STRING_LIST output_key = *(new STRING_LIST());
 			STRINGLIST_SET output_result = GetNewResult((*result_entry).second, index_to_extract);
-			AddResult(*key, output_result, &final_results_map);
+
+			for (INTEGER k = 0; k < key->size(); k++) {
+				STRING synonym = ParsingSynonym(key->at(k));
+				STRING synonym_type = ParsingSynonymAttribute(key->at(k));
+
+				cout << "Synonym: " << synonym << " type: " << synonym_type << endl;
+
+				output_key.push_back(synonym);
+
+				// Check if output synonym is attribute type
+				STRINGLIST_SET result = STRINGLIST_SET();
+				if (!IsSameEntityType(entity_map.at(synonym), synonym_type)) {
+					result = GetAlternateOutputResult(GetNewResult(output_result, k), synonym_type);
+				}
+
+				if (!result.empty()) {
+					// Combine results
+					output_result = GetCombinedResult(output_result, result, k);
+				}
+			}
+
+			AddResult(output_key, output_result, &final_results_map);
 		}
 	}
-	
-	// Get all output_list's results that are not in results_map
-	for (STRING synonym : output_left) {
-		STRING_LIST key = *(new STRING_LIST());
-		key.push_back(synonym);
-		STRINGLIST_SET value = *(new STRINGLIST_SET());
-		value = EvaluateAllCall(entity_map.at(synonym));
-		AddResult(key, value, &final_results_map);
-	}
 
-	Print(final_results_map);
+	// Get all output_list's results that are not in results_map
+	STRINGLIST_STRINGLISTSET_MAP tmp_map = STRINGLIST_STRINGLISTSET_MAP();
+	for (INTEGER i = 0; i < output_list.size(); i++) {
+		if (retrieved_output_index.find(i) == retrieved_output_index.end()) {
+			STRING synonym = output_list.at(i);
+			STRING parsed_synonym = ParsingSynonym(synonym);
+			STRING synonym_type = ParsingSynonymAttribute(synonym);
+
+			STRING_LIST key = *(new STRING_LIST());
+			key.push_back(parsed_synonym);
+			STRINGLIST_SET value = *(new STRINGLIST_SET());
+		
+			STRING_LIST* check_key = GetRelatedSynonyms(key, tmp_map);
+			if (check_key == nullptr) {
+				// not duplicate
+				value = EvaluateAllCall(entity_map.at(parsed_synonym));
+				if (!IsSameEntityType(entity_map.at(parsed_synonym), synonym_type)) {
+					value = ConvertSet(GetAlternateResult(value, entity_map.at(parsed_synonym)));
+				}
+
+				// Check constraints
+				BOOLEAN is_dependency_checked = CheckConstraints(constraints, entity_map, &results_map, key, &value);
+
+				if (is_dependency_checked && value.empty()) {				
+					// error
+					if (DEBUG) {
+						cout << "PQLEvaluator - Checked constraints: Empty results." << endl;
+					}
+
+					return SetResult(is_boolean_output, FALSE, *(new STRINGLIST_SET()));
+
+				}
+			}
+			else {
+				// duplicate
+				STRING_LIST new_key = STRING_LIST();
+				new_key.insert(new_key.end(), check_key->begin(), check_key->end());
+				new_key.insert(new_key.end(), key.begin(), key.end());
+				key = new_key;
+				
+				value = tmp_map.at(check_key);
+				for (auto v = value.cbegin(); v != value.cend(); v++) {
+					(*v)->push_back((*v)->at(0));
+				}
+
+				tmp_map.erase(check_key);
+			}
+			tmp_map.insert({ new STRING_LIST(key), value });
+		}
+	}
+	// Add all output_list's results that are not in results_map into final_results_map
+	for (auto v = tmp_map.cbegin(); v != tmp_map.cend(); v++) {
+		AddResult(*(*v).first, (*v).second, &final_results_map);
+	}
 
 	// Combine all the expected output results
 	final_result_set = GetCartesianProduct(final_results_map, output_list);
@@ -232,18 +306,38 @@ VOID PQLEvaluator::Print(STRINGLIST_STRINGLISTSET_MAP to_print) {
 		for (STRING s : *(*result_entry).first) {
 			cout << s << " ";
 		}
-		cout << ": " << endl;;
+		cout << ": ";;
 		Print((*result_entry).second);
 	}
 }
 
+VOID PQLEvaluator::Print(STRINGSET_STRINGLISTSET_MAP to_print) {
+	for (auto result_entry = to_print.cbegin(); result_entry != to_print.cend(); result_entry++) {
+		Print(*(*result_entry).first);
+		cout << ": ";
+		Print((*result_entry).second);
+	}
+}
+
+VOID PQLEvaluator::Print(STRING_SET to_print) {
+	for (auto f = to_print.cbegin(); f != to_print.cend(); f++) {
+		cout << (*f) << " ";
+	}
+}
+
+VOID PQLEvaluator::Print(STRING_LIST to_print) {
+	cout << "{ ";
+	for (STRING s : to_print) {
+		cout << s << " ";
+	}
+	cout << "} ";
+}
+
 VOID PQLEvaluator::Print(STRINGLIST_SET to_print) {
 	for (STRING_LIST* set : to_print) {
-		for (STRING s : *set) {
-			cout << s << " ";
-		}
-		cout << endl;
+		Print(*set);
 	}
+	cout << endl;
 }
 
 VOID PQLEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP* results_map) {
@@ -254,8 +348,42 @@ VOID PQLEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_S
 	}
 	else {
 		// Merge common synonyms & their results
-		INTEGERLIST_LIST index_to_compare = GetCommonSynonymsIndex(*check_key, key);
-		results_map->at(check_key) = GetCombinedResult(results_map->at(check_key), value, index_to_compare);
+		// INTEGERPAIR_SET index_to_compare = GetCommonSynonymsIndex(*check_key, key);
+		
+		INTEGERPAIR_SET index_to_compare = INTEGERPAIR_SET();
+		INTEGER_SET pos_to_ignore = INTEGER_SET();
+		for (INTEGER s = 0; s < check_key->size(); s++) {
+			for (INTEGER a = 0; a < key.size(); a++) {
+				if (check_key->at(s).compare(key.at(a)) == 0) {
+					INTEGER_PAIR* pair = new INTEGER_PAIR();
+					pair->first = s;
+					pair->second = a;
+
+					index_to_compare.insert(pair);
+					pos_to_ignore.insert(a);
+				}
+			}
+		}
+
+		STRINGLIST_SET tmp_result = results_map->at(check_key);
+		STRING_LIST new_key = *(new STRING_LIST(*check_key));
+		
+		if (pos_to_ignore.size() == key.size()) {
+			tmp_result = GetDependencyProduct(tmp_result, value, -1, index_to_compare);
+		}
+		else {
+			for (INTEGER i = 0; i < key.size(); i++) {
+				if (pos_to_ignore.find(i) == pos_to_ignore.end()) {
+
+					tmp_result = GetDependencyProduct(tmp_result, value, i, index_to_compare);
+
+					new_key.push_back(key.at(i));
+				}
+			}
+		}
+		
+		results_map->erase(check_key);
+		results_map->insert({ new STRING_LIST(new_key), tmp_result });
 	}
 }
 
@@ -277,11 +405,18 @@ QueryResult PQLEvaluator::SetResult(BOOLEAN is_boolean_output, STRING bool_resul
 }
 
 BOOLEAN PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints) {
-	STRINGPAIR_SET with_map = query_info.GetWithMap();
+	if (DEBUG) {
+		cout << "PQLEvaluator - ParseClauses: WITH" << endl;
+	}
 
+	STRINGPAIR_SET with_map = query_info.GetWithMap();
 	for (STRING_PAIR* clause: with_map) {
 		STRING lhs = clause->first;
 		STRING rhs = clause->second;
+
+		if (DEBUG) {
+			cout << "LHS: " << lhs << ", RHS: " << rhs << endl;
+		}
 
 		if (!IsVar(lhs)) {
 			// INT=INT or STRING=STRING
@@ -317,8 +452,8 @@ BOOLEAN PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET
 		STRINGLIST_LIST all_params = (*f).second;
 
 		for (STRING_LIST p : all_params) {
-			if (p[0].compare(p[1]) == 0 && !IsUnderscore(p[0])) {
-				// same parameter & not _
+			if (p[0].compare(p[1]) == 0 && !IsUnderscore(p[0]) && f_call.compare(TYPE_COND_NEXT_T) != 0) {
+				// same parameter & not _ & not Next*
 				if (DEBUG) {
 					cout << "PQLEvaluator - Evaluating such that clauses: Same parameters." << endl;
 				}
@@ -425,6 +560,13 @@ BOOLEAN PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET
 			clause->push_back(p[1]);
 			clause->push_back(p[2]);
 
+			STRING type = p[2];
+			if (p.size() == 4) {
+				// If pattern
+				clause->push_back(p[3]);
+				type = p[3];
+			}
+
 			if (clause->empty()) {
 				// error
 				if (DEBUG) {
@@ -435,7 +577,7 @@ BOOLEAN PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET
 			}
 
 			STRING_SET* key = new STRING_SET();
-			key->insert(p[2]);
+			key->insert(type);
 
 			STRING_SET* check_key = new STRING_SET();
 			STRINGLIST_SET value = *(new STRINGLIST_SET());
@@ -591,6 +733,7 @@ BOOLEAN PQLEvaluator::EvaluateNoSynonymSet(STRING f_call, STRING param1, STRING 
 		return rm.IsProcModifies(ParsingEntRef(param1), ParsingEntRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_CALLS) == 0) {
+		cout << "param1:" << ParsingEntRef(param1) << " param2:" << ParsingEntRef(param1) << endl;
 		return rm.IsCalls(ParsingEntRef(param1), ParsingEntRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_CALLS_T) == 0) {
@@ -1171,7 +1314,7 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_PROC_PAIR_LIST result_set) {
 }
 
 BOOLEAN PQLEvaluator::CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING_MAP entity_map, 
-	STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST key, STRINGLIST_SET* value) {
+	STRINGLIST_STRINGLISTSET_MAP* results_map, STRING_LIST key, STRINGLIST_SET* value) {
 	BOOLEAN is_checked = true;
 	/*
 	for (STRING_PAIR* check : constraints) {
@@ -1195,8 +1338,8 @@ BOOLEAN PQLEvaluator::CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING
 			}
 		}
 
-		STRING_SET lhs_values = STRING_SET();
-		STRING_SET rhs_values = STRING_SET();
+		STRINGLIST_SET lhs_values = STRINGLIST_SET();
+		STRINGLIST_SET rhs_values = STRINGLIST_SET();
 
 		if (key_with_constraint.first == -1 && key_with_constraint.second == -1) {
 			// not applicable constraint
@@ -1205,11 +1348,11 @@ BOOLEAN PQLEvaluator::CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING
 		else {
 			if (key_with_constraint.first != -1) {
 				// lhs = constraint with synonyms
-				lhs_values = GetNewResult(*value, key_with_constraint.first);
+				lhs_values = ConvertSet(GetNewResult(*value, key_with_constraint.first));
 			}
 			else {
 				// lhs at results table 
-				STRING_LIST* check_key = GetRelatedSynonyms(parsed_lhs, results_map);
+				STRING_LIST* check_key = GetRelatedSynonyms(parsed_lhs, *results_map);
 				if (check_key == nullptr) {
 					// synonym not in results_map yet
 					is_checked = false;
@@ -1217,22 +1360,24 @@ BOOLEAN PQLEvaluator::CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING
 				}
 				else {
 					INTEGER index = GetCommonSynonymsIndex(*check_key, parsed_lhs);
-					lhs_values = GetNewResult(results_map.at(check_key), index);
+					lhs_values = ConvertSet(GetNewResult(results_map->at(check_key), index));
 				}
 			}
 
 			if (key_with_constraint.second != -1) {
 				// rhs = constraint with synonyms
-				rhs_values = GetNewResult(*value, key_with_constraint.second);
+				rhs_values = ConvertSet(GetNewResult(*value, key_with_constraint.second));
 			}
 			else {
 				// rhs = at result table / int / str
 				if (IsInteger(rhs) || IsString(rhs)) {
 					// parsed or not shouldnt matter
-					rhs_values.insert(rhs);
+					STRING_LIST val = STRING_LIST();
+					val.push_back(rhs);
+					rhs_values.insert(new STRING_LIST(rhs));
 				}
 				else {
-					STRING_LIST* check_key = GetRelatedSynonyms(parsed_rhs, results_map);
+					STRING_LIST* check_key = GetRelatedSynonyms(parsed_rhs, *results_map);
 					if (check_key == nullptr) {
 						// synonym not in results_map yet
 						is_checked = false;
@@ -1240,14 +1385,46 @@ BOOLEAN PQLEvaluator::CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING
 					}
 					else {
 						INTEGER index = GetCommonSynonymsIndex(*check_key, parsed_rhs);
-						rhs_values = GetNewResult(results_map.at(check_key), index);
+						rhs_values = ConvertSet(GetNewResult(results_map->at(check_key), index));
 					}
 				}
 			}
 
-			if (!CheckConstraints(lhs_values, rhs_values, lhs_attr, rhs_attr, lhs_type, rhs_type)) {
+			if (!CheckConstraints(&lhs_values, &rhs_values, lhs_attr, rhs_attr, lhs_type, rhs_type)) {
+				// Constraint not met
 				value->clear();
 				break;
+			}
+			else {
+				// Constraint met, update values
+
+				// Update lhs values
+				if (key_with_constraint.first != -1) {
+					// lhs = constraint with synonyms
+					RemoveIrrelevant(value, , key_with_constraint.first);
+				}
+				else {
+					// lhs at results table 
+					STRING_LIST* check_key = GetRelatedSynonyms(parsed_lhs, *results_map);
+					INTEGER index = GetCommonSynonymsIndex(*check_key, parsed_lhs);
+
+					RemoveIrrelevant(&results_map->at(check_key), , index);
+				}
+
+				// Update rhs values
+				if (key_with_constraint.second != -1) {
+					// rhs = constraint with synonyms
+					RemoveIrrelevant(value, , key_with_constraint.second);
+				}
+				else {
+					// rhs = at result table
+					if (!IsInteger(rhs) && !IsString(rhs)) {
+						STRING_LIST* check_key = GetRelatedSynonyms(parsed_rhs, *results_map);
+						INTEGER index = GetCommonSynonymsIndex(*check_key, parsed_rhs);
+						
+						RemoveIrrelevant(&results_map->at(check_key), , index);
+					}
+				}
 			}
 		}
 	}
@@ -1255,16 +1432,24 @@ BOOLEAN PQLEvaluator::CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING
 	return is_checked;
 }
 
-BOOLEAN PQLEvaluator::CheckConstraints(STRING_SET lhs_values, STRING_SET rhs_values, STRING lhs_attr, STRING rhs_attr, STRING lhs_type, STRING rhs_type) {
+BOOLEAN PQLEvaluator::CheckConstraints(STRINGLIST_SET* lhs_values, STRINGLIST_SET* rhs_values, STRING lhs_attr, STRING rhs_attr, STRING lhs_type, STRING rhs_type) {
+	/*
 	if (!IsSameEntityType(lhs_type, lhs_attr)) {
-		lhs_values = GetAlternateResult(lhs_values, lhs_type);
+		GetAlternateResult(lhs_values, lhs_type);
 	}
 
 	if (!IsSameEntityType(rhs_type, rhs_attr)) {
-		rhs_values = GetAlternateResult(rhs_values, rhs_type);
+		GetAlternateResult(rhs_values, rhs_type);
 	}
 
-	return lhs_values == rhs_values ? true : false;
+	STRING_SET new_result = *(new STRING_SET());
+	for (STRING l : lhs) {
+		if (rhs.find(l) != rhs.end()) {
+			new_result.insert(l);
+		}
+	}
+	*/
+	return true;
 }
 
 STRING_SET PQLEvaluator::GetAlternateResult(STRING_SET values, STRING type) {
@@ -1273,14 +1458,94 @@ STRING_SET PQLEvaluator::GetAlternateResult(STRING_SET values, STRING type) {
 
 	for (STRING v : values) {
 		STRING_SET new_values = *(new STRING_SET());
+		if (type.compare(TYPE_STMT_PRINT) == 0) {
+			new_values = rm.GetStmtUses(ParsingStmtRef(v));
+		}
+		else if (type.compare(TYPE_STMT_READ) == 0) {
+			new_values = rm.GetStmtModifies(ParsingStmtRef(v));
+		}
+		else {
+			// calls
+			STRING new_value = PKB().GetDataManager().GetCalledByStmt(ParsingStmtRef(v));
+			if (new_value.compare("") != 0) {
+				new_values.insert(new_value);
+			}
+		}
+
+		if (new_values.empty()) {
+			results.clear();
+			break;
+		}
+
+		results.insert(new_values.begin(), new_values.end());
+	}
+
+	return results;
+}
+
+STRING_SET PQLEvaluator::GetAlternateResult(STRINGLIST_SET values, STRING type) {
+	RelationManager rm = PKB().GetRelationManager();
+	STRING_SET results = *(new STRING_SET());
+
+	for (STRING_LIST* v : values) {
+		STRING_SET new_values = *(new STRING_SET());
+		if (type.compare(TYPE_STMT_PRINT) == 0) {
+			new_values = rm.GetStmtUses(ParsingStmtRef(v->at(0)));
+		}
+		else if (type.compare(TYPE_STMT_READ) == 0) {
+			new_values = rm.GetStmtModifies(ParsingStmtRef(v->at(0)));
+		} 
+		else {
+			// calls
+			STRING new_value = PKB().GetDataManager().GetCalledByStmt(ParsingStmtRef(v->at(0)));
+			if (new_value.compare("") != 0) {
+				new_values.insert(new_value);
+			}
+		}
+
+		if (new_values.empty()) {
+			results.clear();
+			break;
+		}
+
+		results.insert(new_values.begin(), new_values.end());
+	}
+
+	return results;
+}
+
+STRINGLIST_SET PQLEvaluator::GetAlternateOutputResult(STRING_SET values, STRING type) {
+	RelationManager rm = PKB().GetRelationManager();
+	STRINGLIST_SET results = *(new STRINGLIST_SET());
+
+	for (STRING v : values) {
+		STRING_SET new_values = *(new STRING_SET());
 		if (type.compare(TYPE_STMT_READ) == 0 || type.compare(TYPE_STMT_PRINT) == 0) {
 			new_values = rm.GetStmtUses(ParsingStmtRef(v));
 		}
 		else {
 			// calls
+			STRING new_value = PKB().GetDataManager().GetCalledByStmt(ParsingStmtRef(v));
+			if (new_value.compare("") != 0) {
+				new_values.insert(new_value);
+			}
 		}
 
-		results.insert(new_values.begin(), new_values.end());
+		if (new_values.empty()) {
+			results.clear();
+			break;
+		}
+
+		// Combine the values
+		for (STRING s : new_values) {
+			STRING_LIST r = STRING_LIST();
+			r.push_back(v);
+			r.push_back(s);
+			
+			if (!IsDuplicate(results, r)) {
+				results.insert(new STRING_LIST(r));
+			}
+		}
 	}
 
 	return results;
@@ -1312,17 +1577,17 @@ BOOLEAN PQLEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp
 	return is_changed;
 }
 
-INTEGERLIST_LIST PQLEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, STRING_LIST small_keys) {
-	INTEGERLIST_LIST results = *(new INTEGERLIST_LIST());
+INTEGERPAIR_SET PQLEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, STRING_LIST small_keys) {
+	INTEGERPAIR_SET results = *(new INTEGERPAIR_SET());
 
 	for (INTEGER s_index = 0; s_index < small_keys.size(); s_index++) {
 		for (INTEGER l_index = 0; l_index < large_keys.size(); l_index++) {
 			if (small_keys[s_index].compare(large_keys[l_index]) == 0) {
-				INTEGER_LIST common_index = *(new INTEGER_LIST());
+				INTEGER_PAIR* pair = new INTEGER_PAIR();
 				// l_key = s_key
-				common_index.push_back(l_index);
-				common_index.push_back(s_index);
-				results.push_back(common_index);
+				pair->first = l_index;
+				pair->second = s_index;
+				results.insert(pair);
 				// should not have duplicated key
 				break;
 			}
@@ -1347,7 +1612,6 @@ INTEGER PQLEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, STRING syno
 	return results;
 }
 
-
 STRING_SET PQLEvaluator::GetNewResult(STRINGLIST_SET value, INTEGER pos_to_check) {
 	if (DEBUG) {
 		cout << "PQLEvaluator - GetNewResult" << endl;
@@ -1362,20 +1626,20 @@ STRING_SET PQLEvaluator::GetNewResult(STRINGLIST_SET value, INTEGER pos_to_check
 	return result;
 }
 
-STRINGLIST_SET PQLEvaluator::GetNewResult(STRINGLIST_SET value, INTEGER_SET pos_to_check) {
+STRINGLIST_SET PQLEvaluator::GetNewResult(STRINGLIST_SET value, INTEGER_LIST pos_to_check) {
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 
 	for (STRING_LIST* entry : value) {
 		STRING_LIST* entry_value = new STRING_LIST();
 
-		for (INTEGER i = 0; i < entry->size(); i++) {
-			if (pos_to_check.find(i) != pos_to_check.end()) {
-				// Found value to be included in the result
-				entry_value->push_back(entry->at(i));
-			}
+		for (INTEGER j = 0; j < pos_to_check.size(); j++) {
+			// Found value to be included in the result
+			entry_value->push_back(entry->at(pos_to_check.at(j)));
 		}
 
-		result.insert(entry_value);
+		if (!IsDuplicate(result, *entry_value)) {
+			result.insert(entry_value);
+		}
 	}
 
 	return result;
@@ -1422,24 +1686,56 @@ STRINGLIST_SET PQLEvaluator::GetCombinedResult(STRINGLIST_SET large_values, STRI
 	return results;
 }
 
-STRINGLIST_SET PQLEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list) {
-	STRINGLIST_SET results = *(new STRINGLIST_SET());
+STRINGLIST_SET PQLEvaluator::GetCombinedResult(STRINGLIST_SET output_result, STRINGLIST_SET result, INTEGER pos_to_compare) {
+	STRINGLIST_SET combined_result = STRINGLIST_SET();
+	for (auto result_entry = output_result.cbegin(); result_entry != output_result.cend(); result_entry++) {
+		STRING_LIST entry = *(*result_entry);
+		for (auto r = result.cbegin(); r != result.cend(); r++) {
+			STRING_LIST converted_entry = *(*r);
 
+			if (entry.at(pos_to_compare).compare(converted_entry.at(0)) == 0) {
+				STRING_LIST val = STRING_LIST();
+				for (INTEGER i = 0; i < entry.size(); i++) {
+					if (i != pos_to_compare) {
+						val.push_back(entry.at(i));
+					}
+					else {
+						val.push_back(converted_entry.at(1));
+					}
+
+				}
+
+				if (!IsDuplicate(combined_result, val)) {
+					combined_result.insert(new STRING_LIST(val));
+				}
+			}
+		}
+	}
+
+	return combined_result;
+}
+
+STRINGLIST_SET PQLEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetCartesianProduct" << endl;
+		cout << "Results map: " << endl;
+		Print(results_map);
+	}
+	
+	STRINGLIST_SET results = *(new STRINGLIST_SET());
 	STRING_LIST added_output = STRING_LIST();
 	for (STRING output : output_list) {
+		STRING parsed_output = ParsingSynonym(output);
 		for (auto entry = results_map.cbegin(); entry != results_map.cend(); entry++) {
 			STRING_LIST* synonyms = (*entry).first;
 			STRINGLIST_SET values = (*entry).second;
 			BOOLEAN is_tuple = synonyms->size() > 1 ? true : false;
 
 			for (INTEGER i = 0; i < synonyms->size(); i++) {
-				if (synonyms->at(i).compare(output) == 0) {
+				if (synonyms->at(i).compare(parsed_output) == 0) {
 					// output synonym found
 					if (!is_tuple) {
 						results = GetNoDependencyProduct(results, values);
-
-						cout << "not tuple" << endl;
-						Print(results);
 					}
 					else {
 						// Check constraint if synonym has already been added in output list
@@ -1461,18 +1757,14 @@ STRINGLIST_SET PQLEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP re
 							// Get the values to be added
 							STRINGLIST_SET synonym_values = ConvertSet(GetNewResult(values, i));
 							results = GetNoDependencyProduct(results, synonym_values);
-
-							cout << "added_index empty " << endl;
-							Print(results);
 						}
 						else {
 							// Merge with respect to dependencies
-							cout << "added_index not empty " << endl;
 							results = GetDependencyProduct(results, values, i, added_index);
 						}
 					}
-
 					added_output.push_back(output);
+					break;
 				}
 			}
 		}
@@ -1491,19 +1783,20 @@ STRINGLIST_SET PQLEvaluator::GetDependencyProduct(STRINGLIST_SET results, STRING
 		for (STRING_LIST* set : results) {
 			for (STRING_LIST* val : values) {
 				if (IsDependencyStatisfied(*set, *val, to_check)) {
-					STRING_LIST* new_value = new STRING_LIST();
-					new_value->insert(new_value->end(), set->begin(), set->end());
-					new_value->push_back(val->at(pos_to_add));
+					STRING_LIST new_value = *(new STRING_LIST());
+					new_value.insert(new_value.end(), set->begin(), set->end());
 
-					if (!IsDuplicate(final_results, *new_value)) {
-						final_results.insert(new_value);
+					if (pos_to_add != -1) {
+						new_value.push_back(val->at(pos_to_add));
+					}
+
+					if (!IsDuplicate(final_results, new_value)) {
+						final_results.insert(new STRING_LIST(new_value));
 					}
 				}
 			}
 		}
 	}
-
-	Print(final_results);
 
 	return final_results;
 }
@@ -1555,7 +1848,7 @@ BOOLEAN PQLEvaluator::IsBooleanOutput(STRING_LIST output_list) {
 BOOLEAN PQLEvaluator::IsOutputSynonyms(STRING_LIST synonyms, STRING_LIST output_list) {
 	for (STRING synonym : synonyms) {
 		for (STRING output : output_list) {
-			if (synonym.compare(output) == 0) {
+			if (synonym.compare(ParsingSynonym(output)) == 0) {
 				return true;
 			}
 		}
@@ -1624,10 +1917,10 @@ STRING PQLEvaluator::ParsingEntRef(STRING param) {
 
 STRING PQLEvaluator::ParsingSynonym(STRING synonym) {
 	INTEGER index = synonym.find(".");
-	return index != string::npos ? synonym.substr(0, index) : "";
+	return index != string::npos ? synonym.substr(0, index) : synonym;
 }
 
 STRING PQLEvaluator::ParsingSynonymAttribute(STRING synonym) {
 	INTEGER index = synonym.find(".");
-	return index != string::npos ? synonym.substr(index + 1, synonym.length()) : synonym;
+	return index != string::npos ? synonym.substr(index + 1, synonym.length()) : "";
 }

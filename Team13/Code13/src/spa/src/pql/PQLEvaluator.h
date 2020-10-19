@@ -11,9 +11,12 @@ class PQLEvaluator
 public:
 	QueryResult Evaluate(QueryInfo query_info);
 
+	VOID Print(STRING_LIST to_print);
+	VOID Print(STRING_SET to_print);
 	VOID Print(STRINGLIST_SET to_print);
 	VOID Print(STRINGLIST_STRINGLISTSET_MAP to_print);
-	
+	VOID Print(STRINGSET_STRINGLISTSET_MAP to_print);
+
 	VOID AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP* results_map);
 	QueryResult SetResult(BOOLEAN is_boolean_output, STRING bool_result, STRINGLIST_SET result);
 		
@@ -41,21 +44,25 @@ public:
 	STRINGLIST_SET ConvertSet(PROC_VAR_PAIR_LIST result_set);
 	STRINGLIST_SET ConvertSet(PROC_PROC_PAIR_LIST result_set);
 
-	BOOLEAN CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING_MAP entity_map, STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST key, STRINGLIST_SET* value);
-	BOOLEAN CheckConstraints(STRING_SET lhs_values, STRING_SET rhs_values, STRING lhs_attr, STRING rhs_attr, STRING lhs_type, STRING rhs_type);
+	BOOLEAN CheckConstraints(STRINGPAIR_SET constraints, STRING_STRING_MAP entity_map, STRINGLIST_STRINGLISTSET_MAP* results_map, STRING_LIST key, STRINGLIST_SET* value);
+	BOOLEAN CheckConstraints(STRINGLIST_SET* lhs_values, STRINGLIST_SET* rhs_values, STRING lhs_attr, STRING rhs_attr, STRING lhs_type, STRING rhs_type);
 
 	BOOLEAN RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, INTEGER pos_to_check);
+	BOOLEAN RemoveIrrelevant(STRINGLIST_SET* value, STRING tmp, INTEGER pos_to_check);
 
 	INTEGER GetCommonSynonymsIndex(STRING_LIST large_keys, STRING synonym);
-	INTEGERLIST_LIST GetCommonSynonymsIndex(STRING_LIST large_keys, STRING_LIST small_keys);
+	INTEGERPAIR_SET GetCommonSynonymsIndex(STRING_LIST large_keys, STRING_LIST small_keys);
 	STRING_SET GetNewResult(STRINGLIST_SET value, INTEGER pos_to_check);
-	STRINGLIST_SET GetNewResult(STRINGLIST_SET value, INTEGER_SET pos_to_check);
+	STRINGLIST_SET GetNewResult(STRINGLIST_SET value, INTEGER_LIST pos_to_check);
 	STRINGLIST_SET GetCombinedResult(STRINGLIST_SET large_values, STRINGLIST_SET small_values, INTEGERLIST_LIST indexes);
+	STRINGLIST_SET GetCombinedResult(STRINGLIST_SET output_result, STRINGLIST_SET result, INTEGER pos_to_compare);
 	STRINGLIST_SET GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list);
 	STRINGLIST_SET GetNoDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values);
 	STRINGLIST_SET GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, INTEGER pos_to_add, INTEGERPAIR_SET to_check);
 	
 	STRING_SET GetAlternateResult(STRING_SET values, STRING type);
+	STRING_SET GetAlternateResult(STRINGLIST_SET values, STRING type);
+	STRINGLIST_SET GetAlternateOutputResult(STRING_SET values, STRING type);
 
 	BOOLEAN IsVar(STRING var);
 	BOOLEAN IsString(STRING var);

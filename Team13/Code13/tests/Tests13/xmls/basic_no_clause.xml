@@ -1,14 +1,14 @@
 <?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
 <test_results>
 <info>
-<name>Tests13</name><parsing_time_taken>322.000000</parsing_time_taken>
+<name>Tests13</name><parsing_time_taken>224.000000</parsing_time_taken>
 </info>
 <queries>
 <query>
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="Select all statements">1</id><querystr><![CDATA[stmt s; Select s]]></querystr>
-<stuans>9,1,7,2,3,12,5,4,8,6,10,16,17,11,13,14,15</stuans>
+<stuans>1,9,3,2,4,17,6,8,5,14,7,12,11,10,15,13,16</stuans>
 <correct>1,2,3,4,5,6,7,8,9,10,11,12,13</correct>
-<time_taken>44.000000</time_taken>
+<time_taken>49.000000</time_taken>
 <failed>
 <missing></missing>
 <additional>14,15,16,17</additional>
@@ -22,30 +22,30 @@
 </query>
 <query>
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="Select all variables">2</id><querystr><![CDATA[variable v; Select v]]></querystr>
-<stuans>x,y,a,i,b,c,v</stuans>
+<stuans>i,y,a,x,b,c,v</stuans>
 <correct>x,i,y,a,b,c,v</correct>
-<time_taken>39.000000</time_taken>
+<time_taken>48.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="Select all procedures">3</id><querystr><![CDATA[procedure p; Select p]]></querystr>
-<stuans>Iteration,System,Test</stuans>
+<stuans>Test,Iteration,System</stuans>
 <correct>System,Test,Iteration</correct>
-<time_taken>39.000000</time_taken>
+<time_taken>50.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="Select all constants">4</id><querystr><![CDATA[constant c; Select c]]></querystr>
 <stuans>2,0,1</stuans>
 <correct>2,1,0</correct>
-<time_taken>38.000000</time_taken>
+<time_taken>43.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" UnnamedVar="1" CondNum="2" RelNum="0" comment="Select all program lines">5</id><querystr><![CDATA[prog_line n; Select n]]></querystr>
-<stuans>5,10,1,4,2,3,7,6,9,8,11,12,14,15,13,16,17</stuans>
+<stuans>1,2,3,4,5,6,7,8,10,9,11,17,14,12,13,15,16</stuans>
 <correct>1,2,3,4,5,6,7,8,9,10,11,12,13</correct>
-<time_taken>43.000000</time_taken>
+<time_taken>48.000000</time_taken>
 <failed>
 <missing></missing>
 <additional>14,15,16,17</additional>
@@ -59,9 +59,9 @@
 </query>
 <query>
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="Select all statements: assign">6</id><querystr><![CDATA[assign a; Select a]]></querystr>
-<stuans>1,9,14,5,16,7,3,6,8,15,17</stuans>
+<stuans>1,9,3,14,5,7,17,15,6,8,16</stuans>
 <correct>1,3,5,10,11,12,13</correct>
-<time_taken>38.000000</time_taken>
+<time_taken>48.000000</time_taken>
 <failed>
 <missing>10,11,12,13</missing>
 <additional>14,15,16,17,6,7,8,9</additional>
@@ -77,7 +77,7 @@
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="Select all statements: if">7</id><querystr><![CDATA[if ifs; Select ifs]]></querystr>
 <stuans>13</stuans>
 <correct>9</correct>
-<time_taken>34.000000</time_taken>
+<time_taken>49.000000</time_taken>
 <failed>
 <missing>9</missing>
 <additional>13</additional>
@@ -93,14 +93,14 @@
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="Select all statements: while">8</id><querystr><![CDATA[while w; Select w]]></querystr>
 <stuans>2,4</stuans>
 <correct>2,4</correct>
-<time_taken>35.000000</time_taken>
+<time_taken>56.000000</time_taken>
 <passed/>
 </query>
 <query>
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="Select all statements: call">9</id><querystr><![CDATA[call cl; Select cl]]></querystr>
 <stuans>12</stuans>
 <correct>8</correct>
-<time_taken>37.000000</time_taken>
+<time_taken>48.000000</time_taken>
 <failed>
 <missing>8</missing>
 <additional>12</additional>
@@ -116,7 +116,7 @@
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="Select all statements: read">10</id><querystr><![CDATA[read r; Select r]]></querystr>
 <stuans>10</stuans>
 <correct>6</correct>
-<time_taken>39.000000</time_taken>
+<time_taken>40.000000</time_taken>
 <failed>
 <missing>6</missing>
 <additional>10</additional>
@@ -132,7 +132,7 @@
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="Select all statements: print">11</id><querystr><![CDATA[print pr; Select pr]]></querystr>
 <stuans>11</stuans>
 <correct>7</correct>
-<time_taken>37.000000</time_taken>
+<time_taken>47.000000</time_taken>
 <failed>
 <missing>7</missing>
 <additional>11</additional>

@@ -11,7 +11,7 @@ Select ifs such that Follows(5, ifs)
 3 - comment
 assign a;
 Select a such that Parent*(4, a)
-5, 7, 8, 9, 11
+5,8,10,9,12,7
 5000
 4 - comment
 call c;

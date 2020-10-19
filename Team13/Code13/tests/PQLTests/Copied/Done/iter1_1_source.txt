@@ -1,24 +1,26 @@
 procedure testBasic {
-	a = 1;				
-	b = 2;				
-	c = 3;
+	a = 1;					
+	b = 2;					
+	c = 3;					
 	D = 4;					
 	f = 5;					
 	q = 6;					
 	p = 4;					
+	
 	a = p * 2;				
 	b = b + 1;				
 	c = c - 4;				
 	q = q / 5;				
-	m = a * b * c + p / q - f * D;	
-
+	m = a * b * c + p / q - f * D;		
+	
 	read D;					
 	print D;				
 	f = 789120748901275890417589 * f; 		  
+	
 	c5 = 23;				  
 	cDe2 = 22;				
 	print cDe2;				
-
+	
 	y = 3;					     
 	count = 0;				
 	if(a > b) then {			

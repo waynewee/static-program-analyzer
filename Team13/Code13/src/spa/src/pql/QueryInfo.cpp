@@ -66,15 +66,13 @@ VOID QueryInfo::PrintPatternMap() {
 	for (auto const& pair : this->pattern_map_) {
 		cout << " { " << pair.first << " , ";
 		for (STRING_LIST v : pair.second) {
-			cout << " < ";
+			cout << "< ";
 			for (auto i : v) {
-				cout << i << ", ";
-			}/*
-			else {
-				cout << "{ " << *(v->at(0)) << " " << *(v->at(1)) << "} ";
-			}*/
+				cout << i << " ";
+			}
+			cout << ">";
 		}
-
+		cout << endl;
 	}
 	cout << "-------------------- " << endl;
 }
@@ -82,37 +80,25 @@ VOID QueryInfo::PrintPatternMap() {
 VOID QueryInfo::PrintStMap() {
 	cout << "----- St Clauses ----- " << endl;
 	for (auto const& pair : this->st_map_) {
-		cout << " { " << pair.first << " , ";
+		cout << pair.first << ": ";
 		for (STRING_LIST v : pair.second) {
-			cout << " < ";
+			cout << "< ";
 			for (auto i : v) {
-				cout << i << ", ";
-			}/*
-			else {
-				cout << "{ " << *(v->at(0)) << " " << *(v->at(1)) << "} ";
-			}*/
+				cout << i << " ";
+			}
+			cout << ">";
 		}
-
+		cout << endl;
 	}
 	cout << "-------------------- " << endl;
 }
 
 VOID QueryInfo::PrintWithMap() {
-	//cout << "----- St Clauses ----- " << endl;
-	//for (auto const& pair : this->with_map_) {
-	//	cout << " { " << pair.first << " , ";
-	//	for (STRING v : pair.second) {
-	//		cout << " < ";
-	//		for (auto i : v) {
-	//			cout << i << ", ";
-	//		}/*
-	//		else {
-	//			cout << "{ " << *(v->at(0)) << " " << *(v->at(1)) << "} ";
-	//		}*/
-	//	}
-
-	//}
-	//cout << "-------------------- " << endl;
+	cout << "----- With Clauses ----- " << endl;
+	for (auto pair : this->with_map_) {
+		cout << "< " << pair->first << " " << pair->second << " >" << endl;
+	}
+	cout << "-------------------- " << endl;
 }
 
 VOID QueryInfo::PrintEntityMap() {
