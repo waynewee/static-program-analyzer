@@ -144,7 +144,7 @@ BOOLEAN QueryRules::IsSelect(STRING token) {
 /*
 	Remember to pass in "stmt s" without the semicolon.
 */
-BOOLEAN QueryRules::IsDeclaration(STRING token) {
+BOOLEAN QueryRules::IsDeclaration(STRING token, STRING_STRING_MAP entity_map) {
 	BOOLEAN result = true;
 	STRING temp_token = token;
 	STRING sub_token;
@@ -183,6 +183,11 @@ BOOLEAN QueryRules::IsDeclaration(STRING token) {
 				result = false;
 				break;
 			}
+			if (entity_map.count(sub_token) != 0) {
+				result = false;
+				break;
+			}
+
 			else {
 				declared_synonyms.insert(sub_token);
 			}
@@ -197,6 +202,9 @@ BOOLEAN QueryRules::IsDeclaration(STRING token) {
 		if (!IsSynonym(temp_token) || declared_synonyms.count(temp_token) != 0) {
 			result = false;
 		}
+		if (entity_map.count(temp_token) != 0) {
+			result = false;
+		}
 	}
 	else {
 		// No comma found. One synonym declared.
@@ -208,6 +216,10 @@ BOOLEAN QueryRules::IsDeclaration(STRING token) {
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
 		if (!IsSynonym(temp_token)) {
 			result = false;
+		}
+		if (entity_map.count(temp_token) != 0) {
+			result = false;
+			return result;
 		}
 	}
 	if (DEBUG) {

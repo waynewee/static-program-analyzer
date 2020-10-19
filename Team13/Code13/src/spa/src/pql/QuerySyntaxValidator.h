@@ -14,7 +14,7 @@ private:
 public:
 	QuerySyntaxValidator();
 
-	BOOLEAN ValidateDeclaration(STRING decl);
+	BOOLEAN ValidateDeclaration(STRING decl, STRING_STRING_MAP entity_map);
 
 	BOOLEAN ValidateSelect(STRING token);
 
