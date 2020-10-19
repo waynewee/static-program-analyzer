@@ -1,0 +1,45 @@
+1 - Calls* - synonym, synonym - related output
+procedure p1, p2;
+Select p1 such that Calls* (p1, p2)
+Test
+5000
+2 - Calls* - synonym, string - related output
+procedure p1;
+Select p1 such that Calls* (p1, "Iteration")
+Test
+5000
+3 - Calls* - string, synonym - related output
+procedure p1;
+Select p1 such that Calls* ("Test", p1)
+Iteration
+5000
+4 - Calls* - synonym, wildcard - related output
+procedure p1;
+Select p1 such that Calls* (p1, _)
+Test
+5000
+5 - Calls* - wildcard, synonym - related output
+procedure p1;
+Select p1 such that Calls* (_, p1)
+Iteration
+5000
+6 - Calls* - string, string - non-related output
+procedure p1;
+Select p1 such that Calls* ("Test", "Iteration")
+Iteration,System,Test
+5000
+7 - Calls* - wildcard, wildcard - non-related output
+procedure p1;
+Select p1 such that Calls* (_, _)
+Iteration,System,Test
+5000
+8 - Calls* - string, wildcard - non-related output
+procedure p1;
+Select p1 such that Calls* ("Test", _)
+Iteration,System,Test
+5000
+9 - Calls* - wildcard, string - non-related output
+procedure p1;
+Select p1 such that Calls* (_, "Iteration")
+Iteration,System,Test
+5000
