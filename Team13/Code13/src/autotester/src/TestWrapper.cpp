@@ -47,6 +47,7 @@ void TestWrapper::parse(string filename) {
 	DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
 	/*try {
 		FrontendWrapper frontend_wrapper(filename);
 
