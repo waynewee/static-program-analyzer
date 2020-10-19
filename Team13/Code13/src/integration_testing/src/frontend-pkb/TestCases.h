@@ -11,7 +11,7 @@ typedef struct {
 
 typedef struct {
 	string* SourceProgram;
-	CFG_LIST cfgs;
+	CFG* cfg;
 }CFGTestCase;
 
 // AST TEST CASES
