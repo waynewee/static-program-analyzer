@@ -27,9 +27,13 @@ STRING_SET PQLDriver::Query(STRING query_string) {
 	}
 
 	// loop: check whats in Query info
-	/*parsed_info.PrintOutputList();
-	parsed_info.PrintClausesMap();
-	parsed_info.PrintEntityMap();*/
+	if (DEBUG) {
+		parsed_info.PrintEntityMap();
+		parsed_info.PrintOutputList();
+		parsed_info.PrintStMap();
+		parsed_info.PrintPatternMap();
+		parsed_info.PrintWithMap();
+	}
 
 	QueryResult result = evaluator.Evaluate(parsed_info);
 	//if (result.IsEmpty()) {
