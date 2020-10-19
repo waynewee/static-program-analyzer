@@ -10,7 +10,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	// Expected output list
 	STRING_LIST output_list = query_info.GetOutputList();
 	BOOLEAN is_boolean_output = IsBooleanOutput(output_list);
-	cout << "IS BOOLEAN OUTPUT? " << (is_boolean_output ? "true" : "false") << endl;
+
 	// Check if QueryInfo is valid
 	if (!query_info.IsQueryInfoValid()) {
 		return SetResult(is_boolean_output, FALSE, *(new STRINGLIST_SET()));
@@ -109,6 +109,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 					c_value = EvaluateInverseOneSynonymSet(f_call, param2);
 
 					STRINGLIST_SET tmp = EvaluateAllCall(entity_map.at(param1));
+					
 					RemoveIrrelevant(&c_value, tmp, 0);
 				}
 			}
@@ -157,12 +158,11 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 		
 	}
 
-	cout << "FINAL CONSTRAINT size: " << constraints.size() << endl;
 	for (STRING_PAIR* check : constraints) {
 		// Constraints not captured in clauses / output synonyms
 		STRING lhs_synonym = check->first;
 		STRING rhs_synonym = check->second;
-		cout << "lhs: " << lhs_synonym << " rhs: " << rhs_synonym << endl;
+
 		STRING parsed_lhs = ParsingSynonym(lhs_synonym);
 		STRING parsed_rhs = ParsingSynonym(rhs_synonym);
 
@@ -238,11 +238,8 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 				STRING parsed_output_synonym = ParsingSynonym(output_list.at(o));
 
 				if (retrieved_output_index.find(o) == retrieved_output_index.end()) {
-					cout << "Parsed output: " << parsed_output_synonym << endl;
-					cout << "key: " << result_key->at(i) << endl;
 
 					if (result_key->at(i).compare(parsed_output_synonym) == 0) {
-						cout << "reached" << endl;
 						key->push_back(output_list.at(o));
 
 						// Add index of value to extract to list
@@ -267,8 +264,6 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			for (INTEGER k = 0; k < key->size(); k++) {
 				STRING synonym = ParsingSynonym(key->at(k));
 				STRING synonym_type = ParsingSynonymAttribute(key->at(k));
-
-				cout << "Synonym: " << synonym << " type: " << synonym_type << endl;
 
 				output_key.push_back(synonym);
 
@@ -304,12 +299,9 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			if (check_key == nullptr) {
 				// not duplicate
 				value = EvaluateAllCall(entity_map.at(parsed_synonym));
-				cout << entity_map.at(parsed_synonym) << endl;
 
 				// Check constraints
 				BOOLEAN is_dependency_checked = CheckConstraints(&constraints, entity_map, &results_map, key, &value);
-				cout << "BACK AT OUT" << endl;
-				Print(value);
 				if (is_dependency_checked && value.empty()) {				
 					// error
 					if (DEBUG) {
@@ -342,12 +334,11 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	}
 
 	// NOT SURE IF I NEED TO RUN CONSTRAINT CHECK AGAIN FOR FINAL RESULTS MAP
-	cout << "FINAL CONSTRAINT size: " << constraints.size() << endl;
 	for (STRING_PAIR* check: constraints) {
 		// Constraints not captured in clauses / output synonyms
 		STRING lhs_synonym = check->first;
 		STRING rhs_synonym = check->second;
-		cout << "lhs: " << lhs_synonym << " rhs: " << rhs_synonym << endl;
+
 		STRING parsed_lhs = ParsingSynonym(lhs_synonym);
 		STRING parsed_rhs = ParsingSynonym(rhs_synonym);
 
@@ -516,7 +507,6 @@ QueryResult PQLEvaluator::SetResult(BOOLEAN is_boolean_output, STRING bool_resul
 	STRINGLIST_SET final_value = *(new STRINGLIST_SET());
 
 	if (is_boolean_output) {
-		cout << "BOOLEAN OUTPUT" << endl;
 		STRING_LIST* value = new STRING_LIST();
 		value->push_back(bool_result);
 		final_value.insert(value);
@@ -526,8 +516,6 @@ QueryResult PQLEvaluator::SetResult(BOOLEAN is_boolean_output, STRING bool_resul
 	}
 
 	final_result.SetResult(final_value);
-	cout << "FINAL: " << endl;
-	Print(final_value);
 	return final_result;
 }
 
@@ -622,15 +610,6 @@ BOOLEAN PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET
 
 					return false;
 				}
-
-				/*if (no_synonym_set->insert(clause).second == 0) {
-					// error
-					if (DEBUG) {
-						cout << "PQLEvaluator - Parsing clauses: Error inserting no_synonym_set." << endl;
-					}
-
-					return false;
-				}*/
 			}
 			else {
 				STRING_SET* key = new STRING_SET();
@@ -1390,7 +1369,6 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_STMT_PAIR_LIST result_set) {
 		}
 	}
 
-	cout << "returned" << endl;
 	return final_result;
 }
 
@@ -1463,7 +1441,7 @@ BOOLEAN PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRIN
 	for (STRING_PAIR* check : *constraints) {
 		STRING lhs_synonym = check->first;
 		STRING rhs_synonym = check->second;
-		cout << "lhs: " << lhs_synonym << " rhs: " << rhs_synonym << endl;
+
 		STRING parsed_lhs = ParsingSynonym(lhs_synonym);
 		STRING parsed_rhs = ParsingSynonym(rhs_synonym);
 
@@ -1491,38 +1469,27 @@ BOOLEAN PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRIN
 		}
 		else if (key_with_constraint.first != -1 && key_with_constraint.second == -1) {
 			// LHS = synonym, RHS = int/str/synonym@result
-			cout << "REACHED SYNONYM-INT/STR/RESULT" << endl;
 
 			STRING_SET lhs = GetNewResult(*value, key_with_constraint.first);
-			Print(lhs);
 			STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
 			STRING lhs_type = entity_map.at(parsed_lhs);
-			cout << "reached" << endl;
 			if (!IsSameEntityType(lhs_type, lhs_attr)) {
 				for (STRING s : lhs) {
-					cout << "VALUE OF LHS: " << s << endl;
 					STRING_SET v = GetAlternateResult(s, lhs_type);
-					cout << "reached" << endl;
 
 					lhs_w_attr.insert({ s, v });
-					cout << "reached" << endl;
-
 				}
 			}
-			cout << "reached" << endl;
 
 			if (IsString(rhs_synonym) || IsInteger(rhs_synonym)) {
 				STRING_SET rhs = STRING_SET();
 
-				cout << "reached int/str" << endl;
 				IsString(rhs_synonym) ? rhs.insert(ParsingEntRef(rhs_synonym)) : rhs.insert(rhs_synonym);
 				
 				if (lhs_w_attr.empty()) {
 					// compare lhs and str/int
 					STRINGLIST_SET val = ConvertSet(GetIntersectResult(lhs, rhs));
-					Print(val);
 					RemoveIrrelevant(value, val, key_with_constraint.first);
-					Print(*value);
 				}
 				else {
 					// compare lhs attr and str/int
@@ -1914,7 +1881,6 @@ STRING_SET PQLEvaluator::GetAlternateResult(STRING values, STRING type) {
 	DataManager dm = PKB().GetDataManager();
 
 	STRING_SET results = *(new STRING_SET());
-	cout << "reached alt" << endl;
 
 	if (type.compare(TYPE_STMT_PRINT) == 0) {
 		results = rm.GetStmtUses(ParsingStmtRef(values));
@@ -1924,7 +1890,6 @@ STRING_SET PQLEvaluator::GetAlternateResult(STRING values, STRING type) {
 	}
 	else {
 		// calls
-		cout << "val: " << values << endl;
 		STRING new_value = dm.GetCalledByStmt(ParsingStmtRef(values));
 		if (new_value.compare("") != 0) {
 			results.insert(new_value);
@@ -1968,7 +1933,7 @@ STRING_SET PQLEvaluator::GetAlternateResult(STRING_SET values, STRING type) {
 STRING_SET PQLEvaluator::GetAlternateResult(STRINGLIST_SET values, STRING type) {
 	RelationManager rm = PKB().GetRelationManager();
 	STRING_SET results = *(new STRING_SET());
-	cout << "reached" << endl;
+
 	for (STRING_LIST* v : values) {
 		STRING_SET new_values = *(new STRING_SET());
 		if (type.compare(TYPE_STMT_PRINT) == 0) {
