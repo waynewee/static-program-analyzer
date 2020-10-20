@@ -5,12 +5,12 @@ Select a pattern a(_,_)
 5000
 2-
 assign a;
-Select a pattern a(_,_"b+c"_)
+Select a pattern a(_,_"b+c                "_)
 17, 19, 20, 21, 23
 5000
 3-
 assign a;
-Select a pattern a(_,_"ab"_)
+Select a pattern a(_,_"   ab"_)
 23
 5000
 4-
