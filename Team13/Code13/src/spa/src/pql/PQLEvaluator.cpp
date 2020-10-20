@@ -92,6 +92,19 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 
 					tmp = EvaluateAllCall(entity_map.at(param2));
 					RemoveIrrelevant(&c_value, tmp, 1);
+
+					if (param1.compare(param2) == 0) {
+						// same synonym
+						tmp.clear();
+						for (STRING_LIST* s : c_value) {
+							if (s->at(0).compare(s->at(1)) == 0) {
+								STRING_LIST* to_insert = new STRING_LIST();
+								to_insert->push_back(s->at(0));
+								tmp.insert(to_insert);
+							}
+						}
+						c_value = tmp;
+					}
 				}
 				else if (!IsVar(param1) && IsVar(param2)) {
 					// first param != synonym & second param = synonym
