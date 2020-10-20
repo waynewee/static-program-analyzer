@@ -13,6 +13,7 @@ bool CFG::AddAllNextPairs() {
             all_edges_.push_back({node, n});
         }
     }
+    return true;
 }
 bool CFG::AddEdge(STMT_IDX s1, STMT_IDX s2) {
     auto result = AddEdgeUtil(data_, s1, s2);
