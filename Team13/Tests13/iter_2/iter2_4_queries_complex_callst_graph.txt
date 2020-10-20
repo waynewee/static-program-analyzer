@@ -9,6 +9,7 @@ Select a such that Calls*("procb", "proce")
 1, 3, 7, 9, 10, 13, 14
 5000
 3 - valid query
+
 Select BOOLEAN such that Calls*("proca", "proca")
 FALSE
 5000

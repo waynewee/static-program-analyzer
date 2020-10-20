@@ -1,4 +1,4 @@
-Invoke-Expression -Command "autotester.exe iter2_1_source_calls.txt iter2_1_queries.txt xmls/iter2_1_out.xml"
+Invoke-Expression -Command "autotester.exe iter2_1_source_calls.txt iter2_1_queries_calls.txt xmls/iter2_1_out.xml"
 
 Invoke-Expression -Command "autotester.exe iter2_2_source_complex_calls_graph.txt iter2_2_queries_complex_calls_graph.txt xmls/iter2_2_1_out.xml"
 Invoke-Expression -Command "autotester.exe iter2_2_source_complex_calls_graph.txt iter2_2_queries_alternate_output_attributes.txt xmls/iter2_2_2_out.xml"
