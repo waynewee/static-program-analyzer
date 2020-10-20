@@ -35,7 +35,10 @@ TestWrapper::TestWrapper() {
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(string filename) {
-	FrontendWrapper frontend_wrapper(filename);
+
+	FileReader file_reader(filename);
+	string file_contents = file_reader.ReadFile();
+	FrontendWrapper frontend_wrapper(file_contents);
 
 	TNode* ast_root = frontend_wrapper.GetAST();
 	CFG* cfg = frontend_wrapper.GetCFG(ast_root);
