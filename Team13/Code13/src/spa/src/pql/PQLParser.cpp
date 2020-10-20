@@ -83,7 +83,7 @@ QueryInfo PQLParser::Parse(STRING s) {
         This loop erases the clause after parsing them, and loops until the string is empty.
         If it's a suchthat or with clause,
         */
-        regex r("such that|pattern|with|and");
+        regex r("such that |pattern |with |and ");
         STRING current_clause_type;
         BOOLEAN current_is_and_clause = false;
         BOOLEAN first_passed = false;
