@@ -158,183 +158,132 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 		
 	}
 
-	for (STRING_PAIR* check : constraints) {
-		// Constraints not captured in clauses / output synonyms
-		STRING lhs_synonym = check->first;
-		STRING rhs_synonym = check->second;
+	if (!is_boolean_output) {
+		// Get output_list's results from results_map
+		INTEGER_SET retrieved_output_index = INTEGER_SET();
+		for (auto result_entry = results_map.cbegin(); result_entry != results_map.cend(); result_entry++) {
+			STRING_LIST* result_key = (*result_entry).first;
+			STRING_LIST* key = new STRING_LIST();
+			INTEGER_LIST index_to_extract = INTEGER_LIST();
 
-		STRING parsed_lhs = ParsingSynonym(lhs_synonym);
-		STRING parsed_rhs = ParsingSynonym(rhs_synonym);
+			for (INTEGER i = 0; i < result_key->size(); i++) {
+				for (INTEGER o = 0; o < output_list.size(); o++) {
+					STRING parsed_output_synonym = ParsingSynonym(output_list.at(o));
 
-		STRING lhs_attr = ParsingSynonymAttribute(lhs_synonym);
-		STRING rhs_attr = ParsingSynonymAttribute(rhs_synonym);
+					if (retrieved_output_index.find(o) == retrieved_output_index.end()) {
 
-		if (IsVar(parsed_lhs)) {
-			// Synonym = int/str
-			STRING lhs_type = entity_map.at(parsed_lhs);
-			STRINGLIST_SET lhs = EvaluateAllCall(lhs_type);
-			STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
+						if (result_key->at(i).compare(parsed_output_synonym) == 0) {
+							key->push_back(output_list.at(o));
 
-			if (!IsSameEntityType(lhs_type, lhs_attr)) {
-				for (STRING_LIST* s : lhs) {
-					STRING_SET v = GetAlternateResult(s->at(0), lhs_type);
+							// Add index of value to extract to list
+							index_to_extract.push_back(i);
 
-					lhs_w_attr.insert({ s->at(0), v });
-
-				}
-			}
-
-			STRING_SET rhs = STRING_SET();
-			IsString(rhs_synonym) ? rhs.insert(ParsingEntRef(rhs_synonym)) : rhs.insert(rhs_synonym);
-
-			if (lhs_w_attr.empty()) {
-				// compare lhs and str/int
-				STRINGLIST_SET val = ConvertSet(GetIntersectResult(rhs, lhs, 0));
-
-				if (val.empty()) {
-					// empty result
-					return SetResult(is_boolean_output, FALSE, {});
-				}
-			}
-			else {
-				// compare lhs attr and str/int
-
-				STRING_SET lhs_val = STRING_SET();
-				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-					STRING_SET v = (*f).second;
-					STRING_SET val = GetIntersectResult(rhs, v);
-					lhs_w_attr.at((*f).first) = val;
-
-					if (!val.empty()) {
-						lhs_val.insert((*f).first);
+							// Add index of retrieved output synonym to list
+							retrieved_output_index.insert(o);
+						}
 					}
 				}
 
-				RemoveIrrelevant(&lhs, ConvertSet(lhs_val), 0);
-
-				if (lhs.empty()) {
-					// empty result
-					return SetResult(is_boolean_output, FALSE, {});
-				}
-			}
-		}
-	}
-
-	// Check if output_list is BOOLEAN: TRUE -> return TRUE; FALSE -> continue
-	if (is_boolean_output) {
-		// Result doesn't matter
-		return SetResult(is_boolean_output, TRUE, *(new STRINGLIST_SET()));
-	}	
-
-	// Get output_list's results from results_map
-	INTEGER_SET retrieved_output_index = INTEGER_SET();
-	for (auto result_entry = results_map.cbegin(); result_entry != results_map.cend(); result_entry++) {
-		STRING_LIST* result_key = (*result_entry).first;
-		STRING_LIST* key = new STRING_LIST();
-		INTEGER_LIST index_to_extract = INTEGER_LIST();
-
-		for (INTEGER i = 0; i < result_key->size(); i++) {
-			for (INTEGER o = 0; o < output_list.size(); o++) {
-				STRING parsed_output_synonym = ParsingSynonym(output_list.at(o));
-
-				if (retrieved_output_index.find(o) == retrieved_output_index.end()) {
-
-					if (result_key->at(i).compare(parsed_output_synonym) == 0) {
-						key->push_back(output_list.at(o));
-
-						// Add index of value to extract to list
-						index_to_extract.push_back(i);
-
-						// Add index of retrieved output synonym to list
-						retrieved_output_index.insert(o);
-					}
+				if (retrieved_output_index.size() == output_list.size()) {
+					break;
 				}
 			}
 
-			if (retrieved_output_index.size() == output_list.size()) {
-				break;
-			}
-		}
+			if (!key->empty()) {
+				// Has >=1 expected output synonym(s)
+				STRING_LIST output_key = *(new STRING_LIST());
+				STRINGLIST_SET output_result = GetNewResult((*result_entry).second, index_to_extract);
 
-		if (!key->empty()) {
-			// Has >=1 expected output synonym(s)
-			STRING_LIST output_key = *(new STRING_LIST());
-			STRINGLIST_SET output_result = GetNewResult((*result_entry).second, index_to_extract);
+				for (INTEGER k = 0; k < key->size(); k++) {
+					STRING synonym = ParsingSynonym(key->at(k));
+					STRING synonym_type = ParsingSynonymAttribute(key->at(k));
 
-			for (INTEGER k = 0; k < key->size(); k++) {
-				STRING synonym = ParsingSynonym(key->at(k));
-				STRING synonym_type = ParsingSynonymAttribute(key->at(k));
+					output_key.push_back(synonym);
 
-				output_key.push_back(synonym);
-
-				// Check if output synonym is attribute type
-				STRINGLIST_SET result = STRINGLIST_SET();
-				if (!IsSameEntityType(entity_map.at(synonym), synonym_type)) {
-					result = GetAlternateOutputResult(GetNewResult(output_result, k), synonym_type);
-				}
-
-				if (!result.empty()) {
-					// Combine results
-					output_result = GetCombinedResult(output_result, result, k);
-				}
-			}
-
-			AddResult(output_key, output_result, &final_results_map);
-		}
-	}
-
-	// Get all output_list's results that are not in results_map
-	// STRINGLIST_STRINGLISTSET_MAP tmp_map = STRINGLIST_STRINGLISTSET_MAP();
-	for (INTEGER i = 0; i < output_list.size(); i++) {
-		if (retrieved_output_index.find(i) == retrieved_output_index.end()) {
-			STRING synonym = output_list.at(i);
-			STRING parsed_synonym = ParsingSynonym(synonym);
-			STRING synonym_type = ParsingSynonymAttribute(synonym);
-
-			STRING_LIST key = *(new STRING_LIST());
-			key.push_back(parsed_synonym);
-			STRINGLIST_SET value = *(new STRINGLIST_SET());
-		
-			STRING_LIST* check_key = GetRelatedSynonyms(key, final_results_map);
-			if (check_key == nullptr) {
-				// not duplicate
-				value = EvaluateAllCall(entity_map.at(parsed_synonym));
-
-				// Check constraints
-				BOOLEAN is_dependency_checked = CheckConstraints(&constraints, entity_map, &results_map, key, &value);
-				if (is_dependency_checked && value.empty()) {				
-					// error
-					if (DEBUG) {
-						cout << "PQLEvaluator - Checked constraints: Empty results." << endl;
+					// Check if output synonym is attribute type
+					STRINGLIST_SET result = STRINGLIST_SET();
+					if (!IsSameEntityType(entity_map.at(synonym), synonym_type)) {
+						result = GetAlternateOutputResult(GetNewResult(output_result, k), synonym_type);
 					}
 
-					return SetResult(is_boolean_output, FALSE, *(new STRINGLIST_SET()));
+					if (!result.empty()) {
+						// Combine results
+						output_result = GetCombinedResult(output_result, result, k);
+					}
 				}
 
-				if (!IsSameEntityType(entity_map.at(parsed_synonym), synonym_type)) {
-					value = ConvertSet(GetAlternateResult(value, entity_map.at(parsed_synonym)));
-				}
+				AddResult(output_key, output_result, &final_results_map);
 			}
-			else {
-				// duplicate
-				STRING_LIST new_key = STRING_LIST();
-				new_key.insert(new_key.end(), check_key->begin(), check_key->end());
-				new_key.insert(new_key.end(), key.begin(), key.end());
-				key = new_key;
-				
-				value = final_results_map.at(check_key);
-				for (auto v = value.cbegin(); v != value.cend(); v++) {
-					(*v)->push_back((*v)->at(0));
-				}
+		}
 
-				final_results_map.erase(check_key);
+		// Get all output_list's results that are not in results_map
+		// STRINGLIST_STRINGLISTSET_MAP tmp_map = STRINGLIST_STRINGLISTSET_MAP();
+		for (INTEGER i = 0; i < output_list.size(); i++) {
+			if (retrieved_output_index.find(i) == retrieved_output_index.end()) {
+				STRING synonym = output_list.at(i);
+				STRING parsed_synonym = ParsingSynonym(synonym);
+				STRING synonym_type = ParsingSynonymAttribute(synonym);
+
+				STRING_LIST key = *(new STRING_LIST());
+				key.push_back(parsed_synonym);
+				STRINGLIST_SET value = *(new STRINGLIST_SET());
+
+				STRING_LIST* check_key = GetRelatedSynonyms(key, final_results_map);
+				if (check_key == nullptr) {
+					// not duplicate
+					value = EvaluateAllCall(entity_map.at(parsed_synonym));
+
+					// Check constraints
+					BOOLEAN is_dependency_checked = CheckConstraints(&constraints, entity_map, &results_map, key, &value);
+					if (is_dependency_checked && value.empty()) {
+						// error
+						if (DEBUG) {
+							cout << "PQLEvaluator - Checked constraints: Empty results." << endl;
+						}
+
+						return SetResult(is_boolean_output, FALSE, *(new STRINGLIST_SET()));
+					}
+
+					if (!IsSameEntityType(entity_map.at(parsed_synonym), synonym_type)) {
+						value = ConvertSet(GetAlternateResult(value, entity_map.at(parsed_synonym)));
+					}
+				}
+				else {
+					// duplicate
+					STRING_LIST new_key = STRING_LIST();
+					new_key.insert(new_key.end(), check_key->begin(), check_key->end());
+					new_key.insert(new_key.end(), key.begin(), key.end());
+					key = new_key;
+
+					value = final_results_map.at(check_key);
+					for (auto v = value.cbegin(); v != value.cend(); v++) {
+						(*v)->push_back((*v)->at(0));
+					}
+
+					final_results_map.erase(check_key);
+				}
+				final_results_map.insert({ new STRING_LIST(key), value });
 			}
-			final_results_map.insert({ new STRING_LIST(key), value });
 		}
 	}
 
 	// NOT SURE IF I NEED TO RUN CONSTRAINT CHECK AGAIN FOR FINAL RESULTS MAP
-	for (STRING_PAIR* check: constraints) {
+	/*
+	for (auto result_entry = final_results_map.cbegin(); result_entry != final_results_map.cend(); result_entry++) {
+		STRINGLIST_SET values = (*result_entry).second;
+		STRING_LIST* key = (*result_entry).first;
+		CheckConstraints(&constraints, entity_map, &final_results_map, *key, &values);
+
+		if (values.empty()) {
+			return SetResult(is_boolean_output, FALSE, {});
+		}
+		else {
+			final_results_map.at(key) = values;
+		}
+	}
+	*/
+
+	/*for (STRING_PAIR* check : constraints) {
 		// Constraints not captured in clauses / output synonyms
 		STRING lhs_synonym = check->first;
 		STRING rhs_synonym = check->second;
@@ -344,8 +293,8 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 
 		STRING lhs_attr = ParsingSynonymAttribute(lhs_synonym);
 		STRING rhs_attr = ParsingSynonymAttribute(rhs_synonym);
-		
-		if (IsVar(parsed_lhs)) {
+
+		if (IsVar(parsed_lhs) && !IsVar(parsed_rhs)) {
 			// Synonym = int/str
 			STRING lhs_type = entity_map.at(parsed_lhs);
 			STRINGLIST_SET lhs = EvaluateAllCall(lhs_type);
@@ -394,10 +343,112 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 				}
 			}
 		}
-	}
+		else if (IsVar(parsed_lhs) && IsVar(parsed_rhs)) {
+			// synonym=synonym
 
-	// Combine all the expected output results
-	final_result_set = GetCartesianProduct(final_results_map, output_list);
+			STRING lhs_type = entity_map.at(parsed_lhs);
+			STRINGLIST_SET lhs = EvaluateAllCall(lhs_type);
+			STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
+
+			if (!IsSameEntityType(lhs_type, lhs_attr)) {
+				for (STRING_LIST* s : lhs) {
+					STRING_SET v = GetAlternateResult(s->at(0), lhs_type);
+
+					lhs_w_attr.insert({ s->at(0), v });
+
+				}
+			}
+
+			STRING rhs_type = entity_map.at(parsed_rhs);
+			STRINGLIST_SET rhs = EvaluateAllCall(rhs_type);
+			STRING_STRINGSET_MAP rhs_w_attr = STRING_STRINGSET_MAP();
+
+			if (!IsSameEntityType(rhs_type, rhs_attr)) {
+				for (STRING_LIST* s : rhs) {
+					STRING_SET v = GetAlternateResult(s->at(0), rhs_type);
+
+					rhs_w_attr.insert({ s->at(0), v });
+
+				}
+			}
+
+			if (lhs_w_attr.empty() && rhs_w_attr.empty()) {
+				// compare lhs and rhs
+				STRINGLIST_SET val = GetIntersectResult(lhs, rhs);
+				if (val.empty()) {
+					return SetResult(is_boolean_output, FALSE, {});
+				}
+			}
+			else if (lhs_w_attr.empty() && !rhs_w_attr.empty()) {
+				// compare lhs and rhs attr
+
+				STRING_SET lhs_val = STRING_SET();
+				STRING_SET rhs_val = STRING_SET();
+				for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
+					STRING_SET v = (*f).second;
+					STRING_SET val = GetIntersectResult(v, lhs, 0);
+					rhs_w_attr.at((*f).first) = val;
+					lhs_val.insert(val.begin(), val.end());
+
+					if (!val.empty()) {
+						rhs_val.insert((*f).first);
+					}
+				}
+
+				if (lhs_val.empty() || rhs_val.empty()) {
+					return SetResult(is_boolean_output, FALSE, {});
+				}
+			}
+			else if (!lhs_w_attr.empty() && rhs_w_attr.empty()) {
+				// compare lhs attr and rhs
+
+				STRING_SET lhs_val = STRING_SET();
+				STRING_SET rhs_val = STRING_SET();
+				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
+					STRING_SET v = (*f).second;
+					STRING_SET val = GetIntersectResult(v, rhs, 0);
+					lhs_w_attr.at((*f).first) = val;
+					rhs_val.insert(val.begin(), val.end());
+
+					if (!val.empty()) {
+						lhs_val.insert((*f).first);
+					}
+				}
+
+				if (lhs_val.empty() || rhs_val.empty()) {
+					return SetResult(is_boolean_output, FALSE, {});
+				}
+			}
+			else if (!lhs_w_attr.empty() && !rhs_w_attr.empty()) {
+				// compare lhs attr and rhs attr
+
+				STRING_SET lhs_val = STRING_SET();
+				STRING_SET rhs_val = STRING_SET();
+				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
+					for (auto g = rhs_w_attr.cbegin(); g != rhs_w_attr.cend(); g++) {
+						STRING_SET lhs_v = (*f).second;
+						STRING_SET rhs_v = (*g).second;
+
+						STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
+
+						if (!val.empty()) {
+							lhs_val.insert((*f).first);
+							rhs_val.insert((*g).first);
+						}
+					}
+				}
+
+				if (lhs_val.empty() || rhs_val.empty()) {
+					return SetResult(is_boolean_output, FALSE, {});
+				}
+			}
+		}
+	}*/
+	
+	if (!is_boolean_output) {
+		// Combine all the expected output results
+		final_result_set = GetCartesianProduct(final_results_map, output_list);
+	}
 
 	/*
 	STRING_LIST general_func = ConvertFunction(*func, entity_map);
@@ -1510,8 +1561,84 @@ BOOLEAN PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRIN
 			else {
 				STRING_LIST* check_key = GetRelatedSynonyms(parsed_rhs, *results_map);
 				if (check_key == nullptr) {
+					// not in results yet
 					is_checked = false;
-					break;
+					
+					STRING rhs_type = entity_map.at(parsed_rhs);
+					STRINGLIST_SET rhs = EvaluateAllCall(rhs_type);
+					STRING_STRINGSET_MAP rhs_w_attr = STRING_STRINGSET_MAP();
+
+					if (!IsSameEntityType(rhs_type, rhs_attr)) {
+						for (STRING_LIST* s : rhs) {
+							STRING_SET v = GetAlternateResult(s->at(0), rhs_type);
+
+							rhs_w_attr.insert({ s->at(0), v });
+
+						}
+					}
+
+					if (lhs_w_attr.empty() && rhs_w_attr.empty()) {
+						// compare lhs and rhs
+						STRING_SET val = GetIntersectResult(lhs, rhs, 0);
+						RemoveIrrelevant(value, ConvertSet(val), key_with_constraint.first);
+					}
+					else if (lhs_w_attr.empty() && !rhs_w_attr.empty()) {
+						// compare lhs and rhs attr
+
+						STRING_SET lhs_val = STRING_SET();
+						STRING_SET rhs_val = STRING_SET();
+						for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
+							STRING_SET v = (*f).second;
+							STRING_SET val = GetIntersectResult(v, lhs);
+							rhs_w_attr.at((*f).first) = val;
+							lhs_val.insert(val.begin(), val.end());
+
+							if (!val.empty()) {
+								rhs_val.insert((*f).first);
+							}
+						}
+
+						RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.first);
+					}
+					else if (!lhs_w_attr.empty() && rhs_w_attr.empty()) {
+						// compare lhs attr and rhs
+
+						STRING_SET lhs_val = STRING_SET();
+						STRING_SET rhs_val = STRING_SET();
+						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
+							STRING_SET v = (*f).second;
+							STRING_SET val = GetIntersectResult(v, rhs, 0);
+							lhs_w_attr.at((*f).first) = val;
+							rhs_val.insert(val.begin(), val.end());
+
+							if (!val.empty()) {
+								lhs_val.insert((*f).first);
+							}
+						}
+
+						RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.first);
+					}
+					else if (!lhs_w_attr.empty() && !rhs_w_attr.empty()) {
+						// compare lhs attr and rhs attr
+
+						STRING_SET lhs_val = STRING_SET();
+						STRING_SET rhs_val = STRING_SET();
+						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
+							for (auto g = rhs_w_attr.cbegin(); g != rhs_w_attr.cend(); g++) {
+								STRING_SET lhs_v = (*f).second;
+								STRING_SET rhs_v = (*g).second;
+
+								STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
+
+								if (!val.empty()) {
+									lhs_val.insert((*f).first);
+									rhs_val.insert((*g).first);
+								}
+							}
+						}
+
+						RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.first);
+					}
 				}
 				else {					
 					INTEGER index = GetCommonSynonymsIndex(*check_key, parsed_rhs);
@@ -1639,8 +1766,84 @@ BOOLEAN PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRIN
 			else {
 				STRING_LIST* check_key = GetRelatedSynonyms(parsed_lhs, *results_map);
 				if (check_key == nullptr) {
+					// not in results yet
 					is_checked = false;
-					break;
+
+					STRING lhs_type = entity_map.at(parsed_lhs);
+					STRINGLIST_SET lhs = EvaluateAllCall(lhs_type);
+					STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
+
+					if (!IsSameEntityType(lhs_type, lhs_attr)) {
+						for (STRING_LIST* s : lhs) {
+							STRING_SET v = GetAlternateResult(s->at(0), lhs_type);
+
+							rhs_w_attr.insert({ s->at(0), v });
+
+						}
+					}
+
+					if (lhs_w_attr.empty() && rhs_w_attr.empty()) {
+						// compare lhs and rhs
+						STRING_SET val = GetIntersectResult(rhs, lhs, 0);
+						RemoveIrrelevant(value, ConvertSet(val), key_with_constraint.second);
+					}
+					else if (!lhs_w_attr.empty() && rhs_w_attr.empty()) {
+						// compare lhs attr and rhs
+
+						STRING_SET lhs_val = STRING_SET();
+						STRING_SET rhs_val = STRING_SET();
+						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
+							STRING_SET v = (*f).second;
+							STRING_SET val = GetIntersectResult(v, rhs);
+							lhs_w_attr.at((*f).first) = val;
+							rhs_val.insert(val.begin(), val.end());
+
+							if (!val.empty()) {
+								lhs_val.insert((*f).first);
+							}
+						}
+
+						RemoveIrrelevant(value, ConvertSet(rhs_val), key_with_constraint.second);
+					}
+					else if (lhs_w_attr.empty() && !rhs_w_attr.empty()) {
+						// compare lhs and rhs attr
+
+						STRING_SET lhs_val = STRING_SET();
+						STRING_SET rhs_val = STRING_SET();
+						for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
+							STRING_SET v = (*f).second;
+							STRING_SET val = GetIntersectResult(v, lhs, 0);
+							rhs_w_attr.at((*f).first) = val;
+							lhs_val.insert(val.begin(), val.end());
+
+							if (!val.empty()) {
+								rhs_val.insert((*f).first);
+							}
+						}
+
+						RemoveIrrelevant(value, ConvertSet(rhs_val), key_with_constraint.second);
+					}
+					else if (!lhs_w_attr.empty() && !rhs_w_attr.empty()) {
+						// compare lhs attr and rhs attr
+
+						STRING_SET lhs_val = STRING_SET();
+						STRING_SET rhs_val = STRING_SET();
+						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
+							for (auto g = rhs_w_attr.cbegin(); g != rhs_w_attr.cend(); g++) {
+								STRING_SET lhs_v = (*f).second;
+								STRING_SET rhs_v = (*g).second;
+
+								STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
+
+								if (!val.empty()) {
+									lhs_val.insert((*f).first);
+									rhs_val.insert((*g).first);
+								}
+							}
+						}
+
+						RemoveIrrelevant(value, ConvertSet(rhs_val), key_with_constraint.second);
+					}
 				}
 				else {
 					INTEGER index = GetCommonSynonymsIndex(*check_key, parsed_lhs);
@@ -1861,7 +2064,7 @@ STRING_SET PQLEvaluator::GetIntersectResult(STRING_SET val1, STRING_SET val2) {
 
 	return result;
 }
-/*
+
 STRINGLIST_SET PQLEvaluator::GetIntersectResult(STRINGLIST_SET val1, STRINGLIST_SET val2) {
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 
@@ -1875,7 +2078,7 @@ STRINGLIST_SET PQLEvaluator::GetIntersectResult(STRINGLIST_SET val1, STRINGLIST_
 
 	return result;
 }
-*/
+
 STRING_SET PQLEvaluator::GetAlternateResult(STRING values, STRING type) {
 	RelationManager rm = PKB().GetRelationManager();
 	DataManager dm = PKB().GetDataManager();
