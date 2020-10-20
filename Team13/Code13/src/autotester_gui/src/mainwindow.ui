@@ -77,14 +77,14 @@
      <widget class="QGroupBox" name="horizontalGroupBox">
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="astButton">
          <property name="text">
           <string>View AST</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="cfgButton">
          <property name="text">
           <string>View CFG</string>
          </property>
