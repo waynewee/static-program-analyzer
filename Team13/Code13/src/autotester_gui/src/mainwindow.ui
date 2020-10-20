@@ -24,6 +24,9 @@
        <item>
         <widget class="CodeEditor" name="txtCodeEditor"/>
        </item>
+       <item>
+        <widget class="QGraphicsView" name="graphicsView"/>
+       </item>
       </layout>
      </widget>
     </item>
@@ -71,6 +74,26 @@
      </widget>
     </item>
     <item>
+     <widget class="QGroupBox" name="horizontalGroupBox">
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>View AST</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>View CFG</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
      <widget class="QPushButton" name="btnLoadQuery">
       <property name="text">
        <string>Load SIMPLE source code from file</string>
@@ -80,7 +103,7 @@
     <item>
      <widget class="QPushButton" name="btnRunQuery">
       <property name="text">
-       <string>Evaluate PQL qeury</string>
+       <string>Evaluate PQL query</string>
       </property>
      </widget>
     </item>
