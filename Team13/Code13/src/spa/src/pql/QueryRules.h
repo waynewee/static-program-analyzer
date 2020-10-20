@@ -17,7 +17,7 @@ public:
 	BOOLEAN IsStmtRef(STRING token, STRING synonym_type);
 	BOOLEAN IsEntRef(STRING token, STRING synonym_type);
 	BOOLEAN IsLineRef(STRING token, STRING synonym_type);
-	BOOLEAN IsElem(STRING token);
+	BOOLEAN IsElem(STRING token, STRING_STRING_MAP declared_var_names);
 	BOOLEAN IsAttrName(STRING token);
 	BOOLEAN IsDesignEntity(STRING token);
 
@@ -33,7 +33,7 @@ public:
 	BOOLEAN IsAttrCond(STRING token, STRING_STRING_MAP declared_var_names);
 	BOOLEAN IsAttrCompare(STRING token, STRING_STRING_MAP declared_var_names);
 	BOOLEAN IsRef(STRING token, STRING synonym_type);
-	BOOLEAN IsAttrRef(STRING token);
+	BOOLEAN IsAttrRef(STRING token, STRING synonym_type);
 
 	BOOLEAN IsRelCond(STRING token, STRING_STRING_MAP declared_var_names);
 	BOOLEAN IsRelRef(STRING token, STRING_STRING_MAP declared_var_names);
