@@ -1,4 +1,4 @@
-#include "PQLCustomTypes.h";
+#include "PQLCustomTypes.h"
 
 #pragma once
 class WhitespaceHandler
