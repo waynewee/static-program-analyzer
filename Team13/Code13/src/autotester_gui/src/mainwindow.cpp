@@ -11,6 +11,7 @@
 #include <vector>
 #include <list>
 
+
 using namespace std;
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -60,49 +61,22 @@ void MainWindow::btnRun_clicked() {
 void MainWindow::on_astButton_clicked() {
 
 	string file_contents = file_contents_.toUtf8().constData();
-
 	FrontendWrapper wrapper(file_contents);
-
 	TNode* root_node = wrapper.GetAST();
-
 	root_node->Print(root_node);
 
+	
 	int max_depth = CountMaxDepth(root_node, 0);
 
 	LIST_OF_NODE_LISTS list_of_node_lists;
 
-	for (int i = 0; i < max_depth + 1; i++) {
-		NODE_LIST* node_list = new NODE_LIST;
-		list_of_node_lists.push_back(node_list);
-	}
+	InitialiseListOfNodeLists(&list_of_node_lists, max_depth);
 
-	PopulateNodeList(root_node, list_of_node_lists, 0, max_depth);
+	PopulateNodeList(root_node, NULL, list_of_node_lists, 0);
 
 	PrintNodeList(list_of_node_lists);
 
-	QBrush blueBrush(Qt::blue);
-	QPen outlinePen(Qt::black);
-	outlinePen.setWidth(2);
-
-	// set dimensions
-	int diameter = 30;
-	int unit_x = 50;
-	int unit_y = 50;
-
-	int start_x = max_depth * unit_x;
-
-	int y = 0;
-	for (NODE_LIST* node_list : list_of_node_lists) {
-		int x = 0;
-		for (AST_NODE ast_node : *node_list) {
-			scene->addEllipse(start_x + x * unit_x, y * unit_y, diameter, diameter, outlinePen, blueBrush);
-			x += 1;
-		}
-		start_x -= unit_x;
-		y += 1;
-	}
-
-	//ellipse = scene->addEllipse(0, -100, 60, 60, outlinePen, blueBrush);
+	DrawAST(list_of_node_lists);
 
 }
 
@@ -135,24 +109,51 @@ int MainWindow::CountMaxDepth(TNode* root_node, int depth) {
 	}
 }
 
-void MainWindow::PopulateNodeList(TNode* root_node, LIST_OF_NODE_LISTS list_of_node_lists, int curr_depth, int max_depth) {
+void MainWindow::PopulateNodeList(TNode* root_node, TNode* parent_node, LIST_OF_NODE_LISTS list_of_node_lists, int curr_depth) {
 
-	cout << "HELLO" << endl;
-
-	if (curr_depth > max_depth) {
+	if (curr_depth > list_of_node_lists.size()) {
 		return;
 	}
 
+	// get the list of nodes
 	NODE_LIST* node_list = list_of_node_lists.at(curr_depth);
-	//create element
-	AST_NODE ast_node = make_pair(root_node->getData(), make_pair(4, 4));
 
-	node_list->push_back(ast_node);
+	// set depth
+	int y = curr_depth * 50;
+	
+	//if leaf node,
+	if (root_node->GetChildrenVector().size() == 0) {
+		//get position in list
+		int pos = node_list->size();
+		int x = pos * 100;
 
-	for (TNode* node : root_node->GetChildrenVector()) {
-		PopulateNodeList(node, list_of_node_lists, curr_depth + 1, max_depth);
+		//create element
+		AST_NODE ast_node = make_pair(make_pair(parent_node, root_node->getData()), make_pair(x, y));
+		node_list->push_back(ast_node);
+	} else {
+		
+		for (TNode* node : root_node->GetChildrenVector()) {
+			PopulateNodeList(node, root_node, list_of_node_lists, curr_depth + 1);
+		}
+
+		NODE_LIST* child_node_list = list_of_node_lists.at(curr_depth + 1);
+	
+		NODE_LIST* filtered_child_node_list = new NODE_LIST();
+
+		for( AST_NODE ast_node: *child_node_list){
+			if (ast_node.first.first == root_node) {
+				filtered_child_node_list->push_back(ast_node);
+			}
+		}
+
+		int start_x = filtered_child_node_list->at(0).second.first;
+		int end_x = filtered_child_node_list->at(filtered_child_node_list->size() - 1).second.first;
+
+		int parent_x = (end_x + start_x) / 2;
+
+		AST_NODE ast_node = make_pair(make_pair(parent_node, root_node->getData()), make_pair(parent_x, y));
+		node_list->push_back(ast_node);
 	}
-
 
 }
 
@@ -165,7 +166,7 @@ void MainWindow::PrintNodeList(LIST_OF_NODE_LISTS list_of_node_lists) {
 		
 		int idx = 0;
 		for (AST_NODE ast_node : *node_list) {
-			cout << ast_node.first;
+			cout << ast_node.first.second;
 			if (idx < node_list->size() - 1) {
 				cout << ", ";
 			}
@@ -173,4 +174,31 @@ void MainWindow::PrintNodeList(LIST_OF_NODE_LISTS list_of_node_lists) {
 		cout << "]" << endl;
 		level += 1;
 	}
+}
+
+void MainWindow::InitialiseListOfNodeLists(LIST_OF_NODE_LISTS* list_of_node_lists, int max_depth) {
+	for (int i = 0; i < max_depth + 1; i++) {
+		NODE_LIST* node_list = new NODE_LIST;
+		list_of_node_lists->push_back(node_list);
+	}
+}
+
+void MainWindow::DrawAST(LIST_OF_NODE_LISTS list_of_node_lists) {
+	QBrush blueBrush(Qt::blue);
+	QPen outlinePen(Qt::black);
+	outlinePen.setWidth(2);
+
+	// set dimensions
+	int diameter = 30;
+
+	for (NODE_LIST* node_list : list_of_node_lists) {
+		for (AST_NODE ast_node : *node_list) {
+			scene->addEllipse(ast_node.second.first, ast_node.second.second, diameter, diameter, outlinePen, blueBrush);
+			QGraphicsTextItem* text = scene->addText(QString::fromStdString(ast_node.first.second));
+
+			text->setPos(ast_node.second.first - 20, ast_node.second.second + 30);
+		}
+	}
+
+	//ellipse = scene->addEllipse(0, -100, 60, 60, outlinePen, blueBrush);
 }

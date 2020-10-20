@@ -5,9 +5,11 @@
 #include <qgraphicsscene.h>
 #include "GUIWrapper.h"
 #include <TNode.h>
+#include <QGraphicsItem>
 
 typedef pair<int, int> COORDINATES;
-typedef pair<string, COORDINATES> AST_NODE;
+typedef pair<TNode*, string> AST_NODE_DATA;
+typedef pair<AST_NODE_DATA, COORDINATES> AST_NODE;
 typedef vector<AST_NODE> NODE_LIST;
 typedef vector<NODE_LIST*> LIST_OF_NODE_LISTS;
 
@@ -40,8 +42,10 @@ private:
 	QGraphicsTextItem* text;
 	QString file_contents_;
 	int CountMaxDepth(TNode* root_node, int depth);
-	void PopulateNodeList(TNode* root_node, LIST_OF_NODE_LISTS list_of_node_lists, int max_depth, int curr_depth);
+	void PopulateNodeList(TNode* root_node, TNode* parent_node, LIST_OF_NODE_LISTS list_of_node_lists, int curr_depth);
 	void PrintNodeList(LIST_OF_NODE_LISTS list_of_node_lists);
+	void InitialiseListOfNodeLists(LIST_OF_NODE_LISTS* list_of_node_lists, int max_depth);
+	void DrawAST(LIST_OF_NODE_LISTS list_of_node_lists);
 };
 
 #endif // MAINWINDOW_H
