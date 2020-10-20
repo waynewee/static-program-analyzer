@@ -46,10 +46,16 @@ void TestWrapper::parse(string filename) {
 	DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
-	DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
+
+	/*auto rel_manager = pkb->GetRelationManager();
+	PROC_NAME_SET all_calls_star = rel_manager.GetCallsStars("testCallCallsFirst");
+	for (PROC_NAME p : all_calls_star) {
+		cout << "Call star: " << p << "\n";
+	}*/
 	/*try {
 		FrontendWrapper frontend_wrapper(filename);
 

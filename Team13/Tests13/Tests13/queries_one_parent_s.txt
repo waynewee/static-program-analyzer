@@ -1,0 +1,45 @@
+1 - Parent* - synonym, synonym - related output
+stmt s1, s2;
+Select s1 such that Parent* (s1, s2)
+13,2,4
+5000
+2 - Parent* - synonym, int - related output
+stmt s1;
+Select s1 such that Parent* (s1, 6)
+2,4
+5000
+3 - Parent* - int, synonym - related output
+stmt s1;
+Select s1 such that Parent* (2, s1)
+3,4,5,6,7,8,9
+5000
+4 - Parent* - synonym, wildcard - related output
+stmt s1;
+Select s1 such that Parent* (s1, _)
+13,2,4
+5000
+5 - Parent* - wildcard, synonym - related output
+stmt s1;
+Select s1 such that Parent* (_, s1)
+14,15,3,4,5,6,7,8,9
+5000
+6 - Parent* - int, int - non-related output
+stmt s1;
+Select s1 such that Parent* (2, 4)
+1,10,11,12,13,14,15,16,17,2,3,4,5,6,7,8,9
+5000
+7 - Parent* - wildcard, wildcard - non-related output
+stmt s1;
+Select s1 such that Parent* (_, _)
+1,10,11,12,13,14,15,16,17,2,3,4,5,6,7,8,9
+5000
+8 - Parent* - int, wildcard - non-related output
+stmt s1;
+Select s1 such that Parent* (2, _)
+1,10,11,12,13,14,15,16,17,2,3,4,5,6,7,8,9
+5000
+9 - Parent* - wildcard, int - non-related output
+stmt s1;
+Select s1 such that Parent* (_, 6)
+1,10,11,12,13,14,15,16,17,2,3,4,5,6,7,8,9
+5000

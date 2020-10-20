@@ -14,5 +14,3 @@ Invoke-Expression -Command "autotester.exe iter2_6_source_with_.txt iter2_6_quer
 Invoke-Expression -Command "autotester.exe iter2_7_source_Next.txt iter2_7_queries_Next_.txt xmls/iter2_7_out.xml"
 
 Invoke-Expression -Command "autotester.exe iter2_8_source_NextT.txt iter2_8_queries_NextT.txt xmls/iter2_8_out.xml"
-
-
