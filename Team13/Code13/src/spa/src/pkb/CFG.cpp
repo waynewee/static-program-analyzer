@@ -5,8 +5,17 @@
 #include "CFG.h"
 
 using namespace std;
+bool CFG::AddAllNextPairs() {
+    for (auto e: data_) {
+        auto node = e.first;
+        auto neighbors = e.second;
+        for (auto n: *neighbors) {
+            all_edges_.push_back({node, n});
+        }
+    }
+}
 bool CFG::AddEdge(STMT_IDX s1, STMT_IDX s2) {
-    auto result = AddEdgeUtil(data_, all_edges_, s1, s2);
+    auto result = AddEdgeUtil(data_, s1, s2);
     if (result) {
         AddKey(s1);
     }

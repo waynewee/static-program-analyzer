@@ -6,6 +6,7 @@
 #include "CFGManager.h"
 void CFGManager::SetCFG(CFG& cfg) {
     cfg_ = cfg;
+    cfg_.AddAllNextPairs();
     AddAllInverseNext();
 }
 
