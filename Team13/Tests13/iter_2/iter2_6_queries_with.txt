@@ -1,11 +1,11 @@
 1 - valid query (IDENT, attrRef NAME)
-procedure p;
-Select p with "main" = p.procName
+procedure p; variable v;
+Select p with v.procName = p.procName
 main
 5000
 2 - valid query (IDENT, attrRef NAME)
-procedure p;
-Select p.procName with "TWO" = p.procName
+procedure p; variable v;
+Select p.procName with v.stmt# = p.procName
 TWO
 5000
 3 - valid query (IDENT, attrRef NAME)

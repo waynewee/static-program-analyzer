@@ -1,0 +1,50 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>Tests13</name><parsing_time_taken>54.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="Uses - synonym, synonym - related output">1</id><querystr><![CDATA[variable v; procedure p; Select v such that Uses (p, v)]]></querystr>
+<stuans>y,i,c,x,b</stuans>
+<correct>b,c,i,x,y</correct>
+<time_taken>97.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="Uses - synonym, string - related output">2</id><querystr><![CDATA[procedure p; Select p such that Uses (p, "x")]]></querystr>
+<stuans>System,Iteration,Test</stuans>
+<correct>Iteration,System,Test</correct>
+<time_taken>107.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="Uses - string, synonym - related output">3</id><querystr><![CDATA[variable v; Select v such that Uses ("Iteration", v)]]></querystr>
+<stuans>x,b,c,y</stuans>
+<correct>b,c,x,y</correct>
+<time_taken>101.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Uses="1" SuchThat="1" CondNum="4" RelNum="1" comment="Uses - synonym, wildcard - related output">4</id><querystr><![CDATA[procedure p; Select p such that Uses (p, _)]]></querystr>
+<stuans>Test,System,Iteration</stuans>
+<correct>Iteration,System,Test</correct>
+<time_taken>115.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Uses="1" SuchThat="1" CondNum="3" RelNum="1" comment="Uses - string, string - non-related output">5</id><querystr><![CDATA[stmt s1; Select s1 such that Uses ("System", "x")]]></querystr>
+<stuans>3,1,17,11,2,4,7,5,6,15,8,9,16,14,12,10,13</stuans>
+<correct>1,10,11,12,13,14,15,16,17,2,3,4,5,6,7,8,9</correct>
+<time_taken>130.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" UnnamedVar="1" Uses="1" SuchThat="1" CondNum="4" RelNum="1" comment="Uses - string, wildcard - non-related output">6</id><querystr><![CDATA[variable v; Select v such that Uses ("Test", _)]]></querystr>
+<stuans>a,i,y,x,c,b,v</stuans>
+<correct>a,b,c,i,v,x,y</correct>
+<time_taken>136.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>

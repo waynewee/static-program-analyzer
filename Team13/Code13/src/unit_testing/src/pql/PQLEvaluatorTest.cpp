@@ -11,16 +11,15 @@ PQLParser parser;
 
 TEST_CASE("") {
 	cout << "------------------------------------------PQLEVALUATOR TESTING------------------------------------" << endl;
+	cout << "PLEASE TURN CHANGE UNIT TESTING TO TRUE IN PQLCUSTOMTYPES.H BEFORE PROCEEDING" << endl;
 }
 
 
 TEST_CASE("ParseClauses | Parsing WITH constraints") {
 	QueryInfo query_info = parser.Parse("stmt s; assign a; prog_line n; Select BOOLEAN with \"x\" = \"x\" and 10 = 10 and s.stmt# = 10 and a.stmt# = n");
-	query_info.PrintWithMap();
 
 	STRINGPAIR_SET constraints = STRINGPAIR_SET();
-	evaluator.ParseClauses(query_info, &constraints);
-
+	
 	STRINGPAIR_SET expected_result = STRINGPAIR_SET();
 	STRING_PAIR* p1 = new STRING_PAIR();
 	p1->first = "s.stmt#";
@@ -33,6 +32,7 @@ TEST_CASE("ParseClauses | Parsing WITH constraints") {
 	expected_result.insert(p1);
 	expected_result.insert(p2);
 
+	evaluator.ParseClauses(query_info, &constraints);
 	for (STRING_PAIR* expected_pair: expected_result) {
 		BOOLEAN found = false;
 		for (STRING_PAIR* constraint_pair : constraints) {
@@ -48,10 +48,8 @@ TEST_CASE("ParseClauses | Parsing WITH constraints") {
 
 TEST_CASE("ParseClauses | Parsing ST constraints") {
 	QueryInfo query_info = parser.Parse("stmt s; assign a; prog_line n; procedure p; variable v1, v2; Select BOOLEAN such that Parent (1, 2) and Follows (1, s) and Next (n, 10) and Uses (s, v1) and Uses (p, v1) and Modifies (n, v2) and Modifies (\"s\", \"x\")");
-	query_info.PrintStMap();
 
 	STRINGSET_STRINGLISTSET_MAP synonyms_map = STRINGSET_STRINGLISTSET_MAP();
-	evaluator.ParseClauses(query_info, &synonyms_map);
 
 	STRINGSET_STRINGLISTSET_MAP expected_result = STRINGSET_STRINGLISTSET_MAP();
 	STRING_SET* k1 = new STRING_SET();
@@ -82,6 +80,7 @@ TEST_CASE("ParseClauses | Parsing ST constraints") {
 	expected_result.insert({ k1, v1 });
 	expected_result.insert({ k2, v2 });
 
+	evaluator.ParseClauses(query_info, &synonyms_map);
 	for (auto f = expected_result.cbegin(); f != expected_result.cend(); f++) {
 		BOOLEAN found_key = false;
 		for (auto s = synonyms_map.cbegin(); s != synonyms_map.cend(); s++) {
@@ -112,7 +111,6 @@ TEST_CASE("ParseClauses | Parsing pattern constraints") {
 	query_info.PrintPatternMap();
 
 	STRINGSET_STRINGLISTSET_MAP synonyms_map = STRINGSET_STRINGLISTSET_MAP();
-	evaluator.ParseClauses(query_info, &synonyms_map);
 
 	STRINGSET_STRINGLISTSET_MAP expected_result = STRINGSET_STRINGLISTSET_MAP();
 	STRING_SET* k1 = new STRING_SET();
@@ -143,6 +141,7 @@ TEST_CASE("ParseClauses | Parsing pattern constraints") {
 	expected_result.insert({ k1, v1 });
 	expected_result.insert({ k2, v2 });
 
+	evaluator.ParseClauses(query_info, &synonyms_map);
 	for (auto f = expected_result.cbegin(); f != expected_result.cend(); f++) {
 		BOOLEAN found_key = false;
 		for (auto s = synonyms_map.cbegin(); s != synonyms_map.cend(); s++) {
