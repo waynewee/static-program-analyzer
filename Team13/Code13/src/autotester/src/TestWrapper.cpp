@@ -46,11 +46,14 @@ void TestWrapper::parse(string filename) {
 	DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
+
 	DesignExtractor::ExtractAssignPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractContainerPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
-	DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
+
+
 	/*try {
 		FrontendWrapper frontend_wrapper(filename);
 

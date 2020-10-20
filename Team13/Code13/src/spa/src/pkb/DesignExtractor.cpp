@@ -200,11 +200,24 @@ bool DesignExtractor::ExtractUses(RelationManager manager, TNode program) {
     for (pair < PROC_NAME, list<pair <PROC_NAME, STMT_IDX> > > call : proc_calls) {
         PROC_NAME caller = call.first;
         list<pair <PROC_NAME, STMT_IDX> > callees = call.second;
-        for (pair <PROC_NAME, STMT_IDX> callee : callees) {
-            VAR_NAME_SET uses = manager.GetProcUses(callee.first);
-            for (VAR_NAME use: uses) {
-                manager.AddStmtUses(callee.second, use);
-                manager.AddProcUses(caller, use);
+
+        for (pair <PROC_NAME, STMT_IDX> callee : callees) {               // Each proc called
+            PROC_NAME proc_name = callee.first;
+            STMT_IDX called_line = callee.second;
+            PROC_NAME_SET all_indirects = manager.GetCallsStars(callee.first);
+            all_indirects.insert(callee.first);
+
+            for (PROC_NAME indirect : all_indirects) {
+                // printf("INDIRECT: ", indirect);
+                VAR_NAME_SET uses = manager.GetProcUses(indirect);
+                STMT_IDX_SET parents = manager.GetInverseParentStars(callee.second);
+                for (VAR_NAME use: uses) {
+                    manager.AddStmtUses(callee.second, use);
+                    manager.AddProcUses(caller, use);
+                    for (STMT_IDX s : parents) {
+                        manager.AddStmtUses(s, use);
+                    }
+                }
             }
         }
     }
@@ -277,11 +290,24 @@ bool DesignExtractor::ExtractModifies(RelationManager manager, TNode program) {
     for (pair < PROC_NAME, list<pair <PROC_NAME, STMT_IDX> > > call : proc_calls) {
         PROC_NAME caller = call.first;
         list<pair <PROC_NAME, STMT_IDX> > callees = call.second;
-        for (pair <PROC_NAME, STMT_IDX> callee : callees) {
-            VAR_NAME_SET uses = manager.GetProcModifies(callee.first);
-            for (VAR_NAME use : uses) {
-                manager.AddStmtModifies(callee.second, use);
-                manager.AddProcModifies(caller, use);
+
+        for (pair <PROC_NAME, STMT_IDX> callee : callees) {               // Each proc called
+            PROC_NAME proc_name = callee.first;
+            STMT_IDX called_line = callee.second;
+            PROC_NAME_SET all_indirects = manager.GetCallsStars(callee.first);
+            all_indirects.insert(callee.first);
+
+            for (PROC_NAME indirect : all_indirects) {
+                // printf("INDIRECT: ", indirect);
+                VAR_NAME_SET modifies = manager.GetProcModifies(indirect);
+                STMT_IDX_SET parents = manager.GetInverseParentStars(callee.second);
+                for (VAR_NAME mod : modifies) {
+                    manager.AddStmtModifies(callee.second, mod);
+                    manager.AddProcModifies(caller, mod);
+                    for (STMT_IDX s : parents) {
+                        manager.AddStmtModifies(s, mod);
+                    }
+                }
             }
         }
     }

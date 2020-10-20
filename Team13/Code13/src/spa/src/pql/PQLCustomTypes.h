@@ -50,6 +50,11 @@ using namespace std;
 #define TYPE_DESIGN_ENTITY_PROG_LINE "prog_line"
 #define TYPE_DESIGN_ENTITY_PROCEDURE "procedure"
 
+#define TYPE_ATTRNAME_PROCNAME "procName"
+#define TYPE_ATTRNAME_VARNAME "varName"
+#define TYPE_ATTRNAME_VALUE "value"
+#define TYPE_ATTRNAME_STMT "stmt#"
+
 #define TYPE_SUCH_THAT_CLAUSE "such that"
 #define TYPE_WITH_CLAUSE "with"
 #define TYPE_PATTERN_CLAUSE "pattern"

@@ -6,14 +6,28 @@
 #include <iostream>
 using namespace std;
 
-const STRING_SET valid_design_entities = { "stmt" , "read" , "print" , "call" , "while" , "if" , "assign" , "variable" , "constant" , "prog_line" , "procedure" };
-const STRING_SET valid_rel_ref_names = { "Follows" , "FollowsT" , "Follows*" , "Parent" , "ParentT" ,
-											"Parent*" , "Uses" , "UsesS" , "UsesP" , "Modifies" ,  "ModifiesS" , "ModifiesP" ,
-												"Calls" , "CallsT" , "Calls*" , "Next" , "NextT" , "Next*" };
-const STRING_SET valid_stmt_ref_synonyms = { "stmt" , "read" , "print" , "call" , "while" , "if" , "assign" };
-const STRING_SET valid_ent_ref_synonyms = { "variable", "procedure" };
-const STRING_SET valid_line_ref_synonyms = { "prog_line" };
-const STRING_SET valid_attr_names = { "procName" , "varName" , "value" , "stmt#" };
+const STRING_SET valid_design_entities = { TYPE_DESIGN_ENTITY_STMT , TYPE_DESIGN_ENTITY_READ , TYPE_DESIGN_ENTITY_PRINT , 
+											TYPE_DESIGN_ENTITY_CALL , TYPE_DESIGN_ENTITY_WHILE , TYPE_DESIGN_ENTITY_IF , 
+											TYPE_DESIGN_ENTITY_ASSIGN , TYPE_DESIGN_ENTITY_VARIABLE , TYPE_DESIGN_ENTITY_CONSTANT , 
+											TYPE_DESIGN_ENTITY_PROG_LINE , TYPE_DESIGN_ENTITY_PROCEDURE };
+const STRING_SET valid_rel_ref_names = { TYPE_COND_FOLLOWS , TYPE_COND_FOLLOWS_T , TYPE_COND_FOLLOWS_STAR , TYPE_COND_PARENT , 
+										TYPE_COND_PARENT_T , TYPE_COND_PARENT_STAR , TYPE_COND_USES , TYPE_COND_USES_S , 
+										TYPE_COND_USES_P , TYPE_COND_MODIFIES ,  TYPE_COND_MODIFIES_S , TYPE_COND_MODIFIES_P ,
+										TYPE_COND_CALLS , TYPE_COND_CALLS_T , TYPE_COND_CALLS_STAR , TYPE_COND_NEXT , 
+										TYPE_COND_NEXT_T , TYPE_COND_NEXT_STAR , TYPE_COND_AFFECTS , TYPE_COND_AFFECTS_T ,
+										TYPE_COND_AFFECTS_STAR };
+const STRING_SET valid_stmt_ref_synonyms = { TYPE_DESIGN_ENTITY_STMT , TYPE_DESIGN_ENTITY_READ , TYPE_DESIGN_ENTITY_PRINT , 
+											TYPE_DESIGN_ENTITY_CALL , TYPE_DESIGN_ENTITY_WHILE , TYPE_DESIGN_ENTITY_IF , 
+											TYPE_DESIGN_ENTITY_ASSIGN };
+const STRING_SET valid_ent_ref_synonyms = { TYPE_DESIGN_ENTITY_VARIABLE, TYPE_DESIGN_ENTITY_PROCEDURE };
+const STRING_SET valid_line_ref_synonyms = { TYPE_DESIGN_ENTITY_PROG_LINE };
+const STRING_SET valid_attr_names = { TYPE_ATTRNAME_PROCNAME , TYPE_ATTRNAME_VARNAME , TYPE_ATTRNAME_VALUE , TYPE_ATTRNAME_STMT };
+const STRING_SET valid_stmt_attr_types = { TYPE_DESIGN_ENTITY_CALL , TYPE_DESIGN_ENTITY_READ , TYPE_DESIGN_ENTITY_PRINT, 
+										TYPE_DESIGN_ENTITY_STMT, TYPE_DESIGN_ENTITY_WHILE, TYPE_DESIGN_ENTITY_IF, 
+										TYPE_DESIGN_ENTITY_ASSIGN };
+const STRING_SET valid_procname_attr_types = { TYPE_DESIGN_ENTITY_PROCEDURE , TYPE_DESIGN_ENTITY_CALL };
+const STRING_SET valid_varname_attr_types = { TYPE_DESIGN_ENTITY_VARIABLE , TYPE_DESIGN_ENTITY_READ , TYPE_DESIGN_ENTITY_PRINT };
+const STRING_SET valid_value_attr_types = { TYPE_DESIGN_ENTITY_CONSTANT };
 
 
 BOOLEAN QueryRules::IsIdent(STRING token) {
@@ -104,13 +118,18 @@ BOOLEAN QueryRules::IsLineRef(STRING token, STRING synonym_type) {
 	return result;
 }
 
-BOOLEAN QueryRules::IsElem(STRING token) {
+BOOLEAN QueryRules::IsElem(STRING token, STRING_STRING_MAP declared_var_names) {
 	BOOLEAN result = false;
 	if (IsSynonym(token)) {
 		result = true;
 	}
-
-	if (IsAttrRef(token)) {
+	STRING synonym_subtoken;
+	STRING synonym_subtoken_type;
+	if (token.find(".") != STRING::npos) {
+		synonym_subtoken = token.substr(0, token.find_first_of("."));
+		synonym_subtoken_type = declared_var_names.at(synonym_subtoken);
+	}
+	if (IsAttrRef(token, synonym_subtoken_type)) {
 		result = true;
 	}
 
@@ -235,6 +254,11 @@ BOOLEAN QueryRules::IsResultClause(STRING token, STRING_STRING_MAP declared_var_
 	if (IsTuple(token, declared_var_names)) {
 		result = true;
 	}
+	/*
+	else {
+		cout << "tuple is not valid in result clase" << endl;
+	}
+	*/
 	if (token.compare("BOOLEAN") == 0) {
 		result = true;
 	}
@@ -245,43 +269,67 @@ BOOLEAN QueryRules::IsTuple(STRING token, STRING_STRING_MAP declared_var_names) 
 	BOOLEAN result = false;
 	STRING temp_token = token;
 	// cout << "temp_token:" << temp_token << endl;
-	if (IsElem(temp_token)) {
-		// cout << "yes is elem" << endl;
-		// element must be declared by user
-		if (IsAttrRef(temp_token)) {
-			// cout << "yes is attrRef" << endl;
-			// there is a dot
-			STRING synonym_subtoken = temp_token.substr(0, temp_token.find_first_of("."));
-			// cout << "synonym_st" << synonym_subtoken << endl;
-			if (declared_var_names.count(synonym_subtoken) == 1) {
+	STRING synonym_token;
+	if (temp_token.find(".") != STRING::npos && temp_token.front() != '<' && temp_token.back() != '>') {
+		synonym_token = temp_token.substr(0, temp_token.find_first_of("."));
+		// cout << "found dot in elem, this is not tuple" << endl; 
+	}
+	// cout << "reachhere1" << endl;
+	if (temp_token.front() != '<' && temp_token.back() != '>') {
+		if (IsElem(temp_token, declared_var_names)) {
+			// cout << "IT IS AN ELEM" << endl;
+			// cout << "yes is elem" << endl;
+			// element must be declared by user
+			if (temp_token.find(".") != STRING::npos) {
+				STRING synonym_type = declared_var_names.at(synonym_token);
+				// cout << "passed synonym Type: " << synonym_type << endl;
+				if (IsAttrRef(temp_token, synonym_type)) {
+					// cout << "yes is attrRef" << endl;
+					// there is a dot
+					// cout << "synonym_st" << synonym_subtoken << endl;
+					if (declared_var_names.count(synonym_token) == 1) {
+						result = true;
+						return result;
+					}
+				}
+			}
+			if (declared_var_names.count(token) == 1) {
 				result = true;
 				return result;
 			}
 		}
-		if (declared_var_names.count(token) == 1) {
-			result = true;
-			return result;
-		}
 	}
+	// cout << "reachhere2" << endl;
 	STRING sub_token;
 	STRING comma = ",";
 	size_t pos = 0;
 	if (temp_token.front() == '<' && temp_token.back() == '>') {
+		// cout << "entered here is tuple" << endl;
 		temp_token = temp_token.substr(1, temp_token.length() - 2);
 		while ((pos = temp_token.find(comma)) != STRING::npos) {
 			sub_token = temp_token.substr(0, pos);
 			// cout << "subtoken:" << sub_token << "|" << endl;
 			WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&sub_token);
-
-			if (IsAttrRef(sub_token)) {
-				STRING synonym_subtoken = sub_token.substr(0, sub_token.find_first_of("."));
-				// cout << "synonym_st" << synonym_subtoken << endl;
-				if (declared_var_names.count(synonym_subtoken) != 1) {
-					result = false;
-					return result; // synonym not declared.
-				}
-				else {
-					result = true;
+			STRING synonym_subtoken;
+			STRING synonym_subtoken_type;
+			if (sub_token.find(".") != STRING::npos) {
+				synonym_subtoken = sub_token.substr(0, sub_token.find_first_of("."));
+				synonym_subtoken_type = declared_var_names.at(synonym_subtoken);
+			}
+			// cout << "subtoken:" << sub_token << endl;
+			// cout << "synonymtype:" << synonym_subtoken_type << endl;
+			// cout << "entered here but didnt enter isAttrRef" << endl;
+			if (sub_token.find(".") != STRING::npos) {
+				if (IsAttrRef(sub_token, synonym_subtoken_type)) {
+					// cout << "yes it's attr ref in tuple" << endl;
+					// cout << "synonym_st" << synonym_subtoken << endl;
+					if (declared_var_names.count(synonym_subtoken) != 1) {
+						result = false;
+						return result; // synonym not declared.
+					}
+					else {
+						result = true;
+					}
 				}
 			}
 			else if (IsSynonym(sub_token)) {
@@ -301,18 +349,26 @@ BOOLEAN QueryRules::IsTuple(STRING token, STRING_STRING_MAP declared_var_names) 
 			temp_token.erase(0, temp_token.find_first_of(",") + 1);
 		}
 		// last token : 
-		cout << "we reach last token. " << endl;
+		// cout << "we reach last token. " << endl;
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
-		cout << "last token:" << temp_token << endl;
-		if (IsAttrRef(temp_token)) {
-			STRING synonym_subtoken = temp_token.substr(0, temp_token.find_first_of("."));
-			// cout << "synonym_st" << synonym_subtoken << endl;
-			if (declared_var_names.count(synonym_subtoken) != 1) {
-				result = false;
-				return result; // synonym not declared.
-			}
-			else {
-				result = true;
+		// cout << "last token:" << temp_token << endl;
+		STRING synonym_lasttoken;
+		STRING synonym_lasttoken_type;
+		if (temp_token.find(".") != STRING::npos) {
+			synonym_lasttoken = temp_token.substr(0, temp_token.find_first_of("."));
+			synonym_lasttoken_type = declared_var_names.at(synonym_lasttoken);
+		}
+		if (sub_token.find(".") != STRING::npos) {
+			if (IsAttrRef(temp_token, synonym_lasttoken_type)) {
+				STRING synonym_subtoken = temp_token.substr(0, temp_token.find_first_of("."));
+				// cout << "synonym_st" << synonym_subtoken << endl;
+				if (declared_var_names.count(synonym_subtoken) != 1) {
+					result = false;
+					return result; // synonym not declared.
+				}
+				else {
+					result = true;
+				}
 			}
 		}
 		else if (IsSynonym(temp_token)) {
@@ -409,24 +465,19 @@ BOOLEAN QueryRules::IsPatternClause(STRING token, STRING_STRING_MAP declared_var
 
 BOOLEAN QueryRules::IsAttrCond(STRING token, STRING_STRING_MAP declared_var_names) {
 	BOOLEAN result = true;
-
+	cout << "CHECKING IF ATTRCOND.." << endl;
 	STRING temp_token = token;
 	STRING and_token = "and";
 	size_t pos = 0;
-	while ((pos = temp_token.find(and_token)) != STRING::npos) {
-		// while we can find 'and'
-		STRING supposed_attr_cond = temp_token.substr(0, temp_token.find_first_of("and"));
-		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&supposed_attr_cond);
-		if (!IsAttrCompare(supposed_attr_cond, declared_var_names)) {
-			result = false;
-			return result;
-		}
-		temp_token.erase(0, temp_token.find_first_of("and") + 3);
+	if (!IsAttrCompare(temp_token, declared_var_names)) {
+		result = false;
+		return result;
 	}
 	return result;
 }
 
 BOOLEAN QueryRules::IsAttrCompare(STRING token, STRING_STRING_MAP declared_var_names) {
+	// cout << "TRYING TO ATTR COMPARE.." << endl;
 	BOOLEAN result = true;
 	STRING first_ref = token.substr(0, token.find_first_of("="));
 	STRING second_ref = token.substr(token.find_first_of("=") + 1, token.length());
@@ -434,22 +485,33 @@ BOOLEAN QueryRules::IsAttrCompare(STRING token, STRING_STRING_MAP declared_var_n
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_ref);
 	// cout << "first_ref:" << first_ref << endl;
 	// cout << "second_ref:" << second_ref << endl;
+	STRING first_ref_synonym;
+	STRING second_ref_synonym;
 	STRING first_ref_synonym_type = "none";
 	STRING second_ref_synonym_type = "none";
-	if (declared_var_names.count(first_ref_synonym_type) != 0) {
-		first_ref_synonym_type = declared_var_names.at(first_ref_synonym_type);
+	// cout << "ATTRCOMPARE CALLED:" << endl;
+	// cout << "first_ref:" << first_ref << endl;
+	if (first_ref.find(".") != STRING::npos) {
+		first_ref_synonym = first_ref.substr(0, first_ref.find_first_of("."));
+		if (declared_var_names.count(first_ref_synonym) != 0) {
+			first_ref_synonym_type = declared_var_names.at(first_ref_synonym);
+		}
+		if (!IsRef(first_ref, first_ref_synonym_type)) {
+			result = false;
+			return result;
+		}
 	}
-	if (declared_var_names.count(second_ref_synonym_type) != 0) {
-		second_ref_synonym_type = declared_var_names.at(second_ref_synonym_type);
+	if (second_ref.find(".") != STRING::npos) {
+		second_ref_synonym = second_ref.substr(0, second_ref.find_first_of("."));
+		if (declared_var_names.count(second_ref_synonym) != 0) {
+			second_ref_synonym_type = declared_var_names.at(second_ref_synonym);
+		}
+		if (!IsRef(second_ref, second_ref_synonym_type)) {
+			result = false;
+			return result;
+		}
 	}
-	if (!IsRef(first_ref, first_ref_synonym_type)) {
-		result = false;
-		return result;
-	}
-	if (!IsRef(second_ref, second_ref_synonym_type)) {
-		result = false;
-		return result;
-	}
+
 	return result;
 }
 
@@ -465,27 +527,63 @@ BOOLEAN QueryRules::IsRef(STRING token, STRING synonym_type) {
 	if (IsInteger(token)) {
 		result = true;
 	}
-	if (IsAttrRef(token)) {
-		result = true;
+	if (token.find(".") != STRING::npos) {
+		cout << "token is :" << token << endl;
+		cout << "syntype: " << synonym_type << endl;
+		if (IsAttrRef(token, synonym_type)) {
+			cout << "checking if:" << token << " is an attr ref" << endl;
+			cout << "its type:" << synonym_type << endl;
+			result = true;
+			cout << "result:" << result << endl;
+		}
 	}
-
 	if (IsSynonym(token) && synonym_type.compare("prog_line") == 0) {
 		result = true;
 	}
 	return result;
 }
 
-BOOLEAN QueryRules::IsAttrRef(STRING token) {
+BOOLEAN QueryRules::IsAttrRef(STRING token, STRING synonym_type) {
 	BOOLEAN result = true;
 	size_t pos_of_fullstop = token.find(".");
 	STRING synonym_token = token.substr(0, pos_of_fullstop);
 	STRING attr_name_token = token.substr(pos_of_fullstop + 1, token.length() - 1);
 	if (!IsSynonym(synonym_token)) {
 		result = false;
+		return result;
 	}
 	if (!IsAttrName(attr_name_token)) {
 		result = false;
+		return result;
 	}
+	if (attr_name_token.compare(TYPE_ATTRNAME_PROCNAME) == 0) {
+		// 2nd is procName
+		if (valid_procname_attr_types.count(synonym_type) == 0) {
+			// first synonym must be type procedure or call
+			result = false;
+			return result;
+		}
+	}
+	if (attr_name_token.compare(TYPE_ATTRNAME_VARNAME) == 0) {
+		// 2nd is varname
+		if (valid_varname_attr_types.count(synonym_type) == 0) {
+			result = false;
+			return result;
+		}
+	}
+	if (attr_name_token.compare(TYPE_ATTRNAME_STMT) == 0) {
+		if (valid_stmt_attr_types.count(synonym_type) == 0) {
+			result = false;
+			return result;
+		}
+	}
+	if (attr_name_token.compare(TYPE_ATTRNAME_VALUE) == 0) {
+		if (valid_value_attr_types.count(synonym_type) == 0) {
+			result = false;
+			return result;
+		}
+	}
+
 	return result;
 }
 

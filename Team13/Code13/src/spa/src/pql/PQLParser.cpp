@@ -83,7 +83,7 @@ QueryInfo PQLParser::Parse(STRING s) {
         This loop erases the clause after parsing them, and loops until the string is empty.
         If it's a suchthat or with clause,
         */
-        regex r("such that|pattern|with|and");
+        regex r("such[\\s]that[\\s*]|pattern[\\s*]|with[\\s*]|and[\\s*]");
         STRING current_clause_type;
         BOOLEAN current_is_and_clause = false;
         BOOLEAN first_passed = false;
@@ -221,6 +221,7 @@ QueryInfo PQLParser::Parse(STRING s) {
             }
 
             if (clause_type.compare(TYPE_WITH_CLAUSE) == 0) {
+                // cout << "going to validate with clause:" << full_clause << endl;
                 if (query_syntax_validator->ValidateWithClause(full_clause, entity_map)) {
                     full_clause.erase(0, full_clause.find_first_of(" "));
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause); // erase with clause
