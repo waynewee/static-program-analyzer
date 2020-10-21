@@ -295,12 +295,14 @@ QueryInfo PQLParser::Parse(STRING s) {
         query_info.SetPatternMap(pattern_map);
         query_info.SetWithMap(with_map);
     }
+    /*
     if (is_query_semantically_invalid_but_syntactically_valid) {
         cout << "QUERY IS INVALID DUE TO SEMANTICS, NOT SYNTAX" << endl;
     }
     else {
         cout << "NOTHING TO DO WITH JUST SEMANTICS" << endl;
     }
+    */
     query_info.PrintEntityMap();
     query_info.PrintOutputList();
     query_info.PrintStMap();
