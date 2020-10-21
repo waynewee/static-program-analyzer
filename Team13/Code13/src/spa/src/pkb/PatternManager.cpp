@@ -1,17 +1,50 @@
-#include "PatternManager.h"
+#include <queue>
 
 #include <ExprParser.h>
+#include "PatternManager.h"
 #include <Tokenizer.h>
+
+
+ASSIGN_EXPRESSION_TABLE* AssignPatternTable::GetData() {
+    return data_;
+}
+void AssignPatternTable::Add(STMT_IDX s, VAR_NAME v, TNode root) {
+    ASSIGN_PATTERN tuple = {s, v, root};
+    data_->push_back(tuple);
+//    //debug
+//    std::cout << "pringing all tuples in AssignPatternTable: " << std::endl;
+//    for (auto tuple: *data_) {
+//        std::cout << "tuple: s = " << tuple.s << ", v = " << tuple.v << std::endl;
+//    }
+}
+CONTAINER_EXPRESSION_TABLE *ContainerPatternTable::GetData() {
+    return data_;
+}
+void ContainerPatternTable::Add(STMT_IDX s, TNode root) {
+    CONTAINER_PATTERN tuple = {s, root};
+    data_->push_back(tuple);
+}
 
 void PatternManager::AddAssignPattern(STMT_IDX s, VAR_NAME v, TNode root) {
     assign_pattern_table_.Add(s, v, root);
 }
-
+void PatternManager::AddIfPattern(STMT_IDX s, TNode root) {
+    if_pattern_table_.Add(s, root);
+}
+void PatternManager::AddWhilePattern(STMT_IDX s, TNode root) {
+    while_pattern_table_.Add(s, root);
+}
 STMT_IDX_SET PatternManager::GetAssignWithFullPattern(VAR_NAME v, EXPRESSION e) {
     return GetStmtOfMatchingAssignments(v, e, true, assign_pattern_table_.GetData());
 }
 STMT_IDX_SET PatternManager::GetAssignWithSubPattern(VAR_NAME v, EXPRESSION e) {
     return GetStmtOfMatchingAssignments(v, e, false, assign_pattern_table_.GetData());
+}
+STMT_IDX_SET PatternManager::GetIfWithPattern(VAR_NAME v) {
+    return GetStmtOfMatchingContainers(v, if_pattern_table_.GetData());
+}
+STMT_IDX_SET PatternManager::GetWhileWithPattern(VAR_NAME v) {
+    return GetStmtOfMatchingContainers(v, while_pattern_table_.GetData());
 }
 STMT_VAR_PAIR_LIST PatternManager::GetAssignStmtVarPairWithFullPattern(VAR_NAME v, EXPRESSION e) {
     return GetStmtVarPairOfMatchingAssignments(v, e, true, assign_pattern_table_.GetData());
@@ -21,7 +54,13 @@ STMT_VAR_PAIR_LIST PatternManager::GetAssignStmtVarPairWithSubPattern(VAR_NAME v
     return GetStmtVarPairOfMatchingAssignments(v, e, false, assign_pattern_table_.GetData());
 }
 
-STMT_IDX_SET PatternManager::GetStmtOfMatchingAssignments(VAR_NAME v, EXPRESSION e, bool is_full, EXPRESSION_TABLE *data) {
+STMT_VAR_PAIR_LIST PatternManager::GetIfStmtVarPairWithPattern(VAR_NAME v) {
+    return GetStmtVarPairOfMatchingContainers(v, if_pattern_table_.GetData());
+}
+STMT_VAR_PAIR_LIST PatternManager::GetWhileStmtVarPairWithPattern(VAR_NAME v) {
+    return GetStmtVarPairOfMatchingContainers(v, while_pattern_table_.GetData());
+}
+STMT_IDX_SET PatternManager::GetStmtOfMatchingAssignments(VAR_NAME v, EXPRESSION e, bool is_full, ASSIGN_EXPRESSION_TABLE *data) {
     if (v.empty() && e.empty()) {
         STMT_IDX_SET result = STMT_IDX_SET();
         for (auto tuple: *data) {
@@ -36,7 +75,7 @@ STMT_IDX_SET PatternManager::GetStmtOfMatchingAssignments(VAR_NAME v, EXPRESSION
             }
         }
         return result;
-    }else if (v.empty() && !e.empty()) {
+    } else if (v.empty() && !e.empty()) {
         TNode* qroot = ParseExpression(e);
         STMT_IDX_SET result = STMT_IDX_SET();
         for (auto tuple: *data) {
@@ -59,7 +98,7 @@ STMT_IDX_SET PatternManager::GetStmtOfMatchingAssignments(VAR_NAME v, EXPRESSION
 
 
 STMT_VAR_PAIR_LIST PatternManager::GetStmtVarPairOfMatchingAssignments(
-    VAR_NAME v, EXPRESSION e, bool is_full, EXPRESSION_TABLE *data) {
+    VAR_NAME v, EXPRESSION e, bool is_full, ASSIGN_EXPRESSION_TABLE *data) {
     if (v.empty() && e.empty()) {
         STMT_VAR_PAIR_LIST result = STMT_VAR_PAIR_LIST();
         for (auto tuple: *data) {
@@ -98,19 +137,40 @@ STMT_VAR_PAIR_LIST PatternManager::GetStmtVarPairOfMatchingAssignments(
         return result;
     }
 }
-
-EXPRESSION_TABLE* AssignPatternTable::GetData() {
-    return data_;
+STMT_IDX_SET PatternManager::GetStmtOfMatchingContainers(VAR_NAME v, CONTAINER_EXPRESSION_TABLE *data) {
+    if (v.empty()) {
+        auto result = STMT_IDX_SET();
+        for (auto tuple: *data) {
+            result.insert(tuple.s);
+        }
+        return result;
+    }
+    auto result = STMT_IDX_SET();
+    for (auto tuple: *data) {
+        if (HasVariable(v, tuple.eroot)) {
+            result.insert(tuple.s);
+        }
+    }
+    return result;
 }
-
-void AssignPatternTable::Add(STMT_IDX s, VAR_NAME v, TNode root) {
-    ASSIGN_PATTERN tuple = {s, v, root};
-    data_->push_back(tuple);
-//    //debug
-//    std::cout << "pringing all tuples in AssignPatternTable: " << std::endl;
-//    for (auto tuple: *data_) {
-//        std::cout << "tuple: s = " << tuple.s << ", v = " << tuple.v << std::endl;
-//    }
+STMT_VAR_PAIR_LIST PatternManager::GetStmtVarPairOfMatchingContainers(VAR_NAME v, CONTAINER_EXPRESSION_TABLE *data) {
+    if (v.empty()) {
+        auto result = STMT_VAR_PAIR_LIST();
+        for (auto tuple: *data) {
+            auto vars = GetAllUsedVars(tuple.eroot);
+            for (auto v: vars) {
+                result.push_back({tuple.s, v});
+            }
+        }
+        return result;
+    }
+    auto result = STMT_VAR_PAIR_LIST();
+    for (auto tuple: *data) {
+        if (HasVariable(v, tuple.eroot)) {
+            result.push_back({tuple.s, v});
+        }
+    }
+    return result;
 }
 bool PatternManager::HasMatchingPattern(TNode root, TNode qroot, bool is_full) {
     if (is_full) {
@@ -178,11 +238,37 @@ bool PatternManager::AreTwoNodesEqual(TNode root, TNode query_root) {
     }
     return false;
 }
-//string PatternManager::RemoveWhiteSpace(EXPRESSION e) {
-//    e.erase(std::remove(e.begin(), e.end(), ' '), e.end());
-//    return e;
-//}
-
+bool PatternManager::HasVariable(VAR_NAME v, TNode root) {
+    if (root.GetNodeType() == TNode::NODE_TYPE::varName) {
+        if (*(root.GetName()) == v) {
+            return true;
+        }
+    }
+    auto children = root.GetChildrenVector();
+    for (auto child: children) {
+        if (HasVariable(v, *child)) {
+            return true;
+        }
+    }
+    return false;
+}
+VAR_NAME_SET PatternManager::GetAllUsedVars(TNode root) {
+    VAR_NAME_SET result;
+    queue<TNode> node_queue;
+    node_queue.push(root);
+    while (!node_queue.empty()) {
+        auto node = node_queue.front();
+        node_queue.pop();
+        auto children = node.GetChildrenVector();
+        for (auto child: children) {
+            node_queue.push(*child);
+        }
+        if (node.GetNodeType() == TNode::NODE_TYPE::varName) {
+            result.insert(*(node.GetName()));
+        }
+    }
+    return result;
+}
 TNode* PatternManager::ParseExpression(EXPRESSION s) {
     Tokenizer tokenizer = Tokenizer(s);
     ExprParser expr_parser = ExprParser(tokenizer.token_list_);
@@ -191,11 +277,6 @@ TNode* PatternManager::ParseExpression(EXPRESSION s) {
     return node;
 }
 
-
-bool PatternManager::IsNumber(EXPRESSION s) {
-    return !s.empty() && std::find_if(s.begin(),
-                                      s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
-}
 void PatternManager::PrintTNode(TNode root) {
     switch (root.GetNodeType()) {
         case TNode::NODE_TYPE::expr:
@@ -221,6 +302,7 @@ void PatternManager::PrintTNode(TNode root) {
     }
 
 }
+
 
 
 

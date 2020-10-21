@@ -49,13 +49,11 @@ void TestWrapper::parse(string filename) {
 	DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
-	DesignExtractor::ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
 
-	/*auto rel_manager = pkb->GetRelationManager();
-	PROC_NAME_SET all_calls_star = rel_manager.GetCallsStars("testCallCallsFirst");
-	for (PROC_NAME p : all_calls_star) {
-		cout << "Call star: " << p << "\n";
-	}*/
+	DesignExtractor::ExtractAssignPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractContainerPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
+
+
 	/*try {
 		FrontendWrapper frontend_wrapper(filename);
 
@@ -69,7 +67,8 @@ void TestWrapper::parse(string filename) {
         DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
         DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
 		DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
-        DesignExtractor::ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
+        DesignExtractor::ExtractAssignPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
+        DesignExtractor::ExtractContainerPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
 	}
 	catch (logic_error& e) {
 		cout << e.what() << endl;
