@@ -8,7 +8,7 @@ Calls QuerySyntaxValidator to validate each portion, before attempting to parse.
 QueryInfo PQLParser::Parse(STRING s) {
     QueryInfo query_info;
 
-    QuerySyntaxValidator* query_syntax_validator = new QuerySyntaxValidator();
+    QueryValidator* query_validator = new QueryValidator();
     STRING query = s;
     BOOLEAN is_query_valid = true;
 
@@ -28,7 +28,7 @@ QueryInfo PQLParser::Parse(STRING s) {
                 WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&decl);
                 STRING design_entity_type = decl.substr(0, decl.find_first_of(" "));
                 // VALIDATION
-                if (!query_syntax_validator->ValidateDeclaration(decl, entity_map)) {
+                if (!query_validator->ValidateDeclaration(decl, entity_map)) {
                     is_query_valid = false;
                 }
                 // Get the result for each declaration
@@ -43,7 +43,7 @@ QueryInfo PQLParser::Parse(STRING s) {
 
         STRING supposed_select_token = PQLTokenizer::RetrieveToken(&query);
 
-        if (!query_syntax_validator->ValidateSelect(supposed_select_token)) {
+        if (!query_validator->ValidateSelect(supposed_select_token)) {
             // cout << "NOT SELECT!" << endl;
             is_query_valid = false;
             throw ("Error : At PQLParser, Validate Select clause");
@@ -55,7 +55,7 @@ QueryInfo PQLParser::Parse(STRING s) {
             // found >, so we know that tuple has multiple elems : e.g. Select <s1, s2>
             // cout << "FOUND > " << endl;
             supposed_result_cl = PQLTokenizer::RetrieveTokenByClosingAngleBracket(&query);
-            if (!query_syntax_validator->ValidateResultClause(supposed_result_cl, entity_map)) {
+            if (!query_validator->ValidateResultClause(supposed_result_cl, entity_map)) {
                 is_query_valid = false;
                 throw ("Error : At PQLParser, Validating Result Clause");
             }
@@ -67,7 +67,7 @@ QueryInfo PQLParser::Parse(STRING s) {
             // cout << "didnt find" << endl;
 
             supposed_result_cl = PQLTokenizer::RetrieveToken(&query);
-            if (!query_syntax_validator->ValidateResultClause(supposed_result_cl, entity_map)) {
+            if (!query_validator->ValidateResultClause(supposed_result_cl, entity_map)) {
                 is_query_valid = false;
                 throw ("Error : At PQLParser, Validating Result Clause");
             }
@@ -156,10 +156,10 @@ QueryInfo PQLParser::Parse(STRING s) {
 
             // cout << "clause_type:" << clause_type << "|" << endl;
             if (clause_type.compare(TYPE_SUCH_THAT_CLAUSE) == 0) {
-                if (query_syntax_validator->ValidateSuchthatClause(full_clause, entity_map)) {
+                if (query_validator->ValidateSuchthatClause(full_clause, entity_map)) {
                     full_clause.erase(0, 9); // erase such that away
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause);
-                    STRING relref_type = query_syntax_validator->GetValidRelRefType(full_clause, entity_map);
+                    STRING relref_type = query_validator->GetValidRelRefType(full_clause, entity_map);
                     full_clause.erase(0, full_clause.find_first_of("(")); // erase relref away
                     // cout << "full clause should have the opening bracket" << full_clause << endl;
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause);
@@ -183,7 +183,7 @@ QueryInfo PQLParser::Parse(STRING s) {
             }
 
             if (clause_type.compare(TYPE_PATTERN_CLAUSE) == 0) {
-                if (query_syntax_validator->ValidatePatternClause(full_clause, entity_map)) {
+                if (query_validator->ValidatePatternClause(full_clause, entity_map)) {
                     full_clause.erase(0, full_clause.find_first_of(" "));
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause); // pattern is erased away
                     STRING pattern_select_var = PQLTokenizer::RetrieveTokenByOpenBracket(&full_clause);
@@ -222,7 +222,7 @@ QueryInfo PQLParser::Parse(STRING s) {
 
             if (clause_type.compare(TYPE_WITH_CLAUSE) == 0) {
                 // cout << "going to validate with clause:" << full_clause << endl;
-                if (query_syntax_validator->ValidateWithClause(full_clause, entity_map)) {
+                if (query_validator->ValidateWithClause(full_clause, entity_map)) {
                     full_clause.erase(0, full_clause.find_first_of(" "));
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause); // erase with clause
                     // remaining is xxx = yyy

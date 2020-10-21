@@ -1,7 +1,7 @@
 #include <string>
 using namespace std;
 #include "QueryInfo.h"
-#include "QuerySyntaxValidator.h"
+#include "QueryValidator.h"
 #include "WhitespaceHandler.h"
 #include "PQLTokenizer.h"
 #include <vector>
