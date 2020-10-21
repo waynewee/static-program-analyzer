@@ -8,9 +8,11 @@ Calls QuerySyntaxValidator to validate each portion, before attempting to parse.
 QueryInfo PQLParser::Parse(STRING s) {
     QueryInfo query_info;
 
-    QuerySyntaxValidator* query_syntax_validator = new QuerySyntaxValidator();
+    QueryValidator* query_validator = new QueryValidator();
+    QuerySyntacticValidator* query_syntactic_validator = new QuerySyntacticValidator();
     STRING query = s;
     BOOLEAN is_query_valid = true;
+    BOOLEAN is_query_semantically_invalid_but_syntactically_valid = false;
 
     // Tables to build from parsing and pass to queryInfo
     STRING_STRING_MAP entity_map;
@@ -28,8 +30,15 @@ QueryInfo PQLParser::Parse(STRING s) {
                 WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&decl);
                 STRING design_entity_type = decl.substr(0, decl.find_first_of(" "));
                 // VALIDATION
-                if (!query_syntax_validator->ValidateDeclaration(decl, entity_map)) {
+                if (!query_validator->ValidateDeclaration(decl, entity_map)) {
                     is_query_valid = false;
+                    // query already invalid (either semantically or syntactically
+                    if (query_syntactic_validator->ValidateDeclaration(decl)) {
+                        // syntactically valid, query was invalid due to semantics.
+                        is_query_semantically_invalid_but_syntactically_valid = true;
+                        query_info.SetInvalidDueToSemanticsTrue();
+                    }
+                    throw ("Wrong query found at PQLParser: validating declaration");
                 }
                 // Get the result for each declaration
                 STRING_STRING_MAP declaration_result;
@@ -43,7 +52,7 @@ QueryInfo PQLParser::Parse(STRING s) {
 
         STRING supposed_select_token = PQLTokenizer::RetrieveToken(&query);
 
-        if (!query_syntax_validator->ValidateSelect(supposed_select_token)) {
+        if (!query_validator->ValidateSelect(supposed_select_token)) {
             // cout << "NOT SELECT!" << endl;
             is_query_valid = false;
             throw ("Error : At PQLParser, Validate Select clause");
@@ -55,7 +64,7 @@ QueryInfo PQLParser::Parse(STRING s) {
             // found >, so we know that tuple has multiple elems : e.g. Select <s1, s2>
             // cout << "FOUND > " << endl;
             supposed_result_cl = PQLTokenizer::RetrieveTokenByClosingAngleBracket(&query);
-            if (!query_syntax_validator->ValidateResultClause(supposed_result_cl, entity_map)) {
+            if (!query_validator->ValidateResultClause(supposed_result_cl, entity_map)) {
                 is_query_valid = false;
                 throw ("Error : At PQLParser, Validating Result Clause");
             }
@@ -67,7 +76,7 @@ QueryInfo PQLParser::Parse(STRING s) {
             // cout << "didnt find" << endl;
 
             supposed_result_cl = PQLTokenizer::RetrieveToken(&query);
-            if (!query_syntax_validator->ValidateResultClause(supposed_result_cl, entity_map)) {
+            if (!query_validator->ValidateResultClause(supposed_result_cl, entity_map)) {
                 is_query_valid = false;
                 throw ("Error : At PQLParser, Validating Result Clause");
             }
@@ -156,10 +165,10 @@ QueryInfo PQLParser::Parse(STRING s) {
 
             // cout << "clause_type:" << clause_type << "|" << endl;
             if (clause_type.compare(TYPE_SUCH_THAT_CLAUSE) == 0) {
-                if (query_syntax_validator->ValidateSuchthatClause(full_clause, entity_map)) {
+                if (query_validator->ValidateSuchthatClause(full_clause, entity_map)) {
                     full_clause.erase(0, 9); // erase such that away
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause);
-                    STRING relref_type = query_syntax_validator->GetValidRelRefType(full_clause, entity_map);
+                    STRING relref_type = query_validator->GetValidRelRefType(full_clause, entity_map);
                     full_clause.erase(0, full_clause.find_first_of("(")); // erase relref away
                     // cout << "full clause should have the opening bracket" << full_clause << endl;
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause);
@@ -178,12 +187,18 @@ QueryInfo PQLParser::Parse(STRING s) {
                 }
                 else {
                     is_query_valid = false;
+                    // cout << "VALIDATING FULL CLAUSE:" << full_clause << endl;
+                    if (query_syntactic_validator->ValidateSuchThatClause(full_clause)) {
+                        // valid syntactically, failed due to semantics
+                        is_query_semantically_invalid_but_syntactically_valid = true;
+                        query_info.SetInvalidDueToSemanticsTrue();
+                    }
                     throw ("Invalid Query : at suchthat clause");
                 }
             }
 
             if (clause_type.compare(TYPE_PATTERN_CLAUSE) == 0) {
-                if (query_syntax_validator->ValidatePatternClause(full_clause, entity_map)) {
+                if (query_validator->ValidatePatternClause(full_clause, entity_map)) {
                     full_clause.erase(0, full_clause.find_first_of(" "));
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause); // pattern is erased away
                     STRING pattern_select_var = PQLTokenizer::RetrieveTokenByOpenBracket(&full_clause);
@@ -216,13 +231,18 @@ QueryInfo PQLParser::Parse(STRING s) {
                 }
                 else {
                     is_query_valid = false;
+                    if (query_syntactic_validator->ValidatePatternClause(full_clause, entity_map)) {
+                        // valid syntactically, failed due to semantics
+                        is_query_semantically_invalid_but_syntactically_valid = true;
+                        query_info.SetInvalidDueToSemanticsTrue();
+                    }
                     throw ("Invalid Query : at pattern clause");
                 }
             }
 
             if (clause_type.compare(TYPE_WITH_CLAUSE) == 0) {
                 // cout << "going to validate with clause:" << full_clause << endl;
-                if (query_syntax_validator->ValidateWithClause(full_clause, entity_map)) {
+                if (query_validator->ValidateWithClause(full_clause, entity_map)) {
                     full_clause.erase(0, full_clause.find_first_of(" "));
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause); // erase with clause
                     // remaining is xxx = yyy
@@ -239,6 +259,11 @@ QueryInfo PQLParser::Parse(STRING s) {
                 }
                 else {
                     is_query_valid = false;
+                    if (query_syntactic_validator->ValidateWithClause(full_clause)) {
+                        // valid syntactically, failed due to semantics
+                        is_query_semantically_invalid_but_syntactically_valid = true;
+                        query_info.SetInvalidDueToSemanticsTrue();
+                    }
                     throw ("Invalid Query : at with clause");
                 }
             }
@@ -246,13 +271,13 @@ QueryInfo PQLParser::Parse(STRING s) {
     }
     catch (const char* msg) {
         //cerr << msg << endl;
-        cout << "Error caught" << endl;
+        // cout << "Error caught" << endl;
         is_query_valid = false;
         query_info.SetValidToFalse();
     }
     catch (...) {
         //cerr << msg << endl;
-        cout << "Error caught" << endl;
+        // cout << "Error caught" << endl;
         is_query_valid = false;
         query_info.SetValidToFalse();
     }
@@ -270,7 +295,14 @@ QueryInfo PQLParser::Parse(STRING s) {
         query_info.SetPatternMap(pattern_map);
         query_info.SetWithMap(with_map);
     }
-    
+    /*
+    if (is_query_semantically_invalid_but_syntactically_valid) {
+        cout << "QUERY IS INVALID DUE TO SEMANTICS, NOT SYNTAX" << endl;
+    }
+    else {
+        cout << "NOTHING TO DO WITH JUST SEMANTICS" << endl;
+    }
+    */
     query_info.PrintEntityMap();
     query_info.PrintOutputList();
     query_info.PrintStMap();

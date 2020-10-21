@@ -491,6 +491,20 @@ BOOLEAN QueryRules::IsAttrCompare(STRING token, STRING_STRING_MAP declared_var_n
 	STRING second_ref_synonym_type = "none";
 	// cout << "ATTRCOMPARE CALLED:" << endl;
 	// cout << "first_ref:" << first_ref << endl;
+	if (IsSynonym(first_ref)) {
+		first_ref_synonym_type = declared_var_names.at(first_ref);
+		if (first_ref_synonym_type.compare(TYPE_DESIGN_ENTITY_PROG_LINE) != 0) {
+			result = false;
+			return result;
+		}
+	}
+	if (IsSynonym(second_ref)) {
+		second_ref_synonym_type = declared_var_names.at(second_ref);
+		if (second_ref_synonym_type.compare(TYPE_DESIGN_ENTITY_PROG_LINE) != 0) {
+			result = false;
+			return result;
+		}
+	}
 	if (first_ref.find(".") != STRING::npos) {
 		first_ref_synonym = first_ref.substr(0, first_ref.find_first_of("."));
 		if (declared_var_names.count(first_ref_synonym) != 0) {

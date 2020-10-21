@@ -6,13 +6,13 @@
 #include <vector>
 using namespace std;
 #pragma once
-class QuerySyntaxValidator
+class QueryValidator
 {
 private:
 	QueryRules query_rules_;
 
 public:
-	QuerySyntaxValidator();
+	QueryValidator();
 
 	BOOLEAN ValidateDeclaration(STRING decl, STRING_STRING_MAP entity_map);
 
