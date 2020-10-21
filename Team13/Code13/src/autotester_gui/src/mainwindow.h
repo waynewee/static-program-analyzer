@@ -6,11 +6,9 @@
 #include "GUIWrapper.h"
 #include <TNode.h>
 #include <QGraphicsItem>
+#include "GUINode.h"
 
-typedef pair<int, int> COORDINATES;
-typedef pair<TNode*, string> AST_NODE_DATA;
-typedef pair<AST_NODE_DATA, COORDINATES> AST_NODE;
-typedef vector<AST_NODE> NODE_LIST;
+typedef vector<GUINode*> NODE_LIST;
 typedef vector<NODE_LIST*> LIST_OF_NODE_LISTS;
 
 namespace Ui {

@@ -10,6 +10,7 @@
 #include <TNode.h>
 #include <vector>
 #include <list>
+#include "GUINode.h"
 
 
 using namespace std;
@@ -115,44 +116,42 @@ void MainWindow::PopulateNodeList(TNode* root_node, TNode* parent_node, LIST_OF_
 		return;
 	}
 
-	// get the list of nodes
+	int unit_y = 50;
+	int unit_x = 100;
+
 	NODE_LIST* node_list = list_of_node_lists.at(curr_depth);
 
-	// set depth
-	int y = curr_depth * 50;
-	
-	//if leaf node,
-	if (root_node->GetChildrenVector().size() == 0) {
-		//get position in list
-		int pos = node_list->size();
-		int x = pos * 100;
+	int y = curr_depth * unit_y;
+	int pos = node_list->size();
+	int x = pos * unit_x;
 
-		//create element
-		AST_NODE ast_node = make_pair(make_pair(parent_node, root_node->getData()), make_pair(x, y));
-		node_list->push_back(ast_node);
-	} else {
-		
-		for (TNode* node : root_node->GetChildrenVector()) {
-			PopulateNodeList(node, root_node, list_of_node_lists, curr_depth + 1);
+	if (root_node->GetChildrenVector().size() == 0) {
+		GUINode* gui_node = new GUINode(root_node, parent_node, x, y);
+		node_list->push_back(gui_node);
+	}
+	else {
+
+		for (TNode* child : root_node->GetChildrenVector()) {
+			PopulateNodeList(child, root_node, list_of_node_lists, curr_depth + 1);
 		}
 
 		NODE_LIST* child_node_list = list_of_node_lists.at(curr_depth + 1);
-	
 		NODE_LIST* filtered_child_node_list = new NODE_LIST();
 
-		for( AST_NODE ast_node: *child_node_list){
-			if (ast_node.first.first == root_node) {
-				filtered_child_node_list->push_back(ast_node);
+		for (GUINode* gui_node : *child_node_list) {
+			if (gui_node->parent_ == root_node) {
+				filtered_child_node_list->push_back(gui_node);
 			}
 		}
 
-		int start_x = filtered_child_node_list->at(0).second.first;
-		int end_x = filtered_child_node_list->at(filtered_child_node_list->size() - 1).second.first;
+		int start_x = filtered_child_node_list->at(0)->x_;
+		int end_x = filtered_child_node_list->at(filtered_child_node_list->size() - 1)->x_;
 
-		int parent_x = (end_x + start_x) / 2;
+		int parent_x = x + (end_x + start_x) / 2;
 
-		AST_NODE ast_node = make_pair(make_pair(parent_node, root_node->getData()), make_pair(parent_x, y));
-		node_list->push_back(ast_node);
+		GUINode* gui_node = new GUINode(root_node, parent_node, parent_x, y);
+		node_list->push_back(gui_node);
+		
 	}
 
 }
@@ -165,8 +164,8 @@ void MainWindow::PrintNodeList(LIST_OF_NODE_LISTS list_of_node_lists) {
 		cout << "Level " << level << ": [";
 		
 		int idx = 0;
-		for (AST_NODE ast_node : *node_list) {
-			cout << ast_node.first.second;
+		for (GUINode* ast_node : *node_list) {
+			cout << ast_node->node_->getData();
 			if (idx < node_list->size() - 1) {
 				cout << ", ";
 			}
@@ -184,6 +183,9 @@ void MainWindow::InitialiseListOfNodeLists(LIST_OF_NODE_LISTS* list_of_node_list
 }
 
 void MainWindow::DrawAST(LIST_OF_NODE_LISTS list_of_node_lists) {
+
+	scene->clear();
+
 	QBrush blueBrush(Qt::blue);
 	QPen outlinePen(Qt::black);
 	outlinePen.setWidth(2);
@@ -192,11 +194,11 @@ void MainWindow::DrawAST(LIST_OF_NODE_LISTS list_of_node_lists) {
 	int diameter = 30;
 
 	for (NODE_LIST* node_list : list_of_node_lists) {
-		for (AST_NODE ast_node : *node_list) {
-			scene->addEllipse(ast_node.second.first, ast_node.second.second, diameter, diameter, outlinePen, blueBrush);
-			QGraphicsTextItem* text = scene->addText(QString::fromStdString(ast_node.first.second));
+		for (GUINode* ast_node : *node_list) {
+			scene->addEllipse(ast_node->x_, ast_node->y_, diameter, diameter, outlinePen, blueBrush);
+			QGraphicsTextItem* text = scene->addText(QString::fromStdString(ast_node->node_->getData()));
 
-			text->setPos(ast_node.second.first - 20, ast_node.second.second + 30);
+			text->setPos(ast_node->x_ - 20, ast_node-> y_ + 30);
 		}
 	}
 

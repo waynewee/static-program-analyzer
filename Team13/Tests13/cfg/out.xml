@@ -1,7 +1,7 @@
 <?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
 <test_results>
 <info>
-<name>cfg</name><parsing_time_taken>128.000000</parsing_time_taken>
+<name>cfg</name><parsing_time_taken>15.000000</parsing_time_taken>
 </info>
 <queries>
 </queries>

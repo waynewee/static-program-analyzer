@@ -1,0 +1,19 @@
+procedure Example {
+
+1 while(bA == bB) {
+2			bA = 10;
+3			x =10;
+4     x = x + 1;
+5	  	if(bD == (bA	 + bB + bC)) then {
+6				while( bD == 4321 ) {
+7					x = x + 1;
+8					while (bA >=0){
+9						print bD;
+					}
+				}
+			} else {
+10				print bD;
+			}
+		}
+
+}
