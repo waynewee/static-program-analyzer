@@ -1,0 +1,20 @@
+1 - synonym spelled as design entity
+assign assign; while while;
+Select BOOLEAN such that Follows(assign, while)
+TRUE
+5000
+2 - synonym spelled as Select
+assign Select;
+Select Select such that Follows (Select, 2)
+none
+5000
+3 - many spaces in between
+assign                  a;
+Select   a such that                       Follows (a,                2              )
+none
+5000
+4 - many tabs in between
+assign      a;
+Select    a   such that     Follows (   a,      2   )
+none
+5000

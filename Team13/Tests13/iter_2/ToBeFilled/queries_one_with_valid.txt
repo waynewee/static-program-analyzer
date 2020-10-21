@@ -1,0 +1,261 @@
+1 - integer, integer
+prog_line n;
+Select n with 10 = 10
+-1
+5000
+2 - prog line, prog_line synonym
+prog_line n;
+Select n with 10 = n
+10
+5000
+3 - stmt number, synonym with attribute - statement
+stmt s;
+Select s with 20 = s.stmt#
+s
+5000
+4 - variable name, synonym with attribute - variable
+variable v;
+Select v with "v" = v.varName
+v
+5000
+5 - procedure name, synonym with attribute - procedure
+procedure p;
+Select p with "p" = p.procName
+p
+5000
+6 - integer, synonym with attribute - constant
+constant c;
+Select c with 1 = c.value
+1
+5000
+7 - stmt number, synonym with attribute - assign
+assign a;
+Select a with 2 = a.stmt#
+2
+5000
+8 - stmt number, synonym with attribute - if
+if ifs;
+Select c with 5 = ifs.stmt#
+1
+5000
+9 - stmt number, synonym with attribute - while
+while w;
+Select w with 3 = w.stmt#
+3
+5000
+10 - stmt number, synonym with attribute - call
+call cl;
+Select cl with 1 = cl.stmt#
+1
+5000
+11 - procedure name, synonym with attribute - call
+call cl;
+Select cl with "p" = cl.procName
+5
+5000
+12 - stmt number, synonym with attribute - read
+read r;
+Select r with 8 = r.stmt#
+8
+5000
+13 - variable name, synonym with attribute - read
+read r;
+Select r with "x" = r.varName
+x
+5000
+14 - stmt number, synonym with attribute - print
+print pr;
+Select pr with 9 = pr.stmt#
+9
+5000
+15 - variable name, synonym with attribute - print
+print pr;
+Select pr with "x" = pr.varName
+x
+5000
+16 - prog_line synonym, prog line
+prog_line n;
+Select n with n = 10
+none
+5000
+17 - synonym with attribute, integer - statement
+stmt s;
+Select s with s.stmt# = 20
+none
+5000
+18 - synonym with attribute, variable name - variable
+variable v;
+Select v with v.varName = "v"
+v
+5000
+19 - synonym with attribute, procedure name - procedure
+procedure p;
+Select p with p.procName = "p"
+p
+5000
+20 - synonym with attribute, integer - constant
+constant c;
+Select c with c.value = 1
+1
+5000
+21 - synonym with attribute, stmt number - assign
+assign a;
+Select a with a.stmt# = 2
+2
+5000
+22 - synonym with attribute, stmt number - if
+if ifs;
+Select c with ifs.stmt# = 5
+1
+5000
+23 - synonym with attribute, stmt number - while
+while w;
+Select w with w.stmt# = 3
+3
+5000
+24 - synonym with attribute, stmt number - call
+call cl;
+Select cl with cl.stmt# = 1
+1
+5000
+25 - synonym with attribute, procedure name - call
+call cl;
+Select cl with cl.procName = "p"
+5
+5000
+26 - synonym with attribute, stmt number - read
+read r;
+Select r with r.stmt# = 8
+8
+5000
+27 - synonym with attribute, variable name - read
+read r;
+Select r with r.varName = "x"
+x
+5000
+28 - synonym with attribute, stmt number - print
+print pr;
+Select pr with pr.stmt# = 9
+9
+5000
+29 - synonym with attribute, variable name - print
+print pr;
+Select pr with pr.varName = "x"
+x
+5000
+30 - prog_line synonym, prog_line synonym
+prog_line n1, n2;
+Select n1 such that n1 = n2
+-1
+5000
+31 - synonym with attribute, prog_line synonym - statement
+stmt s; prog_line n;
+Select s with s.stmt# = n
+-1
+5000
+32 - synonym with attribute, prog_line synonym - constant
+constant c; prog_line n;
+Select c with c.value = n
+-1
+5000
+33 - synonym with attribute, prog_line synonym - assign
+assign a; prog_line n;
+Select a with a.stmt# = n
+2
+5000
+34 - synonym with attribute, prog_line synonym - if
+if ifs; prog_line n;
+Select c with ifs.stmt# = n
+1
+5000
+35 - synonym with attribute, prog_line synonym - while
+while w; prog_line n;
+Select w with w.stmt# = n
+3
+5000
+36 - synonym with attribute, prog_line synonym - call
+call cl; prog_line n;
+Select cl with cl.stmt# = n
+1
+5000
+37 - synonym with attribute, prog_line synonym - read
+read r; prog_line n;
+Select r with r.stmt# = n
+8
+5000
+38 - synonym with attribute, prog_line synonym - print
+print pr; prog_line n;
+Select pr with pr.stmt# = n
+9
+5000
+39 - prog_line synonym, synonym with attribute - statement
+stmt s; prog_line n;
+Select s with n = s.stmt#
+-1
+5000
+40 - prog_line synonym, synonym with attribute - constant
+constant c; prog_line n;
+Select c with n = c.value
+-1
+5000
+41
+
+
+
+
+
+
+33 - synonym with attribute, prog_line synonym - assign
+assign a; prog_line n;
+Select a with a.stmt# = n
+2
+5000
+34 - synonym with attribute, prog_line synonym - if
+if ifs; prog_line n;
+Select c with ifs.stmt# = n
+1
+5000
+35 - synonym with attribute, prog_line synonym - while
+while w; prog_line n;
+Select w with w.stmt# = n
+3
+5000
+36 - synonym with attribute, prog_line synonym - call
+call cl; prog_line n;
+Select cl with cl.stmt# = n
+1
+5000
+37 - synonym with attribute, prog_line synonym - read
+read r; prog_line n;
+Select r with r.stmt# = n
+8
+5000
+38 - synonym with attribute, prog_line synonym - print
+print pr; prog_line n;
+Select pr with pr.stmt# = n
+9
+5000
+
+
+
+
+- synonym with attribute, synonym with attribute
+stmt s; constant c;
+Select s with s.stmt# = c.value
+none
+5000
+10 - string value, string value
+
+Select BOOLEAN with "x" = "x"
+TRUE
+5000
+11 - string value, synonym with attribute
+procedure p;
+Select p with "x" = p.procName
+"x"
+5000
+12 - synonym with attribute, string value
+calls c;
+Select c with c.procName = "x"
+"x"
+5000

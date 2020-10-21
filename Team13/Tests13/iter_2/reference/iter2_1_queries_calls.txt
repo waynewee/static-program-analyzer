@@ -1,49 +1,49 @@
-1 - valid query 
+1 - True: Wildcard, Wildcard
 stmt Calls;
 Select Calls such that Calls*(_, _)
 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
 5000
-2 - valid query 
+2 - Evaluates to true: Wildcard, Synonym
 assign a; procedure p;
 Select a such that Calls*(_, p)
 9
 5000
-3 - valid query 
+3 - Evaluates to true: Boolean for Wildcard, Synonym 
 
 Select BOOLEAN such that Calls*(_, "procedure")
 TRUE
 5000
-4 - invalid query 
+4 - Evaluates to false: no procedure e
 read r;
 Select r such that Calls*(_, "e")
 none
 5000
-5 - invalid query 
+5 - Evaluates to false: procedure B not called 
 prog_line p;
 Select p such that Calls*(_, "B")
 none
 5000
-6 - valid query 
+6 - Evaluates to true: Boolean for Synonym, Wildcard 
 procedure p;
 Select BOOLEAN such that Calls*(p, _)
 TRUE
 5000
-7 - valid query 
+7 - Evaluates to true: Synonym, Synonym 
 while w; procedure p1, p2;
 Select w such that Calls*(p1, p2)
 5
 5000
-8 - valid query 
+8 - Evaluates to true: Synonym, Ref
 if ifs; procedure p;
 Select ifs.stmt# such that Calls*(p, "b")
 1
 5000
-9 - invalid query 
+9 - Evaluates to false: Recursive Call (Synonym, Synonym)
 stmt s; procedure p;
 Select s such that Calls*(p, p)
 none
 5000
-10 - invalid query 
+10 - Evaluates to false: (Synonym, Invalid Reference)
 if ifs; procedure p;
 Select ifs such that Calls*(p, "#")
 none

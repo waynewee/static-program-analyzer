@@ -10,7 +10,7 @@ procedure procd {
 procedure procc {
     call proce;		
     while (l > i){	
-    call procd;		            
+    call procd;		             
     z = x + y;		
     read b;		
     }

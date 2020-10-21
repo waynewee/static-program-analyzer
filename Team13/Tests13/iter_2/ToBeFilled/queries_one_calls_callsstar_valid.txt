@@ -1,0 +1,90 @@
+1 - Calls - synonym, synonym 
+procedure p1, p2;
+Select p1 such that Calls (p1, p2)
+Test
+5000
+2 - Calls - synonym, string
+procedure p1;
+Select p1 such that Calls (p1, "Iteration")
+Test
+5000
+3 - Calls - string, synonym
+procedure p1;
+Select p1 such that Calls ("Test", p1)
+Iteration
+5000
+4 - Calls - synonym, wildcard
+procedure p1;
+Select p1 such that Calls (p1, _)
+Test
+5000
+5 - Calls - wildcard, synonym
+procedure p1;
+Select p1 such that Calls (_, p1)
+Iteration
+5000
+6 - Calls - string, string
+procedure p1;
+Select p1 such that Calls ("Test", "Iteration")
+Iteration,System,Test
+5000
+7 - Calls - wildcard, wildcard
+procedure p1;
+Select p1 such that Calls (_, _)
+Iteration,System,Test
+5000
+8 - Calls - string, wildcard
+procedure p1;
+Select p1 such that Calls ("Test", _)
+Iteration,System,Test
+5000
+9 - Calls - wildcard, string
+procedure p1;
+Select p1 such that Calls (_, "Iteration")
+Iteration,System,Test
+5000
+10 - Calls* - synonym, synonym
+procedure p1, p2;
+Select p1 such that Calls* (p1, p2)
+Test
+5000
+11 - Calls* - synonym, string
+procedure p1;
+Select p1 such that Calls* (p1, "Iteration")
+Test
+5000
+12 - Calls* - string, synonym
+procedure p1;
+Select p1 such that Calls* ("Test", p1)
+Iteration
+5000
+13 - Calls* - synonym, wildcard
+procedure p1;
+Select p1 such that Calls* (p1, _)
+Test
+5000
+14 - Calls* - wildcard, synonym
+procedure p1;
+Select p1 such that Calls* (_, p1)
+Iteration
+5000
+15 - Calls* - string, string
+procedure p1;
+Select p1 such that Calls* ("Test", "Iteration")
+Iteration,System,Test
+5000
+16 - Calls* - wildcard, wildcard
+procedure p1;
+Select p1 such that Calls* (_, _)
+Iteration,System,Test
+5000
+17 - Calls* - string, wildcard
+procedure p1;
+Select p1 such that Calls* ("Test", _)
+Iteration,System,Test
+5000
+18 - Calls* - wildcard, string
+procedure p1;
+Select p1 such that Calls* (_, "Iteration")
+Iteration,System,Test
+5000
