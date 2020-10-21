@@ -2,6 +2,7 @@
 using namespace std;
 #include "QueryInfo.h"
 #include "QueryValidator.h"
+#include "QuerySyntacticValidator.h"
 #include "WhitespaceHandler.h"
 #include "PQLTokenizer.h"
 #include <vector>

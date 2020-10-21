@@ -52,6 +52,10 @@ VOID QueryInfo::SetValidToFalse() {
 	this->is_valid_ = false;
 }
 
+VOID QueryInfo::SetInvalidDueToSemanticsTrue() {
+	this->is_invalid_due_to_semantics_ = true;
+}
+
 // test print functions
 VOID QueryInfo::PrintClausesMap() {
 	cout << "----- Clauses ----- " << endl;

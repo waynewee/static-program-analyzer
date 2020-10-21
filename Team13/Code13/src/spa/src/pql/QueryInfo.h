@@ -15,6 +15,7 @@ private:
 	STRING_STRING_MAP entity_map_;
 	STRING_LIST output_list_;
 	BOOLEAN is_valid_ = true;
+	BOOLEAN is_invalid_due_to_semantics_ = false;
 public:
 	/* getters */
 	STRING_STRINGLISTLIST_MAP GetStMap();
@@ -31,6 +32,7 @@ public:
 	VOID SetEntityMap(STRING_STRING_MAP entity_map);
 	VOID SetOutputList(STRING_LIST output_list);
 	VOID SetValidToFalse();
+	VOID SetInvalidDueToSemanticsTrue();
 
 	/* printing */
 	VOID PrintOutputList();

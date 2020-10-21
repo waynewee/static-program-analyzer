@@ -9,8 +9,10 @@ QueryInfo PQLParser::Parse(STRING s) {
     QueryInfo query_info;
 
     QueryValidator* query_validator = new QueryValidator();
+    QuerySyntacticValidator* query_syntactic_validator = new QuerySyntacticValidator();
     STRING query = s;
     BOOLEAN is_query_valid = true;
+    BOOLEAN is_query_semantically_invalid_but_syntactically_valid = false;
 
     // Tables to build from parsing and pass to queryInfo
     STRING_STRING_MAP entity_map;
@@ -30,6 +32,13 @@ QueryInfo PQLParser::Parse(STRING s) {
                 // VALIDATION
                 if (!query_validator->ValidateDeclaration(decl, entity_map)) {
                     is_query_valid = false;
+                    // query already invalid (either semantically or syntactically
+                    if (query_syntactic_validator->ValidateDeclaration(decl)) {
+                        // syntactically valid, query was invalid due to semantics.
+                        is_query_semantically_invalid_but_syntactically_valid = true;
+                        query_info.SetInvalidDueToSemanticsTrue();
+                    }
+                    throw ("Wrong query found at PQLParser: validating declaration");
                 }
                 // Get the result for each declaration
                 STRING_STRING_MAP declaration_result;
@@ -178,6 +187,12 @@ QueryInfo PQLParser::Parse(STRING s) {
                 }
                 else {
                     is_query_valid = false;
+                    // cout << "VALIDATING FULL CLAUSE:" << full_clause << endl;
+                    if (query_syntactic_validator->ValidateSuchThatClause(full_clause)) {
+                        // valid syntactically, failed due to semantics
+                        is_query_semantically_invalid_but_syntactically_valid = true;
+                        query_info.SetInvalidDueToSemanticsTrue();
+                    }
                     throw ("Invalid Query : at suchthat clause");
                 }
             }
@@ -216,6 +231,11 @@ QueryInfo PQLParser::Parse(STRING s) {
                 }
                 else {
                     is_query_valid = false;
+                    if (query_syntactic_validator->ValidatePatternClause(full_clause, entity_map)) {
+                        // valid syntactically, failed due to semantics
+                        is_query_semantically_invalid_but_syntactically_valid = true;
+                        query_info.SetInvalidDueToSemanticsTrue();
+                    }
                     throw ("Invalid Query : at pattern clause");
                 }
             }
@@ -239,6 +259,11 @@ QueryInfo PQLParser::Parse(STRING s) {
                 }
                 else {
                     is_query_valid = false;
+                    if (query_syntactic_validator->ValidateWithClause(full_clause)) {
+                        // valid syntactically, failed due to semantics
+                        is_query_semantically_invalid_but_syntactically_valid = true;
+                        query_info.SetInvalidDueToSemanticsTrue();
+                    }
                     throw ("Invalid Query : at with clause");
                 }
             }
@@ -246,13 +271,13 @@ QueryInfo PQLParser::Parse(STRING s) {
     }
     catch (const char* msg) {
         //cerr << msg << endl;
-        cout << "Error caught" << endl;
+        // cout << "Error caught" << endl;
         is_query_valid = false;
         query_info.SetValidToFalse();
     }
     catch (...) {
         //cerr << msg << endl;
-        cout << "Error caught" << endl;
+        // cout << "Error caught" << endl;
         is_query_valid = false;
         query_info.SetValidToFalse();
     }
@@ -270,7 +295,12 @@ QueryInfo PQLParser::Parse(STRING s) {
         query_info.SetPatternMap(pattern_map);
         query_info.SetWithMap(with_map);
     }
-    
+    if (is_query_semantically_invalid_but_syntactically_valid) {
+        cout << "QUERY IS INVALID DUE TO SEMANTICS, NOT SYNTAX" << endl;
+    }
+    else {
+        cout << "NOTHING TO DO WITH JUST SEMANTICS" << endl;
+    }
     query_info.PrintEntityMap();
     query_info.PrintOutputList();
     query_info.PrintStMap();
