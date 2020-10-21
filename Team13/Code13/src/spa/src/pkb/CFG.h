@@ -33,6 +33,7 @@ public:
     bool HasEdge(STMT_IDX s1, STMT_IDX s2);
     bool HasInverseEdge(STMT_IDX s1, STMT_IDX s2);
     STMT_STMT_PAIR_LIST GetAllEdeges();
+    bool AddAllNextPairs();
 };
 
 

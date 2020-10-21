@@ -69,7 +69,7 @@ bool ExprValidator::CheckValid(Token prev_token, Token curr_token) {
 	}
 
 	if (prev_type == TokenType::TOKEN_TYPE::constant) {
-		if (curr_type != TokenType::TOKEN_TYPE::expr && curr_type != TokenType::TOKEN_TYPE::rel_expr && curr_val != TYPE_PUNC_CLOSED_PARAN) {
+		if (curr_type != TokenType::TOKEN_TYPE::expr && curr_type != TokenType::TOKEN_TYPE::cond_expr && curr_type != TokenType::TOKEN_TYPE::rel_expr && curr_val != TYPE_PUNC_CLOSED_PARAN) {
 			return false;
 		}
 	}

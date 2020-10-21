@@ -1,13 +1,14 @@
 <?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
 <test_results>
 <info>
-<name>iter_2</name><parsing_time_taken>28.000000</parsing_time_taken>
+<name>iter_2</name><parsing_time_taken>78.000000</parsing_time_taken>
 </info>
 <queries>
 <query>
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="valid query">1</id><querystr><![CDATA[stmt s; Select s.stmt#]]></querystr>
-<stuans></stuans>
+<stuans>5,14,1,2,3,4,6,7,8,10,9,11,12,13,20,19,17,15,18,21,16,22</stuans>
 <correct>1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_2_2_out.xml
 <time_taken>37.000000</time_taken>
 <failed>
 <missing>1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,3,4,5,6,7,8,9</missing>
@@ -19,11 +20,16 @@
 <additional>0</additional>
 </summary>
 </failed>
+=======
+<time_taken>118.000000</time_taken>
+<passed/>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_2_2_out.xml
 </query>
 <query>
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="valid query">2</id><querystr><![CDATA[procedure p1; Select p1.procName]]></querystr>
-<stuans></stuans>
+<stuans>proca,proce,procd,procb,procc</stuans>
 <correct>proca,procb,procc,procd,proce</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_2_2_out.xml
 <time_taken>38.000000</time_taken>
 <failed>
 <missing>proca,procb,procc,procd,proce</missing>
@@ -35,11 +41,16 @@
 <additional>0</additional>
 </summary>
 </failed>
+=======
+<time_taken>113.000000</time_taken>
+<passed/>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_2_2_out.xml
 </query>
 <query>
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="valid query">3</id><querystr><![CDATA[read r1; Select r1.varName]]></querystr>
-<stuans></stuans>
+<stuans>b,m</stuans>
 <correct>b,m</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_2_2_out.xml
 <time_taken>37.000000</time_taken>
 <failed>
 <missing>b,m</missing>
@@ -51,11 +62,16 @@
 <additional>0</additional>
 </summary>
 </failed>
+=======
+<time_taken>115.000000</time_taken>
+<passed/>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_2_2_out.xml
 </query>
 <query>
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="valid query">4</id><querystr><![CDATA[print pr1; Select pr1.varName]]></querystr>
-<stuans></stuans>
+<stuans>f</stuans>
 <correct>f</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_2_2_out.xml
 <time_taken>39.000000</time_taken>
 <failed>
 <missing>f</missing>
@@ -67,11 +83,16 @@
 <additional>0</additional>
 </summary>
 </failed>
+=======
+<time_taken>95.000000</time_taken>
+<passed/>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_2_2_out.xml
 </query>
 <query>
 <id ReturnTuple="1" CondNum="1" RelNum="0" comment="valid query">5</id><querystr><![CDATA[call cl1; Select cl1.procName]]></querystr>
-<stuans></stuans>
+<stuans>procc,procd,proce,procb</stuans>
 <correct>proce,procd,procc,procb</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_2_2_out.xml
 <time_taken>41.000000</time_taken>
 <failed>
 <missing>procb,procc,procd,proce</missing>
@@ -83,6 +104,10 @@
 <additional>0</additional>
 </summary>
 </failed>
+=======
+<time_taken>131.000000</time_taken>
+<passed/>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_2_2_out.xml
 </query>
 </queries>
 </test_results>
