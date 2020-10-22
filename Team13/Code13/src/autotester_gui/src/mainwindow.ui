@@ -27,6 +27,16 @@
        <item>
         <widget class="QGraphicsView" name="graphicsView"/>
        </item>
+       <item>
+        <widget class="QSlider" name="verticalSlider">
+         <property name="value">
+          <number>50</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>

@@ -29,6 +29,7 @@ public slots:
 	void btnRun_clicked();
 	void on_astButton_clicked();
 	void on_cfgButton_clicked();
+	void on_verticalSlider_valueChanged(int value);
 
 private:
 
@@ -48,12 +49,16 @@ private:
 	void DrawNode(GUINode* gui_node, QColor color);
 	
 	LIST_OF_NODE_LISTS* list_of_node_lists_;
+	QBrush main_brush_;
+	QPen outline_pen_;
 
 	const int diameter_ = 30;
 	const int unit_x_ = 50;
 	const int unit_y_ = 50;
 	const int line_offset_x = diameter_ / 2;
 	const int line_offset_y = diameter_;
+	const int text_offset_x = diameter_ * (2 / 3);
+	const int text_offset_y = diameter_;
 
 };
 

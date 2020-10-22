@@ -24,6 +24,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->graphicsView->setScene(scene);
 
 	wrapper = new GUIWrapper();
+
+	main_brush_ = QBrush(Qt::blue);
+	outline_pen_ = QPen(Qt::black);
+	outline_pen_.setWidth(1);
 }
 
 MainWindow::~MainWindow()
@@ -99,6 +103,15 @@ void MainWindow::on_astButton_clicked() {
 
 void MainWindow::on_cfgButton_clicked() {
 	cout << "Hello World" << endl;
+}
+
+void MainWindow::on_verticalSlider_valueChanged(int value) {
+	ui->graphicsView->resetMatrix();
+	
+	double scale = value / 50.0;
+
+	ui->graphicsView->scale(scale, scale);
+
 }
 
 int MainWindow::CountMaxDepth(TNode* root_node, int depth) {
@@ -203,18 +216,12 @@ void MainWindow::DrawAST() {
 
 	scene->clear();
 
-	QBrush blueBrush(Qt::blue);
-	QPen outlinePen(Qt::black);
-	outlinePen.setWidth(2);
-
 	// set dimensions
 	int diameter = 30;
 
 	for (NODE_LIST* node_list : *list_of_node_lists_) {
 		for (GUINode* gui_node : *node_list) {
-			QGraphicsTextItem* text = scene->addText(QString::fromStdString(gui_node->node_->getData()));
 			DrawNode(gui_node);
-			text->setPos(gui_node->x_ - 20, gui_node-> y_ + 30);
 		}
 	}
 
@@ -232,23 +239,23 @@ void MainWindow::DrawAST() {
 							gui_node->y_, 
 							parent_node->x_ + line_offset_x, 
 							parent_node->y_ + line_offset_y
-						), outlinePen);
+						), outline_pen_);
 				}
 			}
 		}
 		
 	}
 
+	ui->graphicsView->fitInView(ui->graphicsView->sceneRect(), Qt::KeepAspectRatio);
+
 }
 
 void MainWindow::DrawNode(GUINode* gui_node) {
-	QBrush blueBrush(Qt::blue);
-	QPen outlinePen(Qt::black);
-	outlinePen.setWidth(2);
-	scene->addEllipse(gui_node->x_, gui_node->y_, diameter_, diameter_, outlinePen, blueBrush);
+	scene->addEllipse(gui_node->x_, gui_node->y_, diameter_, diameter_, outline_pen_, main_brush_);
+	QGraphicsTextItem* text = scene->addText(QString::fromStdString(gui_node->node_->getData()));
+	text->setPos(gui_node->x_ - text_offset_x, gui_node->y_ + text_offset_y);
 }
 
 void MainWindow::DrawNode(GUINode* gui_node, QColor color) {
-	QPen outlinePen(Qt::black);
-	scene->addEllipse(gui_node->x_, gui_node->y_, diameter_, diameter_, outlinePen, QBrush(color));
+	scene->addEllipse(gui_node->x_, gui_node->y_, diameter_, diameter_, outline_pen_, QBrush(color));
 }
