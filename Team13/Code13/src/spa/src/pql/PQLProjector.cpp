@@ -8,9 +8,9 @@ STRING_SET PQLProjector::Project(QueryResult query_result) {
 
 	for (auto f = result.cbegin(); f != result.cend(); f++) {
 		STRING_LIST values = *(*f);
-		STRING converted_value = "";
+		string converted_value = "";
 
-		for (STRING v : values) {
+		for (string v : values) {
 			converted_value.append(v).append(" ");
 		}
 

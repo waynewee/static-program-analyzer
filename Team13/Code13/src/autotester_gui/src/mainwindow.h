@@ -40,10 +40,21 @@ private:
 	QGraphicsTextItem* text;
 	QString file_contents_;
 	int CountMaxDepth(TNode* root_node, int depth);
-	void PopulateNodeList(TNode* root_node, TNode* parent_node, LIST_OF_NODE_LISTS list_of_node_lists, int curr_depth);
-	void PrintNodeList(LIST_OF_NODE_LISTS list_of_node_lists);
-	void InitialiseListOfNodeLists(LIST_OF_NODE_LISTS* list_of_node_lists, int max_depth);
-	void DrawAST(LIST_OF_NODE_LISTS list_of_node_lists);
+	void PopulateNodeList(TNode* root_node, TNode* parent_node, int curr_depth, int* leaf_x);
+	void PrintNodeList();
+	void InitialiseListOfNodeLists(int max_depth);
+	void DrawAST();
+	void DrawNode(GUINode* gui_node);
+	void DrawNode(GUINode* gui_node, QColor color);
+	
+	LIST_OF_NODE_LISTS* list_of_node_lists_;
+
+	const int diameter_ = 30;
+	const int unit_x_ = 50;
+	const int unit_y_ = 50;
+	const int line_offset_x = diameter_ / 2;
+	const int line_offset_y = diameter_;
+
 };
 
 #endif // MAINWINDOW_H

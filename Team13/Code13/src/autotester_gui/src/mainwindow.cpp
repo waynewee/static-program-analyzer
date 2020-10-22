@@ -48,14 +48,31 @@ void MainWindow::btnLoad_clicked() {
 
 void MainWindow::btnRun_clicked() {
 	std::list<std::string> results;
-	wrapper->evaluate(ui->txtQuery->toPlainText().toStdString(),results);
+	wrapper->Evaluate(ui->txtQuery->toPlainText().toStdString(),results);
 	QString result_str;
+
+	int i = 0;
 
 	for (auto const& result : results) {
 
 		result_str += QString(result.c_str());
+		if (i < results.size()) {
+			result_str += ", ";
+		}
 	}
+
 	ui->txtResult->document()->setPlainText(result_str);
+
+	for (auto const& result : results) {
+		for (NODE_LIST* node_list : *list_of_node_lists_) {
+			for (GUINode* node : *node_list) {
+				if (node->node_->GetStmtIndex() == stoi(result.c_str())) {
+					DrawNode(node, Qt::red);
+				}
+			}
+		}
+	}
+
 }
 
 // Reference this https://www.bogotobogo.com/Qt/Qt5_QGraphicsView_QGraphicsScene.php
@@ -68,16 +85,15 @@ void MainWindow::on_astButton_clicked() {
 
 	
 	int max_depth = CountMaxDepth(root_node, 0);
+	int leaf_x = 0;
 
-	LIST_OF_NODE_LISTS list_of_node_lists;
+	InitialiseListOfNodeLists(max_depth);
 
-	InitialiseListOfNodeLists(&list_of_node_lists, max_depth);
+	PopulateNodeList(root_node, NULL, 0, &leaf_x);
 
-	PopulateNodeList(root_node, NULL, list_of_node_lists, 0);
+	PrintNodeList();
 
-	PrintNodeList(list_of_node_lists);
-
-	DrawAST(list_of_node_lists);
+	DrawAST();
 
 }
 
@@ -110,32 +126,30 @@ int MainWindow::CountMaxDepth(TNode* root_node, int depth) {
 	}
 }
 
-void MainWindow::PopulateNodeList(TNode* root_node, TNode* parent_node, LIST_OF_NODE_LISTS list_of_node_lists, int curr_depth) {
+void MainWindow::PopulateNodeList(TNode* root_node, TNode* parent_node, int curr_depth, int* leaf_x) {
 
-	if (curr_depth > list_of_node_lists.size()) {
+	if (curr_depth > list_of_node_lists_->size()) {
 		return;
 	}
 
-	int unit_y = 50;
-	int unit_x = 100;
+	NODE_LIST* node_list = list_of_node_lists_->at(curr_depth);
 
-	NODE_LIST* node_list = list_of_node_lists.at(curr_depth);
-
-	int y = curr_depth * unit_y;
+	int y = curr_depth * unit_y_;
 	int pos = node_list->size();
-	int x = pos * unit_x;
+	int x = pos * unit_x_;
 
 	if (root_node->GetChildrenVector().size() == 0) {
-		GUINode* gui_node = new GUINode(root_node, parent_node, x, y);
+		GUINode* gui_node = new GUINode(root_node, parent_node, *leaf_x, y);
+		*leaf_x += unit_x_;
 		node_list->push_back(gui_node);
 	}
 	else {
 
 		for (TNode* child : root_node->GetChildrenVector()) {
-			PopulateNodeList(child, root_node, list_of_node_lists, curr_depth + 1);
+			PopulateNodeList(child, root_node, curr_depth + 1, leaf_x);
 		}
 
-		NODE_LIST* child_node_list = list_of_node_lists.at(curr_depth + 1);
+		NODE_LIST* child_node_list = list_of_node_lists_->at(curr_depth + 1);
 		NODE_LIST* filtered_child_node_list = new NODE_LIST();
 
 		for (GUINode* gui_node : *child_node_list) {
@@ -147,7 +161,7 @@ void MainWindow::PopulateNodeList(TNode* root_node, TNode* parent_node, LIST_OF_
 		int start_x = filtered_child_node_list->at(0)->x_;
 		int end_x = filtered_child_node_list->at(filtered_child_node_list->size() - 1)->x_;
 
-		int parent_x = x + (end_x + start_x) / 2;
+		int parent_x = (end_x + start_x) / 2;
 
 		GUINode* gui_node = new GUINode(root_node, parent_node, parent_x, y);
 		node_list->push_back(gui_node);
@@ -156,16 +170,16 @@ void MainWindow::PopulateNodeList(TNode* root_node, TNode* parent_node, LIST_OF_
 
 }
 
-void MainWindow::PrintNodeList(LIST_OF_NODE_LISTS list_of_node_lists) {
+void MainWindow::PrintNodeList() {
 	
 	int level = 0;
-	for (NODE_LIST* node_list : list_of_node_lists) {
+	for (NODE_LIST* node_list : *list_of_node_lists_) {
 		
 		cout << "Level " << level << ": [";
 		
 		int idx = 0;
-		for (GUINode* ast_node : *node_list) {
-			cout << ast_node->node_->getData();
+		for (GUINode* gui_node : *node_list) {
+			cout << gui_node->node_->getData();
 			if (idx < node_list->size() - 1) {
 				cout << ", ";
 			}
@@ -175,14 +189,17 @@ void MainWindow::PrintNodeList(LIST_OF_NODE_LISTS list_of_node_lists) {
 	}
 }
 
-void MainWindow::InitialiseListOfNodeLists(LIST_OF_NODE_LISTS* list_of_node_lists, int max_depth) {
+void MainWindow::InitialiseListOfNodeLists(int max_depth) {
+
+	list_of_node_lists_ = new LIST_OF_NODE_LISTS();
+	
 	for (int i = 0; i < max_depth + 1; i++) {
 		NODE_LIST* node_list = new NODE_LIST;
-		list_of_node_lists->push_back(node_list);
+		list_of_node_lists_->push_back(node_list);
 	}
 }
 
-void MainWindow::DrawAST(LIST_OF_NODE_LISTS list_of_node_lists) {
+void MainWindow::DrawAST() {
 
 	scene->clear();
 
@@ -193,14 +210,45 @@ void MainWindow::DrawAST(LIST_OF_NODE_LISTS list_of_node_lists) {
 	// set dimensions
 	int diameter = 30;
 
-	for (NODE_LIST* node_list : list_of_node_lists) {
-		for (GUINode* ast_node : *node_list) {
-			scene->addEllipse(ast_node->x_, ast_node->y_, diameter, diameter, outlinePen, blueBrush);
-			QGraphicsTextItem* text = scene->addText(QString::fromStdString(ast_node->node_->getData()));
-
-			text->setPos(ast_node->x_ - 20, ast_node-> y_ + 30);
+	for (NODE_LIST* node_list : *list_of_node_lists_) {
+		for (GUINode* gui_node : *node_list) {
+			QGraphicsTextItem* text = scene->addText(QString::fromStdString(gui_node->node_->getData()));
+			DrawNode(gui_node);
+			text->setPos(gui_node->x_ - 20, gui_node-> y_ + 30);
 		}
 	}
 
-	//ellipse = scene->addEllipse(0, -100, 60, 60, outlinePen, blueBrush);
+	for (int i = 1; i < list_of_node_lists_->size(); i++) {
+		NODE_LIST* node_list = list_of_node_lists_->at(i);
+		NODE_LIST* parent_node_list = list_of_node_lists_->at(i-1);
+
+		for (GUINode* gui_node : *node_list) {
+			for (GUINode* parent_node : *parent_node_list) {
+				if (gui_node->parent_ == parent_node->node_) {
+					//draw edge
+					scene->addLine(
+						QLine(
+							gui_node->x_ + line_offset_x, 
+							gui_node->y_, 
+							parent_node->x_ + line_offset_x, 
+							parent_node->y_ + line_offset_y
+						), outlinePen);
+				}
+			}
+		}
+		
+	}
+
+}
+
+void MainWindow::DrawNode(GUINode* gui_node) {
+	QBrush blueBrush(Qt::blue);
+	QPen outlinePen(Qt::black);
+	outlinePen.setWidth(2);
+	scene->addEllipse(gui_node->x_, gui_node->y_, diameter_, diameter_, outlinePen, blueBrush);
+}
+
+void MainWindow::DrawNode(GUINode* gui_node, QColor color) {
+	QPen outlinePen(Qt::black);
+	scene->addEllipse(gui_node->x_, gui_node->y_, diameter_, diameter_, outlinePen, QBrush(color));
 }

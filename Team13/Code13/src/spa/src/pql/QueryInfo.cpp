@@ -23,37 +23,37 @@ STRING_LIST QueryInfo::GetOutputList() {
 	return this->output_list_;
 }
 
-BOOLEAN QueryInfo::IsQueryInfoValid() {
+bool QueryInfo::IsQueryInfoValid() {
 	return this->is_valid_;
 }
 
 /* setters */
-VOID QueryInfo::SetStMap(STRING_STRINGLISTLIST_MAP rel_ref_map) {
+void QueryInfo::SetStMap(STRING_STRINGLISTLIST_MAP rel_ref_map) {
 	this->st_map_ = rel_ref_map;
 }
 
-VOID QueryInfo::SetPatternMap(STRING_STRINGLISTLIST_MAP pattern_map) {
+void QueryInfo::SetPatternMap(STRING_STRINGLISTLIST_MAP pattern_map) {
 	this->pattern_map_ = pattern_map;
 }
 
-VOID QueryInfo::SetWithMap(STRINGPAIR_SET with_map) {
+void QueryInfo::SetWithMap(STRINGPAIR_SET with_map) {
 	this->with_map_ = with_map;
 }
 
-VOID QueryInfo::SetEntityMap(STRING_STRING_MAP var_map) {
+void QueryInfo::SetEntityMap(STRING_STRING_MAP var_map) {
 	this->entity_map_ = var_map;
 }
 
-VOID QueryInfo::SetOutputList(STRING_LIST output_var) {
+void QueryInfo::SetOutputList(STRING_LIST output_var) {
 	this->output_list_ = output_var;
 }
 
-VOID QueryInfo::SetValidToFalse() {
+void QueryInfo::SetValidToFalse() {
 	this->is_valid_ = false;
 }
 
 // test print functions
-VOID QueryInfo::PrintClausesMap() {
+void QueryInfo::PrintClausesMap() {
 	cout << "----- Clauses ----- " << endl;
 	PrintStMap();
 	PrintPatternMap();
@@ -61,7 +61,7 @@ VOID QueryInfo::PrintClausesMap() {
 	cout << "-------------------- " << endl;
 }
 
-VOID QueryInfo::PrintPatternMap() {
+void QueryInfo::PrintPatternMap() {
 	cout << "----- Pattern Clauses ----- " << endl;
 	for (auto const& pair : this->pattern_map_) {
 		cout << " { " << pair.first << " , ";
@@ -77,7 +77,7 @@ VOID QueryInfo::PrintPatternMap() {
 	cout << "-------------------- " << endl;
 }
 
-VOID QueryInfo::PrintStMap() {
+void QueryInfo::PrintStMap() {
 	cout << "----- St Clauses ----- " << endl;
 	for (auto const& pair : this->st_map_) {
 		cout << pair.first << ": ";
@@ -93,7 +93,7 @@ VOID QueryInfo::PrintStMap() {
 	cout << "-------------------- " << endl;
 }
 
-VOID QueryInfo::PrintWithMap() {
+void QueryInfo::PrintWithMap() {
 	cout << "----- With Clauses ----- " << endl;
 	for (auto pair : this->with_map_) {
 		cout << "< " << pair->first << " " << pair->second << " >" << endl;
@@ -101,7 +101,7 @@ VOID QueryInfo::PrintWithMap() {
 	cout << "-------------------- " << endl;
 }
 
-VOID QueryInfo::PrintEntityMap() {
+void QueryInfo::PrintEntityMap() {
 	cout << "----- ENTITY MAP ----- " << endl;
 	for (auto f = entity_map_.cbegin(); f != entity_map_.cend(); f++) {
 		cout << " { " << (*f).first << " , " << (*f).second << " } " << endl;
@@ -109,9 +109,9 @@ VOID QueryInfo::PrintEntityMap() {
 	cout << "-------------------- " << endl;
 }
 
-VOID QueryInfo::PrintOutputList() {
+void QueryInfo::PrintOutputList() {
 	cout << "---- OUTPUT VAR ---- " << endl;
-	for (STRING s : output_list_) {
+	for (string s : output_list_) {
 		cout << s << " " << endl;
 	}
 	cout << "-------------------- " << endl;

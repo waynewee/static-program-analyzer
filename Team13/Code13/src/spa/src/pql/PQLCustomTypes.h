@@ -56,38 +56,31 @@ using namespace std;
 #define TYPE_SELECT_CLAUSE "Select"
 #define TYPE_AND_CLAUSE "and"
 
-#define FALSE "FALSE"
-#define TRUE "TRUE"
+//#define FALSE "FALSE"
+//#define TRUE "TRUE"
 
-typedef string STRING;
-typedef int INTEGER;
-typedef char CHAR;
-typedef double DOUBLE;
-typedef bool BOOLEAN;
-typedef void VOID;
+typedef pair<string, string> STRING_PAIR;
+typedef pair<int, int> INTEGER_PAIR;
 
-typedef pair<STRING, STRING> STRING_PAIR;
-typedef pair<INTEGER, INTEGER> INTEGER_PAIR;
-
-typedef vector<STRING> STRING_LIST;
-typedef vector<INTEGER> INTEGER_LIST;
+typedef vector<string> STRING_LIST;
+typedef vector<int> INTEGER_LIST;
 typedef vector<STRING_LIST> STRINGLIST_LIST;
 typedef vector<INTEGER_LIST> INTEGERLIST_LIST;
 typedef vector<STRING_PAIR> STRINGPAIR_LIST;
 typedef vector<INTEGER_PAIR> INTEGERPAIR_LIST;
 
-typedef unordered_set<STRING> STRING_SET;
-typedef unordered_set<INTEGER> INTEGER_SET;
-typedef unordered_set<DOUBLE> DOUBLE_SET;
+typedef unordered_set<string> STRING_SET;
+typedef unordered_set<int> INTEGER_SET;
+typedef unordered_set<double> DOUBLE_SET;
 typedef unordered_set<STRING_LIST*> STRINGLIST_SET;
 typedef unordered_set<STRING_PAIR*> STRINGPAIR_SET;
 typedef unordered_set<INTEGER_PAIR*> INTEGERPAIR_SET;
 
-typedef unordered_map<STRING, STRING> STRING_STRING_MAP;
-typedef unordered_map<STRING, INTEGER> STRING_INTEGER_MAP;
-typedef unordered_map<STRING, STRING_LIST> STRING_STRINGLIST_MAP;
-typedef unordered_map<STRING, STRING_SET> STRING_STRINGSET_MAP;
-typedef unordered_map<STRING, STRINGLIST_LIST> STRING_STRINGLISTLIST_MAP;
+typedef unordered_map<string, string> STRING_STRING_MAP;
+typedef unordered_map<string, int> STRING_INTEGER_MAP;
+typedef unordered_map<string, STRING_LIST> STRING_STRINGLIST_MAP;
+typedef unordered_map<string, STRING_SET> STRING_STRINGSET_MAP;
+typedef unordered_map<string, STRINGLIST_LIST> STRING_STRINGLISTLIST_MAP;
 typedef unordered_map<STRING_LIST*, STRING_LIST> STRINGLIST_STRINGLIST_MAP;
 typedef unordered_map<STRING_LIST*, STRINGLIST_SET> STRINGLIST_STRINGLISTSET_MAP;
 typedef unordered_map<STRING_LIST*, STRING_SET> STRINGLIST_STRINGSET_MAP;

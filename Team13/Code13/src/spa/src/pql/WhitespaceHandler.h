@@ -4,8 +4,8 @@
 class WhitespaceHandler
 {
 public:
-	static void TrimLeadingWhitespaces(STRING* s);
-	static void TrimTrailingWhitespaces(STRING* s);
-	static void TrimLeadingAndTrailingWhitespaces(STRING* s);
+	static void TrimLeadingWhitespaces(string* s);
+	static void TrimTrailingWhitespaces(string* s);
+	static void TrimLeadingAndTrailingWhitespaces(string* s);
 };
 

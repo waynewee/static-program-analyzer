@@ -4,5 +4,5 @@ class PQLDriver
 {
 public:
 
-	STRING_SET Query(STRING query_string);
+	STRING_SET Query(string query_string);
 };

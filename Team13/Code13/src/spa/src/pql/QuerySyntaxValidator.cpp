@@ -13,30 +13,30 @@ QuerySyntaxValidator::QuerySyntaxValidator() {
 	this->query_rules_ = query_rules;
 }
 
-BOOLEAN QuerySyntaxValidator::ValidateDeclaration(STRING token, STRING_STRING_MAP entity_map) {
+bool QuerySyntaxValidator::ValidateDeclaration(string token, STRING_STRING_MAP entity_map) {
 	return this->query_rules_.IsDeclaration(token, entity_map);
 }
 
-BOOLEAN QuerySyntaxValidator::ValidateSelect(STRING token) {
+bool QuerySyntaxValidator::ValidateSelect(string token) {
 	return this->query_rules_.IsSelect(token);
 }
 
-BOOLEAN QuerySyntaxValidator::ValidateResultClause(STRING token, STRING_STRING_MAP user_declared_vars) {
+bool QuerySyntaxValidator::ValidateResultClause(string token, STRING_STRING_MAP user_declared_vars) {
 	return this->query_rules_.IsResultClause(token, user_declared_vars);
 }
 
-BOOLEAN QuerySyntaxValidator::ValidateSuchthatClause(STRING token, STRING_STRING_MAP user_declared_vars) {
+bool QuerySyntaxValidator::ValidateSuchthatClause(string token, STRING_STRING_MAP user_declared_vars) {
 	return this->query_rules_.IsSuchThatClause(token, user_declared_vars);
 }
 
-STRING QuerySyntaxValidator::GetValidRelRefType(STRING token, STRING_STRING_MAP user_declared_vars) {
+string QuerySyntaxValidator::GetValidRelRefType(string token, STRING_STRING_MAP user_declared_vars) {
 	return this->query_rules_.GetRelRefType(token, user_declared_vars);
 }
 
-BOOLEAN QuerySyntaxValidator::ValidatePatternClause(STRING token, STRING_STRING_MAP user_declared_vars) {
+bool QuerySyntaxValidator::ValidatePatternClause(string token, STRING_STRING_MAP user_declared_vars) {
 	return this->query_rules_.IsPatternClause(token, user_declared_vars);
 }
 
-BOOLEAN QuerySyntaxValidator::ValidateWithClause(STRING token, STRING_STRING_MAP user_declared_vars) {
+bool QuerySyntaxValidator::ValidateWithClause(string token, STRING_STRING_MAP user_declared_vars) {
 	return this->query_rules_.IsWithClause(token, user_declared_vars);
 }

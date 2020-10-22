@@ -5,12 +5,12 @@ using namespace std;
 Main Query Parser of the PQL.
 Calls QuerySyntaxValidator to validate each portion, before attempting to parse.
 */
-QueryInfo PQLParser::Parse(STRING s) {
+QueryInfo PQLParser::Parse(string s) {
     QueryInfo query_info;
 
     QuerySyntaxValidator* query_syntax_validator = new QuerySyntaxValidator();
-    STRING query = s;
-    BOOLEAN is_query_valid = true;
+    string query = s;
+    bool is_query_valid = true;
 
     // Tables to build from parsing and pass to queryInfo
     STRING_STRING_MAP entity_map;
@@ -22,11 +22,11 @@ QueryInfo PQLParser::Parse(STRING s) {
     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&query);
 
     try {
-        if (query.find(";") != STRING::npos) {
+        if (query.find(";") != string::npos) {
             STRING_LIST all_declarations = PQLTokenizer::TokenizeBySemicolons(&query);
             for (auto decl : all_declarations) {
                 WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&decl);
-                STRING design_entity_type = decl.substr(0, decl.find_first_of(" "));
+                string design_entity_type = decl.substr(0, decl.find_first_of(" "));
                 // VALIDATION
                 if (!query_syntax_validator->ValidateDeclaration(decl, entity_map)) {
                     is_query_valid = false;
@@ -41,7 +41,7 @@ QueryInfo PQLParser::Parse(STRING s) {
             }
         }
 
-        STRING supposed_select_token = PQLTokenizer::RetrieveToken(&query);
+        string supposed_select_token = PQLTokenizer::RetrieveToken(&query);
 
         if (!query_syntax_validator->ValidateSelect(supposed_select_token)) {
             // cout << "NOT SELECT!" << endl;
@@ -49,9 +49,9 @@ QueryInfo PQLParser::Parse(STRING s) {
             throw ("Error : At PQLParser, Validate Select clause");
         }
 
-        STRING supposed_result_cl;
+        string supposed_result_cl;
 
-        if (query.find(">") != STRING::npos) {
+        if (query.find(">") != string::npos) {
             // found >, so we know that tuple has multiple elems : e.g. Select <s1, s2>
             // cout << "FOUND > " << endl;
             supposed_result_cl = PQLTokenizer::RetrieveTokenByClosingAngleBracket(&query);
@@ -84,13 +84,13 @@ QueryInfo PQLParser::Parse(STRING s) {
         If it's a suchthat or with clause,
         */
         regex r("such that|pattern|with|and");
-        STRING current_clause_type;
-        BOOLEAN current_is_and_clause = false;
-        BOOLEAN first_passed = false;
-        while (query.find_first_not_of(' ') != STRING::npos && !query.empty()) {
-            STRING current_token;
-            STRING clause_type;
-            STRING supposed_such_that = query.substr(0, 10);
+        string current_clause_type;
+        bool current_is_and_clause = false;
+        bool first_passed = false;
+        while (query.find_first_not_of(' ') != string::npos && !query.empty()) {
+            string current_token;
+            string clause_type;
+            string supposed_such_that = query.substr(0, 10);
             smatch m;
             // cout << "supposed_such_that:" << supposed_such_that << "|" << endl;
             WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&supposed_such_that);
@@ -126,7 +126,7 @@ QueryInfo PQLParser::Parse(STRING s) {
             first_passed = true;  // first clause has parsed, now 'and' can be allowed in place of such that / pattern / with
 
             // cout << "remainingQuery:" << query << endl;
-            STRING clause_arguments;
+            string clause_arguments;
             if (regex_search(query, m, r)) {
                 clause_arguments = m.prefix().str();
                 // cout << "clause_arguments:" << clause_arguments << "|" << endl;
@@ -137,7 +137,7 @@ QueryInfo PQLParser::Parse(STRING s) {
                 clause_arguments = query;
                 query.erase(0, clause_arguments.length());
             }
-            STRING full_clause;
+            string full_clause;
             if (clause_type.compare(TYPE_AND_CLAUSE) == 0) {
                 full_clause = current_clause_type;
             }
@@ -159,7 +159,7 @@ QueryInfo PQLParser::Parse(STRING s) {
                 if (query_syntax_validator->ValidateSuchthatClause(full_clause, entity_map)) {
                     full_clause.erase(0, 9); // erase such that away
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause);
-                    STRING relref_type = query_syntax_validator->GetValidRelRefType(full_clause, entity_map);
+                    string relref_type = query_syntax_validator->GetValidRelRefType(full_clause, entity_map);
                     full_clause.erase(0, full_clause.find_first_of("(")); // erase relref away
                     // cout << "full clause should have the opening bracket" << full_clause << endl;
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause);
@@ -186,14 +186,14 @@ QueryInfo PQLParser::Parse(STRING s) {
                 if (query_syntax_validator->ValidatePatternClause(full_clause, entity_map)) {
                     full_clause.erase(0, full_clause.find_first_of(" "));
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause); // pattern is erased away
-                    STRING pattern_select_var = PQLTokenizer::RetrieveTokenByOpenBracket(&full_clause);
+                    string pattern_select_var = PQLTokenizer::RetrieveTokenByOpenBracket(&full_clause);
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&pattern_select_var);
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause);
                     STRING_LIST pattern_result = ExtractArguments(full_clause);
                     pattern_result.push_back(pattern_select_var);
                     STRINGLIST_LIST list_of_pattern_result;
                     if (IsPatternPartial(full_clause)) {
-                        STRING expr_spec = pattern_result.at(1);
+                        string expr_spec = pattern_result.at(1);
                         expr_spec = expr_spec.substr(1, expr_spec.length() - 2);
                         pattern_result.at(1) = expr_spec;
                         list_of_pattern_result.push_back(pattern_result);
@@ -225,8 +225,8 @@ QueryInfo PQLParser::Parse(STRING s) {
                     full_clause.erase(0, full_clause.find_first_of(" "));
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause); // erase with clause
                     // remaining is xxx = yyy
-                    STRING first_arg = full_clause.substr(0, full_clause.find_first_of("="));
-                    STRING second_arg = full_clause.substr(full_clause.find_first_of("=") + 1, full_clause.length());
+                    string first_arg = full_clause.substr(0, full_clause.find_first_of("="));
+                    string second_arg = full_clause.substr(full_clause.find_first_of("=") + 1, full_clause.length());
                     STRING_PAIR* result_with = new STRING_PAIR();
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
@@ -279,15 +279,15 @@ QueryInfo PQLParser::Parse(STRING s) {
     return query_info;
 }
 
-STRING_STRING_MAP PQLParser::ParseDeclaration(STRING decl) {
+STRING_STRING_MAP PQLParser::ParseDeclaration(string decl) {
     STRING_STRING_MAP variable_names_declared;
     STRING_LIST temp_results;
-    STRING decl_clone = decl;
+    string decl_clone = decl;
     size_t pos = 0;
-    STRING token;
+    string token;
     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&decl_clone);
 
-    while ((pos = decl_clone.find(",")) != STRING::npos) {
+    while ((pos = decl_clone.find(",")) != string::npos) {
         token = decl_clone.substr(0, pos);
         WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&token);
         temp_results.push_back(token);
@@ -296,12 +296,12 @@ STRING_STRING_MAP PQLParser::ParseDeclaration(STRING decl) {
     }
     temp_results.push_back(decl_clone); // last declaration after the ending comma
     // cout << "trying to call front" << endl;
-    STRING entity_synonym = temp_results.front(); // this is "assign a" in "assign a, b, c"
+    string entity_synonym = temp_results.front(); // this is "assign a" in "assign a, b, c"
     // cout << "front called" << endl;
     temp_results.erase(temp_results.begin());
 
-    STRING entity_type = entity_synonym.substr(0, entity_synonym.find_first_of(" "));
-    STRING first_synonym = entity_synonym.substr(entity_synonym.find_first_of(" "), entity_synonym.length());
+    string entity_type = entity_synonym.substr(0, entity_synonym.find_first_of(" "));
+    string first_synonym = entity_synonym.substr(entity_synonym.find_first_of(" "), entity_synonym.length());
     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_synonym);
 
     variable_names_declared[first_synonym] = entity_type;
@@ -318,18 +318,18 @@ STRING_STRING_MAP PQLParser::ParseDeclaration(STRING decl) {
     return variable_names_declared;
 }
 
-VOID PQLParser::ParseResultClauseElem(STRING token, STRING_LIST* output_list) {
+void PQLParser::ParseResultClauseElem(string token, STRING_LIST* output_list) {
     output_list->push_back(token);
 }
 
-VOID PQLParser::ParseResultClauseTuple(STRING token, STRING_LIST* output_list) {
-    STRING temp_token = token;
-    STRING sub_token;
-    STRING comma = ",";
+void PQLParser::ParseResultClauseTuple(string token, STRING_LIST* output_list) {
+    string temp_token = token;
+    string sub_token;
+    string comma = ",";
     size_t pos = 0;
     // erase front and back <>
     temp_token = temp_token.substr(1, temp_token.length() - 2);
-    while ((pos = temp_token.find(comma)) != STRING::npos) {
+    while ((pos = temp_token.find(comma)) != string::npos) {
         sub_token = temp_token.substr(0, pos);
         // cout << "subtoken:" << sub_token << "|" << endl;
         WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&sub_token);
@@ -341,31 +341,31 @@ VOID PQLParser::ParseResultClauseTuple(STRING token, STRING_LIST* output_list) {
     output_list->push_back(temp_token);
 }
 
-STRING_LIST PQLParser::ExtractArguments(STRING token) {
+STRING_LIST PQLParser::ExtractArguments(string token) {
     // takes a bracket with two arguments , e.g. ( s1, s2) with any amount of whitespace. If argument has "", trim the whitespace inside.
-    STRING temp_token = token;
+    string temp_token = token;
     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
     // cout << "temp token:" << temp_token << endl;
     temp_token = temp_token.substr(1, temp_token.length() - 2); // erasing opening and closing brackets
     // cout << "Trimmed temp_token:" << temp_token << endl;
-    INTEGER comma_count = 0;
+    int comma_count = 0;
     for (int i = 0; i < temp_token.size(); i++) {
         if (temp_token[i] == ',') comma_count++;
     }
     STRING_LIST argument_list;
     if (comma_count == 1) {
         // ONLY TWO ARGS
-        STRING first_arg = temp_token.substr(0, temp_token.find_first_of(","));
-        STRING second_arg = temp_token.substr(temp_token.find_first_of(",") + 1, temp_token.length());
+        string first_arg = temp_token.substr(0, temp_token.find_first_of(","));
+        string second_arg = temp_token.substr(temp_token.find_first_of(",") + 1, temp_token.length());
         // cout << "EXTRACTING FIRST ARG: " << first_arg << endl;
         // cout << "1st arg:" << first_arg << endl;
         // cout << "2nd arg:" << second_arg << endl;
         WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
         WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
-        STRING first_arg_first_two_chars;
-        STRING first_arg_last_two_chars;
-        STRING second_arg_first_two_chars;
-        STRING second_arg_last_two_chars;
+        string first_arg_first_two_chars;
+        string first_arg_last_two_chars;
+        string second_arg_first_two_chars;
+        string second_arg_last_two_chars;
         if (first_arg.length() > 2) {
             first_arg_first_two_chars = first_arg.substr(0, 2);
             first_arg_last_two_chars = first_arg.substr(first_arg.length() - 2, first_arg.length());
@@ -385,7 +385,7 @@ STRING_LIST PQLParser::ExtractArguments(STRING token) {
             // append back " "
             // cout << "PUTTING BACK ARGS:" << endl;
             // cout << "first Arg : " << first_arg << endl;
-            STRING first_arg_result = "\"";
+            string first_arg_result = "\"";
             first_arg_result.append(first_arg);
             first_arg_result.append("\"");
             argument_list.push_back(first_arg_result);
@@ -395,7 +395,7 @@ STRING_LIST PQLParser::ExtractArguments(STRING token) {
             WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
             // cout << "1st arg: " << first_arg << "|" << endl;
             // append back " "
-            STRING first_arg_result = "_\"";
+            string first_arg_result = "_\"";
             first_arg_result.append(first_arg);
             first_arg_result.append("\"_");
             argument_list.push_back(first_arg_result);
@@ -408,7 +408,7 @@ STRING_LIST PQLParser::ExtractArguments(STRING token) {
             WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
             // cout << "2nd arg: "<< second_arg << "|" << endl;
             // append back " "
-            STRING second_arg_result = "\"";
+            string second_arg_result = "\"";
             second_arg_result.append(second_arg);
             second_arg_result.append("\"");
             argument_list.push_back(second_arg_result);
@@ -419,7 +419,7 @@ STRING_LIST PQLParser::ExtractArguments(STRING token) {
             WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
             //  cout << "2nd arg: "<< second_arg << "|" << endl;
              // append back " "
-            STRING second_arg_result = "_\"";
+            string second_arg_result = "_\"";
             second_arg_result.append(second_arg);
             second_arg_result.append("\"_");
             argument_list.push_back(second_arg_result);
@@ -430,10 +430,10 @@ STRING_LIST PQLParser::ExtractArguments(STRING token) {
     }
     if (comma_count == 2) {
         // three args
-        STRING first_arg = temp_token.substr(0, temp_token.find_first_of(","));
+        string first_arg = temp_token.substr(0, temp_token.find_first_of(","));
         temp_token.erase(0, temp_token.find_first_of(",") + 1);
-        STRING second_arg = temp_token.substr(0, temp_token.find_first_of(","));
-        STRING third_arg = temp_token.substr(temp_token.find_first_of(",") + 1, temp_token.length());
+        string second_arg = temp_token.substr(0, temp_token.find_first_of(","));
+        string third_arg = temp_token.substr(temp_token.find_first_of(",") + 1, temp_token.length());
         WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
         WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
         WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&third_arg);
@@ -443,7 +443,7 @@ STRING_LIST PQLParser::ExtractArguments(STRING token) {
             WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
             // cout << "1st arg: " << first_arg << "|" << endl;
             // append back " "
-            STRING first_arg_result = "\"";
+            string first_arg_result = "\"";
             first_arg_result.append(first_arg);
             first_arg_result.append("\"");
             argument_list.push_back(first_arg_result);
@@ -463,18 +463,18 @@ STRING_LIST PQLParser::ExtractArguments(STRING token) {
 }
 
 
-BOOLEAN PQLParser::IsPatternPartial(STRING token) {
-    BOOLEAN is_partial = false;
-    STRING temp_token = token;
+bool PQLParser::IsPatternPartial(string token) {
+    bool is_partial = false;
+    string temp_token = token;
     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
     temp_token = temp_token.substr(1, temp_token.length() - 2); // erasing opening and closing brackets
     // cout << "Trimmed temp_token:" << temp_token << endl;
-    STRING first_arg = temp_token.substr(0, temp_token.find_first_of(","));
-    STRING second_arg = temp_token.substr(temp_token.find_first_of(",") + 1, temp_token.length());
+    string first_arg = temp_token.substr(0, temp_token.find_first_of(","));
+    string second_arg = temp_token.substr(temp_token.find_first_of(",") + 1, temp_token.length());
     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
 
-    STRING second_arg_first_two_chars;
-    STRING second_arg_last_two_chars;
+    string second_arg_first_two_chars;
+    string second_arg_last_two_chars;
     if (second_arg.length() > 2) {
         second_arg_first_two_chars = second_arg.substr(0, 2);
         second_arg_last_two_chars = second_arg.substr(second_arg.length() - 2, second_arg.length());

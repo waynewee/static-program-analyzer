@@ -1,6 +1,6 @@
 #include "PQLTokenizer.h"
 
-STRING_LIST PQLTokenizer::TokenizeBySemicolons(STRING* query) {
+STRING_LIST PQLTokenizer::TokenizeBySemicolons(string* query) {
     string delimiter = ";";
     size_t pos = 0;
     string token;
@@ -17,27 +17,27 @@ STRING_LIST PQLTokenizer::TokenizeBySemicolons(STRING* query) {
     return all_declarations;
 }
 
-STRING PQLTokenizer::RetrieveToken(STRING* str) {
+string PQLTokenizer::RetrieveToken(string* str) {
     WhitespaceHandler::TrimLeadingWhitespaces(str);
-    STRING next_word = str->substr(0, str->find_first_of(" "));
+    string next_word = str->substr(0, str->find_first_of(" "));
     str->erase(0, str->find_first_of(" "));
     WhitespaceHandler::TrimLeadingWhitespaces(str);
     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&next_word);
     return next_word;
 }
 
-STRING PQLTokenizer::RetrieveTokenByOpenBracket(STRING* str) {
+string PQLTokenizer::RetrieveTokenByOpenBracket(string* str) {
     WhitespaceHandler::TrimLeadingWhitespaces(str);
-    STRING next_word = str->substr(0, str->find_first_of("("));
+    string next_word = str->substr(0, str->find_first_of("("));
     str->erase(0, str->find_first_of("("));
     WhitespaceHandler::TrimLeadingWhitespaces(str);
     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&next_word);
     return next_word;
 }
 
-STRING PQLTokenizer::RetrieveTokenByClosingAngleBracket(STRING* str) {
+string PQLTokenizer::RetrieveTokenByClosingAngleBracket(string* str) {
     WhitespaceHandler::TrimLeadingWhitespaces(str);
-    STRING next_word = str->substr(0, str->find_first_of(">") + 1);
+    string next_word = str->substr(0, str->find_first_of(">") + 1);
     str->erase(0, str->find_first_of(">") + 1);
     WhitespaceHandler::TrimLeadingWhitespaces(str);
     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&next_word);
