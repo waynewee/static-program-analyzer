@@ -16,17 +16,17 @@ using namespace std;
 class PQLParser
 {
 public:
-	QueryInfo Parse(STRING query);
+	QueryInfo Parse(string query);
 
-	STRING_STRING_MAP ParseDeclaration(STRING decl);
+	STRING_STRING_MAP ParseDeclaration(string decl);
 
-	VOID ParseResultClauseElem(STRING token, STRING_LIST* output_list);
+	void ParseResultClauseElem(string token, STRING_LIST* output_list);
 
-	VOID ParseResultClauseTuple(STRING token, STRING_LIST* output_list);
+	void ParseResultClauseTuple(string token, STRING_LIST* output_list);
 
-	STRING_LIST ExtractArguments(STRING token);
+	STRING_LIST ExtractArguments(string token);
 
-	BOOLEAN IsPatternPartial(STRING token);
+	bool IsPatternPartial(string token);
 
 };
 

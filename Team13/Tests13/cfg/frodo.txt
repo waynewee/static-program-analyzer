@@ -1,0 +1,24 @@
+procedure Gandalf {
+  read shine;
+  ring = shine * 2;
+  f = ring + 3;
+  read help;
+  read Frodo;
+  if (lost != ((shine * 6 % ring) + help) / (123 + 456) && 0 == 0 || Frodo != help ) then {
+    print Aragon;
+    d = (shine + 12) * help - (55 % ((((6)))));
+  }  else {
+    d = 2;
+  }
+  while (f > 10) {
+      read g;
+      f = ring + 4 + g * a * 2 * 1 + shine;
+      read Frodo;
+  }
+  if (Frodo == shine) then {
+    print help;
+  } else {
+    print Frodo;
+  }
+  print d;
+}

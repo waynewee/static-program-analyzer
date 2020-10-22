@@ -6,7 +6,7 @@
 #include "QueryResult.h"
 #include <iostream>
 
-STRING_SET PQLDriver::Query(STRING query_string) {
+STRING_SET PQLDriver::Query(string query_string) {
 	PQLParser parser = PQLParser();
 	PQLEvaluator evaluator = PQLEvaluator();
 	PQLProjector projector = PQLProjector();

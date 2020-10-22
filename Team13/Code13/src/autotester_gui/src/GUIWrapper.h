@@ -5,9 +5,12 @@
 #include <iostream>
 #include <list>
 
+#include <PKB.h>
+#include <Windows.h>
 
 class GUIWrapper {
  public:
+	 PKB* pkb;
   // default constructor
   GUIWrapper();
   
@@ -18,7 +21,7 @@ class GUIWrapper {
   virtual void parse(std::string filename);
   
   // method for evaluating a query
-  virtual void evaluate(std::string query, std::list<std::string>& results);
+  virtual void Evaluate(std::string query, std::list<std::string>& results);
 };
 
 #endif

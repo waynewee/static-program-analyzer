@@ -11,21 +11,21 @@ class QuerySyntacticValidator
 public:
 	QuerySyntacticValidator(); 
 
-	BOOLEAN ValidateDeclaration(STRING token);
-	BOOLEAN ValidateSuchThatClause(STRING token);
+	bool ValidateDeclaration(string token);
+	bool ValidateSuchThatClause(string token);
 
-	BOOLEAN ValidatePatternClause(STRING token, STRING_STRING_MAP declared_var_names);
+	bool ValidatePatternClause(string token, STRING_STRING_MAP declared_var_names);
 
-	BOOLEAN ValidateWithClause(STRING token);
+	bool ValidateWithClause(string token);
 
-	BOOLEAN IsRelRef(STRING token);
-	BOOLEAN IsValidRelRefArgument(STRING token);
-	BOOLEAN IsIdent(STRING token);
-	BOOLEAN IsName(STRING token);
-	BOOLEAN IsInteger(STRING token);
-	BOOLEAN IsSynonym(STRING token);
+	bool IsRelRef(string token);
+	bool IsValidRelRefArgument(string token);
+	bool IsIdent(string token);
+	bool IsName(string token);
+	bool IsInteger(string token);
+	bool IsSynonym(string token);
 
-	BOOLEAN IsAttrRef(STRING token);
-	BOOLEAN IsRef(STRING token);
+	bool IsAttrRef(string token);
+	bool IsRef(string token);
 };
 

@@ -14,19 +14,19 @@ private:
 public:
 	QueryValidator();
 
-	BOOLEAN ValidateDeclaration(STRING decl, STRING_STRING_MAP entity_map);
+	bool ValidateDeclaration(string decl, STRING_STRING_MAP entity_map);
 
-	BOOLEAN ValidateSelect(STRING token);
+	bool ValidateSelect(string token);
 
-	BOOLEAN ValidateResultClause(STRING token, STRING_STRING_MAP user_declared_vars);
+	bool ValidateResultClause(string token, STRING_STRING_MAP user_declared_vars);
 
-	BOOLEAN ValidateSuchthatClause(STRING token, STRING_STRING_MAP user_declared_vars);
+	bool ValidateSuchthatClause(string token, STRING_STRING_MAP user_declared_vars);
 
-	STRING GetValidRelRefType(STRING token, STRING_STRING_MAP user_declared_vars);
+	string GetValidRelRefType(string token, STRING_STRING_MAP user_declared_vars);
 
-	BOOLEAN ValidatePatternClause(STRING token, STRING_STRING_MAP user_declared_vars);
+	bool ValidatePatternClause(string token, STRING_STRING_MAP user_declared_vars);
 
-	BOOLEAN ValidateWithClause(STRING token, STRING_STRING_MAP user_declared_vars);
+	bool ValidateWithClause(string token, STRING_STRING_MAP user_declared_vars);
 
 };
 
