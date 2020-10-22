@@ -35,10 +35,10 @@ public:
 	bool IsRef(string token, string synonym_type);
 	bool IsAttrRef(string token, string synonym_type);
 
-	bool IsAttrCond(string token, STRING_STRING_MAP declared_var_names);
-	bool IsAttrCompare(string token, STRING_STRING_MAP declared_var_names);
-	bool IsRef(string token, string synonym_type);
-	bool IsAttrRef(string token);
+	//bool IsAttrCond(string token, STRING_STRING_MAP declared_var_names);
+	//bool IsAttrCompare(string token, STRING_STRING_MAP declared_var_names);
+	//bool IsRef(string token, string synonym_type);
+	//bool IsAttrRef(string token);
 
 	bool IsRelCond(string token, STRING_STRING_MAP declared_var_names);
 	bool IsRelRef(string token, STRING_STRING_MAP declared_var_names);

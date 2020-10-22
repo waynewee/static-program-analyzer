@@ -32,7 +32,7 @@ void GUIWrapper::parse(std::string filename) {
 	DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
-	DesignExtractor::ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
+	//DesignExtractor::ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
 }
 
 // method to evaluating a query

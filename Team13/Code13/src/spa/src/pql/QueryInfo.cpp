@@ -52,7 +52,7 @@ void QueryInfo::SetValidToFalse() {
 	this->is_valid_ = false;
 }
 
-VOID QueryInfo::SetInvalidDueToSemanticsTrue() {
+void QueryInfo::SetInvalidDueToSemanticsTrue() {
 	this->is_invalid_due_to_semantics_ = true;
 }
 
