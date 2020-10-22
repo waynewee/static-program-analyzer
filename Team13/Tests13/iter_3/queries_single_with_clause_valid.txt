@@ -235,7 +235,7 @@ Select s with n = s.stmt#
 47 - prog_line synonym, synonym with attribute - constant
 constant c; prog_line n;
 Select c with n = c.value
-2,3,6,123,456,12,55,6,4,1
+2,3,12,6,4,1
 5000
 48 - prog_line synonym, synonym with attribute - assign
 assign a; prog_line n;
@@ -280,92 +280,439 @@ TRUE
 56 - synonym with attribute, synonym with attribute - procedure, variable
 procedure p; variable v;
 Select v with p.procName = v.varName
+Food, Gandalf
+5000
+57 - synonym with attribute, synonym with attribute - procedure, read (variable)
+procedure p; read r;
+Select r with p.procName = r.varName
+1, 27
+5000
+58 - synonym with attribute, synonym with attribute - procedure, read (variable)
+procedure p; read r;
+Select r.varName with p.procName = r.varName
+Food, Gandalf
+5000
+59 - synonym with attribute, synonym with attribute - procedure, print (variable)
+procedure p; print pr;
+Select pr with p.procName = pr.varName
+34
+5000
+60 - synonym with attribute, synonym with attribute - procedure, print (variable)
+procedure p; print pr;
+Select pr.varName with p.procName = pr.varName
 Food
 5000
-synonym with attribute, synonym with attribute - procedure, read (variable)
-synonym with attribute, synonym with attribute - procedure, print (variable)
-synonym with attribute, synonym with attribute - procedure, call (variable)
-synonym with attribute, synonym with attribute - variable, procedure
-synonym with attribute, synonym with attribute - variable, variable
-synonym with attribute, synonym with attribute - variable, read (variable)
-synonym with attribute, synonym with attribute - variable, print (variable)
-synonym with attribute, synonym with attribute - variable, call (variable)
-synonym with attribute, synonym with attribute - read (variable), procedure
-synonym with attribute, synonym with attribute - read (variable), variable
-synonym with attribute, synonym with attribute - read (variable), read (variable)
-synonym with attribute, synonym with attribute - read (variable), print (variable)
-synonym with attribute, synonym with attribute - read (variable), call (variable)
-synonym with attribute, synonym with attribute - print (variable), procedure
-synonym with attribute, synonym with attribute - print (variable), variable
-synonym with attribute, synonym with attribute - print (variable), read (variable)
-synonym with attribute, synonym with attribute - print (variable), print (variable)
-synonym with attribute, synonym with attribute - print (variable), call (variable)
-synonym with attribute, synonym with attribute - call (variable), procedure
-synonym with attribute, synonym with attribute - call (variable), variable
-synonym with attribute, synonym with attribute - call (variable), read (variable)
-synonym with attribute, synonym with attribute - call (variable), print (variable)
-synonym with attribute, synonym with attribute - call (variable), call (variable)
-synonym with attribute, synonym with attribute - statement, statement
-synonym with attribute, synonym with attribute - statement, assign
-synonym with attribute, synonym with attribute - statement, read
-synonym with attribute, synonym with attribute - statement, print
-synonym with attribute, synonym with attribute - statement, while
-synonym with attribute, synonym with attribute - statement, if
-synonym with attribute, synonym with attribute - statement, constant
-synonym with attribute, synonym with attribute - statement, call
-synonym with attribute, synonym with attribute - assign, statement
-synonym with attribute, synonym with attribute - assign, assign
-synonym with attribute, synonym with attribute - assign, read
-synonym with attribute, synonym with attribute - assign, print
-synonym with attribute, synonym with attribute - assign, while
-synonym with attribute, synonym with attribute - assign, if
-synonym with attribute, synonym with attribute - assign, constant
-synonym with attribute, synonym with attribute - assign, call
-synonym with attribute, synonym with attribute - read, statement
-synonym with attribute, synonym with attribute - read, assign
-synonym with attribute, synonym with attribute - read, read
-synonym with attribute, synonym with attribute - read, print
-synonym with attribute, synonym with attribute - read, while
-synonym with attribute, synonym with attribute - read, if
-synonym with attribute, synonym with attribute - read, constant
-synonym with attribute, synonym with attribute - read, call
-synonym with attribute, synonym with attribute - print, statement
-synonym with attribute, synonym with attribute - print, assign
-synonym with attribute, synonym with attribute - print, read
-synonym with attribute, synonym with attribute - print, print
-synonym with attribute, synonym with attribute - print, while
-synonym with attribute, synonym with attribute - print, if
-synonym with attribute, synonym with attribute - print, constant
-synonym with attribute, synonym with attribute - print, call
-synonym with attribute, synonym with attribute - while, statement
-synonym with attribute, synonym with attribute - while, assign
-synonym with attribute, synonym with attribute - while, read
-synonym with attribute, synonym with attribute - while, print
-synonym with attribute, synonym with attribute - while, while
-synonym with attribute, synonym with attribute - while, if
-synonym with attribute, synonym with attribute - while, constant
-synonym with attribute, synonym with attribute - while, call
-synonym with attribute, synonym with attribute - if, statement
-synonym with attribute, synonym with attribute - if, assign
-synonym with attribute, synonym with attribute - if, read
-synonym with attribute, synonym with attribute - if, print
-synonym with attribute, synonym with attribute - if, while
-synonym with attribute, synonym with attribute - if, if
-synonym with attribute, synonym with attribute - if, constant
-synonym with attribute, synonym with attribute - if, call
-synonym with attribute, synonym with attribute - constant, statement
-synonym with attribute, synonym with attribute - constant, assign
-synonym with attribute, synonym with attribute - constant, read
-synonym with attribute, synonym with attribute - constant, print
-synonym with attribute, synonym with attribute - constant, while
-synonym with attribute, synonym with attribute - constant, if
-synonym with attribute, synonym with attribute - constant, constant
-synonym with attribute, synonym with attribute - constant, call
-synonym with attribute, synonym with attribute - call, statement
-synonym with attribute, synonym with attribute - call, assign
-synonym with attribute, synonym with attribute - call, read
-synonym with attribute, synonym with attribute - call, print
-synonym with attribute, synonym with attribute - call, while
-synonym with attribute, synonym with attribute - call, if
-synonym with attribute, synonym with attribute - call, constant
-synonym with attribute, synonym with attribute - call, call
+61 - synonym with attribute, synonym with attribute - procedure, call (variable)
+procedure p; call cl;
+Select cl with p.procName = cl.procName
+24,35,45
+5000
+62 - synonym with attribute, synonym with attribute - procedure, call (variable)
+procedure p; call cl;
+Select cl.procName with p.procName = cl.procName
+Food
+5000
+62 - synonym with attribute, synonym with attribute - variable, procedure
+variable v; procedure p;
+Select p with v.varName = p.procName
+Food, Gandalf
+5000
+63 - synonym with attribute, synonym with attribute - variable, variable - same synonym
+variable v;
+Select BOOLEAN with v.varName = v.varName
+TRUE
+5000
+64 - synonym with attribute, synonym with attribute - variable, variable - different synonyms
+variable v1,v2;
+Select BOOLEAN with v1.varName = v2.varName
+TRUE
+5000
+65 - synonym with attribute, synonym with attribute - variable, read (variable)
+variable v; read r;
+Select r with v.varName = r.varName
+1,4,5,11,21,23,27,33,39,47
+5000
+66- synonym with attribute, synonym with attribute - variable, read (variable)
+variable v; read r;
+Select r.varName with v.varName = r.varName
+Food, help, Frodo, ginger, g, Gandalf, breakfast, hungry
+5000
+67 - synonym with attribute, synonym with attribute - variable, print (variable)
+variable v; print pr;
+Select pr with v.varName = pr.varName
+7,9,26,28,31,38,46
+5000
+68 - synonym with attribute, synonym with attribute - variable, print (variable)
+variable v; print pr;
+Select pr.varName with v.varName = pr.varName
+hungry, Food, d, Frodo, help, ginger, Aragon
+5000
+69 - synonym with attribute, synonym with attribute - variable, call (variable)
+variable v; call cl;
+Select cl with v.varName = cl.procName
+24,35,45
+5000
+70 - synonym with attribute, synonym with attribute - variable, call (variable)
+variable v; call cl;
+Select cl.procName with v.varName = cl.procName
+Food
+5000
+71 - synonym with attribute, synonym with attribute - read (variable), procedure
+read r; procedure p;
+Select p with r.varName = p.procName
+Food, Gandalf
+5000
+72 - synonym with attribute, synonym with attribute - read (variable), variable
+read r; variable v;
+Select v with r.varName = v.varName
+Food, help, Frodo, ginger, g, Gandalf, breakfast, hungry
+5000
+72 - synonym with attribute, synonym with attribute - read (variable), read (variable) - same synonym
+read r;
+Select BOOLEAN with r.varName = r.varName
+TRUE
+5000
+73 - synonym with attribute, synonym with attribute - read (variable), read (variable) - different synonyms
+read r1, r2;
+Select BOOLEAN with r1.varName = r2.varName
+TRUE
+5000
+74 - synonym with attribute, synonym with attribute - read (variable), print (variable)
+read r; print pr;
+Select pr with r.varName = pr.varName
+34,38,46,28,26,9
+5000
+75  - synonym with attribute, synonym with attribute - read (variable), print (variable)
+read r; print pr;
+Select pr.varName with r.varName = pr.varName
+Food,hungry,Frodo,help,ginger
+5000
+76 - synonym with attribute, synonym with attribute - read (variable), call (variable)
+read r; call cl;
+Select cl with r.varName = cl.procName
+24,35,45
+5000
+77 - synonym with attribute, synonym with attribute - read (variable), call (variable)
+read r; call cl;
+Select cl.procName with r.varName = cl.procName
+Food
+5000
+78 - synonym with attribute, synonym with attribute - print (variable), procedure
+print pr; procedure p;
+Select p with pr.varName = p.procName
+Food
+5000
+79 - synonym with attribute, synonym with attribute - print (variable), variable
+print pr; variable v;
+Select v with pr.varName = v.varName
+hungry, Food, d, Frodo, help, ginger, Aragon
+5000
+80 - synonym with attribute, synonym with attribute - print (variable), read (variable)
+print pr; read r;
+Select r with pr.varName = r.varName
+1,39,47,23,5,4,11
+5000
+81 - synonym with attribute, synonym with attribute - print (variable), read (variable)
+print pr; read r;
+Select r.varName with pr.varName = r.varName
+Food,hungry,Frodo,help,ginger
+5000
+82 - synonym with attribute, synonym with attribute - print (variable), print (variable) - same synonym
+print pr;
+Select BOOLEAN with pr.varName = pr.varName
+TRUE
+5000
+83 - synonym with attribute, synonym with attribute - print (variable), print (variable) - different synonyms
+print pr1, pr2;
+Select BOOLEAN with pr1.varName = pr2.varName
+TRUE
+5000
+84 - synonym with attribute, synonym with attribute - print (variable), call (variable)
+print pr; call cl;
+Select cl with pr.varName = cl.procName
+24,35,45
+5000
+85 - synonym with attribute, synonym with attribute - print (variable), call (variable)
+print pr; call cl;
+Select cl.procName with pr.varName = cl.procName
+Food
+5000
+86 - synonym with attribute, synonym with attribute - call (variable), procedure
+call cl; procedure p;
+Select p with cl.procName = p.procName
+Food
+5000
+87 - synonym with attribute, synonym with attribute - call (variable), variable
+call cl; variable v;
+Select v with cl.procName = v.varName
+Food
+5000
+88 - synonym with attribute, synonym with attribute - call (variable), read (variable)
+call cl; read r;
+Select r with cl.procName = r.varName
+1
+5000
+89 - synonym with attribute, synonym with attribute - call (variable), read (variable)
+call cl; read r;
+Select r.varName with cl.procName = r.varName
+Food
+5000
+90 - synonym with attribute, synonym with attribute - call (variable), print (variable)
+call cl; print pr;
+Select pr with cl.procName = pr.varName
+34
+5000
+91 - synonym with attribute, synonym with attribute - call (variable), print (variable)
+call cl; print pr;
+Select pr.varName with cl.procName = pr.varName
+Food
+5000
+92 - synonym with attribute, synonym with attribute - call (variable), call (variable) - same synonym
+call cl;
+Select BOOLEAN with cl.procName = cl.procName
+TRUE
+5000
+93 - synonym with attribute, synonym with attribute - call (variable), call (variable) - different synonyms
+call cl1, cl2;
+Select BOOLEAN with cl1.procName = cl2.procName
+TRUE
+5000
+94 - synonym with attribute, synonym with attribute - statement, statement - same synonym
+stmt s;
+Select BOOLEAN with s.stmt# = s.stmt#
+TRUE
+5000
+95 - synonym with attribute, synonym with attribute - statement, statement - different synonyms
+stmt s1, s2;
+Select BOOLEAN with s1.stmt# = s2.stmt#
+TRUE
+5000
+96 - synonym with attribute, synonym with attribute - statement, assign
+stmt s; assign a;
+Select a with s.stmt# = a.stmt#
+2,3,8,10,12,14,15,16,17,18,19,22,29,30,37,40,41,42,43,44,48
+5000
+97 - synonym with attribute, synonym with attribute - statement, read
+stmt s; read r;
+Select r with s.stmt# = r.stmt#
+1,4,5,11,21,23,27,33,39,47
+98 - synonym with attribute, synonym with attribute - statement, read
+stmt s; read r;
+Select r.varName with s.stmt# = r.stmt#
+Food, help, Frodo, ginger, g, Gandalf, breakfast, hungry
+5000
+99 - synonym with attribute, synonym with attribute - statement, print
+stmt s; print pr;
+Select pr with s.stmt# = pr.stmt#
+7,9,26,28,31,38,46
+5000
+100 - synonym with attribute, synonym with attribute - statement, print
+stmt s; print pr;
+Select pr.varName with s.stmt# = pr.stmt#
+hungry, Food, d, Frodo, help, ginger, Aragon
+5000
+101 -synonym with attribute, synonym with attribute - statement, while
+stmt s; while w;
+Select w with s.stmt# = w.stmt#
+20,32,36
+5000
+102 - synonym with attribute, synonym with attribute - statement, if
+stmt s; if ifs;
+Select s with s.stmt# = ifs.stmt#
+6,13,25
+5000
+103 - synonym with attribute, synonym with attribute - statement, constant
+stmt s; constant c;
+Select s with s.stmt# = c.value
+2,3,12,6,4,1,45
+5000
+104 - synonym with attribute, synonym with attribute - statement, call
+stmt s; call cl;
+Select cl with s.stmt# = cl.stmt#
+24,35,45
+5000
+105 - synonym with attribute, synonym with attribute - statement, call
+stmt s; call cl;
+Select cl.procName with s.stmt# = cl.stmt#
+Food
+5000
+106 - synonym with attribute, synonym with attribute - assign, statement
+assign a; stmt s;
+Select s with a.stmt# = s.stmt#
+2,3,8,10,12,14,15,16,17,18,19,22,29,30,37,40,41,42,43,44,48
+5000
+107 - synonym with attribute, synonym with attribute - assign, assign - same synonym
+assign a;
+Select BOOLEAN with a.stmt# = a.stmt#
+TRUE
+5000
+108 - synonym with attribute, synonym with attribute - assign, assign - different synonyms
+assign a1, a2;
+Select BOOLEAN with a1.stmt# = a2.stmt#
+TRUE
+5000
+109 - synonym with attribute, synonym with attribute - assign, constant
+assign a; constant c;
+Select c with a.stmt# = c.value
+2,3
+5000
+110 - synonym with attribute, synonym with attribute - read, statement
+read r; stmt s;
+Select s with s.stmt# = r.stmt#
+1,4,5,11,21,23,27,33,39,47
+5000
+111 - synonym with attribute, synonym with attribute - read, read - same synonym
+read r;
+Select BOOLEAN with r.stmt# = r.stmt#
+TRUE
+5000
+112 - synonym with attribute, synonym with attribute - read, read - different synonyms
+read r1, r2;
+Select BOOLEAN with r1.stmt#= r2.stmt#
+TRUE
+5000
+113 - synonym with attribute, synonym with attribute - read, constant
+read r; constant c;
+Select c with r.stmt# = c.value
+4,1
+5000
+114 - synonym with attribute, synonym with attribute - print, statement
+print pr; stmt s;
+Select s with pr.stmt# = s.stmt#
+7,9,26,28,31,38,46
+5000
+115 - synonym with attribute, synonym with attribute - print, print - same synonym
+print p;
+Select BOOLEAN p.stmt# = p.stmt#
+TRUE
+5000
+116 - synonym with attribute, synonym with attribute - print, print - different synonyms
+print p1, p2;
+Select BOOLEAN p1.stmt# = p2.stmt#
+TRUE
+5000
+117 - synonym with attribute, synonym with attribute - print, constant
+print p; constant c;
+Select c with p.stmt# = c.value
+9
+5000
+118 - synonym with attribute, synonym with attribute - while, statement
+while w; stmt s;
+Select s with w.stmt# = s.stmt#
+20,32,36
+5000
+119 - synonym with attribute, synonym with attribute - while, while - same synonym
+while w;
+Select BOOLEAN with w.stmt# = w.stmt#
+TRUE
+5000
+120 - synonym with attribute, synonym with attribute - while, while - different synonyms
+while w1, w2;
+Select BOOLEAN with w1.stmt# = w2.stmt#
+TRUE
+5000
+121 - synonym with attribute, synonym with attribute - while, constant
+while w; constant c;
+Select c with w.stmt# = c.value
+32
+5000
+122 - synonym with attribute, synonym with attribute - if, statement
+if ifs; stmt s;
+Select s with ifs.stmt# = s.stmt#
+6,13,25
+5000
+123 - synonym with attribute, synonym with attribute - if, if - same synonym
+if ifs;
+Select BOOLEAN with ifs.stmt#  = ifs.stmt#
+TRUE
+5000
+124 - synonym with attribute, synonym with attribute - if, if - different synonyms
+if ifs1, ifs2;
+Select BOOLEAN with ifs1.stmt#  = ifs2.stmt#
+TRUE
+5000
+125 - synonym with attribute, synonym with attribute - if, constant
+if ifs; constant c;
+Select c with ifs.stmt# = c.value
+6
+5000
+126 - synonym with attribute, synonym with attribute - constant, statement
+constant c; stmt s;
+Select s with c.value = s.stmt#
+2,3,6,9,12,4,1,45
+5000
+127 - synonym with attribute, synonym with attribute - constant, assign
+constant c; assign a;
+Select a with c.value = a.stmt#
+2,3
+5000
+128 - synonym with attribute, synonym with attribute - constant, read
+constant c; read r;
+Select r with c.value = r.stmt#
+1,4
+5000
+129 - synonym with attribute, synonym with attribute - constant, read
+constant c; read r;
+Select r.varName with c.value = r.stmt#
+Food,help
+5000
+130 - synonym with attribute, synonym with attribute - constant, print
+constant c; print pr;
+Select pr with c.value = pr.stmt#
+9
+5000
+131 - synonym with attribute, synonym with attribute - constant, print
+constant c; print pr;
+Select pr.varName with c.value = pr.stmt#
+ginger
+5000
+132 - synonym with attribute, synonym with attribute - constant, while
+constant c; while w;
+Select w with c.value = w.stmt#
+32
+5000
+133 - synonym with attribute, synonym with attribute - constant, if
+constant c; if ifs;
+Select ifs with c.value = ifs.stmt#
+6
+5000
+134 - synonym with attribute, synonym with attribute - constant, constant - same synonym
+constant c;
+Select BOOLEAN with c = c
+TRUE
+5000
+135 - synonym with attribute, synonym with attribute - constant, constant - different synonyms
+constant c1,c2;
+Select BOOLEAN with c1 = c2
+TRUE
+5000
+136 - synonym with attribute, synonym with attribute - constant, call
+constant c; call cl;
+Select cl with c.value = cl.stmt#
+45
+5000
+137 - synonym with attribute, synonym with attribute - constant, call
+constant c; call cl;
+Select cl.procName with c.value = cl.stmt#
+Food
+5000
+138 - synonym with attribute, synonym with attribute - call, statement
+call cl; stmt s;
+Select s with cl.stmt# = s.stmt#
+24,35,45
+5000
+139 - synonym with attribute, synonym with attribute - call, constant
+call cl; constant c;
+Select c with cl.stmt# = c.value
+45
+5000
+140 - synonym with attribute, synonym with attribute - call, call - same synonym
+call cl;
+Select BOOLEAN with cl.stmt# = cl.stmt#
+TRUE
+5000
+141 - synonym with attribute, synonym with attribute - call, call - different synonyms
+call cl1,cl2;
+Select BOOLEAN with cl1.stmt# = cl2.stmt#
+TRUE
+5000
