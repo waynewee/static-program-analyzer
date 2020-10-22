@@ -1,0 +1,45 @@
+procedure Gandalf {
+	read shine; 																									//1
+	ring = shine * 2; 																						//2
+	f = ring + 3; 																								//3
+	read help; 																										//4
+	read Frodo; 																									//5
+	if (lost != ((shine * 6 % ring) + help) / (123 + 456)
+	&& 0 == 0
+	|| Frodo != help) then { 																			//6
+		print Aragon; 																							//7
+		d = (shine + 12) * help - (55 % ((((6))))); 								//8
+	}  else { 																										//9
+		d = 2;																											//10
+		read ginger;																								//11
+		ginger = (a+b)*(a+b)*a+b*a+b/a+b%a+b;												//12
+	}
+	if (check == breakfast) {																			//13
+		bread = a+b*a+b																							//14
+		jam = (a+b)*(a+b)																						//15
+		bread = b/a+b																								//16
+		jam = b%a+b																									//17
+	} else {
+		tomato = (a+b)*a+b*a+b																			//18
+		carrot = b*a+b/a																						//19
+	}
+	while (f > 10) {																							//20
+			read g;																										//21
+			f = ring + 4 + g * a * 2 * 1 + shine;											//22
+			read Frodo;																								//23
+			print tomato;																							//24
+	}
+	if (Frodo == shine) then {																		//25
+		print help;																									//26
+		read carrot;																								//27
+		breakfast = jam*2;
+	} else {
+		print Frodo;																								//28
+		carrot = carrot + tomato;																		//29
+		breakfast = bread*2;																				//30
+	}
+	print d;																											//31
+	read breakfast;																								//32
+	print bread;																									//33
+	read jam;																											//34
+}

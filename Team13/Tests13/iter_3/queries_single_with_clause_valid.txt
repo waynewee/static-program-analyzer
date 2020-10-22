@@ -198,64 +198,51 @@ constant c; prog_line n;
 Select c with n = c.value
 -1
 5000
-41
-
-
-
-
-
-
-33 - synonym with attribute, prog_line synonym - assign
+41 - prog_line synonym, synonym with attribute - assign
 assign a; prog_line n;
-Select a with a.stmt# = n
+Select a with n = a.stmt#
 2
 5000
-34 - synonym with attribute, prog_line synonym - if
+42 - prog_line synonym, synonym with attribute - if
 if ifs; prog_line n;
-Select c with ifs.stmt# = n
+Select c with n = ifs.stmt#
 1
 5000
-35 - synonym with attribute, prog_line synonym - while
+43 - prog_line synonym, synonym with attribute - while
 while w; prog_line n;
-Select w with w.stmt# = n
+Select w with n = w.stmt#
 3
 5000
-36 - synonym with attribute, prog_line synonym - call
+44 - prog_line synonym, synonym with attribute - call
 call cl; prog_line n;
-Select cl with cl.stmt# = n
+Select cl with n = cl.stmt#
 1
 5000
-37 - synonym with attribute, prog_line synonym - read
+45 - prog_line synonym, synonym with attribute - read
 read r; prog_line n;
-Select r with r.stmt# = n
+Select r with n = r.stmt#
 8
 5000
-38 - synonym with attribute, prog_line synonym - print
+46 - prog_line synonym, synonym with attribute - print
 print pr; prog_line n;
-Select pr with pr.stmt# = n
+Select pr with n = pr.stmt#
 9
 5000
-
-
-
-
-- synonym with attribute, synonym with attribute
-stmt s; constant c;
-Select s with s.stmt# = c.value
-none
-5000
-10 - string value, string value
+47 - string value, string value
 
 Select BOOLEAN with "x" = "x"
 TRUE
 5000
-11 - string value, synonym with attribute
-procedure p;
-Select p with "x" = p.procName
-"x"
+48 -
+
+
+synonym with attribute, synonym with attribute - procedure, call
+procedure p; call c;
+Select p with p.procName = c.procName
+-1
 5000
-12 - synonym with attribute, string value
-calls c;
-Select c with c.procName = "x"
-"x"
+49 - synonym with attribute, synonym with attribute - call, procedure
+procedure p; call c;
+Select p with p.procName = c.procName
+-1
 5000
