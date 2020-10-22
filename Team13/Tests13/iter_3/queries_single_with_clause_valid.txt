@@ -1,248 +1,371 @@
 1 - integer, integer
-prog_line n;
-Select n with 10 = 10
--1
+
+Select BOOLEAN with 10 = 10
+TRUE
 5000
-2 - prog line, prog_line synonym
+2 - IDENT, IDENT
+Select BOOLEAN with "x" = "x"
+TRUE
+5000
+3 - prog line, prog_line synonym
 prog_line n;
 Select n with 10 = n
 10
 5000
-3 - stmt number, synonym with attribute - statement
+4 - prog_line synonym, prog line
+prog_line n;
+Select n with n = 10
+10
+5000
+5 - prog_line synonym, prog_line synonym - same synonym
+prog_line n;
+Select n with n = n
+TRUE
+5000
+6 - prog_line synonym, prog_line synonym - different synonyms
+prog_line n1, n2;
+Select BOOLEAN with n1 = n2
+TRUE
+5000
+7 - stmt number, synonym with attribute - statement
 stmt s;
 Select s with 20 = s.stmt#
-s
+20
 5000
-4 - variable name, synonym with attribute - variable
+8 - variable name, synonym with attribute - variable
 variable v;
-Select v with "v" = v.varName
-v
+Select v with "breakfast" = v.varName
+breakfast
 5000
-5 - procedure name, synonym with attribute - procedure
+9 - procedure name, synonym with attribute - procedure
 procedure p;
-Select p with "p" = p.procName
-p
+Select p with "Gandalf" = p.procName
+Gandalf
 5000
-6 - integer, synonym with attribute - constant
+10 - constant value, synonym with attribute - constant
 constant c;
-Select c with 1 = c.value
-1
+Select c with 2 = c.value
+2
 5000
-7 - stmt number, synonym with attribute - assign
+11 - stmt number, synonym with attribute - assign
 assign a;
 Select a with 2 = a.stmt#
 2
 5000
-8 - stmt number, synonym with attribute - if
+12 - stmt number, synonym with attribute - if
 if ifs;
-Select c with 5 = ifs.stmt#
-1
+Select ifs with 6 = ifs.stmt#
+6
 5000
-9 - stmt number, synonym with attribute - while
+13 - stmt number, synonym with attribute - while
 while w;
-Select w with 3 = w.stmt#
-3
+Select w with 20 = w.stmt#
+20
 5000
-10 - stmt number, synonym with attribute - call
+14 - stmt number, synonym with attribute - call
 call cl;
-Select cl with 1 = cl.stmt#
+Select cl with 35 = cl.stmt#
+35
+5000
+15 - procedure name, synonym with attribute - call
+call cl;
+Select cl with "Food" = cl.procName
+45,35,24
+5000
+16 - procedure name, synonym with attribute - call
+call cl;
+Select cl.procName with "Food" = cl.procName
+Food
+5000
+16 - stmt number, synonym with attribute - read
+read r;
+Select r with 1 = r.stmt#
 1
 5000
-11 - procedure name, synonym with attribute - call
-call cl;
-Select cl with "p" = cl.procName
-5
-5000
-12 - stmt number, synonym with attribute - read
+17 - variable name, synonym with attribute - read
 read r;
-Select r with 8 = r.stmt#
-8
+Select r with "hungry" = r.varName
+39,47
 5000
-13 - variable name, synonym with attribute - read
+18 - variable name, synonym with attribute - read
 read r;
-Select r with "x" = r.varName
-x
+Select r.varName with "hungry" = r.varName
+hungry
 5000
-14 - stmt number, synonym with attribute - print
+19 - stmt number, synonym with attribute - print
 print pr;
 Select pr with 9 = pr.stmt#
 9
 5000
-15 - variable name, synonym with attribute - print
+20 - variable name, synonym with attribute - print
 print pr;
-Select pr with "x" = pr.varName
-x
+Select pr with "hungry" = pr.varName
+38,46
 5000
-16 - prog_line synonym, prog line
-prog_line n;
-Select n with n = 10
-none
+21 - variable name, synonym with attribute - print
+print pr;
+Select pr.varName with "hungry" = pr.varName
+hungry
 5000
-17 - synonym with attribute, integer - statement
+22 - synonym with attribute, integer - statement
 stmt s;
 Select s with s.stmt# = 20
-none
+20
 5000
-18 - synonym with attribute, variable name - variable
+23 - synonym with attribute, variable name - variable
 variable v;
-Select v with v.varName = "v"
-v
+Select v with v.varName = "breakfast"
+breakfast
 5000
-19 - synonym with attribute, procedure name - procedure
+24 - synonym with attribute, procedure name - procedure
 procedure p;
-Select p with p.procName = "p"
-p
+Select p with p.procName = "Gandalf"
+Gandalf
 5000
-20 - synonym with attribute, integer - constant
+25 - synonym with attribute, integer - constant
 constant c;
-Select c with c.value = 1
-1
+Select c with c.value = 2
+2
 5000
-21 - synonym with attribute, stmt number - assign
+26 - synonym with attribute, stmt number - assign
 assign a;
 Select a with a.stmt# = 2
 2
 5000
-22 - synonym with attribute, stmt number - if
+27 - synonym with attribute, stmt number - if
 if ifs;
-Select c with ifs.stmt# = 5
-1
+Select ifs with ifs.stmt# = 6
+6
 5000
-23 - synonym with attribute, stmt number - while
+28 - synonym with attribute, stmt number - while
 while w;
-Select w with w.stmt# = 3
-3
+Select w with w.stmt# = 20
+20
 5000
-24 - synonym with attribute, stmt number - call
+29 - synonym with attribute, stmt number - call
 call cl;
-Select cl with cl.stmt# = 1
+Select cl with cl.stmt# = 35
+35
+5000
+30 - synonym with attribute, procedure name - call
+call cl;
+Select cl with cl.procName = "Food"
+45,35,24
+5000
+31 - synonym with attribute, procedure name - call
+call cl;
+Select cl.procName with cl.procName = "Food"
+Food
+5000
+32 - synonym with attribute, stmt number - read
+read r;
+Select r with r.stmt# = 1
 1
 5000
-25 - synonym with attribute, procedure name - call
-call cl;
-Select cl with cl.procName = "p"
-5
-5000
-26 - synonym with attribute, stmt number - read
+33 - synonym with attribute, variable name - read
 read r;
-Select r with r.stmt# = 8
-8
+Select r with r.varName = "hungry"
+39,47
 5000
-27 - synonym with attribute, variable name - read
+34 - synonym with attribute, variable name - read
 read r;
-Select r with r.varName = "x"
-x
+Select r.varName with r.varName = "hungry"
+39,47
 5000
-28 - synonym with attribute, stmt number - print
+35 - synonym with attribute, stmt number - print
 print pr;
 Select pr with pr.stmt# = 9
 9
 5000
-29 - synonym with attribute, variable name - print
+36 - synonym with attribute, variable name - print
 print pr;
-Select pr with pr.varName = "x"
-x
+Select pr with pr.varName = "hungry"
+38,46
 5000
-30 - prog_line synonym, prog_line synonym
-prog_line n1, n2;
-Select n1 such that n1 = n2
--1
+37 - synonym with attribute, variable name - print
+print pr;
+Select pr.varName with pr.varName = "hungry"
+hungry
 5000
-31 - synonym with attribute, prog_line synonym - statement
+38 - synonym with attribute, prog_line synonym - statement
 stmt s; prog_line n;
 Select s with s.stmt# = n
--1
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48
 5000
-32 - synonym with attribute, prog_line synonym - constant
+39 - synonym with attribute, prog_line synonym - constant
 constant c; prog_line n;
 Select c with c.value = n
--1
+1,2,3,4,6,12
 5000
-33 - synonym with attribute, prog_line synonym - assign
+40 - synonym with attribute, prog_line synonym - assign
 assign a; prog_line n;
 Select a with a.stmt# = n
-2
+2,3,8,10,12,14,15,16,17,18,19,22,29,30,37,40,41,42,43,44,48
 5000
-34 - synonym with attribute, prog_line synonym - if
+41 - synonym with attribute, prog_line synonym - if
 if ifs; prog_line n;
-Select c with ifs.stmt# = n
-1
+Select ifs with ifs.stmt# = n
+6,13,25
 5000
-35 - synonym with attribute, prog_line synonym - while
+42 - synonym with attribute, prog_line synonym - while
 while w; prog_line n;
 Select w with w.stmt# = n
-3
+20,32,36
 5000
-36 - synonym with attribute, prog_line synonym - call
+43 - synonym with attribute, prog_line synonym - call
 call cl; prog_line n;
 Select cl with cl.stmt# = n
-1
+24,35,45
 5000
-37 - synonym with attribute, prog_line synonym - read
+44 - synonym with attribute, prog_line synonym - read
 read r; prog_line n;
 Select r with r.stmt# = n
-8
+1,4,5,11,21,23,27,33,39,47
 5000
-38 - synonym with attribute, prog_line synonym - print
+45 - synonym with attribute, prog_line synonym - print
 print pr; prog_line n;
 Select pr with pr.stmt# = n
-9
+7,9,26,28,31,38,46
 5000
-39 - prog_line synonym, synonym with attribute - statement
+46 - prog_line synonym, synonym with attribute - statement
 stmt s; prog_line n;
 Select s with n = s.stmt#
--1
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48
 5000
-40 - prog_line synonym, synonym with attribute - constant
+47 - prog_line synonym, synonym with attribute - constant
 constant c; prog_line n;
 Select c with n = c.value
--1
+2,3,6,123,456,12,55,6,4,1
 5000
-41 - prog_line synonym, synonym with attribute - assign
+48 - prog_line synonym, synonym with attribute - assign
 assign a; prog_line n;
 Select a with n = a.stmt#
-2
+2,3,8,10,12,14,15,16,17,18,19,22,29,30,37,40,41,42,43,44,48
 5000
-42 - prog_line synonym, synonym with attribute - if
+49 - prog_line synonym, synonym with attribute - if
 if ifs; prog_line n;
-Select c with n = ifs.stmt#
-1
+Select ifs with n = ifs.stmt#
+6,13,25
 5000
-43 - prog_line synonym, synonym with attribute - while
+50 - prog_line synonym, synonym with attribute - while
 while w; prog_line n;
 Select w with n = w.stmt#
-3
+20,32,36
 5000
-44 - prog_line synonym, synonym with attribute - call
+51 - prog_line synonym, synonym with attribute - call
 call cl; prog_line n;
 Select cl with n = cl.stmt#
-1
+24,35,45
 5000
-45 - prog_line synonym, synonym with attribute - read
+52 - prog_line synonym, synonym with attribute - read
 read r; prog_line n;
 Select r with n = r.stmt#
-8
+1,4,5,11,21,23,27,33,39,47
 5000
-46 - prog_line synonym, synonym with attribute - print
+53 - prog_line synonym, synonym with attribute - print
 print pr; prog_line n;
 Select pr with n = pr.stmt#
-9
+7,9,26,28,31,38,46
 5000
-47 - string value, string value
-
-Select BOOLEAN with "x" = "x"
+54 - synonym with attribute, synonym with attribute - procedure, procedure - same synonym
+procedure p;
+Select BOOLEAN with p.procName = p.procName
 TRUE
 5000
-48 -
-
-
-synonym with attribute, synonym with attribute - procedure, call
-procedure p; call c;
-Select p with p.procName = c.procName
--1
+55 - synonym with attribute, synonym with attribute - procedure, procedure - different synonyms
+procedure p1,p2;
+Select BOOLEAN with p1.procName = p2.procName
+TRUE
 5000
-49 - synonym with attribute, synonym with attribute - call, procedure
-procedure p; call c;
-Select p with p.procName = c.procName
--1
+56 - synonym with attribute, synonym with attribute - procedure, variable
+procedure p; variable v;
+Select v with p.procName = v.varName
+Food
 5000
+synonym with attribute, synonym with attribute - procedure, read (variable)
+synonym with attribute, synonym with attribute - procedure, print (variable)
+synonym with attribute, synonym with attribute - procedure, call (variable)
+synonym with attribute, synonym with attribute - variable, procedure
+synonym with attribute, synonym with attribute - variable, variable
+synonym with attribute, synonym with attribute - variable, read (variable)
+synonym with attribute, synonym with attribute - variable, print (variable)
+synonym with attribute, synonym with attribute - variable, call (variable)
+synonym with attribute, synonym with attribute - read (variable), procedure
+synonym with attribute, synonym with attribute - read (variable), variable
+synonym with attribute, synonym with attribute - read (variable), read (variable)
+synonym with attribute, synonym with attribute - read (variable), print (variable)
+synonym with attribute, synonym with attribute - read (variable), call (variable)
+synonym with attribute, synonym with attribute - print (variable), procedure
+synonym with attribute, synonym with attribute - print (variable), variable
+synonym with attribute, synonym with attribute - print (variable), read (variable)
+synonym with attribute, synonym with attribute - print (variable), print (variable)
+synonym with attribute, synonym with attribute - print (variable), call (variable)
+synonym with attribute, synonym with attribute - call (variable), procedure
+synonym with attribute, synonym with attribute - call (variable), variable
+synonym with attribute, synonym with attribute - call (variable), read (variable)
+synonym with attribute, synonym with attribute - call (variable), print (variable)
+synonym with attribute, synonym with attribute - call (variable), call (variable)
+synonym with attribute, synonym with attribute - statement, statement
+synonym with attribute, synonym with attribute - statement, assign
+synonym with attribute, synonym with attribute - statement, read
+synonym with attribute, synonym with attribute - statement, print
+synonym with attribute, synonym with attribute - statement, while
+synonym with attribute, synonym with attribute - statement, if
+synonym with attribute, synonym with attribute - statement, constant
+synonym with attribute, synonym with attribute - statement, call
+synonym with attribute, synonym with attribute - assign, statement
+synonym with attribute, synonym with attribute - assign, assign
+synonym with attribute, synonym with attribute - assign, read
+synonym with attribute, synonym with attribute - assign, print
+synonym with attribute, synonym with attribute - assign, while
+synonym with attribute, synonym with attribute - assign, if
+synonym with attribute, synonym with attribute - assign, constant
+synonym with attribute, synonym with attribute - assign, call
+synonym with attribute, synonym with attribute - read, statement
+synonym with attribute, synonym with attribute - read, assign
+synonym with attribute, synonym with attribute - read, read
+synonym with attribute, synonym with attribute - read, print
+synonym with attribute, synonym with attribute - read, while
+synonym with attribute, synonym with attribute - read, if
+synonym with attribute, synonym with attribute - read, constant
+synonym with attribute, synonym with attribute - read, call
+synonym with attribute, synonym with attribute - print, statement
+synonym with attribute, synonym with attribute - print, assign
+synonym with attribute, synonym with attribute - print, read
+synonym with attribute, synonym with attribute - print, print
+synonym with attribute, synonym with attribute - print, while
+synonym with attribute, synonym with attribute - print, if
+synonym with attribute, synonym with attribute - print, constant
+synonym with attribute, synonym with attribute - print, call
+synonym with attribute, synonym with attribute - while, statement
+synonym with attribute, synonym with attribute - while, assign
+synonym with attribute, synonym with attribute - while, read
+synonym with attribute, synonym with attribute - while, print
+synonym with attribute, synonym with attribute - while, while
+synonym with attribute, synonym with attribute - while, if
+synonym with attribute, synonym with attribute - while, constant
+synonym with attribute, synonym with attribute - while, call
+synonym with attribute, synonym with attribute - if, statement
+synonym with attribute, synonym with attribute - if, assign
+synonym with attribute, synonym with attribute - if, read
+synonym with attribute, synonym with attribute - if, print
+synonym with attribute, synonym with attribute - if, while
+synonym with attribute, synonym with attribute - if, if
+synonym with attribute, synonym with attribute - if, constant
+synonym with attribute, synonym with attribute - if, call
+synonym with attribute, synonym with attribute - constant, statement
+synonym with attribute, synonym with attribute - constant, assign
+synonym with attribute, synonym with attribute - constant, read
+synonym with attribute, synonym with attribute - constant, print
+synonym with attribute, synonym with attribute - constant, while
+synonym with attribute, synonym with attribute - constant, if
+synonym with attribute, synonym with attribute - constant, constant
+synonym with attribute, synonym with attribute - constant, call
+synonym with attribute, synonym with attribute - call, statement
+synonym with attribute, synonym with attribute - call, assign
+synonym with attribute, synonym with attribute - call, read
+synonym with attribute, synonym with attribute - call, print
+synonym with attribute, synonym with attribute - call, while
+synonym with attribute, synonym with attribute - call, if
+synonym with attribute, synonym with attribute - call, constant
+synonym with attribute, synonym with attribute - call, call
