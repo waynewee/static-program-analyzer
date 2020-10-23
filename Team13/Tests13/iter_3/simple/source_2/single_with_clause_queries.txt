@@ -1172,6 +1172,8 @@ none
 233 - (semantically invalid - no results) synonym with different attribute types - statement, call (procedure)
 stmt s; call cl;
 Select cl with s.stmt# = cl.procName
+none
+5000
 234 - (semantically invalid - no results) synonym with different attribute types - assign, procedure
 assign a; procedure p;
 Select p with a.stmt# = p.procName
@@ -1197,77 +1199,353 @@ assign a; call cl;
 Select cl with a.stmt# = cl.procName
 none
 5000
-
-
-
-
-(semantically invalid - no results) synonym with different attribute types - read, procedure
-(semantically invalid - no results) synonym with different attribute types - read, variable
-(semantically invalid - no results) synonym with different attribute types - read, read (variable)
-(semantically invalid - no results) synonym with different attribute types - read, print (variable)
-(semantically invalid - no results) synonym with different attribute types - read, call (procedure)
-(semantically invalid - no results) synonym with different attribute types - print, procedure
-(semantically invalid - no results) synonym with different attribute types - print, variable
-(semantically invalid - no results) synonym with different attribute types - print, read (variable)
-(semantically invalid - no results) synonym with different attribute types - print, print (variable)
-(semantically invalid - no results) synonym with different attribute types - print, call (procedure)
-(semantically invalid - no results) synonym with different attribute types - while, procedure
-(semantically invalid - no results) synonym with different attribute types - while, variable
-(semantically invalid - no results) synonym with different attribute types - while, read (variable)
-(semantically invalid - no results) synonym with different attribute types - while, print (variable)
-(semantically invalid - no results) synonym with different attribute types - while, call (procedure)
-(semantically invalid - no results) synonym with different attribute types - if, procedure
-(semantically invalid - no results) synonym with different attribute types - if, variable
-(semantically invalid - no results) synonym with different attribute types - if, read (variable)
-(semantically invalid - no results) synonym with different attribute types - if, print (variable)
-(semantically invalid - no results) synonym with different attribute types - if, call (procedure)
-(semantically invalid - no results) synonym with different attribute types - constant, procedure
-(semantically invalid - no results) synonym with different attribute types - constant, variable
-(semantically invalid - no results) synonym with different attribute types - constant, read (variable)
-(semantically invalid - no results) synonym with different attribute types - constant, print (variable)
-(semantically invalid - no results) synonym with different attribute types - constant, call (procedure)
-(semantically invalid - no results) synonym with different attribute types - call, procedure
-(semantically invalid - no results) synonym with different attribute types - call, variable
-(semantically invalid - no results) synonym with different attribute types - call, read (variable)
-(semantically invalid - no results) synonym with different attribute types - call, print (variable)
-(semantically invalid - no results) synonym with different attribute types - call, call (procedure)
-(semantically invalid - no results) synonym with different attribute types - procedure, statement
-(semantically invalid - no results) synonym with different attribute types - procedure, assign
-(semantically invalid - no results) synonym with different attribute types - procedure, read
-(semantically invalid - no results) synonym with different attribute types - procedure, print
-(semantically invalid - no results) synonym with different attribute types - procedure, while
-(semantically invalid - no results) synonym with different attribute types - procedure, if
-(semantically invalid - no results) synonym with different attribute types - procedure, constant
-(semantically invalid - no results) synonym with different attribute types - procedure, call
-(semantically invalid - no results) synonym with different attribute types - variable, statement
-(semantically invalid - no results) synonym with different attribute types - variable, assign
-(semantically invalid - no results) synonym with different attribute types - variable, read
-(semantically invalid - no results) synonym with different attribute types - variable, print
-(semantically invalid - no results) synonym with different attribute types - variable, while
-(semantically invalid - no results) synonym with different attribute types - variable, if
-(semantically invalid - no results) synonym with different attribute types - variable, constant
-(semantically invalid - no results) synonym with different attribute types - variable, call
-(semantically invalid - no results) synonym with different attribute types - read (variable), statement
-(semantically invalid - no results) synonym with different attribute types - read (variable), assign
-(semantically invalid - no results) synonym with different attribute types - read (variable), read
-(semantically invalid - no results) synonym with different attribute types - read (variable), print
-(semantically invalid - no results) synonym with different attribute types - read (variable), while
-(semantically invalid - no results) synonym with different attribute types - read (variable), if
-(semantically invalid - no results) synonym with different attribute types - read (variable), constant
-(semantically invalid - no results) synonym with different attribute types - read (variable), call
-(semantically invalid - no results) synonym with different attribute types - print (variable), statement
-(semantically invalid - no results) synonym with different attribute types - print (variable), assign
-(semantically invalid - no results) synonym with different attribute types - print (variable), read
-(semantically invalid - no results) synonym with different attribute types - print (variable), print
-(semantically invalid - no results) synonym with different attribute types - print (variable), while
-(semantically invalid - no results) synonym with different attribute types - print (variable), if
-(semantically invalid - no results) synonym with different attribute types - print (variable), constant
-(semantically invalid - no results) synonym with different attribute types - print (variable), call
-(semantically invalid - no results) synonym with different attribute types - call (procedure), statement
-(semantically invalid - no results) synonym with different attribute types - call (procedure), assign
-(semantically invalid - no results) synonym with different attribute types - call (procedure), read
-(semantically invalid - no results) synonym with different attribute types - call (procedure), print
-(semantically invalid - no results) synonym with different attribute types - call (procedure), while
-(semantically invalid - no results) synonym with different attribute types - call (procedure), if
-(semantically invalid - no results) synonym with different attribute types - call (procedure), constant
-(semantically invalid - no results) synonym with different attribute types - call (procedure), call
+239 - (semantically invalid - no results) synonym with different attribute types - read, procedure
+read r; procedure p;
+Select p with r.stmt# = p.procName
+none
+5000
+240 - (semantically invalid - no results) synonym with different attribute types - read, variable
+read r; variable v;
+Select v with r.stmt# = v.varName
+none
+5000
+241 - (semantically invalid - no results) synonym with different attribute types - read, read (variable)
+read r;
+Select r with r.stmt# = r.varName
+none
+5000
+242 - (semantically invalid - no results) synonym with different attribute types - read, print (variable)
+read r; print pr;
+Select pr with r.stmt# = pr.stmt#
+none
+5000
+243 - (semantically invalid - no results) synonym with different attribute types - read, call (procedure)
+read r; call cl;
+Select cl with r.stmt# = cl.procName
+none
+5000
+244 - (semantically invalid - no results) synonym with different attribute types - print, procedure
+print pr; procedure p;
+Select p with pr.stmt# = p.procName
+none
+5000
+245 - (semantically invalid - no results) synonym with different attribute types - print, variable
+print pr; variable v;
+Select v with pr.stmt# = v.varName
+none
+5000
+246 - (semantically invalid - no results) synonym with different attribute types - print, read (variable)
+print pr; read r;
+Select r with pr.stmt# = r.varName
+none
+5000
+247 - (semantically invalid - no results) synonym with different attribute types - print, print (variable)
+print p;
+Select p with p.stmt# = p.varName
+none
+5000
+248 - (semantically invalid - no results) synonym with different attribute types - print, call (procedure)
+print pr; call cl;
+Select cl with pr.stmt# = cl.procName
+none
+5000
+249 - (semantically invalid - no results) synonym with different attribute types - while, procedure
+while w; procedure p;
+Select p with w.stmt# = p.procName
+none
+5000
+250 - (semantically invalid - no results) synonym with different attribute types - while, variable
+while w; variable v;
+Select v with w.stmt# = v.varName
+none
+5000
+251 - (semantically invalid - no results) synonym with different attribute types - while, read (variable)
+while w; read r;
+Select r with w.stmt# = r.varName
+none
+5000
+252 - (semantically invalid - no results) synonym with different attribute types - while, print (variable)
+while w; print pr;
+Select pr with w.stmt# = pr.varName
+none
+5000
+253 - (semantically invalid - no results) synonym with different attribute types - while, call (procedure)
+while w; call cl;
+Select cl with w.stmt# = cl.procName
+none
+5000
+254 - (semantically invalid - no results) synonym with different attribute types - if, procedure
+if ifs; procedure p;
+Select p with ifs.stmt# = p.procName
+none
+5000
+255 - (semantically invalid - no results) synonym with different attribute types - if, variable
+if ifs; variable v;
+Select v with ifs.stmt# = v.varName
+none
+5000
+256 - (semantically invalid - no results) synonym with different attribute types - if, read (variable)
+if ifs; read r;
+Select r with ifs.stmt# = r.varName
+none
+5000
+257 - (semantically invalid - no results) synonym with different attribute types - if, print (variable)
+if ifs; print pr;
+Select pr with ifs.stmt# = pr.varName
+none
+5000
+258 - (semantically invalid - no results) synonym with different attribute types - if, call (procedure)
+if ifs; call cl;
+Select cl with ifs.stmt# = cl.varName
+none
+5000
+269 - (semantically invalid - no results) synonym with different attribute types - constant, procedure
+constant c; procedure p;
+Select p with c.value = p.procName
+none
+5000
+270 - (semantically invalid - no results) synonym with different attribute types - constant, variable
+constant c; variable v;
+Select v with c.value = v.varName
+none
+5000
+271 - (semantically invalid - no results) synonym with different attribute types - constant, read (variable)
+constant c; read r;
+Select r with c.value = r.varName
+none
+5000
+272 - (semantically invalid - no results) synonym with different attribute types - constant, print (variable)
+constant c; print pr;
+Select pr with c.value = pr.varName
+none
+5000
+273 - (semantically invalid - no results) synonym with different attribute types - constant, call (procedure)
+constant c; call cl;
+Select cl with c.value = cl.procName
+none
+5000
+274 - (semantically invalid - no results) synonym with different attribute types - call, procedure
+call cl; procedure p;
+Select p with cl.stmt# = p.procName
+none
+5000
+275 - (semantically invalid - no results) synonym with different attribute types - call, variable
+call cl; variable v;
+Select v with cl.stmt# = v.varName
+none
+5000
+276 - (semantically invalid - no results) synonym with different attribute types - call, read (variable)
+call cl; read r;
+Select r with cl.stmt# = r.varName
+none
+5000
+277 - (semantically invalid - no results) synonym with different attribute types - call, print (variable)
+call cl; print p;
+Select p with cl.stmt# = p.varName
+none
+5000
+278 - (semantically invalid - no results) synonym with different attribute types - call, call (procedure)
+call c;
+Select c with c.stmt# = c.procName
+none
+5000
+279 - (semantically invalid - no results) synonym with different attribute types - procedure, statement
+stmt s; procedure p;
+Select p with p.procName = s.stmt#
+none
+5000
+280 - (semantically invalid - no results) synonym with different attribute types - procedure, assign
+assign a; procedure p;
+Select p with p.procName = a.stmt#
+none
+5000
+281 - (semantically invalid - no results) synonym with different attribute types - procedure, read
+read r; procedure p;
+Select p with p.procName = r.stmt#
+none
+5000
+282 - (semantically invalid - no results) synonym with different attribute types - procedure, print
+print pr; procedure p;
+Select p with p.procName = pr.stmt#
+none
+5000
+283 - (semantically invalid - no results) synonym with different attribute types - procedure, while
+while w; procedure p;
+Select p with p.procName = w.stmt#
+none
+5000
+284 - (semantically invalid - no results) synonym with different attribute types - procedure, if
+if ifs; procedure p;
+Select p with p.procName = ifs.stmt#
+none
+5000
+285 - (semantically invalid - no results) synonym with different attribute types - procedure, constant
+constant c; procedure p;
+Select p with p.procName = c.value
+none
+5000
+286 - (semantically invalid - no results) synonym with different attribute types - procedure, call
+call cl; procedure p;
+Select p with p.procName = cl.stmt#
+none
+5000
+287 - (semantically invalid - no results) synonym with different attribute types - variable, statement
+stmt s; variable v;
+Select v with v.varName = s.stmt#
+none
+5000
+288 - (semantically invalid - no results) synonym with different attribute types - variable, assign
+assign a; variable v;
+Select v with v.varName = a.stmt#
+none
+5000
+289 - (semantically invalid - no results) synonym with different attribute types - variable, read
+read r; variable v;
+Select v with v.varName = r.stmt#
+none
+5000
+290 - (semantically invalid - no results) synonym with different attribute types - variable, print
+print pr; variable v;
+Select v with v.varName = pr.stmt#
+none
+5000
+291 - (semantically invalid - no results) synonym with different attribute types - variable, while
+while w; variable v;
+Select v with v.varName = w.stmt#
+none
+5000
+292 - (semantically invalid - no results) synonym with different attribute types - variable, if
+if ifs; variable v;
+Select v with v.varName = ifs.stmt#
+none
+5000
+293 - (semantically invalid - no results) synonym with different attribute types - variable, constant
+constant c; variable v;
+Select v with v.varName = c.value
+none
+5000
+294 - (semantically invalid - no results) synonym with different attribute types - variable, call
+call cl; variable v;
+Select v with v.varName = cl.stmt#
+none
+5000
+295 - (semantically invalid - no results) synonym with different attribute types - read (variable), statement
+stmt s ; read r;
+Select r with s.stmt# = r.varName
+none
+5000
+296 - (semantically invalid - no results) synonym with different attribute types - read (variable), assign
+assign a; read r;
+Select a with r.varName = a.stmt#
+none
+5000
+297 - (semantically invalid - no results) synonym with different attribute types - read (variable), read
+read r;
+Select r with r.varName = r.stmt#
+none
+5000
+298 - (semantically invalid - no results) synonym with different attribute types - read (variable), print
+print pr; read r;
+Select r with r.varName = pr.stmt#
+none
+5000
+299 - (semantically invalid - no results) synonym with different attribute types - read (variable), while
+while w; read r;
+Select r with r.varName = w.stmt#
+none
+5000
+300 - (semantically invalid - no results) synonym with different attribute types - read (variable), if
+if ifs; read r;
+Select r with r.varName = ifs.stmt#
+none
+5000
+301 - (semantically invalid - no results) synonym with different attribute types - read (variable), constant
+constant c; read r;
+Select r with r.varName = c.value
+none
+5000
+302 - (semantically invalid - no results) synonym with different attribute types - read (variable), call
+call cl; read r;
+Select r with r.varName = cl.stmt#
+none
+5000
+303 - (semantically invalid - no results) synonym with different attribute types - print (variable), statement
+stmt s; print pr;
+Select pr with s.stmt# = pr.varName
+none
+5000
+304 - (semantically invalid - no results) synonym with different attribute types - print (variable), assign
+assign a; print pr;
+Select a with pr.varName = a.stmt#
+none
+5000
+305 - (semantically invalid - no results) synonym with different attribute types - print (variable), read
+read r; print pr;
+Select pr with pr.stmt# = r.stmt#
+none
+5000
+306 - (semantically invalid - no results) synonym with different attribute types - print (variable), print
+print p;
+Select p with p.varName = p.stmt#
+none
+5000
+307 - (semantically invalid - no results) synonym with different attribute types - print (variable), while
+while w; print pr;
+Select pr with pr.varName = w.stmt#
+none
+5000
+308 - (semantically invalid - no results) synonym with different attribute types - print (variable), if
+if ifs; print pr;
+Select pr with pr.varName = ifs.stmt#
+none
+5000
+309 - (semantically invalid - no results) synonym with different attribute types - print (variable), constant
+constant c; print pr;
+Select pr with pr.varName = c.value
+none
+5000
+310 - (semantically invalid - no results) synonym with different attribute types - print (variable), call
+call cl; print p;
+Select p with p.varName = cl.stmt#
+none
+5000
+311 - (semantically invalid - no results) synonym with different attribute types - call (procedure), statement
+stmt s; call cl;
+Select cl with s.stmt# = cl.procName
+none
+5000
+312 - (semantically invalid - no results) synonym with different attribute types - call (procedure), assign
+assign a; call cl;
+Select cl with cl.procName = a.stmt#
+none
+5000
+313 - (semantically invalid - no results) synonym with different attribute types - call (procedure), read
+read r; call cl;
+Select cl with cl.procName = r.stmt#
+none
+5000
+314 - (semantically invalid - no results) synonym with different attribute types - call (procedure), print
+print pr; call cl;
+Select cl with cl.procName = pr.stmt#
+none
+5000
+315 - (semantically invalid - no results) synonym with different attribute types - call (procedure), while
+while w; call cl;
+Select cl with cl.procName = w.stmt#
+none
+5000
+316 - (semantically invalid - no results) synonym with different attribute types - call (procedure), if
+if ifs; call cl;
+Select cl with cl.varName = ifs.stmt#
+none
+5000
+317 - (semantically invalid - no results) synonym with different attribute types - call (procedure), constant
+constant c; call cl;
+Select cl with cl.procName = c.value
+none
+5000
+318 - (semantically invalid - no results) synonym with different attribute types - call (procedure), call
+call c;
+Select c with c.procName = c.stmt#
+none
+5000
