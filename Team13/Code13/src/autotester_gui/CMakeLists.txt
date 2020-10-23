@@ -1,4 +1,4 @@
-set(CMAKE_PREFIX_PATH "C:\\Qt\\Qt5.11.1\\5.11.1\\msvc2015")
+set(CMAKE_PREFIX_PATH "C:\\Qt\\Qt5.14.2\\5.14.2\\msvc2017")
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
@@ -13,7 +13,7 @@ file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h" "${CMAKE_CURRENT_SOURCE_
 
 SET(forms mainwindow.ui)
 QT5_WRAP_UI(forms_headers ${forms})
-add_executable(autotester_gui ${srcs} ${forms_headers})
+add_executable(autotester_gui ${srcs} ${forms_headers} "src/GUINode.h" "src/GUINode.cpp")
 target_link_libraries(autotester_gui Qt5::Widgets spa)
 
 macro(qt5_copy_dll APP DLL)

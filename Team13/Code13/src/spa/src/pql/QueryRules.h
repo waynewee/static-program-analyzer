@@ -10,60 +10,65 @@ class QueryRules
 	*/
 public:
 	// Lexical Tokens
-	BOOLEAN IsIdent(STRING token);
-	BOOLEAN IsName(STRING token);
-	BOOLEAN IsInteger(STRING token);
-	BOOLEAN IsSynonym(STRING token);
-	BOOLEAN IsStmtRef(STRING token, STRING synonym_type);
-	BOOLEAN IsEntRef(STRING token, STRING synonym_type);
-	BOOLEAN IsLineRef(STRING token, STRING synonym_type);
-	BOOLEAN IsElem(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsAttrName(STRING token);
-	BOOLEAN IsDesignEntity(STRING token);
+	bool IsIdent(string token);
+	bool IsName(string token);
+	bool IsInteger(string token);
+	bool IsSynonym(string token);
+	bool IsStmtRef(string token, string synonym_type);
+	bool IsEntRef(string token, string synonym_type);
+	bool IsLineRef(string token, string synonym_type);
+	bool IsElem(string token, STRING_STRING_MAP declared_var_names);
+	bool IsAttrName(string token);
+	bool IsDesignEntity(string token);
 
 	// Grammar Rules
-	BOOLEAN IsSelect(STRING token);
-	BOOLEAN IsDeclaration(STRING token, STRING_STRING_MAP entity_map);
-	BOOLEAN IsResultClause(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsTuple(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsWithClause(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsSuchThatClause(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsPatternClause(STRING token, STRING_STRING_MAP declared_var_names);
+	bool IsSelect(string token);
+	bool IsDeclaration(string token, STRING_STRING_MAP entity_map);
+	bool IsResultClause(string token, STRING_STRING_MAP declared_var_names);
+	bool IsTuple(string token, STRING_STRING_MAP declared_var_names);
+	bool IsWithClause(string token, STRING_STRING_MAP declared_var_names);
+	bool IsSuchThatClause(string token, STRING_STRING_MAP declared_var_names);
+	bool IsPatternClause(string token, STRING_STRING_MAP declared_var_names);
 
-	BOOLEAN IsAttrCond(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsAttrCompare(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsRef(STRING token, STRING synonym_type);
-	BOOLEAN IsAttrRef(STRING token, STRING synonym_type);
+	bool IsAttrCond(string token, STRING_STRING_MAP declared_var_names);
+	bool IsAttrCompare(string token, STRING_STRING_MAP declared_var_names);
+	bool IsRef(string token, string synonym_type);
+	bool IsAttrRef(string token, string synonym_type);
 
-	BOOLEAN IsRelCond(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsRelRef(STRING token, STRING_STRING_MAP declared_var_names);
-	STRING GetRelRefType(STRING token, STRING_STRING_MAP declared_var_names);
+	//bool IsAttrCond(string token, STRING_STRING_MAP declared_var_names);
+	//bool IsAttrCompare(string token, STRING_STRING_MAP declared_var_names);
+	//bool IsRef(string token, string synonym_type);
+	//bool IsAttrRef(string token);
 
-	BOOLEAN IsModifiesP(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsModifiesS(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsUsesP(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsUsesS(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsCalls(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsCallsT(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsParent(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsParentT(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsFollows(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsFollowsT(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsNext(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsNextT(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsAffects(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsAffectsT(STRING token, STRING_STRING_MAP declared_var_names);
+	bool IsRelCond(string token, STRING_STRING_MAP declared_var_names);
+	bool IsRelRef(string token, STRING_STRING_MAP declared_var_names);
+	string GetRelRefType(string token, STRING_STRING_MAP declared_var_names);
 
-	BOOLEAN IsPatternCond(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsPattern(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsAssign(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsExpressionSpec(STRING token);
-	BOOLEAN IsOperator(CHAR c);
-	BOOLEAN IsExpr(STRING token);
-	BOOLEAN IsTerm(STRING token);
-	BOOLEAN IsFactor(STRING token);
-	BOOLEAN IsVarName(STRING token);
-	BOOLEAN IsConstValue(STRING token);
-	BOOLEAN IsSynIf(STRING token, STRING_STRING_MAP declared_var_names);
-	BOOLEAN IsSynWhile(STRING token, STRING_STRING_MAP declared_var_names);
+	bool IsModifiesP(string token, STRING_STRING_MAP declared_var_names);
+	bool IsModifiesS(string token, STRING_STRING_MAP declared_var_names);
+	bool IsUsesP(string token, STRING_STRING_MAP declared_var_names);
+	bool IsUsesS(string token, STRING_STRING_MAP declared_var_names);
+	bool IsCalls(string token, STRING_STRING_MAP declared_var_names);
+	bool IsCallsT(string token, STRING_STRING_MAP declared_var_names);
+	bool IsParent(string token, STRING_STRING_MAP declared_var_names);
+	bool IsParentT(string token, STRING_STRING_MAP declared_var_names);
+	bool IsFollows(string token, STRING_STRING_MAP declared_var_names);
+	bool IsFollowsT(string token, STRING_STRING_MAP declared_var_names);
+	bool IsNext(string token, STRING_STRING_MAP declared_var_names);
+	bool IsNextT(string token, STRING_STRING_MAP declared_var_names);
+	bool IsAffects(string token, STRING_STRING_MAP declared_var_names);
+	bool IsAffectsT(string token, STRING_STRING_MAP declared_var_names);
+
+	bool IsPatternCond(string token, STRING_STRING_MAP declared_var_names);
+	bool IsPattern(string token, STRING_STRING_MAP declared_var_names);
+	bool IsAssign(string token, STRING_STRING_MAP declared_var_names);
+	bool IsExpressionSpec(string token);
+	bool IsOperator(char c);
+	bool IsExpr(string token);
+	bool IsTerm(string token);
+	bool IsFactor(string token);
+	bool IsVarName(string token);
+	bool IsConstValue(string token);
+	bool IsSynIf(string token, STRING_STRING_MAP declared_var_names);
+	bool IsSynWhile(string token, STRING_STRING_MAP declared_var_names);
 };

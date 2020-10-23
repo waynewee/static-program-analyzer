@@ -11,5 +11,5 @@ public:
 	QueryResult();
 
 	STRINGLIST_SET GetResult();
-	VOID SetResult(STRINGLIST_SET result);
+	void SetResult(STRINGLIST_SET result);
 };
