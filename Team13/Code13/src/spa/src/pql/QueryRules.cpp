@@ -1001,10 +1001,10 @@ bool QueryRules::IsCalls(string token, STRING_STRING_MAP declared_var_names) {
 	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
-	}
-	if (first_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
-		result = false;
-		return result;
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(first_arg, first_arg_type)) {
 		result = false;
@@ -1014,10 +1014,10 @@ bool QueryRules::IsCalls(string token, STRING_STRING_MAP declared_var_names) {
 	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
-	}
-	if (second_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
-		result = false;
-		return result;
+		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(second_arg, second_arg_type)) {
 		result = false;
@@ -1056,10 +1056,10 @@ bool QueryRules::IsCallsT(string token, STRING_STRING_MAP declared_var_names) {
 	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
-	}
-	if (first_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
-		result = false;
-		return result;
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(first_arg, first_arg_type)) {
 		result = false;
@@ -1069,10 +1069,10 @@ bool QueryRules::IsCallsT(string token, STRING_STRING_MAP declared_var_names) {
 	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
-	}
-	if (second_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
-		result = false;
-		return result;
+		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(second_arg, second_arg_type)) {
 		result = false;
