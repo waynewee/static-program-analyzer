@@ -644,7 +644,7 @@ TEST_CASE("big tuple, multiple clauses, similar relref and different relref") {
 
 // Test for pattern clauses :
 
-TEST_CASE("simple pattern clause, assign type") {
+TEST_CASE("simple pattern clause, assign type, full pattern") {
 	PQLParser pql_parser;
 	QueryInfo query_info_actual;
 	QueryInfo query_info_expected;
@@ -676,4 +676,459 @@ TEST_CASE("simple pattern clause, assign type") {
 	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
 
 	REQUIRE(are_similar);
+}
+
+TEST_CASE("simple pattern clause, assign type, partial pattern, white some whitespace") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "assign a; Select a pattern a (_ , _\"   x + y    \"_)";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	STRING_LIST expected_output_list;
+	expected_output_list.push_back("a");
+
+	STRING_STRING_MAP expected_entity_map;
+	expected_entity_map["a"] = TYPE_DESIGN_ENTITY_ASSIGN;
+
+	STRING_STRINGLISTLIST_MAP expected_pattern_map;
+	STRINGLIST_LIST pattern_result;
+	STRING_LIST pattern_single_result;
+	pattern_single_result.push_back("_");
+	pattern_single_result.push_back("\"x + y\"");
+	pattern_single_result.push_back("a");
+	pattern_result.push_back(pattern_single_result);
+
+	expected_pattern_map[TYPE_COND_PATTERN_P] = pattern_result;
+
+	query_info_expected.SetOutputList(expected_output_list);
+	query_info_expected.SetEntityMap(expected_entity_map);
+	query_info_expected.SetPatternMap(expected_pattern_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	REQUIRE(are_similar);
+}
+
+TEST_CASE("simple pattern clause, while type") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "while w; Select w pattern w ( \"x\" , _)";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	STRING_LIST expected_output_list;
+	expected_output_list.push_back("w");
+
+	STRING_STRING_MAP expected_entity_map;
+	expected_entity_map["w"] = TYPE_DESIGN_ENTITY_WHILE;
+
+	STRING_STRINGLISTLIST_MAP expected_pattern_map;
+	STRINGLIST_LIST pattern_result;
+	STRING_LIST pattern_single_result;
+	pattern_single_result.push_back("\"x\"");
+	pattern_single_result.push_back("_");
+	pattern_single_result.push_back("w");
+	pattern_result.push_back(pattern_single_result);
+
+	expected_pattern_map[TYPE_COND_PATTERN_F] = pattern_result;
+
+	query_info_expected.SetOutputList(expected_output_list);
+	query_info_expected.SetEntityMap(expected_entity_map);
+	query_info_expected.SetPatternMap(expected_pattern_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	REQUIRE(are_similar);
+}
+
+TEST_CASE("simple pattern clause, if type") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "if ifs; Select ifs pattern ifs ( \"z\" , _,_)";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	STRING_LIST expected_output_list;
+	expected_output_list.push_back("ifs");
+
+	STRING_STRING_MAP expected_entity_map;
+	expected_entity_map["ifs"] = TYPE_DESIGN_ENTITY_IF;
+
+	STRING_STRINGLISTLIST_MAP expected_pattern_map;
+	STRINGLIST_LIST pattern_result;
+	STRING_LIST pattern_single_result;
+	pattern_single_result.push_back("\"z\"");
+	pattern_single_result.push_back("_");
+	pattern_single_result.push_back("_");
+	pattern_single_result.push_back("ifs");
+	pattern_result.push_back(pattern_single_result);
+
+	expected_pattern_map[TYPE_COND_PATTERN_F] = pattern_result;
+
+	query_info_expected.SetOutputList(expected_output_list);
+	query_info_expected.SetEntityMap(expected_entity_map);
+	query_info_expected.SetPatternMap(expected_pattern_map);
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	REQUIRE(are_similar);
+}
+
+// multiple pattern clauses with tuple
+TEST_CASE("multiple pattern clauses with tuple") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "if ifs; assign a, a1; variable v; Select <ifs, a, a1> pattern ifs ( \"z\" , _,_) and a1 ( v, \"  haha  \") and a ( \"x\" , _\"a/b/c+z\"_)";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	STRING_LIST expected_output_list;
+	expected_output_list.push_back("ifs");
+	expected_output_list.push_back("a");
+	expected_output_list.push_back("a1");
+
+	STRING_STRING_MAP expected_entity_map;
+	expected_entity_map["ifs"] = TYPE_DESIGN_ENTITY_IF;
+	expected_entity_map["a"] = TYPE_DESIGN_ENTITY_ASSIGN;
+	expected_entity_map["a1"] = TYPE_DESIGN_ENTITY_ASSIGN;
+	expected_entity_map["v"] = TYPE_DESIGN_ENTITY_VARIABLE;
+
+	STRING_STRINGLISTLIST_MAP expected_pattern_map;
+	STRINGLIST_LIST pattern_result;
+	STRING_LIST pattern_single_result;
+	pattern_single_result.push_back("\"z\"");
+	pattern_single_result.push_back("_");
+	pattern_single_result.push_back("_");
+	pattern_single_result.push_back("ifs");
+	pattern_result.push_back(pattern_single_result);
+
+	STRING_LIST pattern_single_result_two;
+	pattern_single_result_two.push_back("v");
+	pattern_single_result_two.push_back("\"haha\"");
+	pattern_single_result_two.push_back("a1");
+	pattern_result.push_back(pattern_single_result_two);
+
+	expected_pattern_map[TYPE_COND_PATTERN_F] = pattern_result;
+
+	STRINGLIST_LIST pattern_result_two;
+	STRING_LIST pattern_single_result_three;
+	pattern_single_result_three.push_back("\"x\"");
+	pattern_single_result_three.push_back("\"a/b/c+z\"");
+	pattern_single_result_three.push_back("a");
+
+	pattern_result_two.push_back(pattern_single_result_three);
+
+	expected_pattern_map[TYPE_COND_PATTERN_P] = pattern_result_two;
+
+	query_info_expected.SetOutputList(expected_output_list);
+	query_info_expected.SetEntityMap(expected_entity_map);
+	query_info_expected.SetPatternMap(expected_pattern_map);
+
+	// cout << "------ACTUAL----" << endl;
+	// query_info_actual.PrintPatternMap();
+	// cout << "-----expected----" << endl;
+	// query_info_expected.PrintPatternMap();
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	REQUIRE(are_similar);
+}
+
+// with clauses 
+// procedure p; variable v;
+// Select p with p.procName = v.varName
+TEST_CASE("simple with clause") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+	QueryInfo query_info_expected;
+
+	string pql_query = "procedure p; variable v; Select p with p.procName = v.varName";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	STRING_LIST expected_output_list;
+	expected_output_list.push_back("p");
+
+	STRING_STRING_MAP expected_entity_map;
+	expected_entity_map["p"] = TYPE_DESIGN_ENTITY_PROCEDURE;
+	expected_entity_map["v"] = TYPE_DESIGN_ENTITY_VARIABLE;
+
+	STRING_STRINGLISTLIST_MAP expected_pattern_map;
+	
+	STRINGPAIR_SET expected_with_map;
+	STRING_PAIR* single_with_result = new STRING_PAIR();
+	single_with_result->first = "p.procName";
+	single_with_result->second = "v.varName";
+	expected_with_map.insert(single_with_result);
+
+	query_info_expected.SetOutputList(expected_output_list);
+	query_info_expected.SetEntityMap(expected_entity_map);
+	query_info_expected.SetWithMap(expected_with_map);
+
+	cout << "ACTUAL WITH MAP---" << endl;
+	query_info_actual.PrintWithMap();
+	cout << "expected WITH MAP---" << endl;
+	query_info_expected.PrintWithMap();
+
+	bool are_similar = compareQueryInfo(query_info_actual, query_info_expected);
+
+	REQUIRE(true);
+}
+
+// invalid query
+// variable v, v; Select v (repeated synonym)
+TEST_CASE("invalid query, repeated synonym") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "variable v, v; Select v";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+}
+
+// invalid query
+// variable v; stmt s; procedure v; Select v
+TEST_CASE("invalid query, repeated synonym in different declaration") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "variable v; stmt s; procedure v; Select v";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+}
+
+// invalid query
+// variable vp[; Select v
+TEST_CASE("invalid query, invalid syntax in declaration") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "variable vp[; Select v";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+}
+
+// invalid query
+// invalid design entity declaration
+TEST_CASE("invalid query, invalid design entity declaration") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "stmt s, s1; design a2; Select s1";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+}
+
+// invalid query
+// stmt s, s1; Select s2
+TEST_CASE("invalid query, invalid semantics in result-cl, valid syntax") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "stmt s, s1; Select s2";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+	// REQUIRE(query_info_actual.IsBooleanOutputFalse());
+}
+
+// invalid query
+// stmt s, s1; Select s1 such that Follows (s2, 10)
+TEST_CASE("invalid query, invalid semantics in relref arg, valid syntax") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "stmt s, s1; Select s1 such that Follows (s2, 10)";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+	REQUIRE(query_info_actual.IsBooleanOutputFalse());
+}
+
+// invalid query
+// stmt s, s1; Select s1 such that Uses (s[]2, "x")
+TEST_CASE("invalid query, invalid syntax in relref arg") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "stmt s, s1; Select s1 such that Follows (s[]2, \"x\")";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+	REQUIRE(!query_info_actual.IsBooleanOutputFalse());
+}
+
+// invalid query
+// stmt s, s1; Select s1 such that Uses (s[]2, "x")
+TEST_CASE("invalid query, extra whitespace inbetween such that") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "stmt s, s1; Select s1 such  that Follows (1, 2)";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+}
+
+// invalid query
+// stmt s, s1; Select s1 such that Uses (s[]2, "x")
+TEST_CASE("invalid query, invalid clause type") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "stmt s, s1; Select s1 SuchyThatz Follows (1, 2)";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+}
+
+// invalid query
+// underscore found in first arg of Uses
+TEST_CASE("invalid query, underscore in first arg of Uses") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "stmt s, s1; Select s1 such that Uses (_, \"x\")";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+}
+
+// invalid query
+// stmt s, s1; Select s1 such that Uses (s[]2, "x")
+TEST_CASE("invalid query, invalid pattern first arg") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "stmt s, s1; Select s1 SuchyThatz Follows (1, 2)";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+}
+
+// invalid query
+// missing var after pattern
+TEST_CASE("invalid query, missing var after pattern") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "assign a; Select a pattern (_, \"x+y\")";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+}
+
+// invalid query
+// missing var after pattern
+TEST_CASE("invalid query, stmt ref inside first arg of pattern") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "assign a; stmt s; Select a pattern a (s, \"x\")";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+}
+
+// invalid query
+// missing var after pattern
+TEST_CASE("invalid query, extra and/pattern inbetween clauses") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "assign a; stmt s; Select a pattern a (_, \"x\") and pattern a (_, \"y\")";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+}
+
+// invalid query
+// consecutive num in expr-spec
+TEST_CASE("invalid query, consecutive num in expr-spec") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "assign a; Select a pattern a (_, \"10 10\")";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+}
+
+// invalid query
+TEST_CASE("invalid query, invalid semantics, undeclared relref arg valid syntax") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "assign a; Select BOOLEAN such that Calls ( s, \"procA\")";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+	REQUIRE(query_info_actual.IsBooleanOutputFalse());
+}
+
+// invalid query
+TEST_CASE("invalid query, invalid semantics, and then found invalid syntax") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "assign a; Select BOOLEAN such that Calls ( s, \"procA\") and Calls ( \"procA\", \"[!]\")";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+	REQUIRE(!query_info_actual.IsBooleanOutputFalse());
+}
+
+// invalid query
+TEST_CASE("invalid query, invalid semantics, wrong attribute type, valid syntax") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "assign a; Select BOOLEAN with a.varName = \"x\"";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
+	REQUIRE(query_info_actual.IsBooleanOutputFalse());
+}
+
+// invalid query
+TEST_CASE("invalid query, wrong case for BOOLEAN") {
+	PQLParser pql_parser;
+	QueryInfo query_info_actual;
+
+	string pql_query = "Select BOOLEAn";
+
+	query_info_actual = pql_parser.Parse(pql_query);
+
+	REQUIRE(!query_info_actual.IsQueryInfoValid());
 }
