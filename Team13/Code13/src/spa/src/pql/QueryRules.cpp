@@ -1001,6 +1001,10 @@ bool QueryRules::IsCalls(string token, STRING_STRING_MAP declared_var_names) {
 	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(first_arg, first_arg_type)) {
 		result = false;
@@ -1010,6 +1014,10 @@ bool QueryRules::IsCalls(string token, STRING_STRING_MAP declared_var_names) {
 	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
+		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(second_arg, second_arg_type)) {
 		result = false;
@@ -1048,6 +1056,10 @@ bool QueryRules::IsCallsT(string token, STRING_STRING_MAP declared_var_names) {
 	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(first_arg, first_arg_type)) {
 		result = false;
@@ -1057,6 +1069,10 @@ bool QueryRules::IsCallsT(string token, STRING_STRING_MAP declared_var_names) {
 	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
+		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(second_arg, second_arg_type)) {
 		result = false;
@@ -1456,13 +1472,13 @@ bool QueryRules::IsPatternCond(string token, STRING_STRING_MAP declared_var_name
 			temp_token.erase(0, temp_token.find_first_of(" "));
 		}
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
-		string pattern_token = temp_token.substr(0, temp_token.find_first_of(")") + 1);
+		string pattern_token = temp_token;
 		// cout << "patterntoken:" << pattern_token << endl;
 		if (!IsPattern(pattern_token, declared_var_names)) {
 			result = false;
 			return result;
 		}
-		temp_token.erase(0, temp_token.find_first_of(")") + 1);
+		temp_token.erase(0, temp_token.length());
 		first_passed = true;
 	}
 	return result;
@@ -1569,6 +1585,8 @@ bool QueryRules::IsExpr(string token) {
 	int open_bracket_count = 0;
 	bool prev_was_operator = false;
 	bool prev_was_open_bracket = false;
+	bool prev_is_term = false;
+	bool prev_is_whitespace = false;
 
 	if (IsOperator(expression_token.front()) || IsOperator(expression_token.back())) {
 		result = false;
@@ -1577,11 +1595,14 @@ bool QueryRules::IsExpr(string token) {
 
 	for (char const& c : expression_token) {
 		if (c == ' ') {
+			prev_is_whitespace = true;
 			continue;
 		}
 		if (c == '(') {
 			open_bracket_count++;
 			prev_was_open_bracket = true;
+			prev_is_term = false;
+			prev_is_whitespace = false;
 			continue;
 		}
 		else if (c == ')') {
@@ -1589,6 +1610,8 @@ bool QueryRules::IsExpr(string token) {
 				result = false;
 				return result;
 			}
+			prev_is_term = false;
+			prev_is_whitespace = false;
 			open_bracket_count--;
 		}
 		else if (IsOperator(c)) {
@@ -1597,11 +1620,24 @@ bool QueryRules::IsExpr(string token) {
 				return result;
 			}
 			prev_was_operator = true;
+			prev_is_term = false;
+			prev_is_whitespace = false;
 			continue;
 		}
 		else if (!isalpha(c) && !isdigit(c)) {
 			result = false;
 			return result;
+		}
+		else if (isalpha(c) || isdigit(c)) {
+			if (prev_is_whitespace && prev_is_term) {
+				// to catch like "10 10"
+				result = false;
+				return result;
+			}
+			else {
+				prev_is_term = true;
+				prev_is_whitespace = false;
+			}
 		}
 		prev_was_operator = false;
 		prev_was_open_bracket = false;

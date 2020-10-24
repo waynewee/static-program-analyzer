@@ -27,6 +27,10 @@ bool QueryInfo::IsQueryInfoValid() {
 	return this->is_valid_;
 }
 
+bool QueryInfo::IsBooleanOutputFalse() {
+	return this->is_invalid_due_to_semantics_;
+}
+
 /* setters */
 void QueryInfo::SetStMap(STRING_STRINGLISTLIST_MAP rel_ref_map) {
 	this->st_map_ = rel_ref_map;
@@ -54,6 +58,10 @@ void QueryInfo::SetValidToFalse() {
 
 void QueryInfo::SetInvalidDueToSemanticsTrue() {
 	this->is_invalid_due_to_semantics_ = true;
+}
+
+void QueryInfo::SetInvalidDueToSemanticsFalse() {
+	this->is_invalid_due_to_semantics_ = false;
 }
 
 // test print functions

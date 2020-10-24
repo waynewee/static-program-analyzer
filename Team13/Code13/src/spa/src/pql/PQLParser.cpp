@@ -38,7 +38,11 @@ QueryInfo PQLParser::Parse(string s) {
                         is_query_semantically_invalid_but_syntactically_valid = true;
                         query_info.SetInvalidDueToSemanticsTrue();
                     }
-                    throw ("Wrong query found at PQLParser: validating declaration");
+                    else {
+                        // invalid syntax. we can stop here.
+                        query_info.SetInvalidDueToSemanticsFalse();
+                        throw ("Wrong query found at PQLParser: validating declaration");
+                    }
                 }
                 // Get the result for each declaration
                 STRING_STRING_MAP declaration_result;
@@ -66,6 +70,7 @@ QueryInfo PQLParser::Parse(string s) {
             supposed_result_cl = PQLTokenizer::RetrieveTokenByClosingAngleBracket(&query);
             if (!query_validator->ValidateResultClause(supposed_result_cl, entity_map)) {
                 is_query_valid = false;
+                query_info.SetInvalidDueToSemanticsFalse();
                 throw ("Error : At PQLParser, Validating Result Clause");
             }
             // cout << "Tuple supposed result cl :" << supposed_result_cl << "|" << endl;
@@ -78,6 +83,7 @@ QueryInfo PQLParser::Parse(string s) {
             supposed_result_cl = PQLTokenizer::RetrieveToken(&query);
             if (!query_validator->ValidateResultClause(supposed_result_cl, entity_map)) {
                 is_query_valid = false;
+                query_info.SetInvalidDueToSemanticsFalse();
                 throw ("Error : At PQLParser, Validating Result Clause");
             }
             // Validated, Time to Parse
@@ -129,6 +135,7 @@ QueryInfo PQLParser::Parse(string s) {
                 else {
                     // all clause types are wrong
                     is_query_valid = false;
+                    query_info.SetInvalidDueToSemanticsFalse();
                     throw ("Error : Clause type is not suchthat/with/and/pattern");
                 }
             }
@@ -193,7 +200,10 @@ QueryInfo PQLParser::Parse(string s) {
                         is_query_semantically_invalid_but_syntactically_valid = true;
                         query_info.SetInvalidDueToSemanticsTrue();
                     }
-                    throw ("Invalid Query : at suchthat clause");
+                    else {
+                        query_info.SetInvalidDueToSemanticsFalse();
+                        throw ("Invalid Query : at suchthat clause");
+                    }
                 }
             }
 
@@ -236,7 +246,10 @@ QueryInfo PQLParser::Parse(string s) {
                         is_query_semantically_invalid_but_syntactically_valid = true;
                         query_info.SetInvalidDueToSemanticsTrue();
                     }
-                    throw ("Invalid Query : at pattern clause");
+                    else {
+                        query_info.SetInvalidDueToSemanticsFalse();
+                        throw ("Invalid Query : at pattern clause");
+                    }
                 }
             }
 
@@ -264,7 +277,10 @@ QueryInfo PQLParser::Parse(string s) {
                         is_query_semantically_invalid_but_syntactically_valid = true;
                         query_info.SetInvalidDueToSemanticsTrue();
                     }
-                    throw ("Invalid Query : at with clause");
+                    else {
+                        query_info.SetInvalidDueToSemanticsFalse();
+                        throw ("Invalid Query : at with clause");
+                    }
                 }
             }
         }
@@ -295,14 +311,14 @@ QueryInfo PQLParser::Parse(string s) {
         query_info.SetPatternMap(pattern_map);
         query_info.SetWithMap(with_map);
     }
-    /*
-    if (is_query_semantically_invalid_but_syntactically_valid) {
+    
+    if (query_info.IsBooleanOutputFalse()) {
         cout << "QUERY IS INVALID DUE TO SEMANTICS, NOT SYNTAX" << endl;
     }
     else {
         cout << "NOTHING TO DO WITH JUST SEMANTICS" << endl;
     }
-    */
+    
     query_info.PrintEntityMap();
     query_info.PrintOutputList();
     query_info.PrintStMap();

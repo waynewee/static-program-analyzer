@@ -26,6 +26,7 @@ public:
 	STRING_STRING_MAP GetEntityMap();
 	STRING_LIST GetOutputList();
 	bool IsQueryInfoValid();
+	bool IsBooleanOutputFalse();
 
 	/* setters */
 	void SetStMap(STRING_STRINGLISTLIST_MAP st_map);
@@ -35,6 +36,7 @@ public:
 	void SetOutputList(STRING_LIST output_list);
 	void SetValidToFalse();
 	void SetInvalidDueToSemanticsTrue();
+	void SetInvalidDueToSemanticsFalse();
 
 	/* printing */
 	void PrintOutputList();
