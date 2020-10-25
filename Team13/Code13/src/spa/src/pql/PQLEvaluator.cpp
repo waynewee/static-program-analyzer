@@ -4,17 +4,12 @@
 #include "pkb/PKB.h"
 
 QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
-		// Final result to be returned
+	// Final result to be returned
 	STRINGLIST_SET final_result_set = *(new STRINGLIST_SET());
 
 	// Expected output list
 	STRING_LIST output_list = query_info.GetOutputList();
-	bool is_boolean_output = IsBooleanOutput(output_list);
-
-	// Check if QueryInfo is valid
-	if (!query_info.IsQueryInfoValid()) {
-		return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
-	}
+	bool is_boolean_output = query_info.IsBooleanOutput();
 
 	// Unevaluated clauses & constraints
 	STRINGSET_STRINGLISTSET_MAP synonyms_map = STRINGSET_STRINGLISTSET_MAP();
@@ -2502,10 +2497,6 @@ bool PQLEvaluator::IsInteger(string var) {
 
 bool PQLEvaluator::IsUnderscore(string var) {
 	return var.compare("_") == 0 ? true : false;
-}
-
-bool PQLEvaluator::IsBooleanOutput(STRING_LIST output_list) {
-	return output_list.size() == 1 && output_list[0].compare("bool") == 0 ? true : false;
 }
 
 bool PQLEvaluator::IsOutputSynonyms(STRING_LIST synonyms, STRING_LIST output_list) {

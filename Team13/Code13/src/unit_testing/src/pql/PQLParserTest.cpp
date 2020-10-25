@@ -961,7 +961,7 @@ TEST_CASE("invalid query, invalid semantics in relref arg, valid syntax") {
 	query_info_actual = pql_parser.Parse(pql_query);
 
 	REQUIRE(!query_info_actual.IsQueryInfoValid());
-	REQUIRE(query_info_actual.IsBooleanOutputFalse());
+	REQUIRE(query_info_actual.IsSemanticsInvalid());
 }
 
 // invalid query
@@ -975,7 +975,7 @@ TEST_CASE("invalid query, invalid syntax in relref arg") {
 	query_info_actual = pql_parser.Parse(pql_query);
 
 	REQUIRE(!query_info_actual.IsQueryInfoValid());
-	REQUIRE(!query_info_actual.IsBooleanOutputFalse());
+	REQUIRE(!query_info_actual.IsSemanticsInvalid());
 }
 
 // invalid query
@@ -1092,7 +1092,7 @@ TEST_CASE("invalid query, invalid semantics, undeclared relref arg valid syntax"
 	query_info_actual = pql_parser.Parse(pql_query);
 
 	REQUIRE(!query_info_actual.IsQueryInfoValid());
-	REQUIRE(query_info_actual.IsBooleanOutputFalse());
+	REQUIRE(query_info_actual.IsSemanticsInvalid());
 }
 
 // invalid query
@@ -1105,7 +1105,7 @@ TEST_CASE("invalid query, invalid semantics, and then found invalid syntax") {
 	query_info_actual = pql_parser.Parse(pql_query);
 
 	REQUIRE(!query_info_actual.IsQueryInfoValid());
-	REQUIRE(!query_info_actual.IsBooleanOutputFalse());
+	REQUIRE(!query_info_actual.IsSemanticsInvalid());
 }
 
 // invalid query
@@ -1118,7 +1118,7 @@ TEST_CASE("invalid query, invalid semantics, wrong attribute type, valid syntax"
 	query_info_actual = pql_parser.Parse(pql_query);
 
 	REQUIRE(!query_info_actual.IsQueryInfoValid());
-	REQUIRE(query_info_actual.IsBooleanOutputFalse());
+	REQUIRE(query_info_actual.IsSemanticsInvalid());
 }
 
 // invalid query

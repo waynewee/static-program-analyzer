@@ -72,7 +72,6 @@ public:
 	bool IsString(string var);
 	bool IsInteger(string var);
 	bool IsUnderscore(string var);
-	bool IsBooleanOutput(STRING_LIST output_list);
 	bool IsOutputSynonyms(STRING_LIST synonyms, STRING_LIST output_list);
 	bool IsDuplicate(STRINGLIST_SET set, STRING_LIST value);
 	bool IsDependencyStatisfied(STRING_LIST result1, STRING_LIST result2, INTEGERPAIR_SET to_check);
