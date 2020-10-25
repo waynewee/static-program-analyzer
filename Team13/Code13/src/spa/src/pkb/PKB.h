@@ -26,6 +26,8 @@ class PKB {
     static PatternManager pattern_manager_;
     static CFGManager cfg_manager_;
     static TNode ast_;
+    static AFFECTS_TABLE affects_table_;
+    static INVERSE_AFFECTS_TABLE inverse_affects_table_;
 public:
     PKB() {
     }
@@ -36,8 +38,15 @@ public:
     CFGManager GetCFGManager();
     CFG& GetCFG();
 
+
     void SetASTRoot(TNode* root);
     void SetCFG(CFG& cfg);
+
+    STMT_IDX_SET GetAffects(STMT_IDX a);
+    STMT_IDX_SET GetInverseAffects(STMT_IDX a);
+
+private:
+    void RecursiveGetAffects(STMT_IDX node, VAR_NAME lhs_var, STMT_IDX_SET& visited, STMT_IDX_SET& result);
 };
 
 class ASTRootTypeUnmatchException: public exception {
