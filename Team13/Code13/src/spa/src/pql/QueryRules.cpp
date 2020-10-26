@@ -465,7 +465,7 @@ bool QueryRules::IsPatternClause(string token, STRING_STRING_MAP declared_var_na
 
 bool QueryRules::IsAttrCond(string token, STRING_STRING_MAP declared_var_names) {
 	bool result = true;
-	cout << "CHECKING IF ATTRCOND.." << endl;
+	// cout << "CHECKING IF ATTRCOND.." << endl;
 	string temp_token = token;
 	string and_token = "and";
 	size_t pos = 0;
@@ -478,6 +478,7 @@ bool QueryRules::IsAttrCond(string token, STRING_STRING_MAP declared_var_names) 
 
 bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_names) {
 	// cout << "TRYING TO ATTR COMPARE.." << endl;
+	// cout << "TOKEN IS:" << token << endl;
 	bool result = true;
 	string first_ref = token.substr(0, token.find_first_of("="));
 	string second_ref = token.substr(token.find_first_of("=") + 1, token.length());
@@ -491,12 +492,16 @@ bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_name
 	string second_ref_synonym_type = "none";
 	// cout << "ATTRCOMPARE CALLED:" << endl;
 	// cout << "first_ref:" << first_ref << endl;
+	string first_ref_type = "none1";
+	string second_ref_type = "none2";
 	if (IsSynonym(first_ref)) {
 		first_ref_synonym_type = declared_var_names.at(first_ref);
 		if (first_ref_synonym_type.compare(TYPE_DESIGN_ENTITY_PROG_LINE) != 0) {
 			result = false;
 			return result;
 		}
+		// it is a progline
+		first_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
 	}
 	if (IsSynonym(second_ref)) {
 		second_ref_synonym_type = declared_var_names.at(second_ref);
@@ -504,6 +509,7 @@ bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_name
 			result = false;
 			return result;
 		}
+		second_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
 	}
 	if (first_ref.find(".") != string::npos) {
 		first_ref_synonym = first_ref.substr(0, first_ref.find_first_of("."));
@@ -511,6 +517,28 @@ bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_name
 			first_ref_synonym_type = declared_var_names.at(first_ref_synonym);
 		}
 		if (!IsRef(first_ref, first_ref_synonym_type)) {
+			result = false;
+			return result;
+		}
+		string first_ref_attr_ref_type = first_ref.substr(first_ref.find_first_of(".") + 1, first_ref.length());
+		// cout << "1st attrref type:" << first_ref_attr_ref_type << endl;
+		if (first_ref_attr_ref_type.compare(TYPE_ATTRNAME_STMT) == 0 || first_ref_attr_ref_type.compare(TYPE_ATTRNAME_VALUE) == 0) {
+			first_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
+		}
+		if (first_ref_attr_ref_type.compare(TYPE_ATTRNAME_PROCNAME) == 0 || first_ref_attr_ref_type.compare(TYPE_ATTRNAME_VARNAME) == 0) {
+			first_ref_type = TYPE_WITH_ARGUMENT_STRING;
+		}
+	}
+	else if (IsInteger(first_ref)) {
+		first_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
+	}
+	else if (first_ref.front() == '\"' && first_ref.back() == '\"') {
+		string ident = first_ref.substr(1, first_ref.length() - 2);
+		//cout << "IDENT IS:" << ident << endl;
+		if (IsIdent(ident)) {
+			first_ref_type = TYPE_WITH_ARGUMENT_STRING;
+		}
+		else {
 			result = false;
 			return result;
 		}
@@ -524,8 +552,35 @@ bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_name
 			result = false;
 			return result;
 		}
+		string second_ref_attr_ref_type = second_ref.substr(second_ref.find_first_of(".") + 1, second_ref.length());
+		//cout << "2nd attrref type:" << second_ref_attr_ref_type << endl;
+		if (second_ref_attr_ref_type.compare(TYPE_ATTRNAME_STMT) == 0 || second_ref_attr_ref_type.compare(TYPE_ATTRNAME_VALUE) == 0) {
+			second_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
+		}
+		if (second_ref_attr_ref_type.compare(TYPE_ATTRNAME_PROCNAME) == 0 || second_ref_attr_ref_type.compare(TYPE_ATTRNAME_VARNAME) == 0) {
+			second_ref_type = TYPE_WITH_ARGUMENT_STRING;
+		}
 	}
-
+	else if (IsInteger(second_ref)) {
+		second_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
+	}
+	else if (second_ref.front() == '\"' && second_ref.back() == '\"') {
+		string ident = second_ref.substr(1, second_ref.length() - 2);
+		// cout << "ident is :" << ident << endl;
+		if (IsIdent(ident)) {
+			second_ref_type = TYPE_WITH_ARGUMENT_STRING;
+		}
+		else {
+			result = false;
+			return result;
+		}
+	}
+	// cout << "FIRST_ARG_TYPE:" << first_ref_type << endl;
+	// cout << "SECOND_ARG_TYPE:" << second_ref_type << endl;
+	if (first_ref_type.compare(second_ref_type) != 0) {
+		result = false;
+		return result;
+	}
 	return result;
 }
 
@@ -542,13 +597,13 @@ bool QueryRules::IsRef(string token, string synonym_type) {
 		result = true;
 	}
 	if (token.find(".") != string::npos) {
-		cout << "token is :" << token << endl;
-		cout << "syntype: " << synonym_type << endl;
+		// cout << "token is :" << token << endl;
+		// cout << "syntype: " << synonym_type << endl;
 		if (IsAttrRef(token, synonym_type)) {
-			cout << "checking if:" << token << " is an attr ref" << endl;
-			cout << "its type:" << synonym_type << endl;
+			// cout << "checking if:" << token << " is an attr ref" << endl;
+			// cout << "its type:" << synonym_type << endl;
 			result = true;
-			cout << "result:" << result << endl;
+			// cout << "result:" << result << endl;
 		}
 	}
 	if (IsSynonym(token) && synonym_type.compare("prog_line") == 0) {
