@@ -8,6 +8,6 @@ STRINGLIST_SET QueryResult::GetResult() {
 	return this->result;
 }
 
-VOID QueryResult::SetResult(STRINGLIST_SET result) {
+void QueryResult::SetResult(STRINGLIST_SET result) {
 	this->result = *(new STRINGLIST_SET(result));
 }

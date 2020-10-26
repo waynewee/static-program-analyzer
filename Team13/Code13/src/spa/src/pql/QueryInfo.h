@@ -14,7 +14,10 @@ private:
 	STRINGPAIR_SET with_map_;
 	STRING_STRING_MAP entity_map_;
 	STRING_LIST output_list_;
-	BOOLEAN is_valid_ = true;
+
+	bool is_valid_ = true;
+	bool is_invalid_due_to_semantics_ = false;
+
 public:
 	/* getters */
 	STRING_STRINGLISTLIST_MAP GetStMap();
@@ -22,21 +25,26 @@ public:
 	STRINGPAIR_SET GetWithMap();
 	STRING_STRING_MAP GetEntityMap();
 	STRING_LIST GetOutputList();
-	BOOLEAN IsQueryInfoValid();
+	STRINGLIST_SET GetFalseResult();
+	bool IsQueryInfoValid();
+	bool IsBooleanOutput();
+	bool IsSemanticsInvalid();
 
 	/* setters */
-	VOID SetStMap(STRING_STRINGLISTLIST_MAP st_map);
-	VOID SetPatternMap(STRING_STRINGLISTLIST_MAP pattern_map);
-	VOID SetWithMap(STRINGPAIR_SET with_map);
-	VOID SetEntityMap(STRING_STRING_MAP entity_map);
-	VOID SetOutputList(STRING_LIST output_list);
-	VOID SetValidToFalse();
+	void SetStMap(STRING_STRINGLISTLIST_MAP st_map);
+	void SetPatternMap(STRING_STRINGLISTLIST_MAP pattern_map);
+	void SetWithMap(STRINGPAIR_SET with_map);
+	void SetEntityMap(STRING_STRING_MAP entity_map);
+	void SetOutputList(STRING_LIST output_list);
+	void SetValidToFalse();
+	void SetInvalidDueToSemanticsTrue();
+	void SetInvalidDueToSemanticsFalse();
 
 	/* printing */
-	VOID PrintOutputList();
-	VOID PrintEntityMap();
-	VOID PrintClausesMap();
-	VOID PrintStMap();
-	VOID PrintPatternMap();
-	VOID PrintWithMap();
+	void PrintOutputList();
+	void PrintEntityMap();
+	void PrintClausesMap();
+	void PrintStMap();
+	void PrintPatternMap();
+	void PrintWithMap();
 };

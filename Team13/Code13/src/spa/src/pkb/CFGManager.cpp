@@ -71,18 +71,7 @@ STMT_IDX_SET CFGManager::GetInverseNextStar(STMT_IDX s) {
 //    }
     return *result;
 }
-STMT_IDX_SET CFGManager::GetAffects(STMT_IDX s) {
-    return STMT_IDX_SET();
-}
-STMT_IDX_SET CFGManager::GetAffectsStar(STMT_IDX s) {
-    return STMT_IDX_SET();
-}
-STMT_IDX_SET CFGManager::GetInverseAffects(STMT_IDX s) {
-    return STMT_IDX_SET();
-}
-STMT_IDX_SET CFGManager::GetInverseAffectsStar(STMT_IDX s) {
-    return STMT_IDX_SET();
-}
+
 bool CFGManager::IsNext(STMT_IDX s1, STMT_IDX s2) {
     auto table = cfg_.GetAdjacencyList();
     auto inverse_table = cfg_.GetInverseAdjacencyList();

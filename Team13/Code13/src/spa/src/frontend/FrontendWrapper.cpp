@@ -6,10 +6,8 @@
 #include <TNode.h>
 #include <SimpleValidator.h>
 
-FrontendWrapper::FrontendWrapper(string file_name) {
-	FileReader fileReader(file_name);
-	string input = fileReader.ReadFile();
-	Tokenizer tokenizer(input);
+FrontendWrapper::FrontendWrapper(string file_contents) {
+	Tokenizer tokenizer(file_contents);
 	token_list_ = tokenizer.GetTokenList();
 
 	try {

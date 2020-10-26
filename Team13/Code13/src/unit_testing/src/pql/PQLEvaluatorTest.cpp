@@ -16,7 +16,7 @@ TEST_CASE("") {
 
 
 TEST_CASE("ParseClauses | Parsing WITH constraints") {
-	QueryInfo query_info = parser.Parse("stmt s; assign a; prog_line n; Select BOOLEAN with \"x\" = \"x\" and 10 = 10 and s.stmt# = 10 and a.stmt# = n");
+	QueryInfo query_info = parser.Parse("stmt s; assign a; prog_line n; Select bool with \"x\" = \"x\" and 10 = 10 and s.stmt# = 10 and a.stmt# = n");
 
 	STRINGPAIR_SET constraints = STRINGPAIR_SET();
 	
@@ -34,7 +34,7 @@ TEST_CASE("ParseClauses | Parsing WITH constraints") {
 
 	evaluator.ParseClauses(query_info, &constraints);
 	for (STRING_PAIR* expected_pair: expected_result) {
-		BOOLEAN found = false;
+		bool found = false;
 		for (STRING_PAIR* constraint_pair : constraints) {
 			if (expected_pair->first.compare(constraint_pair->first) == 0 && expected_pair->second.compare(constraint_pair->second) == 0) {
 				found = true;
@@ -47,7 +47,7 @@ TEST_CASE("ParseClauses | Parsing WITH constraints") {
 }
 
 TEST_CASE("ParseClauses | Parsing ST constraints") {
-	QueryInfo query_info = parser.Parse("stmt s; assign a; prog_line n; procedure p; variable v1, v2; Select BOOLEAN such that Parent (1, 2) and Follows (1, s) and Next (n, 10) and Uses (s, v1) and Uses (p, v1) and Modifies (n, v2) and Modifies (\"s\", \"x\")");
+	QueryInfo query_info = parser.Parse("stmt s; assign a; prog_line n; procedure p; variable v1, v2; Select bool such that Parent (1, 2) and Follows (1, s) and Next (n, 10) and Uses (s, v1) and Uses (p, v1) and Modifies (n, v2) and Modifies (\"s\", \"x\")");
 
 	STRINGSET_STRINGLISTSET_MAP synonyms_map = STRINGSET_STRINGLISTSET_MAP();
 
@@ -82,10 +82,10 @@ TEST_CASE("ParseClauses | Parsing ST constraints") {
 
 	evaluator.ParseClauses(query_info, &synonyms_map);
 	for (auto f = expected_result.cbegin(); f != expected_result.cend(); f++) {
-		BOOLEAN found_key = false;
+		bool found_key = false;
 		for (auto s = synonyms_map.cbegin(); s != synonyms_map.cend(); s++) {
 			if (*((*f).first) == *((*s).first)) {
-				BOOLEAN found_value = false;
+				bool found_value = false;
 				for (STRING_LIST* expected_clause : (*f).second) {
 					for (STRING_LIST* clause : (*s).second) {
 						if (*clause == *expected_clause) {
@@ -107,7 +107,7 @@ TEST_CASE("ParseClauses | Parsing ST constraints") {
 }
 
 TEST_CASE("ParseClauses | Parsing pattern constraints") {
-	QueryInfo query_info = parser.Parse("assign a1, a2; variable v1, v2; Select BOOLEAN pattern a1 (v1, _) and a1 (v1, \"x\") and a1 (v1, _\"x\"_) and a2 (_, _\"x\"_) and a2 (_, _) and a2 (_, \"x\")");
+	QueryInfo query_info = parser.Parse("assign a1, a2; variable v1, v2; Select bool pattern a1 (v1, _) and a1 (v1, \"x\") and a1 (v1, _\"x\"_) and a2 (_, _\"x\"_) and a2 (_, _) and a2 (_, \"x\")");
 	query_info.PrintPatternMap();
 
 	STRINGSET_STRINGLISTSET_MAP synonyms_map = STRINGSET_STRINGLISTSET_MAP();
@@ -143,10 +143,10 @@ TEST_CASE("ParseClauses | Parsing pattern constraints") {
 
 	evaluator.ParseClauses(query_info, &synonyms_map);
 	for (auto f = expected_result.cbegin(); f != expected_result.cend(); f++) {
-		BOOLEAN found_key = false;
+		bool found_key = false;
 		for (auto s = synonyms_map.cbegin(); s != synonyms_map.cend(); s++) {
 			if (*((*f).first) == *((*s).first)) {
-				BOOLEAN found_value = false;
+				bool found_value = false;
 				for (STRING_LIST* expected_clause : (*f).second) {
 					for (STRING_LIST* clause : (*s).second) {
 						if (*clause == *expected_clause) {
@@ -209,7 +209,7 @@ TEST_CASE("RemoveIrrelevant | Perform AND operation between 2 data sets") {
 
 	evaluator.RemoveIrrelevant(&values, to_retain, 0);
 	for (auto f = expected_result.cbegin(); f != expected_result.cend(); f++) {
-		BOOLEAN found = false;
+		bool found = false;
 		for (auto s = values.cbegin(); s != values.cend(); s++) {
 			if (*(*f) == *(*s)) {
 				found = true;
@@ -300,7 +300,7 @@ TEST_CASE("GetCartesianProduct | Perform cartesian product on data sets in order
 
 	STRINGLIST_SET result = evaluator.GetCartesianProduct(results_map, output_list);
 	for (auto f = expected_result.cbegin(); f != expected_result.cend(); f++) {
-		BOOLEAN found = false;
+		bool found = false;
 		for (auto s = result.cbegin(); s != result.cend(); s++) {
 			if (*(*f) == *(*s)) {
 				found = true;

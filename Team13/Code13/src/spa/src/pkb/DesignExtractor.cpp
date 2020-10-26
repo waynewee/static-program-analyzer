@@ -432,7 +432,7 @@ bool DesignExtractor::ExtractData(DataManager manager, TNode root) {
     return true;
 }
 
-bool DesignExtractor::ExtractPattern(PatternManager manager, TNode root) {
+bool DesignExtractor::ExtractAssignPattern(PatternManager manager, TNode root) {
     vector<TNode*> children = root.GetChildrenVector();
     if (root.GetNodeType() == TNode::assignStmt) {
         TNode* var_node = children.at(0);
@@ -440,7 +440,45 @@ bool DesignExtractor::ExtractPattern(PatternManager manager, TNode root) {
         manager.AddAssignPattern(root.GetStmtIndex(), *var_node->GetName(), *expr_node);
     } else {
         for (TNode* child : children) {
-            ExtractPattern(manager, *child);
+            ExtractAssignPattern(manager, *child);
+        }
+    }
+    return true;
+}
+bool DesignExtractor::ExtractContainerPattern(PatternManager manager, TNode root) {
+    vector<TNode*> children = root.GetChildrenVector();
+    if (root.GetNodeType() == TNode::ifStmt) {
+        TNode* condition_node = children.at(0);
+        TNode* then_node = children.at(1);
+        TNode* else_node = children.at(2);
+        manager.AddIfPattern(root.GetStmtIndex(), *condition_node);
+        ExtractContainerPattern(manager, *then_node);
+        ExtractContainerPattern(manager, *else_node);
+    } else if (root.GetNodeType() == TNode::whileStmt) {
+        TNode* condition_node = children.at(0);
+        TNode* stmt_list_node = children.at(1);
+        manager.AddWhilePattern(root.GetStmtIndex(), *condition_node);
+        ExtractContainerPattern(manager, *stmt_list_node);
+    } else {
+        for (auto child: children) {
+            ExtractContainerPattern(manager, *child);
+        }
+    }
+    return true;
+}
+bool DesignExtractor::ExtractAssignStmtInProcs(DataManager manager, TNode root) {
+    //Root node has to be a program node; all of its children are procedures
+    vector<TNode*> procs = root.GetChildrenVector();
+    for (auto proc: procs) {
+        auto procName = proc->GetName();
+        vector<TNode*> children = root.GetChildrenVector();
+        //Procedure nodes only have 2 children, first one is procName and the second one is stmtList
+        TNode* stmtListNode = children.at(1);
+        vector<TNode*> stmts = stmtListNode->GetChildrenVector();
+        for (auto stmt: stmts) {
+            if (stmt->GetNodeType() == TNode::NODE_TYPE::assignStmt) {
+                manager.AddAssignStatement(*procName, stmt->GetStmtIndex());
+            }
         }
     }
     return true;

@@ -22,7 +22,9 @@ public:
     static bool ExtractUses(RelationManager manager, TNode root);
     static bool ExtractCalls(RelationManager manager, TNode root);
     static bool ExtractData(DataManager manager, TNode root);
-    static bool ExtractPattern(PatternManager manager, TNode root);
+    static bool ExtractAssignPattern(PatternManager manager, TNode root);
+    static bool ExtractContainerPattern(PatternManager manager, TNode root);
+    static bool ExtractAssignStmtInProcs(DataManager manager, TNode root);
 
 private:
     static bool ExtractParentRecursive(RelationManager manager, TNode root, STMT_IDX_LIST parents);

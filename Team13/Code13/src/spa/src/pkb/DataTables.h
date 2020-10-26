@@ -35,16 +35,21 @@ class StatementTable {
 #define _IF_ 6
 #define _size_ 7
 private:
-    std::vector<STMT_IDX_SET > data_;
+    std::vector<STMT_IDX_SET> stmt_data_;
+    std::unordered_map<PROC_NAME, STMT_IDX_SET> proc_to_assign_stmt_data_;
 public:
     StatementTable() {
         for (int i = 0; i < _size_; i++) {
-            data_.push_back(STMT_IDX_SET());
+            stmt_data_.push_back(STMT_IDX_SET());
         }
     }
     bool Add(STATEMENT_TYPE t, STMT_IDX s);
     STMT_IDX_SET GetAll(STATEMENT_TYPE t);
     STMT_IDX_SET GetAll();
+    bool Add(PROC_NAME p, STMT_IDX s);
+    STMT_IDX_SET GetAll(PROC_NAME p);
+    bool IsAssignStmt(STMT_IDX s);
+    bool IsCallStmt(STMT_IDX s);
 };
 
 class VariableTable {

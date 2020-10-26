@@ -5,12 +5,12 @@
 class PQLTokenizer
 {
 public:
-	static STRING_LIST TokenizeBySemicolons(STRING* query);
+	static STRING_LIST TokenizeBySemicolons(string* query);
 
-	static STRING RetrieveToken(STRING* str);
+	static string RetrieveToken(string* str);
 
-	static STRING RetrieveTokenByOpenBracket(STRING* str);
+	static string RetrieveTokenByOpenBracket(string* str);
 
-	static STRING RetrieveTokenByClosingAngleBracket(STRING* str);
+	static string RetrieveTokenByClosingAngleBracket(string* str);
 };
 

@@ -35,7 +35,10 @@ TestWrapper::TestWrapper() {
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(string filename) {
-	FrontendWrapper frontend_wrapper(filename);
+
+	FileReader file_reader(filename);
+	string file_contents = file_reader.ReadFile();
+	FrontendWrapper frontend_wrapper(file_contents);
 
 	TNode* ast_root = frontend_wrapper.GetAST();
 	CFG* cfg = frontend_wrapper.GetCFG(ast_root);
@@ -49,32 +52,8 @@ void TestWrapper::parse(string filename) {
 	DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
-	DesignExtractor::ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
-
-	/*auto rel_manager = pkb->GetRelationManager();
-	PROC_NAME_SET all_calls_star = rel_manager.GetCallsStars("testCallCallsFirst");
-	for (PROC_NAME p : all_calls_star) {
-		cout << "Call star: " << p << "\n";
-	}*/
-	/*try {
-		FrontendWrapper frontend_wrapper(filename);
-
-		TNode* ast_root_node = frontend_wrapper.GetAST();
-		CFG* cfg = frontend_wrapper.GetCFG(ast_root_node);
-		TestWrapper::pkb->SetASTRoot(ast_root_node);
-
-		DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
-        DesignExtractor::ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
-        DesignExtractor::ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
-        DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
-        DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
-		DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
-        DesignExtractor::ExtractPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
-	}
-	catch (logic_error& e) {
-		cout << e.what() << endl;
-	}*/
-
+	DesignExtractor::ExtractAssignPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractContainerPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
 }
 
 // method to evaluating a query

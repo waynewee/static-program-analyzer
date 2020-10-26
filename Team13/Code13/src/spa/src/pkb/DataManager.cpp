@@ -56,3 +56,16 @@ VariableTable DataManager::GetVarTable() {
 ProcedureTable DataManager::GetProcTable() {
     return proc_table_;
 }
+bool DataManager::AddAssignStatement(PROC_NAME p, STMT_IDX s) {
+    return stmt_table_.Add(p, s);
+}
+STMT_IDX_SET DataManager::GetAllAssignStatements(PROC_NAME p) {
+    return stmt_table_.GetAll(p);
+}
+
+bool DataManager::IsCallStmt(STMT_IDX s) {
+    return stmt_table_.IsCallStmt(s);
+}
+bool DataManager::IsAssignStmt(STMT_IDX s) {
+    return stmt_table_.IsAssignStmt(s);
+}

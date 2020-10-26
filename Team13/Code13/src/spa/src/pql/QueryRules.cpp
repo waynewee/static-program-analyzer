@@ -1,4 +1,4 @@
-#include "QueryRules.h"
+ï»¿#include "QueryRules.h"
 #include "WhitespaceHandler.h"
 #include <sstream>
 #include <regex>
@@ -6,18 +6,32 @@
 #include <iostream>
 using namespace std;
 
-const STRING_SET valid_design_entities = { "stmt" , "read" , "print" , "call" , "while" , "if" , "assign" , "variable" , "constant" , "prog_line" , "procedure" };
-const STRING_SET valid_rel_ref_names = { "Follows" , "FollowsT" , "Follows*" , "Parent" , "ParentT" ,
-											"Parent*" , "Uses" , "UsesS" , "UsesP" , "Modifies" ,  "ModifiesS" , "ModifiesP" ,
-												"Calls" , "CallsT" , "Calls*" , "Next" , "NextT" , "Next*" };
-const STRING_SET valid_stmt_ref_synonyms = { "stmt" , "read" , "print" , "call" , "while" , "if" , "assign" };
-const STRING_SET valid_ent_ref_synonyms = { "variable", "procedure" };
-const STRING_SET valid_line_ref_synonyms = { "prog_line" };
-const STRING_SET valid_attr_names = { "procName" , "varName" , "value" , "stmt#" };
+const STRING_SET valid_design_entities = { TYPE_DESIGN_ENTITY_STMT , TYPE_DESIGN_ENTITY_READ , TYPE_DESIGN_ENTITY_PRINT ,
+											TYPE_DESIGN_ENTITY_CALL , TYPE_DESIGN_ENTITY_WHILE , TYPE_DESIGN_ENTITY_IF ,
+											TYPE_DESIGN_ENTITY_ASSIGN , TYPE_DESIGN_ENTITY_VARIABLE , TYPE_DESIGN_ENTITY_CONSTANT ,
+											TYPE_DESIGN_ENTITY_PROG_LINE , TYPE_DESIGN_ENTITY_PROCEDURE };
+const STRING_SET valid_rel_ref_names = { TYPE_COND_FOLLOWS , TYPE_COND_FOLLOWS_T , TYPE_COND_FOLLOWS_STAR , TYPE_COND_PARENT ,
+										TYPE_COND_PARENT_T , TYPE_COND_PARENT_STAR , TYPE_COND_USES , TYPE_COND_USES_S ,
+										TYPE_COND_USES_P , TYPE_COND_MODIFIES ,  TYPE_COND_MODIFIES_S , TYPE_COND_MODIFIES_P ,
+										TYPE_COND_CALLS , TYPE_COND_CALLS_T , TYPE_COND_CALLS_STAR , TYPE_COND_NEXT ,
+										TYPE_COND_NEXT_T , TYPE_COND_NEXT_STAR , TYPE_COND_AFFECTS , TYPE_COND_AFFECTS_T ,
+										TYPE_COND_AFFECTS_STAR };
+const STRING_SET valid_stmt_ref_synonyms = { TYPE_DESIGN_ENTITY_STMT , TYPE_DESIGN_ENTITY_READ , TYPE_DESIGN_ENTITY_PRINT ,
+											TYPE_DESIGN_ENTITY_CALL , TYPE_DESIGN_ENTITY_WHILE , TYPE_DESIGN_ENTITY_IF ,
+											TYPE_DESIGN_ENTITY_ASSIGN };
+const STRING_SET valid_ent_ref_synonyms = { TYPE_DESIGN_ENTITY_VARIABLE, TYPE_DESIGN_ENTITY_PROCEDURE };
+const STRING_SET valid_line_ref_synonyms = { TYPE_DESIGN_ENTITY_PROG_LINE };
+const STRING_SET valid_attr_names = { TYPE_ATTRNAME_PROCNAME , TYPE_ATTRNAME_VARNAME , TYPE_ATTRNAME_VALUE , TYPE_ATTRNAME_STMT };
+const STRING_SET valid_stmt_attr_types = { TYPE_DESIGN_ENTITY_CALL , TYPE_DESIGN_ENTITY_READ , TYPE_DESIGN_ENTITY_PRINT,
+										TYPE_DESIGN_ENTITY_STMT, TYPE_DESIGN_ENTITY_WHILE, TYPE_DESIGN_ENTITY_IF,
+										TYPE_DESIGN_ENTITY_ASSIGN };
+const STRING_SET valid_procname_attr_types = { TYPE_DESIGN_ENTITY_PROCEDURE , TYPE_DESIGN_ENTITY_CALL };
+const STRING_SET valid_varname_attr_types = { TYPE_DESIGN_ENTITY_VARIABLE , TYPE_DESIGN_ENTITY_READ , TYPE_DESIGN_ENTITY_PRINT };
+const STRING_SET valid_value_attr_types = { TYPE_DESIGN_ENTITY_CONSTANT };
 
 
-BOOLEAN QueryRules::IsIdent(STRING token) {
-	BOOLEAN result = false;
+bool QueryRules::IsIdent(string token) {
+	bool result = false;
 	regex expr("[A-Za-z][a-zA-Z_0-9]*");
 	if (regex_match(token, expr)) {
 		result = true;
@@ -25,8 +39,8 @@ BOOLEAN QueryRules::IsIdent(STRING token) {
 	return result;
 }
 
-BOOLEAN QueryRules::IsName(STRING token) {
-	BOOLEAN result = false;
+bool QueryRules::IsName(string token) {
+	bool result = false;
 	regex expr("[A-Za-z][a-zA-Z_0-9]*");
 	if (regex_match(token, expr)) {
 		result = true;
@@ -34,8 +48,8 @@ BOOLEAN QueryRules::IsName(STRING token) {
 	return result;
 }
 
-BOOLEAN QueryRules::IsInteger(STRING token) {
-	BOOLEAN result = false;
+bool QueryRules::IsInteger(string token) {
+	bool result = false;
 	regex expr("[0-9]*");
 	if (regex_match(token, expr)) {
 		result = true;
@@ -43,16 +57,16 @@ BOOLEAN QueryRules::IsInteger(STRING token) {
 	return result;
 }
 
-BOOLEAN QueryRules::IsSynonym(STRING token) {
-	BOOLEAN result = false;
+bool QueryRules::IsSynonym(string token) {
+	bool result = false;
 	if (IsIdent(token)) {
 		result = true;
 	}
 	return result;
 }
 
-BOOLEAN QueryRules::IsStmtRef(STRING token, STRING synonym_type) {
-	BOOLEAN result = false;
+bool QueryRules::IsStmtRef(string token, string synonym_type) {
+	bool result = false;
 	if (valid_stmt_ref_synonyms.count(synonym_type) == 1) {
 		if (IsSynonym(token)) {
 			result = true;
@@ -67,8 +81,8 @@ BOOLEAN QueryRules::IsStmtRef(STRING token, STRING synonym_type) {
 	return result;
 }
 
-BOOLEAN QueryRules::IsEntRef(STRING token, STRING synonym_type) {
-	BOOLEAN result = false;
+bool QueryRules::IsEntRef(string token, string synonym_type) {
+	bool result = false;
 	if (valid_ent_ref_synonyms.count(synonym_type) == 1) {
 		if (IsSynonym(token)) {
 			result = true;
@@ -79,7 +93,7 @@ BOOLEAN QueryRules::IsEntRef(STRING token, STRING synonym_type) {
 	}
 	else if (token.front() == '\"' && token.back() == '\"') {
 		// remember to ensure that what's inside the "" is already trimmed!
-		STRING ident = token.substr(1, token.length() - 2);
+		string ident = token.substr(1, token.length() - 2);
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&ident);
 		if (IsIdent(ident)) {
 			result = true;
@@ -88,8 +102,8 @@ BOOLEAN QueryRules::IsEntRef(STRING token, STRING synonym_type) {
 	return result;
 }
 
-BOOLEAN QueryRules::IsLineRef(STRING token, STRING synonym_type) {
-	BOOLEAN result = false;
+bool QueryRules::IsLineRef(string token, string synonym_type) {
+	bool result = false;
 	if (valid_line_ref_synonyms.count(synonym_type) == 1) {
 		if (IsSynonym(token)) {
 			result = true;
@@ -104,37 +118,42 @@ BOOLEAN QueryRules::IsLineRef(STRING token, STRING synonym_type) {
 	return result;
 }
 
-BOOLEAN QueryRules::IsElem(STRING token) {
-	BOOLEAN result = false;
+bool QueryRules::IsElem(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = false;
 	if (IsSynonym(token)) {
 		result = true;
 	}
-
-	if (IsAttrRef(token)) {
+	string synonym_subtoken;
+	string synonym_subtoken_type;
+	if (token.find(".") != string::npos) {
+		synonym_subtoken = token.substr(0, token.find_first_of("."));
+		synonym_subtoken_type = declared_var_names.at(synonym_subtoken);
+	}
+	if (IsAttrRef(token, synonym_subtoken_type)) {
 		result = true;
 	}
 
 	return result;
 }
 
-BOOLEAN QueryRules::IsAttrName(STRING token) {
-	BOOLEAN result = false;
+bool QueryRules::IsAttrName(string token) {
+	bool result = false;
 	if (valid_attr_names.count(token) == 1) {
 		result = true;
 	}
 	return result;
 }
 
-BOOLEAN QueryRules::IsDesignEntity(STRING token) {
-	BOOLEAN result = false;
+bool QueryRules::IsDesignEntity(string token) {
+	bool result = false;
 	if (valid_design_entities.count(token) == 1) {
 		result = true;
 	}
 	return result;
 }
 
-BOOLEAN QueryRules::IsSelect(STRING token) {
-	BOOLEAN result = false;
+bool QueryRules::IsSelect(string token) {
+	bool result = false;
 	if (token.compare(TYPE_SELECT_CLAUSE) == 0) {
 		result = true;
 	}
@@ -144,24 +163,24 @@ BOOLEAN QueryRules::IsSelect(STRING token) {
 /*
 	Remember to pass in "stmt s" without the semicolon.
 */
-BOOLEAN QueryRules::IsDeclaration(STRING token, STRING_STRING_MAP entity_map) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING sub_token;
-	STRING comma = ",";
+bool QueryRules::IsDeclaration(string token, STRING_STRING_MAP entity_map) {
+	bool result = true;
+	string temp_token = token;
+	string sub_token;
+	string comma = ",";
 	size_t pos = 0;
-	BOOLEAN first_pass = true;
+	bool first_pass = true;
 	STRING_SET declared_synonyms;
 	// If there is a comma found (indicating multiple synonyms)
-	if (temp_token.find(comma) != STRING::npos) {
-		while ((pos = temp_token.find(comma)) != STRING::npos) {
+	if (temp_token.find(comma) != string::npos) {
+		while ((pos = temp_token.find(comma)) != string::npos) {
 			WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
 			sub_token = temp_token.substr(0, temp_token.find_first_of(","));
 			WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&sub_token);
 			//cout << "SUBTOKEN:" << sub_token << endl;
 			if (first_pass) {
 				// Here should have the design-entity and synonym
-				STRING supposed_design_entity = sub_token.substr(0, sub_token.find_first_of(" "));
+				string supposed_design_entity = sub_token.substr(0, sub_token.find_first_of(" "));
 				//cout << "sde:" << supposed_design_entity << "|" << endl;
 				if (!IsDesignEntity(supposed_design_entity)) {
 					result = false;
@@ -208,7 +227,7 @@ BOOLEAN QueryRules::IsDeclaration(STRING token, STRING_STRING_MAP entity_map) {
 	}
 	else {
 		// No comma found. One synonym declared.
-		STRING supposed_design_entity = temp_token.substr(0, temp_token.find_first_of(" "));
+		string supposed_design_entity = temp_token.substr(0, temp_token.find_first_of(" "));
 		if (!IsDesignEntity(supposed_design_entity)) {
 			result = false;
 		}
@@ -230,58 +249,87 @@ BOOLEAN QueryRules::IsDeclaration(STRING token, STRING_STRING_MAP entity_map) {
 	return result;
 }
 
-BOOLEAN QueryRules::IsResultClause(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = false;
+bool QueryRules::IsResultClause(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = false;
 	if (IsTuple(token, declared_var_names)) {
 		result = true;
 	}
+	/*
+	else {
+		cout << "tuple is not valid in result clase" << endl;
+	}
+	*/
 	if (token.compare("BOOLEAN") == 0) {
 		result = true;
 	}
 	return result;
 }
 
-BOOLEAN QueryRules::IsTuple(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = false;
-	STRING temp_token = token;
+bool QueryRules::IsTuple(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = false;
+	string temp_token = token;
 	// cout << "temp_token:" << temp_token << endl;
-	if (IsElem(temp_token)) {
-		// cout << "yes is elem" << endl;
-		// element must be declared by user
-		if (IsAttrRef(temp_token)) {
-			// cout << "yes is attrRef" << endl;
-			// there is a dot
-			STRING synonym_subtoken = temp_token.substr(0, temp_token.find_first_of("."));
-			// cout << "synonym_st" << synonym_subtoken << endl;
-			if (declared_var_names.count(synonym_subtoken) == 1) {
+	string synonym_token;
+	if (temp_token.find(".") != string::npos && temp_token.front() != '<' && temp_token.back() != '>') {
+		synonym_token = temp_token.substr(0, temp_token.find_first_of("."));
+		// cout << "found dot in elem, this is not tuple" << endl; 
+	}
+	// cout << "reachhere1" << endl;
+	if (temp_token.front() != '<' && temp_token.back() != '>') {
+		if (IsElem(temp_token, declared_var_names)) {
+			// cout << "IT IS AN ELEM" << endl;
+			// cout << "yes is elem" << endl;
+			// element must be declared by user
+			if (temp_token.find(".") != string::npos) {
+				string synonym_type = declared_var_names.at(synonym_token);
+				// cout << "passed synonym Type: " << synonym_type << endl;
+				if (IsAttrRef(temp_token, synonym_type)) {
+					// cout << "yes is attrRef" << endl;
+					// there is a dot
+					// cout << "synonym_st" << synonym_subtoken << endl;
+					if (declared_var_names.count(synonym_token) == 1) {
+						result = true;
+						return result;
+					}
+				}
+			}
+			if (declared_var_names.count(token) == 1) {
 				result = true;
 				return result;
 			}
 		}
-		if (declared_var_names.count(token) == 1) {
-			result = true;
-			return result;
-		}
 	}
-	STRING sub_token;
-	STRING comma = ",";
+	// cout << "reachhere2" << endl;
+	string sub_token;
+	string comma = ",";
 	size_t pos = 0;
 	if (temp_token.front() == '<' && temp_token.back() == '>') {
+		// cout << "entered here is tuple" << endl;
 		temp_token = temp_token.substr(1, temp_token.length() - 2);
-		while ((pos = temp_token.find(comma)) != STRING::npos) {
+		while ((pos = temp_token.find(comma)) != string::npos) {
 			sub_token = temp_token.substr(0, pos);
 			// cout << "subtoken:" << sub_token << "|" << endl;
 			WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&sub_token);
-
-			if (IsAttrRef(sub_token)) {
-				STRING synonym_subtoken = sub_token.substr(0, sub_token.find_first_of("."));
-				// cout << "synonym_st" << synonym_subtoken << endl;
-				if (declared_var_names.count(synonym_subtoken) != 1) {
-					result = false;
-					return result; // synonym not declared.
-				}
-				else {
-					result = true;
+			string synonym_subtoken;
+			string synonym_subtoken_type;
+			if (sub_token.find(".") != string::npos) {
+				synonym_subtoken = sub_token.substr(0, sub_token.find_first_of("."));
+				synonym_subtoken_type = declared_var_names.at(synonym_subtoken);
+			}
+			// cout << "subtoken:" << sub_token << endl;
+			// cout << "synonymtype:" << synonym_subtoken_type << endl;
+			// cout << "entered here but didnt enter isAttrRef" << endl;
+			if (sub_token.find(".") != string::npos) {
+				if (IsAttrRef(sub_token, synonym_subtoken_type)) {
+					// cout << "yes it's attr ref in tuple" << endl;
+					// cout << "synonym_st" << synonym_subtoken << endl;
+					if (declared_var_names.count(synonym_subtoken) != 1) {
+						result = false;
+						return result; // synonym not declared.
+					}
+					else {
+						result = true;
+					}
 				}
 			}
 			else if (IsSynonym(sub_token)) {
@@ -301,18 +349,26 @@ BOOLEAN QueryRules::IsTuple(STRING token, STRING_STRING_MAP declared_var_names) 
 			temp_token.erase(0, temp_token.find_first_of(",") + 1);
 		}
 		// last token : 
-		cout << "we reach last token. " << endl;
+		// cout << "we reach last token. " << endl;
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
-		cout << "last token:" << temp_token << endl;
-		if (IsAttrRef(temp_token)) {
-			STRING synonym_subtoken = temp_token.substr(0, temp_token.find_first_of("."));
-			// cout << "synonym_st" << synonym_subtoken << endl;
-			if (declared_var_names.count(synonym_subtoken) != 1) {
-				result = false;
-				return result; // synonym not declared.
-			}
-			else {
-				result = true;
+		// cout << "last token:" << temp_token << endl;
+		string synonym_lasttoken;
+		string synonym_lasttoken_type;
+		if (temp_token.find(".") != string::npos) {
+			synonym_lasttoken = temp_token.substr(0, temp_token.find_first_of("."));
+			synonym_lasttoken_type = declared_var_names.at(synonym_lasttoken);
+		}
+		if (temp_token.find(".") != string::npos) {
+			if (IsAttrRef(temp_token, synonym_lasttoken_type)) {
+				string synonym_subtoken = temp_token.substr(0, temp_token.find_first_of("."));
+				// cout << "synonym_st" << synonym_subtoken << endl;
+				if (declared_var_names.count(synonym_subtoken) != 1) {
+					result = false;
+					return result; // synonym not declared.
+				}
+				else {
+					result = true;
+				}
 			}
 		}
 		else if (IsSynonym(temp_token)) {
@@ -331,22 +387,22 @@ BOOLEAN QueryRules::IsTuple(STRING token, STRING_STRING_MAP declared_var_names) 
 	}
 	if (DEBUG) {
 		if (!result) {
-			cout << "Error at QueryRules::IsTuple()" << endl;
+			// cout << "Error at QueryRules::IsTuple()" << endl;
 		}
 	}
 	return result;
 }
 
-BOOLEAN QueryRules::IsWithClause(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING with_token = temp_token.substr(0, temp_token.find_first_of(" "));
+bool QueryRules::IsWithClause(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string with_token = temp_token.substr(0, temp_token.find_first_of(" "));
 	if (with_token.compare(TYPE_WITH_CLAUSE) != 0) {
 		result = false;
 	}
 	temp_token.erase(0, temp_token.find_first_of(" "));
 	WhitespaceHandler::TrimLeadingWhitespaces(&temp_token);
-	STRING attr_cond_token = temp_token;
+	string attr_cond_token = temp_token;
 
 	if (!IsAttrCond(attr_cond_token, declared_var_names)) {
 		result = false;
@@ -355,9 +411,9 @@ BOOLEAN QueryRules::IsWithClause(STRING token, STRING_STRING_MAP declared_var_na
 	return result;
 }
 
-BOOLEAN QueryRules::IsSuchThatClause(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
+bool QueryRules::IsSuchThatClause(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
 	size_t second_whitespace_pos = 0;
 	int count = 0;
 	while (count != 2)
@@ -369,14 +425,14 @@ BOOLEAN QueryRules::IsSuchThatClause(STRING token, STRING_STRING_MAP declared_va
 	if (second_whitespace_pos > 9) {
 		second_whitespace_pos = temp_token.length() - 1;
 	}
-	STRING suchthat_token = temp_token.substr(0, second_whitespace_pos);
+	string suchthat_token = temp_token.substr(0, second_whitespace_pos);
 	if (suchthat_token.compare(TYPE_SUCH_THAT_CLAUSE) != 0) {
 		result = false;
 	}
 	temp_token.erase(0, temp_token.find_first_of(" ") + 1); // erase such
 	temp_token.erase(0, temp_token.find_first_of(" ")); // erase that
 	WhitespaceHandler::TrimLeadingWhitespaces(&temp_token);
-	STRING rel_cond_token = temp_token;
+	string rel_cond_token = temp_token;
 
 	if (!IsRelCond(rel_cond_token, declared_var_names)) {
 		result = false;
@@ -386,17 +442,17 @@ BOOLEAN QueryRules::IsSuchThatClause(STRING token, STRING_STRING_MAP declared_va
 	return result;
 }
 
-BOOLEAN QueryRules::IsPatternClause(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING pattern_token = temp_token.substr(0, temp_token.find_first_of(" "));
+bool QueryRules::IsPatternClause(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string pattern_token = temp_token.substr(0, temp_token.find_first_of(" "));
 	if (pattern_token.compare(TYPE_COND_PATTERN) != 0) {
 		result = false;
 		return result;
 	}
 	temp_token.erase(0, temp_token.find_first_of(" "));
 	WhitespaceHandler::TrimLeadingWhitespaces(&temp_token);
-	STRING pattern_cond_token = temp_token;
+	string pattern_cond_token = temp_token;
 
 	if (!IsPatternCond(pattern_cond_token, declared_var_names)) {
 		result = false;
@@ -407,57 +463,132 @@ BOOLEAN QueryRules::IsPatternClause(STRING token, STRING_STRING_MAP declared_var
 	return result;
 }
 
-BOOLEAN QueryRules::IsAttrCond(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-
-	STRING temp_token = token;
-	STRING and_token = "and";
+bool QueryRules::IsAttrCond(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	// cout << "CHECKING IF ATTRCOND.." << endl;
+	string temp_token = token;
+	string and_token = "and";
 	size_t pos = 0;
-	while ((pos = temp_token.find(and_token)) != STRING::npos) {
-		// while we can find 'and'
-		STRING supposed_attr_cond = temp_token.substr(0, temp_token.find_first_of("and"));
-		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&supposed_attr_cond);
-		if (!IsAttrCompare(supposed_attr_cond, declared_var_names)) {
-			result = false;
-			return result;
-		}
-		temp_token.erase(0, temp_token.find_first_of("and") + 3);
+	if (!IsAttrCompare(temp_token, declared_var_names)) {
+		result = false;
+		return result;
 	}
 	return result;
 }
 
-BOOLEAN QueryRules::IsAttrCompare(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING first_ref = token.substr(0, token.find_first_of("="));
-	STRING second_ref = token.substr(token.find_first_of("=") + 1, token.length());
+bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_names) {
+	// cout << "TRYING TO ATTR COMPARE.." << endl;
+	// cout << "TOKEN IS:" << token << endl;
+	bool result = true;
+	string first_ref = token.substr(0, token.find_first_of("="));
+	string second_ref = token.substr(token.find_first_of("=") + 1, token.length());
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_ref);
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_ref);
 	// cout << "first_ref:" << first_ref << endl;
 	// cout << "second_ref:" << second_ref << endl;
-	STRING first_ref_synonym_type = "none";
-	STRING second_ref_synonym_type = "none";
-	if (declared_var_names.count(first_ref_synonym_type) != 0) {
-		first_ref_synonym_type = declared_var_names.at(first_ref_synonym_type);
+	string first_ref_synonym;
+	string second_ref_synonym;
+	string first_ref_synonym_type = "none";
+	string second_ref_synonym_type = "none";
+	// cout << "ATTRCOMPARE CALLED:" << endl;
+	// cout << "first_ref:" << first_ref << endl;
+	string first_ref_type = "none1";
+	string second_ref_type = "none2";
+	if (IsSynonym(first_ref)) {
+		first_ref_synonym_type = declared_var_names.at(first_ref);
+		if (first_ref_synonym_type.compare(TYPE_DESIGN_ENTITY_PROG_LINE) != 0) {
+			result = false;
+			return result;
+		}
+		// it is a progline
+		first_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
 	}
-	if (declared_var_names.count(second_ref_synonym_type) != 0) {
-		second_ref_synonym_type = declared_var_names.at(second_ref_synonym_type);
+	if (IsSynonym(second_ref)) {
+		second_ref_synonym_type = declared_var_names.at(second_ref);
+		if (second_ref_synonym_type.compare(TYPE_DESIGN_ENTITY_PROG_LINE) != 0) {
+			result = false;
+			return result;
+		}
+		second_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
 	}
-	if (!IsRef(first_ref, first_ref_synonym_type)) {
-		result = false;
-		return result;
+	if (first_ref.find(".") != string::npos) {
+		first_ref_synonym = first_ref.substr(0, first_ref.find_first_of("."));
+		if (declared_var_names.count(first_ref_synonym) != 0) {
+			first_ref_synonym_type = declared_var_names.at(first_ref_synonym);
+		}
+		if (!IsRef(first_ref, first_ref_synonym_type)) {
+			result = false;
+			return result;
+		}
+		string first_ref_attr_ref_type = first_ref.substr(first_ref.find_first_of(".") + 1, first_ref.length());
+		// cout << "1st attrref type:" << first_ref_attr_ref_type << endl;
+		if (first_ref_attr_ref_type.compare(TYPE_ATTRNAME_STMT) == 0 || first_ref_attr_ref_type.compare(TYPE_ATTRNAME_VALUE) == 0) {
+			first_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
+		}
+		if (first_ref_attr_ref_type.compare(TYPE_ATTRNAME_PROCNAME) == 0 || first_ref_attr_ref_type.compare(TYPE_ATTRNAME_VARNAME) == 0) {
+			first_ref_type = TYPE_WITH_ARGUMENT_STRING;
+		}
 	}
-	if (!IsRef(second_ref, second_ref_synonym_type)) {
+	else if (IsInteger(first_ref)) {
+		first_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
+	}
+	else if (first_ref.front() == '\"' && first_ref.back() == '\"') {
+		string ident = first_ref.substr(1, first_ref.length() - 2);
+		//cout << "IDENT IS:" << ident << endl;
+		if (IsIdent(ident)) {
+			first_ref_type = TYPE_WITH_ARGUMENT_STRING;
+		}
+		else {
+			result = false;
+			return result;
+		}
+	}
+	if (second_ref.find(".") != string::npos) {
+		second_ref_synonym = second_ref.substr(0, second_ref.find_first_of("."));
+		if (declared_var_names.count(second_ref_synonym) != 0) {
+			second_ref_synonym_type = declared_var_names.at(second_ref_synonym);
+		}
+		if (!IsRef(second_ref, second_ref_synonym_type)) {
+			result = false;
+			return result;
+		}
+		string second_ref_attr_ref_type = second_ref.substr(second_ref.find_first_of(".") + 1, second_ref.length());
+		//cout << "2nd attrref type:" << second_ref_attr_ref_type << endl;
+		if (second_ref_attr_ref_type.compare(TYPE_ATTRNAME_STMT) == 0 || second_ref_attr_ref_type.compare(TYPE_ATTRNAME_VALUE) == 0) {
+			second_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
+		}
+		if (second_ref_attr_ref_type.compare(TYPE_ATTRNAME_PROCNAME) == 0 || second_ref_attr_ref_type.compare(TYPE_ATTRNAME_VARNAME) == 0) {
+			second_ref_type = TYPE_WITH_ARGUMENT_STRING;
+		}
+	}
+	else if (IsInteger(second_ref)) {
+		second_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
+	}
+	else if (second_ref.front() == '\"' && second_ref.back() == '\"') {
+		string ident = second_ref.substr(1, second_ref.length() - 2);
+		// cout << "ident is :" << ident << endl;
+		if (IsIdent(ident)) {
+			second_ref_type = TYPE_WITH_ARGUMENT_STRING;
+		}
+		else {
+			result = false;
+			return result;
+		}
+	}
+	// cout << "FIRST_ARG_TYPE:" << first_ref_type << endl;
+	// cout << "SECOND_ARG_TYPE:" << second_ref_type << endl;
+	if (first_ref_type.compare(second_ref_type) != 0) {
 		result = false;
 		return result;
 	}
 	return result;
 }
 
-BOOLEAN QueryRules::IsRef(STRING token, STRING synonym_type) {
-	BOOLEAN result = false;
+bool QueryRules::IsRef(string token, string synonym_type) {
+	bool result = false;
 	if (token.front() == '\"' && token.back() == '\"') {
 		// remember to ensure that what's inside the "" is already trimmed!
-		STRING ident = token.substr(1, token.length() - 2);
+		string ident = token.substr(1, token.length() - 2);
 		if (IsIdent(ident)) {
 			result = true;
 		}
@@ -465,42 +596,78 @@ BOOLEAN QueryRules::IsRef(STRING token, STRING synonym_type) {
 	if (IsInteger(token)) {
 		result = true;
 	}
-	if (IsAttrRef(token)) {
-		result = true;
+	if (token.find(".") != string::npos) {
+		// cout << "token is :" << token << endl;
+		// cout << "syntype: " << synonym_type << endl;
+		if (IsAttrRef(token, synonym_type)) {
+			// cout << "checking if:" << token << " is an attr ref" << endl;
+			// cout << "its type:" << synonym_type << endl;
+			result = true;
+			// cout << "result:" << result << endl;
+		}
 	}
-
 	if (IsSynonym(token) && synonym_type.compare("prog_line") == 0) {
 		result = true;
 	}
 	return result;
 }
 
-BOOLEAN QueryRules::IsAttrRef(STRING token) {
-	BOOLEAN result = true;
+bool QueryRules::IsAttrRef(string token, string synonym_type) {
+	bool result = true;
 	size_t pos_of_fullstop = token.find(".");
-	STRING synonym_token = token.substr(0, pos_of_fullstop);
-	STRING attr_name_token = token.substr(pos_of_fullstop + 1, token.length() - 1);
+	string synonym_token = token.substr(0, pos_of_fullstop);
+	string attr_name_token = token.substr(pos_of_fullstop + 1, token.length() - 1);
 	if (!IsSynonym(synonym_token)) {
 		result = false;
+		return result;
 	}
 	if (!IsAttrName(attr_name_token)) {
 		result = false;
+		return result;
 	}
+	if (attr_name_token.compare(TYPE_ATTRNAME_PROCNAME) == 0) {
+		// 2nd is procName
+		if (valid_procname_attr_types.count(synonym_type) == 0) {
+			// first synonym must be type procedure or call
+			result = false;
+			return result;
+		}
+	}
+	if (attr_name_token.compare(TYPE_ATTRNAME_VARNAME) == 0) {
+		// 2nd is varname
+		if (valid_varname_attr_types.count(synonym_type) == 0) {
+			result = false;
+			return result;
+		}
+	}
+	if (attr_name_token.compare(TYPE_ATTRNAME_STMT) == 0) {
+		if (valid_stmt_attr_types.count(synonym_type) == 0) {
+			result = false;
+			return result;
+		}
+	}
+	if (attr_name_token.compare(TYPE_ATTRNAME_VALUE) == 0) {
+		if (valid_value_attr_types.count(synonym_type) == 0) {
+			result = false;
+			return result;
+		}
+	}
+
 	return result;
 }
 
-BOOLEAN QueryRules::IsRelCond(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
+bool QueryRules::IsRelCond(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
 
-	STRING and_token = "and";
+	string and_token = "and";
 	size_t pos = 0;
-	while ((pos = temp_token.find(and_token)) != STRING::npos) {
+	while ((pos = temp_token.find(and_token)) != string::npos) {
 		// while we can find 'and'
 		cout << "found AND: " << endl;
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
-		STRING supposed_rel_ref = temp_token.substr(0, temp_token.find_first_of("and"));
+		string supposed_rel_ref = temp_token.substr(0, temp_token.find_first_of("and"));
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&supposed_rel_ref);
 		cout << "supposed_rel_ref:" << supposed_rel_ref << "|" << endl;
 		temp_token.erase(0, temp_token.find_first_of("and") + 3);
@@ -519,8 +686,8 @@ BOOLEAN QueryRules::IsRelCond(STRING token, STRING_STRING_MAP declared_var_names
 	return result;
 }
 
-BOOLEAN QueryRules::IsRelRef(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = false;
+bool QueryRules::IsRelRef(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = false;
 	if (IsModifiesP(token, declared_var_names)) {
 		result = true;
 		// cout << "It is ModifiesP" << endl;
@@ -582,8 +749,8 @@ BOOLEAN QueryRules::IsRelRef(STRING token, STRING_STRING_MAP declared_var_names)
 	return result;
 }
 
-STRING QueryRules::GetRelRefType(STRING token, STRING_STRING_MAP declared_var_names) {
-	STRING type = "none";
+string QueryRules::GetRelRefType(string token, STRING_STRING_MAP declared_var_names) {
+	string type = "none";
 	if (IsModifiesP(token, declared_var_names)) {
 		type = TYPE_COND_MODIFIES_P;
 		// cout << "It is ModifiesP" << endl;
@@ -646,17 +813,17 @@ STRING QueryRules::GetRelRefType(STRING token, STRING_STRING_MAP declared_var_na
 }
 
 
-BOOLEAN QueryRules::IsModifiesP(STRING token, STRING_STRING_MAP declared_var_names) {
+bool QueryRules::IsModifiesP(string token, STRING_STRING_MAP declared_var_names) {
 	/*
 		Token here should be something like Modifies (p, "x")
 		Trailing and leading whitespace should be trimmed before passing in
 	*/
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING modifies_token = temp_token.substr(0, temp_token.find_first_of("("));
+	bool result = true;
+	string temp_token = token;
+	string modifies_token = temp_token.substr(0, temp_token.find_first_of("("));
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&modifies_token);
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	if (modifies_token.compare(TYPE_COND_MODIFIES) != 0) {
 		result = false;
 		return result;
@@ -682,7 +849,7 @@ BOOLEAN QueryRules::IsModifiesP(STRING token, STRING_STRING_MAP declared_var_nam
 		result = false;
 		return result;
 	}
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
 	}
@@ -690,10 +857,14 @@ BOOLEAN QueryRules::IsModifiesP(STRING token, STRING_STRING_MAP declared_var_nam
 		result = false;
 		return result;
 	}
-	// Second argument must be an entRef
-	STRING second_arg_type = "none";
+	// Second argument must be an entRef cannot be procedure
+	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
+		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_PROCEDURE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(second_arg, second_arg_type)) {
 		result = false;
@@ -702,17 +873,17 @@ BOOLEAN QueryRules::IsModifiesP(STRING token, STRING_STRING_MAP declared_var_nam
 	return result;
 }
 
-BOOLEAN QueryRules::IsModifiesS(STRING token, STRING_STRING_MAP declared_var_names) {
+bool QueryRules::IsModifiesS(string token, STRING_STRING_MAP declared_var_names) {
 	/*
 		Token here should be something like Modifies (s, "x")
 		Trailing and leading whitespace should be trimmed before passing in
 	*/
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING modifies_token = temp_token.substr(0, temp_token.find_first_of("("));
+	bool result = true;
+	string temp_token = token;
+	string modifies_token = temp_token.substr(0, temp_token.find_first_of("("));
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&modifies_token);
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	if (modifies_token.compare(TYPE_COND_MODIFIES) != 0) {
 		result = false;
 		return result;
@@ -737,7 +908,7 @@ BOOLEAN QueryRules::IsModifiesS(STRING token, STRING_STRING_MAP declared_var_nam
 		result = false;
 		return result;
 	}
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
 	}
@@ -745,10 +916,14 @@ BOOLEAN QueryRules::IsModifiesS(STRING token, STRING_STRING_MAP declared_var_nam
 		result = false;
 		return result;
 	}
-	// Second argument must be an entRef
-	STRING second_arg_type = "none";
+	// Second argument must be an entRef and cannot be procedure
+	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
+		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_PROCEDURE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(second_arg, second_arg_type)) {
 		result = false;
@@ -757,13 +932,13 @@ BOOLEAN QueryRules::IsModifiesS(STRING token, STRING_STRING_MAP declared_var_nam
 	return result;
 }
 
-BOOLEAN QueryRules::IsUsesP(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING uses_token = temp_token.substr(0, temp_token.find_first_of("("));
+bool QueryRules::IsUsesP(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string uses_token = temp_token.substr(0, temp_token.find_first_of("("));
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&uses_token);
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	if (uses_token.compare(TYPE_COND_USES) != 0) {
 		result = false;
 		return result;
@@ -789,7 +964,7 @@ BOOLEAN QueryRules::IsUsesP(STRING token, STRING_STRING_MAP declared_var_names) 
 		result = false;
 		return result;
 	}
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
 	}
@@ -797,10 +972,14 @@ BOOLEAN QueryRules::IsUsesP(STRING token, STRING_STRING_MAP declared_var_names) 
 		result = false;
 		return result;
 	}
-	// Second argument must be an entRef
-	STRING second_arg_type = "none";
+	// Second argument must be an entRef 
+	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
+		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_PROCEDURE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(second_arg, second_arg_type)) {
 		result = false;
@@ -809,13 +988,13 @@ BOOLEAN QueryRules::IsUsesP(STRING token, STRING_STRING_MAP declared_var_names) 
 	return result;
 }
 
-BOOLEAN QueryRules::IsUsesS(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING uses_token = temp_token.substr(0, temp_token.find_first_of("("));
+bool QueryRules::IsUsesS(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string uses_token = temp_token.substr(0, temp_token.find_first_of("("));
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&uses_token);
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	if (uses_token.compare(TYPE_COND_USES) != 0) {
 		result = false;
 		return result;
@@ -839,7 +1018,7 @@ BOOLEAN QueryRules::IsUsesS(STRING token, STRING_STRING_MAP declared_var_names) 
 		result = false;
 		return result;
 	}
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
 	}
@@ -847,10 +1026,14 @@ BOOLEAN QueryRules::IsUsesS(STRING token, STRING_STRING_MAP declared_var_names) 
 		result = false;
 		return result;
 	}
-	// Second argument must be an entRef
-	STRING second_arg_type = "none";
+	// Second argument must be an entRef & cannot be procedure
+	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
+		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_PROCEDURE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(second_arg, second_arg_type)) {
 		result = false;
@@ -859,13 +1042,13 @@ BOOLEAN QueryRules::IsUsesS(STRING token, STRING_STRING_MAP declared_var_names) 
 	return result;
 }
 
-BOOLEAN QueryRules::IsCalls(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING calls_token = temp_token.substr(0, temp_token.find_first_of("("));
+bool QueryRules::IsCalls(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string calls_token = temp_token.substr(0, temp_token.find_first_of("("));
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&calls_token);
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	if (calls_token.compare(TYPE_COND_CALLS) != 0) {
 		result = false;
 		return result;
@@ -886,18 +1069,26 @@ BOOLEAN QueryRules::IsCalls(STRING token, STRING_STRING_MAP declared_var_names) 
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
 	// First argument must be an entRef
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(first_arg, first_arg_type)) {
 		result = false;
 		return result;
 	}
 	// Second argument must be an entRef
-	STRING second_arg_type = "none";
+	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
+		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(second_arg, second_arg_type)) {
 		result = false;
@@ -906,13 +1097,13 @@ BOOLEAN QueryRules::IsCalls(STRING token, STRING_STRING_MAP declared_var_names) 
 	return result;
 }
 
-BOOLEAN QueryRules::IsCallsT(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING calls_star_token = temp_token.substr(0, temp_token.find_first_of("("));
+bool QueryRules::IsCallsT(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string calls_star_token = temp_token.substr(0, temp_token.find_first_of("("));
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&calls_star_token);
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	if (calls_star_token.compare(TYPE_COND_CALLS_STAR) != 0) {
 		result = false;
 		return result;
@@ -933,18 +1124,26 @@ BOOLEAN QueryRules::IsCallsT(STRING token, STRING_STRING_MAP declared_var_names)
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
 	// First argument must be an entRef
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(first_arg, first_arg_type)) {
 		result = false;
 		return result;
 	}
 	// Second argument must be an entRef
-	STRING second_arg_type = "none";
+	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
+		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(second_arg, second_arg_type)) {
 		result = false;
@@ -953,13 +1152,13 @@ BOOLEAN QueryRules::IsCallsT(STRING token, STRING_STRING_MAP declared_var_names)
 	return result;
 }
 
-BOOLEAN QueryRules::IsParent(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING parent_token = temp_token.substr(0, temp_token.find_first_of("("));
+bool QueryRules::IsParent(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string parent_token = temp_token.substr(0, temp_token.find_first_of("("));
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&parent_token);
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	if (parent_token.compare(TYPE_COND_PARENT) != 0) {
 		result = false;
 		return result;
@@ -980,7 +1179,7 @@ BOOLEAN QueryRules::IsParent(STRING token, STRING_STRING_MAP declared_var_names)
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
 	// First argument must be an entRef
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
 	}
@@ -989,7 +1188,7 @@ BOOLEAN QueryRules::IsParent(STRING token, STRING_STRING_MAP declared_var_names)
 		return result;
 	}
 	// Second argument must be an entRef
-	STRING second_arg_type = "none";
+	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
 	}
@@ -1000,13 +1199,13 @@ BOOLEAN QueryRules::IsParent(STRING token, STRING_STRING_MAP declared_var_names)
 	return result;
 }
 
-BOOLEAN QueryRules::IsParentT(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING parent_star_token = temp_token.substr(0, temp_token.find_first_of("("));
+bool QueryRules::IsParentT(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string parent_star_token = temp_token.substr(0, temp_token.find_first_of("("));
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&parent_star_token);
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	if (parent_star_token.compare(TYPE_COND_PARENT_STAR) != 0) {
 		result = false;
 		return result;
@@ -1027,7 +1226,7 @@ BOOLEAN QueryRules::IsParentT(STRING token, STRING_STRING_MAP declared_var_names
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
 	// First argument must be an entRef
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
 	}
@@ -1036,7 +1235,7 @@ BOOLEAN QueryRules::IsParentT(STRING token, STRING_STRING_MAP declared_var_names
 		return result;
 	}
 	// Second argument must be an entRef
-	STRING second_arg_type = "none";
+	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
 	}
@@ -1047,13 +1246,13 @@ BOOLEAN QueryRules::IsParentT(STRING token, STRING_STRING_MAP declared_var_names
 	return result;
 }
 
-BOOLEAN QueryRules::IsFollows(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING follows_token = temp_token.substr(0, temp_token.find_first_of("("));
+bool QueryRules::IsFollows(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string follows_token = temp_token.substr(0, temp_token.find_first_of("("));
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&follows_token);
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	if (follows_token.compare(TYPE_COND_FOLLOWS) != 0) {
 		result = false;
 		return result;
@@ -1074,7 +1273,7 @@ BOOLEAN QueryRules::IsFollows(STRING token, STRING_STRING_MAP declared_var_names
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
 
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
 	}
@@ -1083,7 +1282,7 @@ BOOLEAN QueryRules::IsFollows(STRING token, STRING_STRING_MAP declared_var_names
 		return result;
 	}
 
-	STRING second_arg_type = "none";
+	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
 	}
@@ -1094,13 +1293,13 @@ BOOLEAN QueryRules::IsFollows(STRING token, STRING_STRING_MAP declared_var_names
 	return result;
 }
 
-BOOLEAN QueryRules::IsFollowsT(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING follows_star_token = temp_token.substr(0, temp_token.find_first_of("("));
+bool QueryRules::IsFollowsT(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string follows_star_token = temp_token.substr(0, temp_token.find_first_of("("));
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&follows_star_token);
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	if (follows_star_token.compare(TYPE_COND_FOLLOWS_STAR) != 0) {
 		result = false;
 		return result;
@@ -1120,7 +1319,7 @@ BOOLEAN QueryRules::IsFollowsT(STRING token, STRING_STRING_MAP declared_var_name
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
 	}
@@ -1128,7 +1327,7 @@ BOOLEAN QueryRules::IsFollowsT(STRING token, STRING_STRING_MAP declared_var_name
 		result = false;
 		return result;
 	}
-	STRING second_arg_type = "none";
+	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
 	}
@@ -1139,13 +1338,13 @@ BOOLEAN QueryRules::IsFollowsT(STRING token, STRING_STRING_MAP declared_var_name
 	return result;
 }
 
-BOOLEAN QueryRules::IsNext(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING next_token = temp_token.substr(0, temp_token.find_first_of("("));
+bool QueryRules::IsNext(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string next_token = temp_token.substr(0, temp_token.find_first_of("("));
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&next_token);
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	if (next_token.compare(TYPE_COND_NEXT) != 0) {
 		result = false;
 		return result;
@@ -1165,7 +1364,7 @@ BOOLEAN QueryRules::IsNext(STRING token, STRING_STRING_MAP declared_var_names) {
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
 	}
@@ -1173,7 +1372,7 @@ BOOLEAN QueryRules::IsNext(STRING token, STRING_STRING_MAP declared_var_names) {
 		result = false;
 		return result;
 	}
-	STRING second_arg_type = "none";
+	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
 	}
@@ -1184,13 +1383,13 @@ BOOLEAN QueryRules::IsNext(STRING token, STRING_STRING_MAP declared_var_names) {
 	return result;
 }
 
-BOOLEAN QueryRules::IsNextT(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING next_star_token = temp_token.substr(0, temp_token.find_first_of("("));
+bool QueryRules::IsNextT(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string next_star_token = temp_token.substr(0, temp_token.find_first_of("("));
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&next_star_token);
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	if (next_star_token.compare(TYPE_COND_NEXT_STAR) != 0) {
 		result = false;
 		return result;
@@ -1210,7 +1409,7 @@ BOOLEAN QueryRules::IsNextT(STRING token, STRING_STRING_MAP declared_var_names) 
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
 	}
@@ -1218,7 +1417,7 @@ BOOLEAN QueryRules::IsNextT(STRING token, STRING_STRING_MAP declared_var_names) 
 		result = false;
 		return result;
 	}
-	STRING second_arg_type = "none";
+	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
 	}
@@ -1229,13 +1428,13 @@ BOOLEAN QueryRules::IsNextT(STRING token, STRING_STRING_MAP declared_var_names) 
 	return result;
 }
 
-BOOLEAN QueryRules::IsAffects(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING parent_star_token = temp_token.substr(0, temp_token.find_first_of("("));
+bool QueryRules::IsAffects(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string parent_star_token = temp_token.substr(0, temp_token.find_first_of("("));
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&parent_star_token);
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	if (parent_star_token.compare(TYPE_COND_AFFECTS) != 0) {
 		result = false;
 		return result;
@@ -1256,18 +1455,26 @@ BOOLEAN QueryRules::IsAffects(STRING token, STRING_STRING_MAP declared_var_names
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
 	// First argument must be an entRef
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_ASSIGN) != 0 && first_arg_type.compare(TYPE_DESIGN_ENTITY_STMT) != 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsStmtRef(first_arg, first_arg_type) && !IsLineRef(first_arg, first_arg_type)) {
 		result = false;
 		return result;
 	}
 	// Second argument must be an entRef
-	STRING second_arg_type = "none";
+	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
+		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_ASSIGN) != 0 && second_arg_type.compare(TYPE_DESIGN_ENTITY_STMT) != 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsStmtRef(second_arg, second_arg_type) && !IsLineRef(second_arg, second_arg_type)) {
 		result = false;
@@ -1276,13 +1483,13 @@ BOOLEAN QueryRules::IsAffects(STRING token, STRING_STRING_MAP declared_var_names
 	return result;
 }
 
-BOOLEAN QueryRules::IsAffectsT(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING parent_star_token = temp_token.substr(0, temp_token.find_first_of("("));
+bool QueryRules::IsAffectsT(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string parent_star_token = temp_token.substr(0, temp_token.find_first_of("("));
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&parent_star_token);
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	if (parent_star_token.compare(TYPE_COND_AFFECTS_STAR) != 0) {
 		result = false;
 		return result;
@@ -1303,18 +1510,26 @@ BOOLEAN QueryRules::IsAffectsT(STRING token, STRING_STRING_MAP declared_var_name
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
 	// First argument must be an entRef
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_ASSIGN) != 0 && first_arg_type.compare(TYPE_DESIGN_ENTITY_STMT) != 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsStmtRef(first_arg, first_arg_type) && !IsLineRef(first_arg, first_arg_type)) {
 		result = false;
 		return result;
 	}
 	// Second argument must be an entRef
-	STRING second_arg_type = "none";
+	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
+		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_ASSIGN) != 0 && second_arg_type.compare(TYPE_DESIGN_ENTITY_STMT) != 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsStmtRef(second_arg, second_arg_type) && !IsLineRef(second_arg, second_arg_type)) {
 		result = false;
@@ -1325,17 +1540,17 @@ BOOLEAN QueryRules::IsAffectsT(STRING token, STRING_STRING_MAP declared_var_name
 
 /*
 Pattern clause rules here
-Select a pattern a ( _ , “v + x * y + z * t”)
+Select a pattern a ( _ , ï¿½v + x * y + z * tï¿½)
 */
 
-BOOLEAN QueryRules::IsPatternCond(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	BOOLEAN first_passed = false;
-	while (temp_token.find_first_not_of(' ') != STRING::npos && !temp_token.empty()) {
+bool QueryRules::IsPatternCond(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	bool first_passed = false;
+	while (temp_token.find_first_not_of(' ') != string::npos && !temp_token.empty()) {
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
 		if (first_passed) {
-			STRING and_token = temp_token.substr(0, temp_token.find_first_of(" "));
+			string and_token = temp_token.substr(0, temp_token.find_first_of(" "));
 			// cout << "AND TOKEN:" << and_token << endl;
 			if (and_token.compare("and") != 0) {
 				result = false;
@@ -1344,20 +1559,20 @@ BOOLEAN QueryRules::IsPatternCond(STRING token, STRING_STRING_MAP declared_var_n
 			temp_token.erase(0, temp_token.find_first_of(" "));
 		}
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
-		STRING pattern_token = temp_token.substr(0, temp_token.find_first_of(")") + 1);
+		string pattern_token = temp_token;
 		// cout << "patterntoken:" << pattern_token << endl;
 		if (!IsPattern(pattern_token, declared_var_names)) {
 			result = false;
 			return result;
 		}
-		temp_token.erase(0, temp_token.find_first_of(")") + 1);
+		temp_token.erase(0, temp_token.length());
 		first_passed = true;
 	}
 	return result;
 }
 
-BOOLEAN QueryRules::IsPattern(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = false;
+bool QueryRules::IsPattern(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = false;
 	if (IsAssign(token, declared_var_names)) {
 		result = true;
 		return result;
@@ -1373,11 +1588,11 @@ BOOLEAN QueryRules::IsPattern(STRING token, STRING_STRING_MAP declared_var_names
 	return result;
 }
 
-BOOLEAN QueryRules::IsAssign(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING syn_assign_token;
-	STRING syn_assign_token_type = "none";
+bool QueryRules::IsAssign(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string syn_assign_token;
+	string syn_assign_token_type = "none";
 	syn_assign_token = temp_token.substr(0, temp_token.find_first_of("("));
 	// cout << "synassigntoken:" << syn_assign_token << endl;
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&syn_assign_token);
@@ -1391,8 +1606,8 @@ BOOLEAN QueryRules::IsAssign(STRING token, STRING_STRING_MAP declared_var_names)
 		result = false;
 		return result;
 	}
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	temp_token.erase(0, temp_token.find_first_of("("));
 	if (temp_token.front() != '(' || temp_token.back() != ')') {
 		result = false;
@@ -1408,7 +1623,7 @@ BOOLEAN QueryRules::IsAssign(STRING token, STRING_STRING_MAP declared_var_names)
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
 	}
@@ -1423,9 +1638,9 @@ BOOLEAN QueryRules::IsAssign(STRING token, STRING_STRING_MAP declared_var_names)
 	return result;
 }
 
-BOOLEAN QueryRules::IsExpressionSpec(STRING token) {
-	BOOLEAN result = false;
-	STRING temp_token = token;
+bool QueryRules::IsExpressionSpec(string token) {
+	bool result = false;
+	string temp_token = token;
 	if (temp_token.compare("_") == 0) {
 		result = true;
 		return result;
@@ -1450,13 +1665,15 @@ BOOLEAN QueryRules::IsExpressionSpec(STRING token) {
 	return result;
 }
 
-BOOLEAN QueryRules::IsExpr(STRING token) {
-	BOOLEAN result = true;
-	STRING expression_token = token;
+bool QueryRules::IsExpr(string token) {
+	bool result = true;
+	string expression_token = token;
 
 	int open_bracket_count = 0;
 	bool prev_was_operator = false;
 	bool prev_was_open_bracket = false;
+	bool prev_is_term = false;
+	bool prev_is_whitespace = false;
 
 	if (IsOperator(expression_token.front()) || IsOperator(expression_token.back())) {
 		result = false;
@@ -1465,11 +1682,14 @@ BOOLEAN QueryRules::IsExpr(STRING token) {
 
 	for (char const& c : expression_token) {
 		if (c == ' ') {
+			prev_is_whitespace = true;
 			continue;
 		}
 		if (c == '(') {
 			open_bracket_count++;
 			prev_was_open_bracket = true;
+			prev_is_term = false;
+			prev_is_whitespace = false;
 			continue;
 		}
 		else if (c == ')') {
@@ -1477,6 +1697,8 @@ BOOLEAN QueryRules::IsExpr(STRING token) {
 				result = false;
 				return result;
 			}
+			prev_is_term = false;
+			prev_is_whitespace = false;
 			open_bracket_count--;
 		}
 		else if (IsOperator(c)) {
@@ -1485,11 +1707,24 @@ BOOLEAN QueryRules::IsExpr(STRING token) {
 				return result;
 			}
 			prev_was_operator = true;
+			prev_is_term = false;
+			prev_is_whitespace = false;
 			continue;
 		}
 		else if (!isalpha(c) && !isdigit(c)) {
 			result = false;
 			return result;
+		}
+		else if (isalpha(c) || isdigit(c)) {
+			if (prev_is_whitespace && prev_is_term) {
+				// to catch like "10 10"
+				result = false;
+				return result;
+			}
+			else {
+				prev_is_term = true;
+				prev_is_whitespace = false;
+			}
 		}
 		prev_was_operator = false;
 		prev_was_open_bracket = false;
@@ -1506,8 +1741,8 @@ BOOLEAN QueryRules::IsExpr(STRING token) {
 	return result;
 }
 
-BOOLEAN QueryRules::IsOperator(CHAR c) {
-	BOOLEAN result = false;
+bool QueryRules::IsOperator(char c) {
+	bool result = false;
 
 	switch (c) {
 	case '+':
@@ -1525,9 +1760,9 @@ BOOLEAN QueryRules::IsOperator(CHAR c) {
 	return result;
 }
 
-BOOLEAN QueryRules::IsTerm(STRING token) {
-	BOOLEAN result = false;
-	STRING temp_token = token;
+bool QueryRules::IsTerm(string token) {
+	bool result = false;
+	string temp_token = token;
 	if (IsFactor(token)) {
 		result = true;
 		return result;
@@ -1535,10 +1770,10 @@ BOOLEAN QueryRules::IsTerm(STRING token) {
 	regex operator_regex("[^*/%]+");
 	smatch sm;
 	regex_search(temp_token, sm, operator_regex);
-	INTEGER pos = sm.position();
+	int pos = sm.position();
 	cout << "POs:" << pos << endl;
-	STRING term_token = temp_token.substr(0, pos);
-	STRING factor_token = temp_token.substr(pos + 1, temp_token.length() - 1);
+	string term_token = temp_token.substr(0, pos);
+	string factor_token = temp_token.substr(pos + 1, temp_token.length() - 1);
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&term_token);
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&factor_token);
 	cout << "TermToken:" << term_token << endl;
@@ -1547,8 +1782,8 @@ BOOLEAN QueryRules::IsTerm(STRING token) {
 	return result;
 }
 
-BOOLEAN QueryRules::IsFactor(STRING token) {
-	BOOLEAN result = false;
+bool QueryRules::IsFactor(string token) {
+	bool result = false;
 	if (IsVarName(token)) {
 		result = true;
 		return result;
@@ -1561,19 +1796,19 @@ BOOLEAN QueryRules::IsFactor(STRING token) {
 	return result;
 }
 
-BOOLEAN QueryRules::IsVarName(STRING token) {
+bool QueryRules::IsVarName(string token) {
 	return IsName(token);
 }
 
-BOOLEAN QueryRules::IsConstValue(STRING token) {
+bool QueryRules::IsConstValue(string token) {
 	return IsInteger(token);
 }
 
-BOOLEAN QueryRules::IsSynIf(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING syn_if_token;
-	STRING syn_if_token_type = "none";
+bool QueryRules::IsSynIf(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string syn_if_token;
+	string syn_if_token_type = "none";
 	syn_if_token = temp_token.substr(0, temp_token.find_first_of("("));
 	// cout << "synassigntoken:" << syn_assign_token << endl;
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&syn_if_token);
@@ -1586,9 +1821,9 @@ BOOLEAN QueryRules::IsSynIf(STRING token, STRING_STRING_MAP declared_var_names) 
 		result = false;
 		return result;
 	}
-	STRING first_arg;
-	STRING second_arg;
-	STRING third_arg;
+	string first_arg;
+	string second_arg;
+	string third_arg;
 	temp_token.erase(0, temp_token.find_first_of("("));
 	if (temp_token.front() != '(' || temp_token.back() != ')') {
 		result = false;
@@ -1608,7 +1843,7 @@ BOOLEAN QueryRules::IsSynIf(STRING token, STRING_STRING_MAP declared_var_names) 
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
 	// cout << "3rd arg:" << third_arg << "|" << endl;
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
 	}
@@ -1627,11 +1862,11 @@ BOOLEAN QueryRules::IsSynIf(STRING token, STRING_STRING_MAP declared_var_names) 
 	return result;
 }
 
-BOOLEAN QueryRules::IsSynWhile(STRING token, STRING_STRING_MAP declared_var_names) {
-	BOOLEAN result = true;
-	STRING temp_token = token;
-	STRING syn_while_token;
-	STRING syn_while_token_type = "none";
+bool QueryRules::IsSynWhile(string token, STRING_STRING_MAP declared_var_names) {
+	bool result = true;
+	string temp_token = token;
+	string syn_while_token;
+	string syn_while_token_type = "none";
 	syn_while_token = temp_token.substr(0, temp_token.find_first_of("("));
 	// cout << "synassigntoken:" << syn_assign_token << endl;
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&syn_while_token);
@@ -1644,8 +1879,8 @@ BOOLEAN QueryRules::IsSynWhile(STRING token, STRING_STRING_MAP declared_var_name
 		result = false;
 		return result;
 	}
-	STRING first_arg;
-	STRING second_arg;
+	string first_arg;
+	string second_arg;
 	temp_token.erase(0, temp_token.find_first_of("("));
 	if (temp_token.front() != '(' || temp_token.back() != ')') {
 		result = false;
@@ -1662,7 +1897,7 @@ BOOLEAN QueryRules::IsSynWhile(STRING token, STRING_STRING_MAP declared_var_name
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
 	// cout << "3rd arg:" << third_arg << "|" << endl;
-	STRING first_arg_type = "none";
+	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
 	}

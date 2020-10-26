@@ -1,0 +1,15 @@
+
+procedure One {
+  x = 1;
+  y = 2;
+}
+
+procedure Two {
+  y = 2;
+  z = 3;
+}
+
+procedure Three {
+  z = 3;
+  x = 1;
+}
