@@ -10,6 +10,8 @@ RelationManager PKB::relation_manager_;
 PatternManager PKB::pattern_manager_;
 CFGManager PKB::cfg_manager_;
 TNode PKB::ast_;
+AFFECTS_TABLE PKB::affects_table_;
+INVERSE_AFFECTS_TABLE PKB::inverse_affects_table_;
 DataManager PKB::GetDataManager() {
     return data_manager_;
 }

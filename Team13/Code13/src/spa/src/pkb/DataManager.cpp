@@ -64,5 +64,8 @@ STMT_IDX_SET DataManager::GetAllAssignStatements(PROC_NAME p) {
 }
 
 bool DataManager::IsCallStmt(STMT_IDX s) {
-    return false;
+    return stmt_table_.IsCallStmt(s);
+}
+bool DataManager::IsAssignStmt(STMT_IDX s) {
+    return stmt_table_.IsAssignStmt(s);
 }
