@@ -31,47 +31,71 @@ bool StatementTable::Add(STATEMENT_TYPE t, STMT_IDX s) {
     bool insert_type = false;
     switch (t) {
         case assignStatement:
-            insert_type = data_[_ASSIGN_].insert(s).second;
+            insert_type = stmt_data_[_ASSIGN_].insert(s).second;
             break;
         case whileStatement:
-            insert_type = data_[_WHILE_].insert(s).second;
+            insert_type = stmt_data_[_WHILE_].insert(s).second;
             break;
         case readStatement:
-            insert_type = data_[_READ_].insert(s).second;
+            insert_type = stmt_data_[_READ_].insert(s).second;
             break;
         case printStatement:
-            insert_type = data_[_PRINT_].insert(s).second;
+            insert_type = stmt_data_[_PRINT_].insert(s).second;
             break;
         case ifStatement:
-            insert_type = data_[_IF_].insert(s).second;
+            insert_type = stmt_data_[_IF_].insert(s).second;
             break;
         case callStatement:
-            insert_type = data_[_CALL_].insert(s).second;
+            insert_type = stmt_data_[_CALL_].insert(s).second;
             break;
     }
-    return insert_type && data_[_ALL_].insert(s).second;
+    return insert_type && stmt_data_[_ALL_].insert(s).second;
 }
 
 STMT_IDX_SET StatementTable::GetAll(STATEMENT_TYPE t) {
     switch (t) {
         case assignStatement:
-            return data_[_ASSIGN_];
+            return stmt_data_[_ASSIGN_];
         case whileStatement:
-            return data_[_WHILE_];
+            return stmt_data_[_WHILE_];
         case readStatement:
-            return data_[_READ_];
+            return stmt_data_[_READ_];
         case printStatement:
-            return data_[_PRINT_];
+            return stmt_data_[_PRINT_];
         case ifStatement:
-            return data_[_IF_];
+            return stmt_data_[_IF_];
         case callStatement:
-            return data_[_CALL_];
+            return stmt_data_[_CALL_];
     }
     return STMT_IDX_SET();
 }
 
 STMT_IDX_SET StatementTable::GetAll() {
-    return data_[_ALL_];
+    return stmt_data_[_ALL_];
+}
+bool StatementTable::Add(PROC_NAME p, STMT_IDX s) {
+    auto iter = proc_to_assign_stmt_data_.find(p);
+    bool result = true;
+    if (iter == proc_to_assign_stmt_data_.end()) {
+        result = proc_to_assign_stmt_data_.insert({p, STMT_IDX_SET()}).second;
+    }
+    if (result) {
+        return proc_to_assign_stmt_data_.at(p).insert(s).second;
+    }
+    return false;
+}
+STMT_IDX_SET StatementTable::GetAll(PROC_NAME p) {
+    auto iter = proc_to_assign_stmt_data_.find(p);
+    if (iter != proc_to_assign_stmt_data_.end()) {
+        return iter->second;
+    }
+    return STMT_IDX_SET();
+}
+bool StatementTable::IsAssignStmt(STMT_IDX s) {
+    return stmt_data_[_ASSIGN_].find(s) != stmt_data_[_ASSIGN_].end();
+}
+bool StatementTable::IsCallStmt(STMT_IDX s) {
+    return stmt_data_[_CALL_].find(s) != stmt_data_[_CALL_].end();
 }
 
 VAR_NAME_SET VariableTable::GetAll() {

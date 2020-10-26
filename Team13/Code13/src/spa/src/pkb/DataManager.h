@@ -24,6 +24,7 @@ public:
     ProcedureTable GetProcTable();
 
     bool AddStatement(STATEMENT_TYPE t, STMT_IDX s);
+    bool AddAssignStatement(PROC_NAME p, STMT_IDX s);
     bool AddVariable(VAR_NAME v);
     bool AddProcedure(PROC_NAME p);
     bool AddConstant(CONST_VALUE c);
@@ -31,10 +32,14 @@ public:
 
     STMT_IDX_SET GetAllStatements(STATEMENT_TYPE t);
     STMT_IDX_SET GetAllStatements();
+    STMT_IDX_SET GetAllAssignStatements(PROC_NAME p);
     VAR_NAME_SET GetAllVariables();
     PROC_NAME_SET GetAllProcedures();
     INT_SET GetAllConstants();
     PROC_NAME GetCalledByStmt(STMT_IDX s);
+
+    bool IsAssignStmt(STMT_IDX s);
+    bool IsCallStmt(STMT_IDX s);
 
 };
 
