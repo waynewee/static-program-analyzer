@@ -16,11 +16,12 @@ public:
 	void Print(STRINGLIST_SET to_print);
 	void Print(STRINGLIST_STRINGLISTSET_MAP to_print);
 	void Print(STRINGSET_STRINGLISTSET_MAP to_print);
+	void Print(STRINGPAIR_SET to_print);
 
 	void AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP* results_map);
 	QueryResult SetResult(bool is_boolean_output, string bool_result, STRINGLIST_SET result);
 		
-	bool ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints);
+	bool ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints, STRINGLIST_STRINGLISTSET_MAP* results_map);
 	bool ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MAP* synonyms_map);
 
 	STRING_SET* GetRelatedSynonyms(string synonym, STRINGSET_STRINGLISTSET_MAP synonyms_map);

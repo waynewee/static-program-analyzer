@@ -38,7 +38,7 @@ STRINGLIST_SET QueryInfo::GetFalseResult() {
 }
 
 bool QueryInfo::IsQueryInfoValid() {
-	return this->is_valid_;
+	return this->is_valid_ && !this->is_invalid_due_to_semantics_;
 }
 
 bool QueryInfo::IsBooleanOutput() {
