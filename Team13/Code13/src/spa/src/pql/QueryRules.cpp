@@ -358,7 +358,7 @@ bool QueryRules::IsTuple(string token, STRING_STRING_MAP declared_var_names) {
 			synonym_lasttoken = temp_token.substr(0, temp_token.find_first_of("."));
 			synonym_lasttoken_type = declared_var_names.at(synonym_lasttoken);
 		}
-		if (sub_token.find(".") != string::npos) {
+		if (temp_token.find(".") != string::npos) {
 			if (IsAttrRef(temp_token, synonym_lasttoken_type)) {
 				string synonym_subtoken = temp_token.substr(0, temp_token.find_first_of("."));
 				// cout << "synonym_st" << synonym_subtoken << endl;
@@ -387,7 +387,7 @@ bool QueryRules::IsTuple(string token, STRING_STRING_MAP declared_var_names) {
 	}
 	if (DEBUG) {
 		if (!result) {
-			cout << "Error at QueryRules::IsTuple()" << endl;
+			// cout << "Error at QueryRules::IsTuple()" << endl;
 		}
 	}
 	return result;
