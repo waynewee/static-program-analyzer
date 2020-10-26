@@ -25,8 +25,10 @@ public:
 	STRINGPAIR_SET GetWithMap();
 	STRING_STRING_MAP GetEntityMap();
 	STRING_LIST GetOutputList();
+	STRINGLIST_SET GetFalseResult();
 	bool IsQueryInfoValid();
-	bool IsBooleanOutputFalse();
+	bool IsBooleanOutput();
+	bool IsSemanticsInvalid();
 
 	/* setters */
 	void SetStMap(STRING_STRINGLISTLIST_MAP st_map);
