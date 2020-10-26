@@ -459,6 +459,27 @@ bool DesignExtractor::ExtractContainerPattern(PatternManager manager, TNode root
         TNode* stmt_list_node = children.at(1);
         manager.AddWhilePattern(root.GetStmtIndex(), *condition_node);
         ExtractContainerPattern(manager, *stmt_list_node);
+    } else {
+        for (auto child: children) {
+            ExtractContainerPattern(manager, *child);
+        }
+    }
+    return true;
+}
+bool DesignExtractor::ExtractAssignStmtInProcs(DataManager manager, TNode root) {
+    //Root node has to be a program node; all of its children are procedures
+    vector<TNode*> procs = root.GetChildrenVector();
+    for (auto proc: procs) {
+        auto procName = proc->GetName();
+        vector<TNode*> children = root.GetChildrenVector();
+        //Procedure nodes only have 2 children, first one is procName and the second one is stmtList
+        TNode* stmtListNode = children.at(1);
+        vector<TNode*> stmts = stmtListNode->GetChildrenVector();
+        for (auto stmt: stmts) {
+            if (stmt->GetNodeType() == TNode::NODE_TYPE::assignStmt) {
+                manager.AddAssignStatement(*procName, stmt->GetStmtIndex());
+            }
+        }
     }
     return true;
 }
