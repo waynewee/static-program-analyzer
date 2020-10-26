@@ -25,8 +25,10 @@ STRING_LIST QueryInfo::GetOutputList() {
 
 STRINGLIST_SET QueryInfo::GetFalseResult() {
 	STRINGLIST_SET false_result = *(new STRINGLIST_SET());
-
-	if (this->is_valid_ && is_invalid_due_to_semantics_ && IsBooleanOutput()) {
+	cout << "BOOLEAN??? " << (IsBooleanOutput() ? "true" : "false") << endl;
+	cout << "SEMANTICS??? " << (this->is_invalid_due_to_semantics_ ? "true" : "false") << endl;
+	PrintOutputList();
+	if (this->is_invalid_due_to_semantics_ && IsBooleanOutput()) {
 		STRING_LIST* bool_false = new STRING_LIST();
 		bool_false->push_back("FALSE");
 		false_result.insert(bool_false);
@@ -36,7 +38,7 @@ STRINGLIST_SET QueryInfo::GetFalseResult() {
 }
 
 bool QueryInfo::IsQueryInfoValid() {
-	return this->is_valid_ && !is_invalid_due_to_semantics_;
+	return this->is_valid_;
 }
 
 bool QueryInfo::IsBooleanOutput() {
