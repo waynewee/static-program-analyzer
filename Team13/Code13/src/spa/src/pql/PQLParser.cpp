@@ -301,6 +301,7 @@ QueryInfo PQLParser::Parse(string s) {
     if (!is_query_valid) {
         query_info.SetValidToFalse();
         cout << "QUERY IS INVALID:" << endl;
+        query_info.SetOutputList(output_list);
     }
     else {
         // QUERY IS VALID BLOCK!!!!!
