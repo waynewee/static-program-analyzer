@@ -17,6 +17,11 @@ PROC_NAME DataManager::GetCalledByStmt(STMT_IDX s) {
     return calls_table_.GetCalledBy(s);
 }
 
+STMT_IDX_SET DataManager::GetInverseCalledBy(PROC_NAME p)
+{
+    return calls_table_.GetInverseCalledBy(p);
+}
+
 bool DataManager::AddStatement(STATEMENT_TYPE t, STMT_IDX s) {
     return stmt_table_.Add(t, s);
 }
