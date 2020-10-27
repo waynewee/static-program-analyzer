@@ -467,20 +467,24 @@ bool DesignExtractor::ExtractContainerPattern(PatternManager manager, TNode root
     return true;
 }
 bool DesignExtractor::ExtractAssignStmtInProcs(DataManager manager, TNode root) {
-    //Root node has to be a program node; all of its children are procedures
-    vector<TNode*> procs = root.GetChildrenVector();
-    for (auto proc: procs) {
-        auto procName = proc->GetName();
+    if (root.GetNodeType() == TNode::NODE_TYPE::procedure) {
         vector<TNode*> children = root.GetChildrenVector();
+        auto procName = children.at(0)->GetName();
         //Procedure nodes only have 2 children, first one is procName and the second one is stmtList
         TNode* stmtListNode = children.at(1);
         vector<TNode*> stmts = stmtListNode->GetChildrenVector();
-        for (auto stmt: stmts) {
+        for (auto stmt : stmts) {
             if (stmt->GetNodeType() == TNode::NODE_TYPE::assignStmt) {
                 manager.AddAssignStatement(*procName, stmt->GetStmtIndex());
             }
+        }
+    } else if (root.GetNodeType() == TNode::NODE_TYPE::program){
+        vector<TNode*> children = root.GetChildrenVector();
+        for (auto child : children) {
+            ExtractAssignStmtInProcs(manager, *child);
         }
     }
     return true;
 }
 
+ 
