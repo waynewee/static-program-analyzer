@@ -19,7 +19,7 @@ TEST_CASE("ParseClauses | Parsing WITH constraints") {
 	QueryInfo query_info = parser.Parse("stmt s; assign a; prog_line n; Select bool with \"x\" = \"x\" and 10 = 10 and s.stmt# = 10 and a.stmt# = n");
 
 	STRINGPAIR_SET constraints = STRINGPAIR_SET();
-	
+
 	STRINGPAIR_SET expected_result = STRINGPAIR_SET();
 	STRING_PAIR* p1 = new STRING_PAIR();
 	p1->first = "s.stmt#";
@@ -66,7 +66,7 @@ TEST_CASE("ParseClauses | Parsing ST constraints") {
 	c.push_back("UsesP"); c.push_back("p"); c.push_back("v1");
 	v1.insert(new STRING_LIST(c));
 	c.clear();
-	
+
 	STRING_SET* k2 = new STRING_SET();
 	k2->insert("n"); k2->insert("v2");
 
@@ -176,7 +176,7 @@ TEST_CASE("RemoveIrrelevant | Perform AND operation between 2 data sets") {
 	v.clear();
 	v.push_back("2");
 	values.insert(new STRING_LIST(v));
-	
+
 	v.clear();
 	v.push_back("3");
 	values.insert(new STRING_LIST(v));
@@ -241,7 +241,7 @@ TEST_CASE("GetCartesianProduct | Perform cartesian product on data sets in order
 	STRING_LIST k2 = { "cl1" };
 	STRINGLIST_SET v2 = STRINGLIST_SET();
 	values.clear();
-	values.push_back("4"); 
+	values.push_back("4");
 	v2.insert(new STRING_LIST(values));
 	values.clear();
 	values.push_back("5");

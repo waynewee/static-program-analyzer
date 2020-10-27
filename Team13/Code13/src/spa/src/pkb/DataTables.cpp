@@ -80,7 +80,8 @@ bool StatementTable::Add(PROC_NAME p, STMT_IDX s) {
         result = proc_to_assign_stmt_data_.insert({p, STMT_IDX_SET()}).second;
     }
     if (result) {
-        return proc_to_assign_stmt_data_.at(p).insert(s).second;
+        result = proc_to_assign_stmt_data_.at(p).insert(s).second;
+        return result;
     }
     return false;
 }
