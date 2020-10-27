@@ -43,3 +43,12 @@ string PQLTokenizer::RetrieveTokenByClosingAngleBracket(string* str) {
     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&next_word);
     return next_word;
 }
+
+string PQLTokenizer::RetrieveTokenByOpeningAngleBracket(string* str) {
+    WhitespaceHandler::TrimLeadingWhitespaces(str);
+    string next_word = str->substr(0, str->find_first_of("<"));
+    str->erase(0, str->find_first_of("<"));
+    WhitespaceHandler::TrimLeadingWhitespaces(str);
+    WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&next_word);
+    return next_word;
+}

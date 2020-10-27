@@ -54,7 +54,15 @@ QueryInfo PQLParser::Parse(string s) {
             }
         }
 
-        string supposed_select_token = PQLTokenizer::RetrieveToken(&query);
+        string supposed_select_token;
+        if (query.find("<") != string::npos) {
+            // tuple in result cl
+            supposed_select_token = PQLTokenizer::RetrieveTokenByOpeningAngleBracket(&query);
+            cout << "SUPPOSED SELECT TOKEN:" << supposed_select_token << endl;
+        }
+        else {
+            supposed_select_token = PQLTokenizer::RetrieveToken(&query);
+        }
 
         if (!query_validator->ValidateSelect(supposed_select_token)) {
             // cout << "NOT SELECT!" << endl;
@@ -63,6 +71,7 @@ QueryInfo PQLParser::Parse(string s) {
         }
 
         string supposed_result_cl;
+        WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&query);
 
         if (query.find(">") != string::npos) {
             // found >, so we know that tuple has multiple elems : e.g. Select <s1, s2>
