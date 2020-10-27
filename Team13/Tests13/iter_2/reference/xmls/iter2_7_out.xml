@@ -1,0 +1,657 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<name>iter_2</name><parsing_time_taken>178.000000</parsing_time_taken>
+=======
+<name>iter_2</name><parsing_time_taken>706.000000</parsing_time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+</info>
+<queries>
+<query>
+<id ReturnBoolean="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 int)">1</id><querystr><![CDATA[ Select BOOLEAN such that Next(25, 26)]]></querystr>
+<stuans>TRUE</stuans>
+<correct>TRUE</correct>
+<time_taken>174.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 int)">2</id><querystr><![CDATA[ Select BOOLEAN such that Next(47, 55)]]></querystr>
+<stuans>TRUE</stuans>
+<correct>TRUE</correct>
+<time_taken>164.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 int)">3</id><querystr><![CDATA[ Select BOOLEAN such that Next(34, 44)]]></querystr>
+<stuans>TRUE</stuans>
+<correct>TRUE</correct>
+<time_taken>195.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="invalid query Next (2 int)">4</id><querystr><![CDATA[ Select BOOLEAN such that Next(42, 39)]]></querystr>
+<stuans>FALSE</stuans>
+<correct>FALSE</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>47.000000</time_taken>
+<failed>
+<missing>FALSE</missing>
+<additional></additional>
+<summary>
+<expected>1</expected>
+<matched>0</matched>
+<missing>1</missing>
+<additional>0</additional>
+</summary>
+</failed>
+=======
+<time_taken>234.000000</time_taken>
+<passed/>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 int)">5</id><querystr><![CDATA[ Select BOOLEAN such that Next(12, 17)]]></querystr>
+<stuans>TRUE</stuans>
+<correct>TRUE</correct>
+<time_taken>232.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 int)">6</id><querystr><![CDATA[ Select BOOLEAN such that Next(55, 59)]]></querystr>
+<stuans>TRUE</stuans>
+<correct>TRUE</correct>
+<time_taken>242.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 int)">7</id><querystr><![CDATA[ Select BOOLEAN such that Next(70, 78)]]></querystr>
+<stuans>TRUE</stuans>
+<correct>TRUE</correct>
+<time_taken>188.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 int)">8</id><querystr><![CDATA[ Select BOOLEAN such that Next(30, 45)]]></querystr>
+<stuans>TRUE</stuans>
+<correct>TRUE</correct>
+<time_taken>228.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 int)">9</id><querystr><![CDATA[ Select BOOLEAN such that Next(32, 45)]]></querystr>
+<stuans>TRUE</stuans>
+<correct>TRUE</correct>
+<time_taken>214.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 int)">10</id><querystr><![CDATA[ Select BOOLEAN such that Next(43, 34)]]></querystr>
+<stuans>TRUE</stuans>
+<correct>TRUE</correct>
+<time_taken>264.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 int)">11</id><querystr><![CDATA[ Select BOOLEAN such that Next(54, 60)]]></querystr>
+<stuans>TRUE</stuans>
+<correct>TRUE</correct>
+<time_taken>207.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 int)">12</id><querystr><![CDATA[ Select BOOLEAN such that Next(41,39)]]></querystr>
+<stuans>TRUE</stuans>
+<correct>TRUE</correct>
+<time_taken>220.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (int, synonym)">13</id><querystr><![CDATA[stmt s2; Select s2 such that Next(32, s2)]]></querystr>
+<stuans>45</stuans>
+<correct>45</correct>
+<time_taken>270.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (int, synonym)">14</id><querystr><![CDATA[stmt s2; Select s2 such that Next(1, s2)]]></querystr>
+<stuans>2</stuans>
+<correct>2</correct>
+<time_taken>268.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (int, synonym)">15</id><querystr><![CDATA[stmt s2; Select s2 such that Next(7, s2)]]></querystr>
+<stuans>8,9</stuans>
+<correct>8,9</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>45.000000</time_taken>
+=======
+<time_taken>273.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (int, synonym)">16</id><querystr><![CDATA[stmt s2; Select s2 such that Next(9, s2)]]></querystr>
+<stuans>11,10</stuans>
+<correct>10,11</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>44.000000</time_taken>
+=======
+<time_taken>264.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (int, synonym)">17</id><querystr><![CDATA[stmt s2; Select s2 such that Next(12, s2)]]></querystr>
+<stuans>17</stuans>
+<correct>17</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>47.000000</time_taken>
+=======
+<time_taken>339.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (int, synonym)">18</id><querystr><![CDATA[stmt s2; Select s2 such that Next(30, s2)]]></querystr>
+<stuans>45</stuans>
+<correct>45</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>43.000000</time_taken>
+=======
+<time_taken>167.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (int, synonym)">19</id><querystr><![CDATA[stmt s2; Select s2 such that Next(39, s2)]]></querystr>
+<stuans>34,40</stuans>
+<correct>40,34</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>43.000000</time_taken>
+<failed>
+<missing>34</missing>
+<additional></additional>
+<summary>
+<expected>2</expected>
+<matched>1</matched>
+<missing>1</missing>
+<additional>0</additional>
+</summary>
+</failed>
+=======
+<time_taken>216.000000</time_taken>
+<passed/>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (int, synonym)">20</id><querystr><![CDATA[stmt s2; Select s2 such that Next(34, s2)]]></querystr>
+<stuans>35,44</stuans>
+<correct>44,35</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>40.000000</time_taken>
+=======
+<time_taken>159.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (int, synonym)">21</id><querystr><![CDATA[stmt s2; Select s2 such that Next(41, s2)]]></querystr>
+<stuans>39,42</stuans>
+<correct>42,39</correct>
+<time_taken>220.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (int, synonym)">22</id><querystr><![CDATA[stmt s2; Select s2 such that Next(42, s2)]]></querystr>
+<stuans>41</stuans>
+<correct>41</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>49.000000</time_taken>
+=======
+<time_taken>257.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (int, synonym)">23</id><querystr><![CDATA[stmt s2; Select s2 such that Next(43, s2)]]></querystr>
+<stuans>34</stuans>
+<correct>34</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>50.000000</time_taken>
+=======
+<time_taken>191.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (int, synonym)">24</id><querystr><![CDATA[stmt s2; Select s2 such that Next(52, s2)]]></querystr>
+<stuans>54,53</stuans>
+<correct>53,54</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>54.000000</time_taken>
+=======
+<time_taken>189.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (synonym, int)">25</id><querystr><![CDATA[stmt s2; Select s2 such that Next(s2, 7)]]></querystr>
+<stuans>5,6,8</stuans>
+<correct>5,6,8</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>44.000000</time_taken>
+=======
+<time_taken>178.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (synonym, int)">26</id><querystr><![CDATA[stmt s2; Select s2 such that Next(s2, 8)]]></querystr>
+<stuans>7</stuans>
+<correct>7</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>42.000000</time_taken>
+=======
+<time_taken>221.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (synonym, int)">27</id><querystr><![CDATA[stmt s2; Select s2 such that Next(s2, 17)]]></querystr>
+<stuans>16,12</stuans>
+<correct>12,16</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>43.000000</time_taken>
+=======
+<time_taken>179.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (synonym, int)">28</id><querystr><![CDATA[stmt s2; Select s2 such that Next(s2, 45)]]></querystr>
+<stuans>30,44,32</stuans>
+<correct>30,32,44</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>50.000000</time_taken>
+=======
+<time_taken>225.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (synonym, int)">29</id><querystr><![CDATA[stmt s2; Select s2 such that Next(s2, 44)]]></querystr>
+<stuans>34</stuans>
+<correct>34</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>43.000000</time_taken>
+=======
+<time_taken>193.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (synonym, int)">30</id><querystr><![CDATA[stmt s2; Select s2 such that Next(s2, 34)]]></querystr>
+<stuans>33,39,43</stuans>
+<correct>33,39,43</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>45.000000</time_taken>
+<failed>
+<missing>39</missing>
+<additional></additional>
+<summary>
+<expected>3</expected>
+<matched>2</matched>
+<missing>1</missing>
+<additional>0</additional>
+</summary>
+</failed>
+=======
+<time_taken>254.000000</time_taken>
+<passed/>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (synonym, int)">31</id><querystr><![CDATA[stmt s2; Select s2 such that Next(s2, 39)]]></querystr>
+<stuans>41,38</stuans>
+<correct>38,41</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>46.000000</time_taken>
+=======
+<time_taken>227.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (synonym, int)">32</id><querystr><![CDATA[stmt s2; Select s2 such that Next(s2, 41)]]></querystr>
+<stuans>40,42</stuans>
+<correct>42,40</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>498.000000</time_taken>
+=======
+<time_taken>238.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (synonym, int)">33</id><querystr><![CDATA[stmt s2; Select s2 such that Next(s2, 52)]]></querystr>
+<stuans>49,51,53</stuans>
+<correct>49,51,53</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>52.000000</time_taken>
+=======
+<time_taken>171.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (synonym, int)">34</id><querystr><![CDATA[stmt s2; Select s2 such that Next(s2, 60)]]></querystr>
+<stuans>54,59</stuans>
+<correct>54,59</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>45.000000</time_taken>
+=======
+<time_taken>218.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (synonym, int)">35</id><querystr><![CDATA[stmt s2; Select s2 such that Next(s2, 57)]]></querystr>
+<stuans>56,58</stuans>
+<correct>56,58</correct>
+<time_taken>249.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (synonym, int)">36</id><querystr><![CDATA[stmt s2; Select s2 such that Next(s2, 74)]]></querystr>
+<stuans>72</stuans>
+<correct>72</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>49.000000</time_taken>
+=======
+<time_taken>214.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 synonym)">37</id><querystr><![CDATA[stmt s1, s2; Select s1 such that Next(s1, s2)]]></querystr>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<stuans>36,1,54,21,18,33,4,76,17,56,23,34,3,19,55,20,35,2,30,7,65,9,25,50,57,22,28,11,31,6,8,53,26,69,32,5,13,66,10,29,39,62,71,12,14,58,51,59,15,37,44,16,77,27,43,49,38,63,41,40,47,42,60,48,52,64,68,70,73,72,74,75</stuans>
+<correct>1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,47,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,62,63,64,65,66,68,69,7,70,71,72,73,74,75,76,77,8,9</correct>
+<time_taken>75.000000</time_taken>
+=======
+<stuans>32,5,69,38,63,30,7,17,57,22,68,33,4,9,36,1,34,3,71,35,2,31,6,20,19,23,28,11,54,21,18,37,43,29,10,73,60,53,26,59,15,52,27,50,25,8,39,44,75,58,14,12,13,16,47,41,48,66,40,42,70,49,72,51,55,56,62,65,64,77,74,76</stuans>
+<correct>1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,47,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,62,63,64,65,66,68,69,7,70,71,72,73,74,75,76,77,8,9</correct>
+<time_taken>297.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 synonym)">38</id><querystr><![CDATA[stmt s1; assign a; Select a such that Next(s1, a)]]></querystr>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<stuans>59,33,5,14,58,20,19,44,27,54,21,18,56,23,22,73,17,51,24,16,6,12,8,60,35,76,10,36,53,71,66,67,50,70,63,77,75</stuans>
+<correct>10,12,14,16,17,18,19,20,21,22,23,24,27,33,35,36,44,5,50,51,53,54,56,58,59,6,60,63,66,67,70,71,73,75,76,77,8</correct>
+<time_taken>65.000000</time_taken>
+=======
+<stuans>17,20,19,5,16,27,12,10,33,51,24,54,18,21,6,22,56,23,58,14,8,60,36,35,44,50,70,73,76,53,67,77,59,63,66,71,75</stuans>
+<correct>10,12,14,16,17,18,19,20,21,22,23,24,27,33,35,36,44,5,50,51,53,54,56,58,59,6,60,63,66,67,70,71,73,75,76,77,8</correct>
+<time_taken>295.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 synonym)">39</id><querystr><![CDATA[stmt s2; assign a; Select a such that Next(a, s2)]]></querystr>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<stuans>19,20,5,54,21,18,10,6,17,12,8,16,50,51,56,23,44,22,27,59,75,58,14,33,35,60,36,73,71,53,66,63,70,76,77</stuans>
+<correct>10,12,14,16,17,18,19,20,21,22,23,27,33,35,36,44,5,50,51,53,54,56,58,59,6,60,63,66,70,71,73,75,76,77,8</correct>
+<time_taken>65.000000</time_taken>
+=======
+<stuans>17,5,50,19,20,8,73,54,18,21,70,56,23,6,60,22,35,51,33,36,10,12,27,58,14,44,16,53,59,75,71,66,77,76,63</stuans>
+<correct>10,12,14,16,17,18,19,20,21,22,23,27,33,35,36,44,5,50,51,53,54,56,58,59,6,60,63,66,70,71,73,75,76,77,8</correct>
+<time_taken>292.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 synonym)">40</id><querystr><![CDATA[stmt s1; while w; Select w such that Next(s1, w)]]></querystr>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<stuans>52,49,7,41,9,55,62,39,34,57</stuans>
+<correct>34,39,41,49,52,55,57,62,7,9</correct>
+<time_taken>52.000000</time_taken>
+=======
+<stuans>9,34,49,52,41,7,62,39,55,57</stuans>
+<correct>34,39,41,49,52,55,57,62,7,9</correct>
+<time_taken>264.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 synonym)">41</id><querystr><![CDATA[stmt s2; while w; Select w such that Next(w, s2)]]></querystr>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<stuans>41,7,52,9,55,62,39,57,34,49</stuans>
+<correct>34,39,41,49,52,55,57,62,7,9</correct>
+<time_taken>53.000000</time_taken>
+=======
+<stuans>49,41,52,7,9,39,62,34,55,57</stuans>
+<correct>34,39,41,49,52,55,57,62,7,9</correct>
+<time_taken>271.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 synonym)">42</id><querystr><![CDATA[stmt s1; if ifs; Select ifs such that Next(s1, ifs)]]></querystr>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<stuans>4,11,28,69,48,26,13,38,72,74</stuans>
+<correct>11,13,26,28,38,4,48,69,72,74</correct>
+<time_taken>53.000000</time_taken>
+=======
+<stuans>11,28,4,13,38,69,26,48,74,72</stuans>
+<correct>11,13,26,28,38,4,48,69,72,74</correct>
+<time_taken>277.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 synonym)">43</id><querystr><![CDATA[stmt s2; if ifs; Select ifs such that Next(ifs, s2)]]></querystr>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<stuans>28,11,48,26,13,4,47,72,38,69,74</stuans>
+=======
+<stuans>47,11,28,4,13,26,48,38,69,72,74</stuans>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<correct>11,13,26,28,38,4,47,48,69,72,74</correct>
+<time_taken>252.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 synonym)">45</id><querystr><![CDATA[if ifs; read r; Select ifs such that Next(ifs, r)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>44.000000</time_taken>
+=======
+<time_taken>218.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 synonym)">47</id><querystr><![CDATA[while w; assign a; Select w such that Next(w, a)]]></querystr>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<stuans>55,52,7,49,34,9,62,57</stuans>
+<correct>34,49,52,55,57,62,7,9</correct>
+<time_taken>50.000000</time_taken>
+=======
+<stuans>9,49,52,7,62,34,57,55</stuans>
+<correct>34,49,52,55,57,62,7,9</correct>
+<time_taken>249.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 synonym)">48</id><querystr><![CDATA[while w; read r; Select w such that Next(w, r)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>46.000000</time_taken>
+=======
+<time_taken>222.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 synonym)">49</id><querystr><![CDATA[while w; print pr; Select w such that Next(w, pr)]]></querystr>
+<stuans>41,62</stuans>
+<correct>41,62</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>63.000000</time_taken>
+=======
+<time_taken>226.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 synonym)">50</id><querystr><![CDATA[while w; if ifs; Select w such that Next(w, ifs)]]></querystr>
+<stuans>9</stuans>
+<correct>9</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>52.000000</time_taken>
+=======
+<time_taken>212.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 synonym)">51</id><querystr><![CDATA[while w; if ifs; Select ifs such that Next(w, ifs)]]></querystr>
+<stuans>11</stuans>
+<correct>11</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>42.000000</time_taken>
+=======
+<time_taken>217.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="valid query Next (2 synonym)">54</id><querystr><![CDATA[assign a1, a2; Select a1 such that Next(a1, a2)]]></querystr>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<stuans>23,20,19,22,54,18,21,17,14,12,35,16,59,66,75,76</stuans>
+<correct>12,14,16,17,18,19,20,21,22,23,35,54,59,66,75,76</correct>
+<time_taken>56.000000</time_taken>
+=======
+<stuans>22,23,17,20,19,54,21,18,16,14,12,66,35,59,75,76</stuans>
+<correct>12,14,16,17,18,19,20,21,22,23,35,54,59,66,75,76</correct>
+<time_taken>239.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" UnnamedVar="1" SuchThat="1" CondNum="4" RelNum="1" comment="valid query Next (2 synonym)">56</id><querystr><![CDATA[stmt s1; prog_line l; Select s1 such that Next(s1, l)]]></querystr>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<stuans>21,18,9,36,1,35,2,71,68,33,4,74,34,3,14,58,66,30,7,8,64,51,28,11,25,50,75,17,76,55,20,19,26,53,63,38,40,56,23,52,27,57,22,72,32,5,13,15,47,6,31,42,16,10,29,41,77,39,62,48,12,44,43,70,37,49,60,59,54,65,69,73</stuans>
+<correct>1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,47,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,62,63,64,65,66,68,69,7,70,71,72,73,74,75,76,77,8,9</correct>
+<time_taken>82.000000</time_taken>
+=======
+<stuans>35,2,13,57,22,65,9,36,1,68,33,4,30,7,6,31,53,26,28,11,54,21,18,56,23,34,3,17,55,20,19,40,69,32,5,47,16,10,29,63,38,62,39,50,25,44,64,8,58,14,43,41,52,27,59,15,12,51,66,60,37,49,48,42,70,71,73,77,72,74,75,76</stuans>
+<correct>1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,47,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,62,63,64,65,66,68,69,7,70,71,72,73,74,75,76,77,8,9</correct>
+<time_taken>334.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" SuchThat="1" CondNum="3" RelNum="1" comment="invalid query Next (2 synonym)">57</id><querystr><![CDATA[stmt s1; Select BOOLEAN such that Next(s1, s1)]]></querystr>
+<stuans>FALSE</stuans>
+<correct>FALSE</correct>
+<time_taken>142.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" UnnamedVar="1" SuchThat="1" CondNum="4" RelNum="1" comment="valid query Next (int, _)">58</id><querystr><![CDATA[ Select BOOLEAN such that Next(44, _)]]></querystr>
+<stuans>TRUE</stuans>
+<correct>TRUE</correct>
+<time_taken>180.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" UnnamedVar="1" SuchThat="1" CondNum="4" RelNum="1" comment="invalid query Next (int, _)">59</id><querystr><![CDATA[ Select BOOLEAN such that Next(61, _)]]></querystr>
+<stuans>FALSE</stuans>
+<correct>FALSE</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>41.000000</time_taken>
+<failed>
+<missing>FALSE</missing>
+<additional></additional>
+<summary>
+<expected>1</expected>
+<matched>0</matched>
+<missing>1</missing>
+<additional>0</additional>
+</summary>
+</failed>
+=======
+<time_taken>170.000000</time_taken>
+<passed/>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" UnnamedVar="1" SuchThat="1" CondNum="4" RelNum="1" comment="valid query Next (_, int)">60</id><querystr><![CDATA[ Select BOOLEAN such that Next(_, 38)]]></querystr>
+<stuans>TRUE</stuans>
+<correct>TRUE</correct>
+<time_taken>218.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" UnnamedVar="1" SuchThat="1" CondNum="4" RelNum="1" comment="invalid query Next (_, int)">61</id><querystr><![CDATA[ Select BOOLEAN such that Next(_, 1)]]></querystr>
+<stuans>FALSE</stuans>
+<correct>FALSE</correct>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<time_taken>48.000000</time_taken>
+<failed>
+<missing>FALSE</missing>
+<additional></additional>
+<summary>
+<expected>1</expected>
+<matched>0</matched>
+<missing>1</missing>
+<additional>0</additional>
+</summary>
+</failed>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" UnnamedVar="1" SuchThat="1" CondNum="4" RelNum="1" comment="valid query Next (synonym, _)">62</id><querystr><![CDATA[stmt s1; Select s1 such that Next(s1, _)]]></querystr>
+<stuans>30,7,9,65,1,36,17,62,39,33,4,68,50,25,29,10,32,5,69,35,2,34,3,66,56,23,55,19,20,28,11,53,26,58,14,37,57,22,16,60,54,21,18,31,6,52,27,12,43,64,8,48,44,41,51,13,42,59,15,49,40,47,38,71,73,63,77,70,72,74,75,76</stuans>
+<correct>1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,47,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,62,63,64,65,66,68,69,7,70,71,72,73,74,75,76,77,8,9</correct>
+<time_taken>64.000000</time_taken>
+=======
+<time_taken>233.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" UnnamedVar="1" SuchThat="1" CondNum="4" RelNum="1" comment="valid query Next (synonym, _)">62</id><querystr><![CDATA[stmt s1; Select s1 such that Next(s1, _)]]></querystr>
+<stuans>55,19,20,8,64,9,65,54,18,21,17,33,4,68,30,7,66,36,1,6,31,59,15,44,14,58,34,3,38,63,62,39,16,23,56,57,22,13,32,69,5,35,2,10,29,28,11,41,12,37,50,25,48,53,26,52,27,47,73,77,43,40,51,42,49,60,70,72,71,75,74,76</stuans>
+<correct>1,10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,25,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,47,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,62,63,64,65,66,68,69,7,70,71,72,73,74,75,76,77,8,9</correct>
+<time_taken>315.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Next="1" UnnamedVar="1" SuchThat="1" CondNum="4" RelNum="1" comment="valid query Next (_, synonym)">63</id><querystr><![CDATA[stmt s2; Select s2 such that Next(_, s2)]]></querystr>
+<<<<<<< HEAD:Team13/Tests13/iter_2/reference/xmls/iter2_7_out.xml
+<stuans>34,3,4,33,32,5,69,28,11,55,19,20,35,2,9,65,52,27,70,17,8,30,7,66,12,51,24,16,13,54,18,21,58,14,67,57,22,29,10,59,15,53,26,71,63,38,31,6,56,23,61,43,37,44,45,60,39,41,40,48,42,49,50,36,62,64,78,72,73,74,75,76,77</stuans>
+<correct>10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,45,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,69,7,70,71,72,73,74,75,76,77,78,8,9</correct>
+<time_taken>74.000000</time_taken>
+=======
+<stuans>44,35,2,13,66,55,20,19,30,7,69,32,5,29,10,28,11,59,15,67,54,21,18,58,14,8,34,3,36,12,56,23,33,4,71,6,31,70,57,22,65,9,63,38,53,26,60,49,45,40,43,37,24,51,48,52,27,50,42,16,39,17,41,61,78,62,64,72,73,74,75,76,77</stuans>
+<correct>10,11,12,13,14,15,16,17,18,19,2,20,21,22,23,24,26,27,28,29,3,30,31,32,33,34,35,36,37,38,39,4,40,41,42,43,44,45,48,49,5,50,51,52,53,54,55,56,57,58,59,6,60,61,62,63,64,65,66,67,69,7,70,71,72,73,74,75,76,77,78,8,9</correct>
+<time_taken>371.000000</time_taken>
+>>>>>>> 7d12ddd5e715f09ab565b3f54e77aa721720147e:Team13/Tests13/iter_2/xmls/iter2_7_out.xml
+<passed/>
+</query>
+<query>
+<id ReturnBoolean="1" Next="1" UnnamedVar="2" SuchThat="1" CondNum="5" RelNum="1" comment="valid query Next (_, _)">64</id><querystr><![CDATA[ Select BOOLEAN such that Next(_, _)]]></querystr>
+<stuans>TRUE</stuans>
+<correct>TRUE</correct>
+<time_taken>220.000000</time_taken>
+<passed/>
+</query>
+</queries>
+</test_results>
