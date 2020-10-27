@@ -9,9 +9,11 @@
 class CallsTable {
 private:
     std::unordered_map<STMT_IDX, PROC_NAME> data_;
+    std::unordered_map<PROC_NAME, STMT_IDX_SET> inverse_data_;
 public:
     bool Add(PROC_NAME pname, STMT_IDX s);
     PROC_NAME GetCalledBy(STMT_IDX s);
+    STMT_IDX_SET GetInverseCalledBy(PROC_NAME p);
 };
 
 class ProcedureTable {
