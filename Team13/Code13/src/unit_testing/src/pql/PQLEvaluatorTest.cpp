@@ -14,7 +14,7 @@ TEST_CASE("") {
 	cout << "PLEASE TURN CHANGE UNIT TESTING TO TRUE IN PQLCUSTOMTYPES.H BEFORE PROCEEDING" << endl;
 }
 
-
+/*
 TEST_CASE("ParseClauses | Parsing WITH constraints") {
 	QueryInfo query_info = parser.Parse("stmt s; assign a; prog_line n; Select bool with \"x\" = \"x\" and 10 = 10 and s.stmt# = 10 and a.stmt# = n");
 
@@ -310,4 +310,9 @@ TEST_CASE("GetCartesianProduct | Perform cartesian product on data sets in order
 
 		REQUIRE(found);
 	}
+}
+*/
+
+TEST_CASE("") {
+	cout << "------------------------------------------END OF PQLEVALUATOR TESTING------------------------------------" << endl;
 }
