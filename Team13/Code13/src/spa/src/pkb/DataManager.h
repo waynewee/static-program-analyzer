@@ -37,6 +37,7 @@ public:
     PROC_NAME_SET GetAllProcedures();
     INT_SET GetAllConstants();
     PROC_NAME GetCalledByStmt(STMT_IDX s);
+    STMT_IDX_SET GetInverseCalledBy(PROC_NAME p);
 
     bool IsAssignStmt(STMT_IDX s);
     bool IsCallStmt(STMT_IDX s);
