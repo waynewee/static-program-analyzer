@@ -237,11 +237,15 @@ void MainWindow::DrawLineWithArrow(int x1, int y1, int x2, int y2) {
 }
 
 void MainWindow::on_verticalSlider_valueChanged(int value) {
-	ui->graphicsView->resetMatrix();
-	
-	double scale = value / 50.0;
 
-	ui->graphicsView->scale(scale, scale);
+	if (value < prev_value) {
+		ui->graphicsView->scale(0.85, 0.85);
+	}
+	else {
+		ui->graphicsView->scale(1.0/0.85, 1.0/0.85);
+	}
+
+	prev_value = value;
 
 }
 

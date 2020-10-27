@@ -56,7 +56,8 @@ private:
 	QBrush brush_secondary_;
 	QBrush brush_tertiary_;
 	QPen outline_pen_;
-	int num_scheduled_scalings_ = 0;
+	double prev_scale_value = 1.0;
+	int prev_value = 1;
 
 	const int diameter_ = 30;
 	const int unit_x_ = 50;
