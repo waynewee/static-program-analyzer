@@ -47,6 +47,7 @@ void TestWrapper::parse(string filename) {
 	TestWrapper::pkb->SetCFG(*cfg);
 
 	DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
+	DesignExtractor::ExtractAssignStmtInProcs(pkb->GetDataManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
 	DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());

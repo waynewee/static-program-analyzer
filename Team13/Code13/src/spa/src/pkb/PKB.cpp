@@ -41,6 +41,8 @@ CFGManager PKB::GetCFGManager() {
     return cfg_manager_;
 }
 STMT_IDX_SET PKB::GetAffects(STMT_IDX a) {
+    //debug
+    std::cout << "GetAffects(" << a << ")" << std::endl;
     if (affects_table_.find(a) != affects_table_.end()) {
         return *affects_table_.at(a);
     }
@@ -53,6 +55,11 @@ STMT_IDX_SET PKB::GetAffects(STMT_IDX a) {
         RecursiveGetAffects(neighbor, lhs_var, *visited, *result);
     }
     affects_table_.insert({a, result});
+    //debug
+    std::cout << "printing result from GetAffects(" << a << std::endl;
+    for (auto e : *result) {
+        std::cout << "" << e << std::endl;
+    }
     return *result;
 }
 
