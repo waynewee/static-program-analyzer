@@ -10,11 +10,13 @@
 using namespace std;
 
 // Activates debug prints
-#define DEBUG false
+#define DEBUG true
 // Activates debug prints with detailed printing (data structures)
-#define DEBUG_PRINTING false
+#define DEBUG_PRINTING true
 // Activates fake data for unit testing
 #define UNIT_TESTING false
+// Activates optimized evaluator
+#define OPTIMIZED_EVALUATION true
 
 #define TYPE_COND_FOLLOWS "Follows"
 #define TYPE_COND_FOLLOWS_T "FollowsT"
