@@ -47,10 +47,16 @@ private:
 	void DrawAST();
 	void DrawNode(GUINode* gui_node);
 	void DrawNode(GUINode* gui_node, QColor color);
+	void DrawLineWithArrow(int x1, int y1, int x2, int y2);
+	void PrintResults(list<string> results);
+	void ColorResultNodes(list<string> results);
 	
 	LIST_OF_NODE_LISTS* list_of_node_lists_;
-	QBrush main_brush_;
+	QBrush brush_primary_;
+	QBrush brush_secondary_;
+	QBrush brush_tertiary_;
 	QPen outline_pen_;
+	int num_scheduled_scalings_ = 0;
 
 	const int diameter_ = 30;
 	const int unit_x_ = 50;

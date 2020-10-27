@@ -6,3 +6,10 @@ GUINode::GUINode(TNode* node, TNode* parent, int x, int y) {
     x_ = x;
     y_ = y;
 }
+
+GUINode::GUINode(int stmt_idx,int x, int y) {
+    stmt_idx_ = stmt_idx;
+    x_ = x;
+    y_ = y;
+}
+

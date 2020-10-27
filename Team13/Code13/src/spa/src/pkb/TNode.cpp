@@ -73,6 +73,23 @@ vector<TNode*> TNode::GetChildrenVector() {
 	return children;
 }
 
+string TNode::GetSelectValue() {
+	switch (type) {
+	case TNode::varName:
+	case TNode::procName:
+		return *name;
+	case TNode::readStmt:
+	case TNode::printStmt:
+	case TNode::callStmt:
+	case TNode::whileStmt:
+	case TNode::ifStmt:
+	case TNode::assignStmt:
+		return to_string(index);
+	default:
+		return "";
+	}
+}
+
 string TNode::getData() {
 	switch (type) {
 	case TNode::program:

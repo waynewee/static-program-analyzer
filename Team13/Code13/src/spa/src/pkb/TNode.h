@@ -75,6 +75,7 @@ public:
     list<TNode*> GetChildrenList();
     vector<TNode*> GetChildrenVector();
     STMT_IDX GetStmtIndex();
+    string GetSelectValue();
     OPERATOR GetOperator();
     string getData();
     TNode* GetParent();

@@ -11,6 +11,8 @@
 #include <vector>
 #include <list>
 #include "GUINode.h"
+#include <QVector>
+#include <CFG.h>
 
 
 using namespace std;
@@ -25,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	wrapper = new GUIWrapper();
 
-	main_brush_ = QBrush(Qt::blue);
+	brush_primary_ = QBrush(QColor("#8CDCDA"));
 	outline_pen_ = QPen(Qt::black);
 	outline_pen_.setWidth(1);
 }
@@ -51,31 +53,18 @@ void MainWindow::btnLoad_clicked() {
 }
 
 void MainWindow::btnRun_clicked() {
+
 	std::list<std::string> results;
 	wrapper->Evaluate(ui->txtQuery->toPlainText().toStdString(),results);
+
 	QString result_str;
 
 	int i = 0;
 
-	for (auto const& result : results) {
+	PrintResults(results);
+	ColorResultNodes(results);
 
-		result_str += QString(result.c_str());
-		if (i < results.size()) {
-			result_str += ", ";
-		}
-	}
 
-	ui->txtResult->document()->setPlainText(result_str);
-
-	for (auto const& result : results) {
-		for (NODE_LIST* node_list : *list_of_node_lists_) {
-			for (GUINode* node : *node_list) {
-				if (node->node_->GetStmtIndex() == stoi(result.c_str())) {
-					DrawNode(node, Qt::red);
-				}
-			}
-		}
-	}
 
 }
 
@@ -102,7 +91,149 @@ void MainWindow::on_astButton_clicked() {
 }
 
 void MainWindow::on_cfgButton_clicked() {
-	cout << "Hello World" << endl;
+
+	int unit_x = 100;
+	int unit_y = 100;
+
+	scene->clear();
+	
+	string file_contents = file_contents_.toUtf8().constData();
+	FrontendWrapper wrapper(file_contents);
+	TNode* root_node = wrapper.GetAST();
+	root_node->Print(root_node);
+
+	CFG* cfg = wrapper.GetCFG(root_node);
+
+	int y = 0;
+
+	int max = 0;
+
+	for (auto const& pair : cfg->GetAdjacencyList()) {
+		if (pair.first > max) {
+			max = pair.first;
+		}
+		for (auto const& edge : *pair.second) {
+			if (edge > max) {
+				max = edge;
+			}
+		}
+	}
+
+	std::map<STMT_IDX, GUINode*> cfg_nodes;
+
+	STMT_IDX_SET* edges = cfg->GetAdjacencyList()[1];
+
+	for (auto const& edge : *edges) {
+		cout << edge << endl;
+	}
+
+	for (STMT_IDX stmt_idx = 1; stmt_idx < max + 1; stmt_idx++) {
+
+		if (cfg->GetAdjacencyList().find(stmt_idx) == cfg->GetAdjacencyList().end()) {
+			continue;
+		}
+		
+		STMT_IDX_SET edges = *cfg->GetAdjacencyList()[stmt_idx];
+
+		GUINode* parent_node;
+
+		//if cant find parent
+		if (cfg_nodes.find(stmt_idx) == cfg_nodes.end()) {
+			cout << "Adding " << stmt_idx << endl;
+			cfg_nodes[stmt_idx] = new GUINode(stmt_idx, 200, y);
+			y += unit_y;
+		}
+
+		parent_node = cfg_nodes[stmt_idx];
+
+		int ctr = 0;
+
+		bool added_new = false;
+
+		for(auto const& edge : edges) {
+
+			GUINode* child_node;
+
+			if (cfg_nodes.find(edge) == cfg_nodes.end()) {
+				cfg_nodes[edge] = new GUINode(edge, parent_node->x_ + (ctr * unit_x), y);
+				added_new = true;
+			}
+
+			child_node = cfg_nodes[edge];
+			parent_node->edges.push_back(child_node);
+			ctr += 1;
+		}
+
+		if (added_new) {
+			y += unit_y;
+		}
+	}
+
+	cout << "PAINTING" << endl;
+	
+	for (int i = 1; i < max + 1; i++) {
+
+		if (cfg_nodes.find(i) == cfg_nodes.end()) {
+			continue;
+		}
+
+		GUINode* gui_node = cfg_nodes[i]; 
+		scene->addEllipse(gui_node->x_, gui_node->y_, diameter_, diameter_, outline_pen_, brush_primary_);
+		QGraphicsTextItem* text = scene->addText(QString::fromStdString(to_string(gui_node->stmt_idx_)));
+		text->setDefaultTextColor(QColor("#4D4D4D"));
+		text->setPos(gui_node->x_, gui_node->y_);
+
+		int ctr = 0;
+
+		while (ctr < gui_node->edges.size()) {
+			GUINode* edge_node = gui_node->edges.at(ctr);
+
+			bool isSource = gui_node->y_ < edge_node->y_;
+
+			int x1 = gui_node->x_ + line_offset_x;
+			int y1 = gui_node->y_;
+			int x2 = edge_node->x_ + line_offset_x;
+			int y2 = edge_node->y_;
+
+			//if arrow is from top down, 
+			if (y1 < y2) {
+				y1 += line_offset_y;
+			}
+			else {
+				y2 += line_offset_y;
+			}
+
+			scene->addLine(QLine(x1, y1, x2, y2));
+			DrawLineWithArrow(x1, y1, x2, y2);
+
+			ctr += 1;
+		}
+
+	}
+
+	ui->graphicsView->fitInView(ui->graphicsView->sceneRect(), Qt::KeepAspectRatio);
+
+}
+
+void MainWindow::DrawLineWithArrow(int x1, int y1, int x2, int y2) {
+
+	qreal arrowSize = 10; // size of head
+
+	QPointF start(x1, y1);
+	QPointF end(x2, y2);
+
+	QLineF line(end, start);
+
+	double angle = std::atan2(-line.dy(), line.dx());
+
+	QPointF arrowP1 = line.p1() + QPointF(sin(angle + M_PI / 3) * arrowSize,
+		cos(angle + M_PI / 3) * arrowSize);
+	QPointF arrowP2 = line.p1() + QPointF(sin(angle + M_PI - M_PI / 3) * arrowSize,
+		cos(angle + M_PI - M_PI / 3) * arrowSize);
+
+	QPolygonF arrow_head;
+	arrow_head << line.p1() << arrowP1 << arrowP2;
+	scene->addPolygon(arrow_head, outline_pen_, brush_primary_);
 }
 
 void MainWindow::on_verticalSlider_valueChanged(int value) {
@@ -251,11 +382,45 @@ void MainWindow::DrawAST() {
 }
 
 void MainWindow::DrawNode(GUINode* gui_node) {
-	scene->addEllipse(gui_node->x_, gui_node->y_, diameter_, diameter_, outline_pen_, main_brush_);
+	scene->addEllipse(gui_node->x_, gui_node->y_, diameter_, diameter_, outline_pen_, brush_primary_);
 	QGraphicsTextItem* text = scene->addText(QString::fromStdString(gui_node->node_->getData()));
 	text->setPos(gui_node->x_ - text_offset_x, gui_node->y_ + text_offset_y);
 }
 
 void MainWindow::DrawNode(GUINode* gui_node, QColor color) {
 	scene->addEllipse(gui_node->x_, gui_node->y_, diameter_, diameter_, outline_pen_, QBrush(color));
+}
+
+void MainWindow::PrintResults(list<string> results) {
+
+	QString result_str;
+	int i = 0;
+
+	for (auto const& result : results) {
+
+		result_str += QString(result.c_str());
+		if (i < results.size()) {
+			result_str += ", ";
+		}
+		i += 1;
+	}
+
+	ui->txtResult->document()->setPlainText(result_str);
+}
+
+void MainWindow::ColorResultNodes(list<string> results) {
+
+	//reset
+	DrawAST();
+
+	for (auto const& result : results) {
+		for (NODE_LIST* node_list : *list_of_node_lists_) {
+			for (GUINode* node : *node_list) {
+				if (node->node_->GetSelectValue() == result.c_str()) {
+					DrawNode(node, Qt::red);
+				}
+			}
+		}
+	}
+
 }
