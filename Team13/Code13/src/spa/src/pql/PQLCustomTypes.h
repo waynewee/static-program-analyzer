@@ -55,6 +55,9 @@ using namespace std;
 #define TYPE_ATTRNAME_VALUE "value"
 #define TYPE_ATTRNAME_STMT "stmt#"
 
+#define TYPE_WITH_ARGUMENT_INTEGER "integer"
+#define TYPE_WITH_ARGUMENT_STRING "string"
+
 #define TYPE_SUCH_THAT_CLAUSE "such that"
 #define TYPE_WITH_CLAUSE "with"
 #define TYPE_PATTERN_CLAUSE "pattern"
