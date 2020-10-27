@@ -9,7 +9,11 @@
 
 using namespace std;
 
-#define DEBUG true
+// Activates debug prints
+#define DEBUG false
+// Activates debug prints with detailed printing (data structures)
+#define DEBUG_PRINTING false
+// Activates fake data for unit testing
 #define UNIT_TESTING false
 
 #define TYPE_COND_FOLLOWS "Follows"

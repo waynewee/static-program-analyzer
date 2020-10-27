@@ -27,7 +27,7 @@ public:
 	STRING_SET* GetRelatedSynonyms(string synonym, STRINGSET_STRINGLISTSET_MAP synonyms_map);
 	STRING_SET* GetRelatedSynonyms(STRING_SET synonyms, STRINGSET_STRINGLISTSET_MAP* synonyms_map);
 	STRING_LIST* GetRelatedSynonyms(string synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
-	STRING_LIST* GetRelatedSynonyms(STRING_LIST synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
+	STRING_LIST* GetRelatedSynonyms(STRING_LIST synonyms, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
 
 	bool EvaluateConstraints(STRING_STRING_MAP entity_map, STRINGPAIR_SET constraints, STRINGLIST_STRINGLISTSET_MAP* results_map);
 	bool EvaluateNoSynonymSet(string f_call, string param1, string param2);
