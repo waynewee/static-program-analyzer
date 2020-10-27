@@ -12,5 +12,7 @@ public:
 	static string RetrieveTokenByOpenBracket(string* str);
 
 	static string RetrieveTokenByClosingAngleBracket(string* str);
+
+	static string RetrieveTokenByOpeningAngleBracket(string* str);
 };
 

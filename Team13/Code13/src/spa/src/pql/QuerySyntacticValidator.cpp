@@ -239,6 +239,11 @@ bool QuerySyntacticValidator::ValidatePatternClause(string token, STRING_STRING_
 		}
 	}
 	if (pattern_type_token_type.compare(TYPE_DESIGN_ENTITY_IF) == 0) {
+		if (temp_token.find(",") == string::npos) {
+			// cannot find comma -> no more arguments
+			result = false;
+			return result;
+		}
 		temp_token.erase(0, temp_token.find_first_of(",") + 1);
 		string third_arg = temp_token.substr(0, temp_token.length() - 1);
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&third_arg);
