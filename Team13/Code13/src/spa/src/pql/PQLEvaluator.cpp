@@ -1176,10 +1176,10 @@ STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) 
 		result = ConvertSet(cfgm.GetNextStar(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		// result = ConvertSet(cfgm.GetAffects(ParsingStmtRef(param)));
+		result = ConvertSet(pkb.GetAffects(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		// result = ConvertSet(cfgm.GetAffectsStar(ParsingStmtRef(param)));
+		// result = ConvertSet(pkb.GetAffectsStar(ParsingStmtRef(param)));
 	}
 	else {
 		// error
