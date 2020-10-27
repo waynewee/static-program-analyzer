@@ -42,7 +42,7 @@ CFGManager PKB::GetCFGManager() {
 }
 STMT_IDX_SET PKB::GetAffects(STMT_IDX a) {
     //debug
-    std::cout << "GetAffects(" << a << ")" << std::endl;
+    std::cout << "PKB: GetAffects(" << a << ")" << std::endl;
     if (affects_table_.find(a) != affects_table_.end()) {
         return *affects_table_.at(a);
     }
@@ -56,7 +56,7 @@ STMT_IDX_SET PKB::GetAffects(STMT_IDX a) {
     }
     affects_table_.insert({a, result});
     //debug
-    std::cout << "printing result from GetAffects(" << a << std::endl;
+    std::cout << "PKB: printing result from GetAffects(" << a << std::endl;
     for (auto e : *result) {
         std::cout << "" << e << std::endl;
     }
@@ -75,6 +75,9 @@ void PKB::RecursiveGetAffects(STMT_IDX node, VAR_NAME lhs_var, STMT_IDX_SET& vis
     //If the node is an assign statement and it uses lhs_var, the statement is affected
     if (data_manager_.IsAssignStmt(node) && relation_manager_.IsStmtUses(node, lhs_var)) {
         result.insert(node);
+    }
+    if (data_manager_.IsAssignStmt(node) && relation_manager_.IsStmtModifies(node, lhs_var)) {
+        return;
     }
     //If this is an assign statement and it modifies the variable, terminate dfs on path
     if (data_manager_.IsCallStmt(node)) {
