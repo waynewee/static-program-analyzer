@@ -76,6 +76,9 @@ void PKB::RecursiveGetAffects(STMT_IDX node, VAR_NAME lhs_var, STMT_IDX_SET& vis
     if (data_manager_.IsAssignStmt(node) && relation_manager_.IsStmtUses(node, lhs_var)) {
         result.insert(node);
     }
+    if (data_manager_.IsAssignStmt(node) && relation_manager_.IsStmtModifies(node, lhs_var)) {
+        return;
+    }
     //If this is an assign statement and it modifies the variable, terminate dfs on path
     if (data_manager_.IsCallStmt(node)) {
         auto procName = data_manager_.GetCalledByStmt(node);

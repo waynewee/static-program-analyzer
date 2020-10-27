@@ -1127,11 +1127,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) 
 		result = ConvertSet(cfgm.GetNextStar(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-<<<<<<< Updated upstream
-		// result = rm.GetAffects(ParsingStmtRef(param));
-=======
 		result = ConvertSet(pkb.GetAffects(ParsingStmtRef(param)));
->>>>>>> Stashed changes
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
 		// result = rm.GetAffectsStar(ParsingStmtRef(param));
