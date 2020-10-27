@@ -21,7 +21,7 @@ public:
 	void AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP* results_map);
 	QueryResult SetResult(bool is_boolean_output, string bool_result, STRINGLIST_SET result);
 		
-	bool ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints, STRINGLIST_STRINGLISTSET_MAP* results_map);
+	bool ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints);
 	bool ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MAP* synonyms_map);
 
 	STRING_SET* GetRelatedSynonyms(string synonym, STRINGSET_STRINGLISTSET_MAP synonyms_map);
@@ -29,6 +29,7 @@ public:
 	STRING_LIST* GetRelatedSynonyms(string synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
 	STRING_LIST* GetRelatedSynonyms(STRING_LIST synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
 
+	bool EvaluateConstraints(STRING_STRING_MAP entity_map, STRINGPAIR_SET constraints, STRINGLIST_STRINGLISTSET_MAP* results_map);
 	bool EvaluateNoSynonymSet(string f_call, string param1, string param2);
 	STRINGLIST_SET EvaluatePatternCall(string f_call, string param1, string param2, string type);
 	STRINGLIST_SET EvaluatePatternCall(string f_call, string param, string type);
@@ -37,6 +38,7 @@ public:
 	STRINGLIST_SET EvaluateTwoSynonymSet(string output_var_type);
 	STRINGLIST_SET EvaluateAllCall(string output_var_type);
 
+	STRING_SET ConvertSet(STRINGLIST_SET result_set);
 	STRINGLIST_SET ConvertSet(INTEGER_SET result_set);
 	STRINGLIST_SET ConvertSet(DOUBLE_SET result_set);
 	STRINGLIST_SET ConvertSet(STRING_SET result_set);
@@ -45,9 +47,10 @@ public:
 	STRINGLIST_SET ConvertSet(PROC_VAR_PAIR_LIST result_set);
 	STRINGLIST_SET ConvertSet(PROC_PROC_PAIR_LIST result_set);
 
-	bool CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_MAP entity_map, STRINGLIST_STRINGLISTSET_MAP* results_map, STRING_LIST key, STRINGLIST_SET* value);
+	//bool CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_MAP entity_map, STRINGLIST_STRINGLISTSET_MAP* results_map, STRING_LIST key, STRINGLIST_SET* value);
 
 	bool RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, int pos_to_check);
+	bool RemoveIrrelevant(STRING_SET* value, STRINGLIST_SET tmp);
 	// bool RemoveIrrelevant(STRINGLIST_SET* value, string tmp, int pos_to_check);
 
 	int GetCommonSynonymsIndex(STRING_LIST large_keys, string synonym);
@@ -64,8 +67,7 @@ public:
 	STRING_SET GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2, int pos_to_check);
 	STRINGLIST_SET GetIntersectResult(STRINGLIST_SET val1, STRINGLIST_SET val2);
 
-	STRING_SET GetAlternateResult(string values, string type);
-	// STRING_SET GetAlternateResult(STRING_SET values, string type);
+	STRINGLIST_SET GetAlternateResult(string values, string type);
 	STRING_SET GetAlternateResult(STRINGLIST_SET values, string type);
 	STRINGLIST_SET GetAlternateOutputResult(STRING_SET values, string type);
 

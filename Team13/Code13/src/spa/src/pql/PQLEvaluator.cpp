@@ -25,7 +25,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	// Parse clauses conditions
 	bool has_parsed = true;
 	
-	if (!ParseClauses(query_info, &constraints, &results_map)) {
+	if (!ParseClauses(query_info, &constraints)) {
 		if (DEBUG) {
 			cout << "PQLEvaluator - parsing with clause: failed." << endl;
 		}
@@ -42,6 +42,15 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	}
 
 	if (!has_parsed) {
+		return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
+	}
+
+	// Evaluate constraints
+	if (!EvaluateConstraints(entity_map, constraints, &results_map)) {
+		if (DEBUG) {
+			cout << "PQLEvaluator - Evaluating with clauses: Constraint not met." << endl;
+		}
+
 		return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
 	}
 	
@@ -143,12 +152,12 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			STRINGLIST_SET values = (*tmp_entry).second;
 
 			// Check constraints
-			bool is_dependency_checked = CheckConstraints(&constraints, entity_map, &results_map, *keys, &values);
+			/*bool is_dependency_checked = CheckConstraints(&constraints, entity_map, &results_map, *keys, &values);
 
 			if (!is_dependency_checked) {
 				AddResult(*keys, values, &results_map);
 			}
-			else {
+			else {*/
 				if (values.empty()) {
 					// error
 					if (DEBUG) {
@@ -158,15 +167,17 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 					return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
 				}
 
-				if (IsOutputSynonyms(*keys, output_list)) {
+				// if (IsOutputSynonyms(*keys, output_list)) {
 					AddResult(*keys, values, &results_map);
-				}
-			}			
+					cout << "result " << endl;
+					Print(results_map);
+				// }
+			//}			
 		}
 		
 	}
 
-	if (!is_boolean_output) {
+	if (!is_boolean_output) {	
 		// Get output_list's results from results_map
 		INTEGER_SET retrieved_output_index = INTEGER_SET();
 
@@ -212,7 +223,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 					// Check if output synonym is attribute type
 					STRINGLIST_SET result = STRINGLIST_SET();
 					if (!IsSameEntityType(entity_map.at(synonym), synonym_type)) {
-						result = GetAlternateOutputResult(GetNewResult(output_result, k), synonym_type);
+						result = GetAlternateOutputResult(GetNewResult(output_result, k), entity_map.at(synonym));
 					}
 
 					if (!result.empty()) {
@@ -226,9 +237,9 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 		}
 
 		// Get all output_list's results that are not in results_map
-		// STRINGLIST_STRINGLISTSET_MAP tmp_map = STRINGLIST_STRINGLISTSET_MAP();
 		for (int i = 0; i < output_list.size(); i++) {
 			if (retrieved_output_index.find(i) == retrieved_output_index.end()) {
+				cout << "REACH EXTRACTION " << endl;
 				string synonym = output_list.at(i);
 				string parsed_synonym = ParsingSynonym(synonym);
 				string synonym_type = ParsingSynonymAttribute(synonym);
@@ -243,17 +254,18 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 					value = EvaluateAllCall(entity_map.at(parsed_synonym));
 
 					// Check constraints
-					bool is_dependency_checked = CheckConstraints(&constraints, entity_map, &results_map, key, &value);
-					if (is_dependency_checked && value.empty()) {
+					// bool is_dependency_checked = CheckConstraints(&constraints, entity_map, &results_map, key, &value);
+					if (/*is_dependency_checked && */value.empty()) {
 						// error
 						if (DEBUG) {
-							cout << "PQLEvaluator - Checked constraints: Empty results." << endl;
+							cout << "PQLEvaluator - Extracting independent output synonyms: Empty results." << endl;
 						}
 
 						return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
 					}
 
 					if (!IsSameEntityType(entity_map.at(parsed_synonym), synonym_type)) {
+						cout << "reached converting" << endl;
 						value = ConvertSet(GetAlternateResult(value, entity_map.at(parsed_synonym)));
 					}
 				}
@@ -274,205 +286,13 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 				final_results_map.insert({ new STRING_LIST(key), value });
 			}
 		}
-	}
-
-	// PRINT CHECK WITH 
-	cout << "CHECKING WITH CLAUSE AT THE END" << endl;
-	Print(constraints);
-/*
-	// Check the independent constraints: not captured in clauses / output synonyms
-	STRINGPAIR_SET checked = STRINGPAIR_SET();
-	for (STRING_PAIR* check : constraints) {
-		string lhs_synonym = check->first;
-		string rhs_synonym = check->second;
-
-		string parsed_lhs = ParsingSynonym(lhs_synonym);
-		string parsed_rhs = ParsingSynonym(rhs_synonym);
-
-		string lhs_attr = ParsingSynonymAttribute(lhs_synonym);
-		string rhs_attr = ParsingSynonymAttribute(rhs_synonym);
-
-		if (IsVar(parsed_lhs) && !IsVar(parsed_rhs)) {
-			// Synonym = int/str
-			string lhs_type = entity_map.at(parsed_lhs);
-			STRINGLIST_SET lhs = EvaluateAllCall(lhs_type);
-			STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
-
-			if (!IsSameEntityType(lhs_type, lhs_attr)) {
-				for (STRING_LIST* s : lhs) {
-					STRING_SET v = GetAlternateResult(s->at(0), lhs_type);
-
-					lhs_w_attr.insert({ s->at(0), v });
-
-				}
-			}
-
-			STRING_SET rhs = STRING_SET();
-			IsString(rhs_synonym) ? rhs.insert(ParsingEntRef(rhs_synonym)) : rhs.insert(rhs_synonym);
-
-			if (lhs_w_attr.empty()) {
-				// compare lhs and str/int
-				STRINGLIST_SET val = ConvertSet(GetIntersectResult(rhs, lhs, 0));
-
-				if (val.empty()) {
-					// empty result
-					return SetResult(is_boolean_output, "FALSE", {});
-				}
-				else {
-					checked.insert(check);
-				}
-			}
-			else {
-				// compare lhs attr and str/int
-
-				STRING_SET lhs_val = STRING_SET();
-				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-					STRING_SET v = (*f).second;
-					STRING_SET val = GetIntersectResult(rhs, v);
-					lhs_w_attr.at((*f).first) = val;
-
-					if (!val.empty()) {
-						lhs_val.insert((*f).first);
-					}
-				}
-
-				RemoveIrrelevant(&lhs, ConvertSet(lhs_val), 0);
-
-				if (lhs.empty()) {
-					// empty result
-					return SetResult(is_boolean_output, "FALSE", {});
-				}
-				else {
-					checked.insert(check);
-				}
-			}
-		}
-		else if (IsVar(parsed_lhs) && IsVar(parsed_rhs)) {
-			// synonym=synonym
-
-			string lhs_type = entity_map.at(parsed_lhs);
-			STRINGLIST_SET lhs = EvaluateAllCall(lhs_type);
-			STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
-
-			if (!IsSameEntityType(lhs_type, lhs_attr)) {
-				for (STRING_LIST* s : lhs) {
-					STRING_SET v = GetAlternateResult(s->at(0), lhs_type);
-
-					lhs_w_attr.insert({ s->at(0), v });
-
-				}
-			}
-
-			string rhs_type = entity_map.at(parsed_rhs);
-			STRINGLIST_SET rhs = EvaluateAllCall(rhs_type);
-			STRING_STRINGSET_MAP rhs_w_attr = STRING_STRINGSET_MAP();
-
-			if (!IsSameEntityType(rhs_type, rhs_attr)) {
-				for (STRING_LIST* s : rhs) {
-					STRING_SET v = GetAlternateResult(s->at(0), rhs_type);
-
-					rhs_w_attr.insert({ s->at(0), v });
-
-				}
-			}
-
-			if (lhs_w_attr.empty() && rhs_w_attr.empty()) {
-				// compare lhs and rhs
-				STRINGLIST_SET val = GetIntersectResult(lhs, rhs);
-				if (val.empty()) {
-					return SetResult(is_boolean_output, "FALSE", {});
-				}
-				else {
-					checked.insert(check);
-				}
-			}
-			else if (lhs_w_attr.empty() && !rhs_w_attr.empty()) {
-				// compare lhs and rhs attr
-
-				STRING_SET lhs_val = STRING_SET();
-				STRING_SET rhs_val = STRING_SET();
-				for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
-					STRING_SET v = (*f).second;
-					STRING_SET val = GetIntersectResult(v, lhs, 0);
-					rhs_w_attr.at((*f).first) = val;
-					lhs_val.insert(val.begin(), val.end());
-
-					if (!val.empty()) {
-						rhs_val.insert((*f).first);
-					}
-				}
-
-				if (lhs_val.empty() || rhs_val.empty()) {
-					return SetResult(is_boolean_output, "FALSE", {});
-				}
-				else {
-					checked.insert(check);
-				}
-			}
-			else if (!lhs_w_attr.empty() && rhs_w_attr.empty()) {
-				// compare lhs attr and rhs
-
-				STRING_SET lhs_val = STRING_SET();
-				STRING_SET rhs_val = STRING_SET();
-				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-					STRING_SET v = (*f).second;
-					STRING_SET val = GetIntersectResult(v, rhs, 0);
-					lhs_w_attr.at((*f).first) = val;
-					rhs_val.insert(val.begin(), val.end());
-
-					if (!val.empty()) {
-						lhs_val.insert((*f).first);
-					}
-				}
-
-				if (lhs_val.empty() || rhs_val.empty()) {
-					return SetResult(is_boolean_output, "FALSE", {});
-				}
-				else {
-					checked.insert(check);
-				}
-			}
-			else if (!lhs_w_attr.empty() && !rhs_w_attr.empty()) {
-				// compare lhs attr and rhs attr
-
-				STRING_SET lhs_val = STRING_SET();
-				STRING_SET rhs_val = STRING_SET();
-				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-					for (auto g = rhs_w_attr.cbegin(); g != rhs_w_attr.cend(); g++) {
-						STRING_SET lhs_v = (*f).second;
-						STRING_SET rhs_v = (*g).second;
-
-						STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
-
-						if (!val.empty()) {
-							lhs_val.insert((*f).first);
-							rhs_val.insert((*g).first);
-						}
-					}
-				}
-
-				if (lhs_val.empty() || rhs_val.empty()) {
-					return SetResult(is_boolean_output, "FALSE", {});
-				}
-				else {
-					checked.insert(check);
-				}
-			}
-		}
-	}
-
-	for (STRING_PAIR* s : checked) {
-		constraints.erase(s);
-	}
 	
-	// PRINT CHECK WITH 
-	cout << "CHECKING WITH CLAUSE AT THE END end " << endl;
-	Print(constraints);
-*/
-	if (!is_boolean_output) {
 		// Combine all the expected output results
 		final_result_set = GetCartesianProduct(final_results_map, output_list);
 	}
+
+	cout << "final result set: " << endl;
+	Print(final_result_set);
 
 	/*
 	STRING_LIST general_func = ConvertFunction(*func, entity_map);
@@ -602,7 +422,7 @@ QueryResult PQLEvaluator::SetResult(bool is_boolean_output, string bool_result, 
 	return final_result;
 }
 
-bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints, STRINGLIST_STRINGLISTSET_MAP* results_map) {
+bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints) {
 	if (DEBUG) {
 		cout << "PQLEvaluator - ParseClauses: WITH" << endl;
 	}
@@ -641,47 +461,6 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraint
 					}
 					return false;
 				}
-
-				string parsed_lhs = ParsingSynonym(lhs);
-				string parsed_rhs = ParsingSynonym(rhs);
-
-				STRING_LIST key = *(new STRING_LIST());
-				STRINGLIST_SET value = *(new STRINGLIST_SET());
-
-				// add constraint into result map
-				if (IsVar(lhs) && !IsVar(rhs)) {
-					// synonym=int/string
-					key = { parsed_lhs };
-					if (IsString(rhs)) {
-						value.insert(new STRING_LIST({ ParsingEntRef(rhs) }));
-					}
-					else {
-						value.insert(new STRING_LIST({ rhs }));
-					}
-				}
-				else if (IsVar(lhs) && IsVar(rhs)) {
-					//synonym=synonym
-					key = { parsed_lhs, parsed_rhs };
-					
-					STRINGLIST_SET lhs_value = EvaluateAllCall(query_info.GetEntityMap().at(parsed_lhs));
-					STRINGLIST_SET rhs_value = EvaluateAllCall(query_info.GetEntityMap().at(parsed_rhs));
-					for (STRING_LIST* lhs_s : lhs_value) {
-						for (STRING_LIST* rhs_s : rhs_value) {
-							if (lhs_s->at(0).compare(rhs_s->at(0)) == 0) {
-								STRING_LIST* to_insert = new STRING_LIST();
-								to_insert->push_back(lhs_s->at(0));
-								to_insert->push_back(lhs_s->at(0));
-
-								if (!IsDuplicate(value, *to_insert)) {
-									value.insert(to_insert);
-								}
-							}
-						}
-					}
-				}
-				
-				AddResult(key, value, results_map);
-				
 			}
 		}
 		
@@ -1128,6 +907,158 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param, st
 	return result;
 }
 
+bool PQLEvaluator::EvaluateConstraints(STRING_STRING_MAP entity_map, STRINGPAIR_SET constraints, STRINGLIST_STRINGLISTSET_MAP* results_map) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - EvaluateConstraints" << endl;
+	}
+
+	for (STRING_PAIR* clause : constraints) {
+		string lhs = clause->first;
+		string rhs = clause->second;
+		string parsed_lhs = ParsingSynonym(lhs);
+		string parsed_rhs = ParsingSynonym(rhs);
+		string lhs_attr = ParsingSynonymAttribute(lhs);
+		string rhs_attr = ParsingSynonymAttribute(rhs);
+		string lhs_type = entity_map.at(parsed_lhs);
+		string rhs_type = entity_map.at(parsed_rhs);
+
+		STRING_LIST key = *(new STRING_LIST());
+		STRINGLIST_SET value = *(new STRINGLIST_SET());
+
+		// add constraint into result map
+		if (IsVar(lhs) && !IsVar(rhs)) {
+			// synonym=int/string
+			key = { parsed_lhs };
+
+			string parsed_string = rhs;
+			if (IsString(rhs)) {
+				parsed_string = ParsingEntRef(rhs);
+			}
+
+			if (IsSameEntityType(lhs_type, lhs_attr)) {
+				cout << "reached" << endl;
+				// store directly
+				value = EvaluateAllCall(lhs_type);
+				STRING_SET tmp = STRING_SET({ parsed_string });
+				RemoveIrrelevant(&value, ConvertSet(tmp), 0);
+			}
+			else {
+				// convert 
+				value = GetAlternateResult(parsed_string, lhs_type);
+			}
+		}
+		else if (IsVar(lhs) && IsVar(rhs)) {
+			//synonym=synonym
+			key = { parsed_lhs, parsed_rhs };
+
+			STRINGLIST_SET lhs_value = EvaluateAllCall(lhs_type);
+			STRINGLIST_SET rhs_value = EvaluateAllCall(rhs_type);
+			STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
+			STRING_STRINGSET_MAP rhs_w_attr = STRING_STRINGSET_MAP();
+
+			if (!IsSameEntityType(entity_map.at(parsed_lhs), lhs_attr)) {
+				for (STRING_LIST* s : lhs_value) {
+					STRING_SET v = GetAlternateResult(lhs_value, lhs_type);
+
+					lhs_w_attr.insert({ s->at(0), v });
+				}
+			}
+
+			if (!IsSameEntityType(entity_map.at(parsed_rhs), rhs_attr)) {
+				for (STRING_LIST* s : rhs_value) {
+					STRING_SET v = GetAlternateResult(lhs_value, rhs_type);
+
+					rhs_w_attr.insert({ s->at(0), v });
+				}
+			}
+
+			if (lhs_w_attr.empty() && rhs_w_attr.empty()) {
+				// comparing lhs and rhs
+				for (STRING_LIST* lhs_s : lhs_value) {
+					for (STRING_LIST* rhs_s : rhs_value) {
+						if (lhs_s->at(0).compare(rhs_s->at(0)) == 0) {
+							STRING_LIST* to_insert = new STRING_LIST();
+							to_insert->push_back(lhs_s->at(0));
+							to_insert->push_back(lhs_s->at(0));
+
+							if (!IsDuplicate(value, *to_insert)) {
+								value.insert(to_insert);
+							}
+						}
+					}
+				}
+			}
+			else if (!lhs_w_attr.empty() && !rhs_w_attr.empty()) {
+				// compare lhs_w_attr and rhs_w_attr
+				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
+					for (auto g = rhs_w_attr.cbegin(); g != rhs_w_attr.cend(); g++) {
+						string lhs_key = (*f).first;
+						string rhs_key = (*g).first;
+						STRING_SET lhs_v = (*f).second;
+						STRING_SET rhs_v = (*g).second;
+
+						STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
+
+						if (!val.empty()) {
+							STRING_LIST* to_insert = new STRING_LIST();
+							to_insert->push_back(lhs_key);
+							to_insert->push_back(rhs_key);
+
+							if (!IsDuplicate(value, *to_insert)) {
+								value.insert(to_insert);
+							}
+						}
+					}
+				}
+			}
+			else if (!lhs_w_attr.empty() && rhs_w_attr.empty()) {
+				// comparing lhs_w_attr and rhs
+				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
+					string key = (*f).first;
+					STRING_SET v = (*f).second;
+					STRING_SET val = GetIntersectResult(v, rhs_value, 0);
+
+					for (string s : val) {
+						STRING_LIST* to_insert = new STRING_LIST();
+						to_insert->push_back(key);
+						to_insert->push_back(s);
+
+						if (!IsDuplicate(value, *to_insert)) {
+							value.insert(to_insert);
+						}
+					}	
+				}
+			}
+			else if (lhs_w_attr.empty() && !rhs_w_attr.empty()) {
+				// comparing lhs and rhs_w_attr
+				for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
+					string key = (*f).first;
+					STRING_SET v = (*f).second;
+					STRING_SET val = GetIntersectResult(v, lhs_value, 0);
+
+					for (string s : val) {
+						STRING_LIST* to_insert = new STRING_LIST();
+						to_insert->push_back(s);
+						to_insert->push_back(key);
+
+						if (!IsDuplicate(value, *to_insert)) {
+							value.insert(to_insert);
+						}
+					}
+				}
+			}			
+		}
+
+		if (value.empty()) {
+			return false;
+		}
+
+		AddResult(key, value, results_map);
+	}
+	
+	return true;
+}
+
 STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) {
 	PKB pkb;
 	RelationManager rm = pkb.GetRelationManager();
@@ -1176,10 +1107,10 @@ STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) 
 		result = ConvertSet(cfgm.GetNextStar(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		// result = ConvertSet(cfgm.GetAffects(ParsingStmtRef(param)));
+		result = ConvertSet(pkb.GetAffects(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		// result = ConvertSet(cfgm.GetAffectsStar(ParsingStmtRef(param)));
+		// result = ConvertSet(pkb.GetAffectsStar(ParsingStmtRef(param)));
 	}
 	else {
 		// error
@@ -1420,6 +1351,17 @@ STRINGLIST_SET PQLEvaluator::EvaluateAllCall(string output_var_type) {
 	return result;
 }
 
+STRING_SET PQLEvaluator::ConvertSet(STRINGLIST_SET result_set) {
+	STRING_SET final_result = *(new STRING_SET());
+
+	if (!result_set.empty()) {
+		for (STRING_LIST* k : result_set) {
+			final_result.insert(k->at(0));
+		}
+	}
+	return final_result;
+}
+
 STRINGLIST_SET PQLEvaluator::ConvertSet(STRING_SET result_set) {
 	STRINGLIST_SET final_result = *(new STRINGLIST_SET());
 
@@ -1541,7 +1483,7 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_PROC_PAIR_LIST result_set) {
 
 	return final_result;
 }
-
+/*
 bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_MAP entity_map, 
 	STRINGLIST_STRINGLISTSET_MAP* results_map, STRING_LIST key, STRINGLIST_SET* value) {
 	if (DEBUG) {
@@ -2291,8 +2233,7 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 	
 	return is_checked;
 }
-
-
+*/
 STRING_SET PQLEvaluator::GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2, int pos_to_check) {
 	STRING_SET result = *(new STRING_SET());
 
@@ -2332,66 +2273,65 @@ STRINGLIST_SET PQLEvaluator::GetIntersectResult(STRINGLIST_SET val1, STRINGLIST_
 	return result;
 }
 
-STRING_SET PQLEvaluator::GetAlternateResult(string values, string type) {
+STRINGLIST_SET PQLEvaluator::GetAlternateResult(string values, string type) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetAlternateResult" << endl;
+		cout << "value: " << values << " type: " << type << endl;
+	}
+
 	RelationManager rm = PKB().GetRelationManager();
 	DataManager dm = PKB().GetDataManager();
 
-	STRING_SET results = *(new STRING_SET());
+	STRINGLIST_SET results = *(new STRINGLIST_SET());
 
 	if (type.compare(TYPE_STMT_PRINT) == 0) {
-		results = rm.GetStmtUses(ParsingStmtRef(values));
+		if (IsInteger(values)) {
+			results = ConvertSet(rm.GetStmtUses(ParsingStmtRef(values)));
+			RemoveIrrelevant(&results, EvaluateAllCall(TYPE_VAR), 0);
+		}
+		else {
+			results = ConvertSet(rm.GetInverseStmtUses(ParsingEntRef(values)));
+			RemoveIrrelevant(&results, EvaluateAllCall(TYPE_STMT_PRINT), 0);
+		}
+
 	}
 	else if (type.compare(TYPE_STMT_READ) == 0) {
-		results = rm.GetStmtModifies(ParsingStmtRef(values));
+		if (IsInteger(values)) {
+			results = ConvertSet(rm.GetStmtModifies(ParsingStmtRef(values)));
+			RemoveIrrelevant(&results, EvaluateAllCall(TYPE_VAR), 0);
+		}
+		else {
+			results = ConvertSet(rm.GetInverseStmtModifies(ParsingEntRef(values)));
+			RemoveIrrelevant(&results, EvaluateAllCall(TYPE_STMT_READ), 0);
+		}
 	}
 	else {
 		// calls
-		string new_value = dm.GetCalledByStmt(ParsingStmtRef(values));
-		if (new_value.compare("") != 0) {
-			results.insert(new_value);
-		}
-	}
-
-	return results;
-}
-/*
-STRING_SET PQLEvaluator::GetAlternateResult(STRING_SET values, string type) {
-	RelationManager rm = PKB().GetRelationManager();
-	STRING_SET results = *(new STRING_SET());
-
-	for (string v : values) {
-		STRING_SET new_values = *(new STRING_SET());
-		if (type.compare(TYPE_STMT_PRINT) == 0) {
-			new_values = rm.GetStmtUses(ParsingStmtRef(v->at(0)));
-		}
-		else if (type.compare(TYPE_STMT_READ) == 0) {
-			new_values = rm.GetStmtModifies(ParsingStmtRef(v->at(0)));
-		}
-		else {
-			// calls
-			string new_value = PKB().GetDataManager().GetCalledByStmt(ParsingStmtRef(v->at(0)));
+		if (IsInteger(values)) {
+			string new_value = dm.GetCalledByStmt(ParsingStmtRef(values));
 			if (new_value.compare("") != 0) {
-				new_values.insert(new_value);
+				results.insert(new STRING_LIST({ new_value }));
 			}
 		}
-
-		if (new_values.empty()) {
-			results.clear();
-			break;
+		else {
+			cout << "NOT IMPLEMENTED YET FOR ALT ATTRIBUTE" << endl;
+			// results = GetNewResult(ConvertSet(rm.GetInverseCalledByStmt(ParsingEntRef(values))), 0);
 		}
-
-		results.insert(new_values.begin(), new_values.end());
+		
 	}
 
 	return results;
 }
-*/
+
 STRING_SET PQLEvaluator::GetAlternateResult(STRINGLIST_SET values, string type) {
 	RelationManager rm = PKB().GetRelationManager();
 	STRING_SET results = *(new STRING_SET());
 
 	for (STRING_LIST* v : values) {
-		STRING_SET new_values = *(new STRING_SET());
+		
+
+		STRING_SET new_values = ConvertSet(GetAlternateResult(v->at(0), type));
+		/*
 		if (type.compare(TYPE_STMT_PRINT) == 0) {
 			new_values = rm.GetStmtUses(ParsingStmtRef(v->at(0)));
 		}
@@ -2410,7 +2350,7 @@ STRING_SET PQLEvaluator::GetAlternateResult(STRINGLIST_SET values, string type) 
 			results.clear();
 			break;
 		}
-
+		*/
 		results.insert(new_values.begin(), new_values.end());
 	}
 
@@ -2418,13 +2358,38 @@ STRING_SET PQLEvaluator::GetAlternateResult(STRINGLIST_SET values, string type) 
 }
 
 STRINGLIST_SET PQLEvaluator::GetAlternateOutputResult(STRING_SET values, string type) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetAlternateOutputResult" << endl;
+		cout << "values: ";
+		Print(values);
+		cout << "type: " << type << endl;
+	}
 	RelationManager rm = PKB().GetRelationManager();
 	STRINGLIST_SET results = *(new STRINGLIST_SET());
 
-	for (string v : values) {
-		STRING_SET new_values = *(new STRING_SET());
-		if (type.compare(TYPE_STMT_READ) == 0 || type.compare(TYPE_STMT_PRINT) == 0) {
-			new_values = rm.GetStmtUses(ParsingStmtRef(v));
+	for (string v : values) {	
+		STRING_SET new_values = ConvertSet(GetAlternateResult(v, type));
+		/*
+		if (type.compare(TYPE_STMT_PRINT) == 0) {
+			if (IsInteger(v)) {
+				results = ConvertSet(rm.GetStmtUses(ParsingStmtRef(v)));
+				RemoveIrrelevant(&results, EvaluateAllCall(TYPE_VAR), 0);
+			}
+			else {
+				results = ConvertSet(GetNewResult(ConvertSet(rm.GetInverseStmtUses(ParsingEntRef(v))), 0));
+				RemoveIrrelevant(&results, EvaluateAllCall(TYPE_STMT_PRINT), 0);
+			}
+		}
+		else if (type.compare(TYPE_STMT_READ) == 0) {
+			if (IsInteger(v)) {
+				new_values = rm.GetStmtModifies(ParsingStmtRef(v));
+				RemoveIrrelevant(&new_values, EvaluateAllCall(TYPE_VAR));
+				Print(new_values);
+			}
+			else {
+				new_values = ConvertSet(ConvertSet(rm.GetInverseStmtModifies(ParsingEntRef(v))));
+				RemoveIrrelevant(&new_values, EvaluateAllCall(TYPE_STMT_READ));
+			}
 		}
 		else {
 			// calls
@@ -2438,6 +2403,7 @@ STRINGLIST_SET PQLEvaluator::GetAlternateOutputResult(STRING_SET values, string 
 			results.clear();
 			break;
 		}
+		*/
 
 		// Combine the values
 		for (string s : new_values) {
@@ -2449,6 +2415,7 @@ STRINGLIST_SET PQLEvaluator::GetAlternateOutputResult(STRING_SET values, string 
 				results.insert(new STRING_LIST(r));
 			}
 		}
+		
 	}
 
 	return results;
@@ -2460,6 +2427,32 @@ bool PQLEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, i
 	auto it = value->begin();
 	while (it != value->end()) {
 		string v = (*it)->at(pos_to_check);
+		bool has_value = false;
+		for (STRING_LIST* tmp_entry : tmp) {
+			string check = tmp_entry->at(0);
+			if (check == v) {
+				has_value = true;
+			}
+		}
+
+		if (has_value) {
+			it++;
+		}
+		else {
+			it = value->erase(it);
+			is_changed = true;
+		}
+	}
+
+	return is_changed;
+}
+
+bool PQLEvaluator::RemoveIrrelevant(STRING_SET* value, STRINGLIST_SET tmp) {
+	bool is_changed = false;
+
+	auto it = value->begin();
+	while (it != value->end()) {
+		string v = (*it);
 		bool has_value = false;
 		for (STRING_LIST* tmp_entry : tmp) {
 			string check = tmp_entry->at(0);
