@@ -1132,6 +1132,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) 
 	PKB pkb;
 	RelationManager rm = pkb.GetRelationManager();
 	CFGManager cfgm = pkb.GetCFGManager();
+	PKB::AffectsManager am = pkb.GetAffectsManager();
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 
 	if (DEBUG) {
@@ -1176,7 +1177,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) 
 		result = ConvertSet(cfgm.GetNextStar(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		result = ConvertSet(pkb.GetAffects(ParsingStmtRef(param)));
+		result = ConvertSet(am.GetAffects(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
 		// result = ConvertSet(pkb.GetAffectsStar(ParsingStmtRef(param)));
@@ -1200,6 +1201,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateInverseOneSynonymSet(string f_call, string 
 	PKB pkb = PKB();
 	RelationManager rm = pkb.GetRelationManager();
 	CFGManager cfgm = pkb.GetCFGManager();
+	PKB::AffectsManager am = pkb.GetAffectsManager();
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 
 	if (DEBUG) {
@@ -1244,7 +1246,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateInverseOneSynonymSet(string f_call, string 
 		result = ConvertSet(cfgm.GetInverseNextStar(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		// result = ConvertSet(cfgm.GetInverseAffects(ParsingStmtRef(param)));
+		result = ConvertSet(am.GetInverseAffects(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
 		// result = ConvertSet(cfgm.GetInverseAffectsStar(ParsingStmtRef(param)));
