@@ -70,11 +70,14 @@ STMT_IDX_SET PKB::GetInverseAffects(STMT_IDX a) {
         return *inverse_affects_table_.at(a);
     }
     auto rhs_vars = relation_manager_.GetStmtUses(a);
-    auto visited = new STMT_IDX_SET();
+    auto visited = new INVERSE_AFFECTS_VISITED_SET();
     auto result = new STMT_IDX_SET();
     auto neighbors = cfg_manager_.GetInverseNext(a);
-    visited->insert(a);
     for (auto rhs_var: rhs_vars) {
+        if (visited->find(rhs_var) == visited->end()) {
+            visited->at(rhs_var) = new STMT_IDX_SET();
+        }
+        visited->at(rhs_var)->insert(a);
         for (auto neighbor: neighbors) {
             RecursiveGetInverseAffects(neighbor, rhs_var, *visited, *result);
         }
@@ -118,12 +121,12 @@ void PKB::RecursiveGetAffects(STMT_IDX node, VAR_NAME lhs_var, STMT_IDX_SET& vis
         RecursiveGetAffects(neighbor, lhs_var, visited, result);
     }
 }
-void PKB::RecursiveGetInverseAffects(STMT_IDX node, VAR_NAME rhs_var, STMT_IDX_SET& visited, STMT_IDX_SET& result) {
-    if (visited.find(node) != visited.end()) {
+void PKB::RecursiveGetInverseAffects(STMT_IDX node, VAR_NAME rhs_var, INVERSE_AFFECTS_VISITED_SET& visited, STMT_IDX_SET& result) {
+    if (visited.at(rhs_var)->find(node) != visited.at(rhs_var)->end()) {
         return;
     }
     //mark as visited
-    visited.insert(node);
+    visited.at(rhs_var)->insert(node);
     //If the node is an assign statement and it modifies the rhs_var, then node is affected by this statement.
     if (data_manager_.IsAssignStmt(node) && relation_manager_.IsStmtModifies(node, rhs_var)) {
         result.insert(node);
@@ -141,6 +144,6 @@ void PKB::RecursiveGetInverseAffects(STMT_IDX node, VAR_NAME rhs_var, STMT_IDX_S
     }
     auto neighbors = cfg_manager_.GetInverseNext(node);
     for (auto neighbor: neighbors) {
-        RecursiveGetAffects(neighbor, rhs_var, visited, result);
+        RecursiveGetInverseAffects(neighbor, rhs_var, visited, result);
     }
 }
