@@ -4,17 +4,12 @@
 #include "pkb/PKB.h"
 
 QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
-		// Final result to be returned
+	// Final result to be returned
 	STRINGLIST_SET final_result_set = *(new STRINGLIST_SET());
 
 	// Expected output list
 	STRING_LIST output_list = query_info.GetOutputList();
-	bool is_boolean_output = IsBooleanOutput(output_list);
-
-	// Check if QueryInfo is valid
-	if (!query_info.IsQueryInfoValid()) {
-		return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
-	}
+	bool is_boolean_output = query_info.IsBooleanOutput();
 
 	// Unevaluated clauses & constraints
 	STRINGSET_STRINGLISTSET_MAP synonyms_map = STRINGSET_STRINGLISTSET_MAP();
@@ -30,7 +25,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	// Parse clauses conditions
 	bool has_parsed = true;
 	
-	if (!ParseClauses(query_info, &constraints)) {
+	if (!ParseClauses(query_info, &constraints, &results_map)) {
 		if (DEBUG) {
 			cout << "PQLEvaluator - parsing with clause: failed." << endl;
 		}
@@ -174,6 +169,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	if (!is_boolean_output) {
 		// Get output_list's results from results_map
 		INTEGER_SET retrieved_output_index = INTEGER_SET();
+
 		for (auto result_entry = results_map.cbegin(); result_entry != results_map.cend(); result_entry++) {
 			STRING_LIST* result_key = (*result_entry).first;
 			STRING_LIST* key = new STRING_LIST();
@@ -280,24 +276,13 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 		}
 	}
 
-	// NOT SURE IF I NEED TO RUN CONSTRAINT CHECK AGAIN FOR FINAL RESULTS MAP
-	/*
-	for (auto result_entry = final_results_map.cbegin(); result_entry != final_results_map.cend(); result_entry++) {
-		STRINGLIST_SET values = (*result_entry).second;
-		STRING_LIST* key = (*result_entry).first;
-		CheckConstraints(&constraints, entity_map, &final_results_map, *key, &values);
-
-		if (values.empty()) {
-			return SetResult(is_boolean_output, "FALSE", {});
-		}
-		else {
-			final_results_map.at(key) = values;
-		}
-	}
-	*/
-
-	/*for (STRING_PAIR* check : constraints) {
-		// Constraints not captured in clauses / output synonyms
+	// PRINT CHECK WITH 
+	cout << "CHECKING WITH CLAUSE AT THE END" << endl;
+	Print(constraints);
+/*
+	// Check the independent constraints: not captured in clauses / output synonyms
+	STRINGPAIR_SET checked = STRINGPAIR_SET();
+	for (STRING_PAIR* check : constraints) {
 		string lhs_synonym = check->first;
 		string rhs_synonym = check->second;
 
@@ -331,7 +316,10 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 
 				if (val.empty()) {
 					// empty result
-					SetResult(is_boolean_output, "FALSE", {});
+					return SetResult(is_boolean_output, "FALSE", {});
+				}
+				else {
+					checked.insert(check);
 				}
 			}
 			else {
@@ -352,7 +340,10 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 
 				if (lhs.empty()) {
 					// empty result
-					SetResult(is_boolean_output, "FALSE", {});
+					return SetResult(is_boolean_output, "FALSE", {});
+				}
+				else {
+					checked.insert(check);
 				}
 			}
 		}
@@ -391,6 +382,9 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 				if (val.empty()) {
 					return SetResult(is_boolean_output, "FALSE", {});
 				}
+				else {
+					checked.insert(check);
+				}
 			}
 			else if (lhs_w_attr.empty() && !rhs_w_attr.empty()) {
 				// compare lhs and rhs attr
@@ -411,6 +405,9 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 				if (lhs_val.empty() || rhs_val.empty()) {
 					return SetResult(is_boolean_output, "FALSE", {});
 				}
+				else {
+					checked.insert(check);
+				}
 			}
 			else if (!lhs_w_attr.empty() && rhs_w_attr.empty()) {
 				// compare lhs attr and rhs
@@ -430,6 +427,9 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 
 				if (lhs_val.empty() || rhs_val.empty()) {
 					return SetResult(is_boolean_output, "FALSE", {});
+				}
+				else {
+					checked.insert(check);
 				}
 			}
 			else if (!lhs_w_attr.empty() && !rhs_w_attr.empty()) {
@@ -454,10 +454,21 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 				if (lhs_val.empty() || rhs_val.empty()) {
 					return SetResult(is_boolean_output, "FALSE", {});
 				}
+				else {
+					checked.insert(check);
+				}
 			}
 		}
-	}*/
+	}
+
+	for (STRING_PAIR* s : checked) {
+		constraints.erase(s);
+	}
 	
+	// PRINT CHECK WITH 
+	cout << "CHECKING WITH CLAUSE AT THE END end " << endl;
+	Print(constraints);
+*/
 	if (!is_boolean_output) {
 		// Combine all the expected output results
 		final_result_set = GetCartesianProduct(final_results_map, output_list);
@@ -479,6 +490,13 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	// related_entities[param2]++;
 	*/
 	return SetResult(is_boolean_output, "TRUE", final_result_set);
+}
+
+void PQLEvaluator::Print(STRINGPAIR_SET to_print) {
+	for (STRING_PAIR* p : to_print) {
+		cout << "<" << p->first << "=" << p->second << "> ";
+	}
+	cout << endl;
 }
 
 void PQLEvaluator::Print(STRINGLIST_STRINGLISTSET_MAP to_print) {
@@ -503,6 +521,7 @@ void PQLEvaluator::Print(STRING_SET to_print) {
 	for (auto f = to_print.cbegin(); f != to_print.cend(); f++) {
 		cout << (*f) << " ";
 	}
+	cout << endl;
 }
 
 void PQLEvaluator::Print(STRING_LIST to_print) {
@@ -583,7 +602,7 @@ QueryResult PQLEvaluator::SetResult(bool is_boolean_output, string bool_result, 
 	return final_result;
 }
 
-bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints) {
+bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints, STRINGLIST_STRINGLISTSET_MAP* results_map) {
 	if (DEBUG) {
 		cout << "PQLEvaluator - ParseClauses: WITH" << endl;
 	}
@@ -622,6 +641,47 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraint
 					}
 					return false;
 				}
+
+				string parsed_lhs = ParsingSynonym(lhs);
+				string parsed_rhs = ParsingSynonym(rhs);
+
+				STRING_LIST key = *(new STRING_LIST());
+				STRINGLIST_SET value = *(new STRINGLIST_SET());
+
+				// add constraint into result map
+				if (IsVar(lhs) && !IsVar(rhs)) {
+					// synonym=int/string
+					key = { parsed_lhs };
+					if (IsString(rhs)) {
+						value.insert(new STRING_LIST({ ParsingEntRef(rhs) }));
+					}
+					else {
+						value.insert(new STRING_LIST({ rhs }));
+					}
+				}
+				else if (IsVar(lhs) && IsVar(rhs)) {
+					//synonym=synonym
+					key = { parsed_lhs, parsed_rhs };
+					
+					STRINGLIST_SET lhs_value = EvaluateAllCall(query_info.GetEntityMap().at(parsed_lhs));
+					STRINGLIST_SET rhs_value = EvaluateAllCall(query_info.GetEntityMap().at(parsed_rhs));
+					for (STRING_LIST* lhs_s : lhs_value) {
+						for (STRING_LIST* rhs_s : rhs_value) {
+							if (lhs_s->at(0).compare(rhs_s->at(0)) == 0) {
+								STRING_LIST* to_insert = new STRING_LIST();
+								to_insert->push_back(lhs_s->at(0));
+								to_insert->push_back(lhs_s->at(0));
+
+								if (!IsDuplicate(value, *to_insert)) {
+									value.insert(to_insert);
+								}
+							}
+						}
+					}
+				}
+				
+				AddResult(key, value, results_map);
+				
 			}
 		}
 		
@@ -925,10 +985,10 @@ bool PQLEvaluator::EvaluateNoSynonymSet(string f_call, string param1, string par
 		return cfgm.IsNextStar(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		//return rm.IsAffects(ParsingStmtRef(param1), ParsingStmtRef(param2));
+		// return rm.IsAffects(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		//return rm.IsAffectsStar(ParsingStmtRef(param1), ParsingStmtRef(param2));
+		// return rm.IsAffectsStar(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else {
 		// error
@@ -951,19 +1011,13 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param1, s
 	}
 
 	if (f_call.compare(TYPE_COND_PATTERN_P) == 0) {
-		if (type.compare(TYPE_STMT_IF) == 0) {
-			// result = ConvertSet(pm.GetIfWithSubPattern(ParsingEntRef(param1), ParsingEntRef(param2)));
-		}
-		else if (type.compare(TYPE_STMT_WHILE) == 0) {
-			// result = ConvertSet(pm.GetWhileWithSubPattern(ParsingEntRef(param1), ParsingEntRef(param2)));
-		}
-		else if (type.compare(TYPE_STMT_ASSIGN) == 0) {
+		if (type.compare(TYPE_STMT_ASSIGN) == 0) {
 			result = ConvertSet(pm.GetAssignWithSubPattern(ParsingEntRef(param1), ParsingEntRef(param2)));
 		}
 		else {
 			// error
 			if (DEBUG) {
-				cout << "PQLEvaluator - EvaluateAssignPatternCall: No such pattern type." << endl;
+				cout << "PQLEvaluator - EvaluatePatternCall: No such pattern type." << endl;
 			}
 
 			return {};
@@ -971,10 +1025,10 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param1, s
 	}
 	else if (f_call.compare(TYPE_COND_PATTERN_F) == 0) {
 		if (type.compare(TYPE_STMT_IF) == 0) {
-			// result = ConvertSet(pm.GetIfWithFullPattern(ParsingEntRef(param1), ParsingEntRef(param2)));
+			result = ConvertSet(pm.GetIfWithPattern(ParsingEntRef(param1)));
 		}
 		else if (type.compare(TYPE_STMT_WHILE) == 0) {
-			// result = ConvertSet(pm.GetWhileWithFullPattern(ParsingEntRef(param1), ParsingEntRef(param2)));
+			result = ConvertSet(pm.GetWhileWithPattern(ParsingEntRef(param1)));
 		}
 		else if (type.compare(TYPE_STMT_ASSIGN) == 0) {
 			result = ConvertSet(pm.GetAssignWithFullPattern(ParsingEntRef(param1), ParsingEntRef(param2)));
@@ -1009,7 +1063,7 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param, st
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 
 	if (DEBUG) {
-		cout << "PQLEvaluator - EvaluateAssignPatternCall (1 param to pass)" << endl;
+		cout << "PQLEvaluator - EvaluatePatternCall (1 param to pass)" << endl;
 		cout << "fcall: " << f_call << "; param: " << param << "; type: " << type << endl;
 	}
 
@@ -1027,19 +1081,13 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param, st
 	}
 
 	if (f_call.compare(TYPE_COND_PATTERN_P) == 0) {
-		if (type.compare(TYPE_STMT_IF) == 0) {
-			// result = ConvertSet(pm.GetIfStmtVarPairWithSubPattern("", ParsingEntRef(param2)));
-		}
-		else if (type.compare(TYPE_STMT_WHILE) == 0) {
-			// result = ConvertSet(pm.GetWhileStmtVarPairWithSubPattern("", ParsingEntRef(param2)));
-		}
-		else if (type.compare(TYPE_STMT_ASSIGN) == 0) {
+		if (type.compare(TYPE_STMT_ASSIGN) == 0) {
 			result = ConvertSet(pm.GetAssignStmtVarPairWithSubPattern("", ParsingEntRef(param)));
 		}
 		else {
 			// error 
 			if (DEBUG) {
-				cout << "PQLEvaluator - EvaluateAssignPatternCall: No such pattern type." << endl;
+				cout << "PQLEvaluator - EvaluatePatternCall: No such pattern type." << endl;
 			}
 
 			return {};
@@ -1047,10 +1095,11 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param, st
 	}
 	else if (f_call.compare(TYPE_COND_PATTERN_F) == 0) {
 		if (type.compare(TYPE_STMT_IF) == 0) {
-			// result = ConvertSet(pm.GetIfStmtVarPairWithFullPattern("", ParsingEntRef(param2)));
+			result = ConvertSet(pm.GetIfStmtVarPairWithPattern(""));
 		}
 		else if (type.compare(TYPE_STMT_WHILE) == 0) {
-			// result = ConvertSet(pm.GetWhileStmtVarPairWithFullPattern("", ParsingEntRef(param2)));
+			cout << "reached" << endl;
+			result = ConvertSet(pm.GetWhileStmtVarPairWithPattern(""));
 		}
 		else if (type.compare(TYPE_STMT_ASSIGN) == 0) {
 			result = ConvertSet(pm.GetAssignStmtVarPairWithFullPattern("", ParsingEntRef(param)));
@@ -1058,7 +1107,7 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param, st
 		else {
 			// error 
 			if (DEBUG) {
-				cout << "PQLEvaluator - EvaluateAssignPatternCall: No such pattern type." << endl;
+				cout << "PQLEvaluator - EvaluatePatternCall: No such pattern type." << endl;
 			}
 
 			return {};
@@ -1067,14 +1116,14 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param, st
 	else {
 		// error
 		if (DEBUG) {
-			cout << "PQLEvaluator - EvaluateAssignPatternCall: No such pattern call." << endl;
+			cout << "PQLEvaluator - EvaluatePatternCall: No such pattern call." << endl;
 		}
 
 		return {};
 	}
 
 	if (DEBUG) {
-		cout << "PQLEvaluator - EvaluateAssignPatternCall: Result clause's size = " << result.size() << endl;
+		cout << "PQLEvaluator - EvaluatePatternCall: Result clause's size = " << result.size() << endl;
 	}
 	return result;
 }
@@ -1130,7 +1179,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) 
 		result = ConvertSet(pkb.GetAffects(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		// result = rm.GetAffectsStar(ParsingStmtRef(param));
+		// result = ConvertSet(pkb.GetAffectsStar(ParsingStmtRef(param)));
 	}
 	else {
 		// error
@@ -1195,10 +1244,10 @@ STRINGLIST_SET PQLEvaluator::EvaluateInverseOneSynonymSet(string f_call, string 
 		result = ConvertSet(cfgm.GetInverseNextStar(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		// result = rm.GetInverseAffects(ParsingStmtRef(param));
+		// result = ConvertSet(cfgm.GetInverseAffects(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		// result = rm.GetInverseAffectsStar(ParsingStmtRef(param));
+		// result = ConvertSet(cfgm.GetInverseAffectsStar(ParsingStmtRef(param)));
 	}
 	else {
 		// error
@@ -1298,10 +1347,10 @@ STRINGLIST_SET PQLEvaluator::EvaluateTwoSynonymSet(string f_call) {
 		result = ConvertSet(cfgm.GetAllNextStar());
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		// result = ConvertSet(rm.GetAllAffects());
+		result = ConvertSet(cfgm.GetAllAffects());
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		// result = ConvertSet(rm.GetAllAffectsStar());
+		result = ConvertSet(cfgm.GetAllAffectsStar());
 	}
 	else {
 		// error
@@ -1524,15 +1573,13 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 			}
 		}
 
-		STRINGLIST_SET lhs_values = STRINGLIST_SET();
-		STRINGLIST_SET rhs_values = STRINGLIST_SET();
-
 		if (key_with_constraint.first == -1 && key_with_constraint.second == -1) {
 			// not applicable constraint
 			continue;
 		}
 		else if (key_with_constraint.first != -1 && key_with_constraint.second == -1) {
 			// LHS = synonym, RHS = int/str/synonym@result
+			cout << "REACHED key_with_constraint.first != -1 && key_with_constraint.second == -1" << endl;
 
 			STRING_SET lhs = GetNewResult(*value, key_with_constraint.first);
 			STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
@@ -1593,6 +1640,18 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 					if (lhs_w_attr.empty() && rhs_w_attr.empty()) {
 						// compare lhs and rhs
 						STRING_SET val = GetIntersectResult(lhs, rhs, 0);
+
+						if (DEBUG) {
+							cout << "LHS VALUE: " << endl;
+							Print(lhs);
+
+							cout << "RHS VALUE: " << endl;
+							Print(rhs);
+
+							cout << "INTERSECTED VALUE: " << endl;
+							Print(val);
+						}
+
 						RemoveIrrelevant(value, ConvertSet(val), key_with_constraint.first);
 					}
 					else if (lhs_w_attr.empty() && !rhs_w_attr.empty()) {
@@ -1601,8 +1660,21 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 						STRING_SET lhs_val = STRING_SET();
 						STRING_SET rhs_val = STRING_SET();
 						for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
+
 							STRING_SET v = (*f).second;
 							STRING_SET val = GetIntersectResult(v, lhs);
+
+							if (DEBUG) {
+								cout << "LHS VALUE: " << endl;
+								Print(lhs);
+
+								cout << "RHS VALUE: " << endl;
+								Print(v);
+
+								cout << "INTERSECTED VALUE: " << endl;
+								Print(val);
+							}
+
 							rhs_w_attr.at((*f).first) = val;
 							lhs_val.insert(val.begin(), val.end());
 
@@ -1621,6 +1693,18 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
 							STRING_SET v = (*f).second;
 							STRING_SET val = GetIntersectResult(v, rhs, 0);
+
+							if (DEBUG) {
+								cout << "LHS VALUE: " << endl;
+								Print(v);
+
+								cout << "RHS VALUE: " << endl;
+								Print(rhs);
+
+								cout << "INTERSECTED VALUE: " << endl;
+								Print(val);
+							}
+
 							lhs_w_attr.at((*f).first) = val;
 							rhs_val.insert(val.begin(), val.end());
 
@@ -1642,6 +1726,17 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 								STRING_SET rhs_v = (*g).second;
 
 								STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
+
+								if (DEBUG) {
+									cout << "LHS VALUE: " << endl;
+									Print(lhs_v);
+
+									cout << "RHS VALUE: " << endl;
+									Print(rhs_v);
+
+									cout << "INTERSECTED VALUE: " << endl;
+									Print(val);
+								}
 
 								if (!val.empty()) {
 									lhs_val.insert((*f).first);
@@ -1680,6 +1775,18 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 						for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
 							STRING_SET v = (*f).second;
 							STRING_SET val = GetIntersectResult(lhs, v);
+
+							if (DEBUG) {
+								cout << "LHS VALUE: " << endl;
+								Print(lhs);
+
+								cout << "RHS VALUE: " << endl;
+								Print(v);
+
+								cout << "INTERSECTED VALUE: " << endl;
+								Print(val);
+							}
+
 							rhs_w_attr.at((*f).first) = val;
 							lhs_val.insert(val.begin(), val.end());
 
@@ -1699,6 +1806,18 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
 							STRING_SET v = (*f).second;
 							STRING_SET val = GetIntersectResult(rhs, v);
+
+							if (DEBUG) {
+								cout << "LHS VALUE: " << endl;
+								Print(rhs);
+
+								cout << "RHS VALUE: " << endl;
+								Print(v);
+
+								cout << "INTERSECTED VALUE: " << endl;
+								Print(val);
+							}
+
 							lhs_w_attr.at((*f).first) = val;
 							rhs_val.insert(val.begin(), val.end());
 
@@ -1722,6 +1841,17 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 
 								STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
 
+								if (DEBUG) {
+									cout << "LHS VALUE: " << endl;
+									Print(lhs_v);
+
+									cout << "RHS VALUE: " << endl;
+									Print(rhs_v);
+
+									cout << "INTERSECTED VALUE: " << endl;
+									Print(val);
+								}
+
 								if (!val.empty()) {
 									lhs_val.insert((*f).first);
 									rhs_val.insert((*g).first);
@@ -1739,6 +1869,8 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 		else if (key_with_constraint.first == -1 && key_with_constraint.second != -1) {
 			// LHS = int/str/synonym@result, RHS = synonym
 
+			cout << "REACHED key_with_constraint.first == -1 && key_with_constraint.second != -1" << endl;
+
 			STRING_SET rhs = GetNewResult(*value, key_with_constraint.second);
 			STRING_STRINGSET_MAP rhs_w_attr = STRING_STRINGSET_MAP();
 			string rhs_type = entity_map.at(parsed_rhs);
@@ -1751,6 +1883,8 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 			}
 
 			if (IsString(lhs_synonym) || IsInteger(lhs_synonym)) {
+				cout << "reached string/integer" << endl;
+
 				STRING_SET lhs = STRING_SET();
 
 				IsString(lhs_synonym) ? rhs.insert(ParsingEntRef(lhs_synonym)) : lhs.insert(lhs_synonym);
@@ -1789,9 +1923,7 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 					if (!IsSameEntityType(lhs_type, lhs_attr)) {
 						for (STRING_LIST* s : lhs) {
 							STRING_SET v = GetAlternateResult(s->at(0), lhs_type);
-
-							rhs_w_attr.insert({ s->at(0), v });
-
+							lhs_w_attr.insert({ s->at(0), v });
 						}
 					}
 
@@ -1808,6 +1940,18 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
 							STRING_SET v = (*f).second;
 							STRING_SET val = GetIntersectResult(v, rhs);
+
+							if (DEBUG) {
+								cout << "LHS VALUE: " << endl;
+								Print(v);
+
+								cout << "RHS VALUE: " << endl;
+								Print(rhs);
+
+								cout << "INTERSECTED VALUE: " << endl;
+								Print(val);
+							}
+
 							lhs_w_attr.at((*f).first) = val;
 							rhs_val.insert(val.begin(), val.end());
 
@@ -1826,6 +1970,18 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 						for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
 							STRING_SET v = (*f).second;
 							STRING_SET val = GetIntersectResult(v, lhs, 0);
+
+							if (DEBUG) {
+								cout << "LHS VALUE: " << endl;
+								Print(lhs);
+
+								cout << "RHS VALUE: " << endl;
+								Print(v);
+
+								cout << "INTERSECTED VALUE: " << endl;
+								Print(val);
+							}
+
 							rhs_w_attr.at((*f).first) = val;
 							lhs_val.insert(val.begin(), val.end());
 
@@ -1848,6 +2004,17 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 
 								STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
 
+								if (DEBUG) {
+									cout << "LHS VALUE: " << endl;
+									Print(lhs_val);
+
+									cout << "RHS VALUE: " << endl;
+									Print(rhs_v);
+
+									cout << "INTERSECTED VALUE: " << endl;
+									Print(val);
+								}
+
 								if (!val.empty()) {
 									lhs_val.insert((*f).first);
 									rhs_val.insert((*g).first);
@@ -1860,9 +2027,10 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 				}
 				else {
 					int index = GetCommonSynonymsIndex(*check_key, parsed_lhs);
+
+					string lhs_type = entity_map.at(parsed_lhs);
 					STRING_SET lhs = GetNewResult(results_map->at(check_key), index);
 					STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
-					string lhs_type = entity_map.at(parsed_lhs);
 
 					if (!IsSameEntityType(lhs_type, lhs_attr)) {
 						for (string s : lhs) {
@@ -1885,6 +2053,18 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 						for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
 							STRING_SET v = (*f).second;
 							STRING_SET val = GetIntersectResult(lhs, v);
+							
+							if (DEBUG) {
+								cout << "LHS VALUE: " << endl;
+								Print(lhs);
+
+								cout << "RHS VALUE: " << endl;
+								Print(v);
+
+								cout << "INTERSECTED VALUE: " << endl;
+								Print(val);
+							}
+
 							rhs_w_attr.at((*f).first) = val;
 							lhs_val.insert(val.begin(), val.end());
 
@@ -1904,6 +2084,18 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
 							STRING_SET v = (*f).second;
 							STRING_SET val = GetIntersectResult(rhs, v);
+
+							if (DEBUG) {
+								cout << "LHS VALUE: " << endl;
+								Print(v);
+
+								cout << "RHS VALUE: " << endl;
+								Print(rhs);
+
+								cout << "INTERSECTED VALUE: " << endl;
+								Print(val);
+							}
+
 							lhs_w_attr.at((*f).first) = val;
 							rhs_val.insert(val.begin(), val.end());
 
@@ -1927,6 +2119,17 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 
 								STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
 
+								if (DEBUG) {
+									cout << "LHS VALUE: " << endl;
+									Print(lhs_v);
+
+									cout << "RHS VALUE: " << endl;
+									Print(rhs_v);
+
+									cout << "INTERSECTED VALUE: " << endl;
+									Print(val);
+								}
+
 								if (!val.empty()) {
 									lhs_val.insert((*f).first);
 									rhs_val.insert((*g).first);
@@ -1942,6 +2145,8 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 		}
 		else if (key_with_constraint.first != -1 && key_with_constraint.second != -1) {
 			// LHS = RHS = synonym
+
+			cout << "REACHED key_with_constraint.first != -1 && key_with_constraint.second != -1" << endl;
 
 			STRING_SET lhs = GetNewResult(*value, key_with_constraint.first);
 			STRING_SET rhs = GetNewResult(*value, key_with_constraint.second);
@@ -1977,6 +2182,18 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 				for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
 					STRING_SET v = (*f).second;
 					STRING_SET val = GetIntersectResult(lhs, v);
+
+					if (DEBUG) {
+						cout << "LHS VALUE: " << endl;
+						Print(lhs);
+
+						cout << "RHS VALUE: " << endl;
+						Print(v);
+
+						cout << "INTERSECTED VALUE: " << endl;
+						Print(val);
+					}
+
 					rhs_w_attr.at((*f).first) = val;
 					lhs_val.insert(val.begin(), val.end());
 
@@ -1996,6 +2213,18 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
 					STRING_SET v = (*f).second;
 					STRING_SET val = GetIntersectResult(rhs, v);
+
+					if (DEBUG) {
+						cout << "LHS VALUE: " << endl;
+						Print(v);
+
+						cout << "RHS VALUE: " << endl;
+						Print(rhs);
+
+						cout << "INTERSECTED VALUE: " << endl;
+						Print(val);
+					}
+
 					lhs_w_attr.at((*f).first) = val;
 					rhs_val.insert(val.begin(), val.end());
 
@@ -2018,6 +2247,17 @@ bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_M
 						STRING_SET rhs_v = (*g).second;
 
 						STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
+
+						if (DEBUG) {
+							cout << "LHS VALUE: " << endl;
+							Print(lhs_v);
+
+							cout << "RHS VALUE: " << endl;
+							Print(rhs_v);
+
+							cout << "INTERSECTED VALUE: " << endl;
+							Print(val);
+						}
 
 						if (!val.empty()) {
 							lhs_val.insert((*f).first);
@@ -2502,10 +2742,6 @@ bool PQLEvaluator::IsInteger(string var) {
 
 bool PQLEvaluator::IsUnderscore(string var) {
 	return var.compare("_") == 0 ? true : false;
-}
-
-bool PQLEvaluator::IsBooleanOutput(STRING_LIST output_list) {
-	return output_list.size() == 1 && output_list[0].compare("bool") == 0 ? true : false;
 }
 
 bool PQLEvaluator::IsOutputSynonyms(STRING_LIST synonyms, STRING_LIST output_list) {

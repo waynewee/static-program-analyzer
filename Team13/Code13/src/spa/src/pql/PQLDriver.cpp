@@ -17,17 +17,33 @@ STRING_SET PQLDriver::Query(string query_string) {
 		cout << "Query: " << query_string << endl;
 	}
 	QueryInfo parsed_info = parser.Parse(query_string);
+	QueryResult result = QueryResult();
 
-	// loop: check whats in Query info
-	if (DEBUG) {
-		parsed_info.PrintEntityMap();
-		parsed_info.PrintOutputList();
-		parsed_info.PrintStMap();
-		parsed_info.PrintPatternMap();
-		parsed_info.PrintWithMap();
+	if (!parsed_info.IsQueryInfoValid()) {
+		// Query invalid - get false result: bool/empty
+		result.SetResult(parsed_info.GetFalseResult());
+
+		if (DEBUG) {
+			if (parsed_info.IsSemanticsInvalid()) {
+				cout << "QUERY IS INVALID DUE TO SEMANTICS, NOT SYNTAX" << endl;
+			}
+			else {
+				cout << "NOTHING TO DO WITH JUST SEMANTICS" << endl;
+			}
+		}
 	}
+	else {
+		result = evaluator.Evaluate(parsed_info);
 
-	QueryResult result = evaluator.Evaluate(parsed_info);
+		// loop: check whats in Query info
+		if (DEBUG) {
+			parsed_info.PrintEntityMap();
+			parsed_info.PrintOutputList();
+			parsed_info.PrintStMap();
+			parsed_info.PrintPatternMap();
+			parsed_info.PrintWithMap();
+		}
+	}
 
 	// loop: check whats in Query result
 

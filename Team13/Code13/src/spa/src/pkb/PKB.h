@@ -47,6 +47,7 @@ public:
 
 private:
     void RecursiveGetAffects(STMT_IDX node, VAR_NAME lhs_var, STMT_IDX_SET& visited, STMT_IDX_SET& result);
+    void RecursiveGetInverseAffects(STMT_IDX node, VAR_NAME rhs_var, STMT_IDX_SET& visited, STMT_IDX_SET& result);
 };
 
 class ASTRootTypeUnmatchException: public exception {

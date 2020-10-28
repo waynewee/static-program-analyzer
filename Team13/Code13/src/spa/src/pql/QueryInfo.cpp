@@ -23,11 +23,29 @@ STRING_LIST QueryInfo::GetOutputList() {
 	return this->output_list_;
 }
 
-bool QueryInfo::IsQueryInfoValid() {
-	return this->is_valid_;
+STRINGLIST_SET QueryInfo::GetFalseResult() {
+	STRINGLIST_SET false_result = *(new STRINGLIST_SET());
+	cout << "BOOLEAN??? " << (IsBooleanOutput() ? "true" : "false") << endl;
+	cout << "SEMANTICS??? " << (this->is_invalid_due_to_semantics_ ? "true" : "false") << endl;
+	PrintOutputList();
+	if (this->is_invalid_due_to_semantics_ && IsBooleanOutput()) {
+		STRING_LIST* bool_false = new STRING_LIST();
+		bool_false->push_back("FALSE");
+		false_result.insert(bool_false);
+	}
+
+	return  false_result;
 }
 
-bool QueryInfo::IsBooleanOutputFalse() {
+bool QueryInfo::IsQueryInfoValid() {
+	return this->is_valid_ && !this->is_invalid_due_to_semantics_;
+}
+
+bool QueryInfo::IsBooleanOutput() {
+	return this->output_list_.size() == 1 && this->output_list_.at(0).compare("BOOLEAN") == 0 ? true : false;
+}
+
+bool QueryInfo::IsSemanticsInvalid() {
 	return this->is_invalid_due_to_semantics_;
 }
 

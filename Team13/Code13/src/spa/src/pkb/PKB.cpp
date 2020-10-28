@@ -42,7 +42,7 @@ CFGManager PKB::GetCFGManager() {
 }
 STMT_IDX_SET PKB::GetAffects(STMT_IDX a) {
     //debug
-    std::cout << "GetAffects(" << a << ")" << std::endl;
+    std::cout << "PKB: GetAffects(" << a << ")" << std::endl;
     if (affects_table_.find(a) != affects_table_.end()) {
         return *affects_table_.at(a);
     }
@@ -54,9 +54,11 @@ STMT_IDX_SET PKB::GetAffects(STMT_IDX a) {
     for (auto neighbor: neighbors) {
         RecursiveGetAffects(neighbor, lhs_var, *visited, *result);
     }
-    affects_table_.insert({a, result});
+    if (result->size() > 0) {
+        affects_table_.insert({a, result});
+    }
     //debug
-    std::cout << "printing result from GetAffects(" << a << std::endl;
+    std::cout << "PKB: printing result from GetAffects(" << a << std::endl;
     for (auto e : *result) {
         std::cout << "" << e << std::endl;
     }
@@ -64,7 +66,29 @@ STMT_IDX_SET PKB::GetAffects(STMT_IDX a) {
 }
 
 STMT_IDX_SET PKB::GetInverseAffects(STMT_IDX a) {
-    return STMT_IDX_SET();
+    if (inverse_affects_table_.find(a) != inverse_affects_table_.end()) {
+        return *inverse_affects_table_.at(a);
+    }
+    auto rhs_vars = relation_manager_.GetStmtUses(a);
+    auto visited = new STMT_IDX_SET();
+    auto result = new STMT_IDX_SET();
+    auto neighbors = cfg_manager_.GetInverseNext(a);
+    visited->insert(a);
+    for (auto rhs_var: rhs_vars) {
+        for (auto neighbor: neighbors) {
+            RecursiveGetInverseAffects(neighbor, rhs_var, *visited, *result);
+        }
+    }
+    if (result->size() > 0) {
+        inverse_affects_table_.insert({a, result});
+    }
+    //debug
+    std::cout << "PKB: printing result from GetInverseAffects(" << a << std::endl;
+    for (auto e : *result) {
+        std::cout << "" << e << std::endl;
+    }
+    return *result;
+
 }
 void PKB::RecursiveGetAffects(STMT_IDX node, VAR_NAME lhs_var, STMT_IDX_SET& visited, STMT_IDX_SET& result) {
     if (visited.find(node) != visited.end()) {
@@ -92,5 +116,31 @@ void PKB::RecursiveGetAffects(STMT_IDX node, VAR_NAME lhs_var, STMT_IDX_SET& vis
     auto neighbors = cfg_manager_.GetNext(node);
     for (auto neighbor: neighbors) {
         RecursiveGetAffects(neighbor, lhs_var, visited, result);
+    }
+}
+void PKB::RecursiveGetInverseAffects(STMT_IDX node, VAR_NAME rhs_var, STMT_IDX_SET& visited, STMT_IDX_SET& result) {
+    if (visited.find(node) != visited.end()) {
+        return;
+    }
+    //mark as visited
+    visited.insert(node);
+    //If the node is an assign statement and it modifies the rhs_var, then node is affected by this statement.
+    if (data_manager_.IsAssignStmt(node) && relation_manager_.IsStmtModifies(node, rhs_var)) {
+        result.insert(node);
+        return;
+    }
+    //If this is an assign statement and it modifies the variable, terminate dfs on path
+    if (data_manager_.IsCallStmt(node)) {
+        auto procName = data_manager_.GetCalledByStmt(node);
+        auto assignStmts = data_manager_.GetAllAssignStatements(procName);
+        for (auto stmt: assignStmts) {
+            if (relation_manager_.IsStmtModifies(stmt, rhs_var)) {
+                return;
+            }
+        }
+    }
+    auto neighbors = cfg_manager_.GetInverseNext(node);
+    for (auto neighbor: neighbors) {
+        RecursiveGetAffects(neighbor, rhs_var, visited, result);
     }
 }
