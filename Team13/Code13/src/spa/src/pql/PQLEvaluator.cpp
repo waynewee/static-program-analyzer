@@ -762,6 +762,7 @@ bool PQLEvaluator::EvaluateNoSynonymSet(string f_call, string param1, string par
 	PKB pkb = PKB();
 	RelationManager rm = pkb.GetRelationManager();
 	CFGManager cfgm = pkb.GetCFGManager();
+	PKB::AffectsManager am = pkb.GetAffectsManager();
 
 	if (UNIT_TESTING) {
 		cout << "PQLEvaluator - EvaluateNoSynonymSet - UNIT TESTING" << endl;
@@ -805,10 +806,10 @@ bool PQLEvaluator::EvaluateNoSynonymSet(string f_call, string param1, string par
 		return cfgm.IsNextStar(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		// return rm.IsAffects(ParsingStmtRef(param1), ParsingStmtRef(param2));
+		return am.IsAffects(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		// return rm.IsAffectsStar(ParsingStmtRef(param1), ParsingStmtRef(param2));
+		return am.IsAffectsStar(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else {
 		// error
@@ -1095,6 +1096,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) 
 	RelationManager rm = pkb.GetRelationManager();
 	CFGManager cfgm = pkb.GetCFGManager();
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
+	PKB::AffectsManager am = pkb.GetAffectsManager();
 
 	if (f_call.compare(TYPE_COND_FOLLOWS) == 0) {
 		result = ConvertSet(rm.GetFollows(ParsingStmtRef(param)));
@@ -1133,20 +1135,18 @@ STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) 
 		result = ConvertSet(cfgm.GetNextStar(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		result = ConvertSet(pkb.GetAffects(ParsingStmtRef(param)));
+		result = ConvertSet(am.GetAffects(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		// result = ConvertSet(pkb.GetAffectsStar(ParsingStmtRef(param)));
+		result = ConvertSet(am.GetAffectsStar(ParsingStmtRef(param)));
 	}
 	else {
 		// error
 		if (DEBUG) {
 			cout << "PQLEvaluator - EvaluateOneSynonymSet: No such relref." << endl;
 		}
-
 		return {};
 	}
-
 	if (DEBUG) {
 		cout << "PQLEvaluator - EvaluateOneSynonymSet: Result clause's size = " << result.size() << endl;
 	}
@@ -1162,6 +1162,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateInverseOneSynonymSet(string f_call, string 
 	PKB pkb = PKB();
 	RelationManager rm = pkb.GetRelationManager();
 	CFGManager cfgm = pkb.GetCFGManager();
+	PKB::AffectsManager am = pkb.GetAffectsManager();
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 	
 	if (f_call.compare(TYPE_COND_FOLLOWS) == 0) {
@@ -1201,10 +1202,10 @@ STRINGLIST_SET PQLEvaluator::EvaluateInverseOneSynonymSet(string f_call, string 
 		result = ConvertSet(cfgm.GetInverseNextStar(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		// result = ConvertSet(cfgm.GetInverseAffects(ParsingStmtRef(param)));
+		result = ConvertSet(am.GetInverseAffects(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		// result = ConvertSet(cfgm.GetInverseAffectsStar(ParsingStmtRef(param)));
+		result = ConvertSet(am.GetInverseAffectsStar(ParsingStmtRef(param)));
 	}
 	else {
 		// error
@@ -1213,11 +1214,9 @@ STRINGLIST_SET PQLEvaluator::EvaluateInverseOneSynonymSet(string f_call, string 
 		}
 		return {};
 	}
-
 	if (DEBUG) {
 		cout << "PQLEvaluator - EvaluateInverseOneSynonymSet: Result clause's size = " << result.size() << endl;
 	}
-
 	return result;
 }
 
@@ -1230,6 +1229,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateTwoSynonymSet(string f_call) {
 	PKB pkb = PKB();
 	RelationManager rm = pkb.GetRelationManager();
 	CFGManager cfgm = pkb.GetCFGManager();
+	PKB::AffectsManager am = pkb.GetAffectsManager();
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 	
 	if (UNIT_TESTING) {
@@ -1304,11 +1304,11 @@ STRINGLIST_SET PQLEvaluator::EvaluateTwoSynonymSet(string f_call) {
 		result = ConvertSet(cfgm.GetAllNextStar());
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		result = ConvertSet(cfgm.GetAllAffects());
+		result = ConvertSet(am.GetAllAffects());
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		result = ConvertSet(cfgm.GetAllAffectsStar());
-	}
+		result = ConvertSet(am.GetAllAffectsStar());
+	} 
 	else {
 		// error
 		if (DEBUG) {
