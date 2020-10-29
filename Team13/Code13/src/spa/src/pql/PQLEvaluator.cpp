@@ -937,6 +937,7 @@ bool PQLEvaluator::EvaluateNoSynonymSet(string f_call, string param1, string par
 	PKB pkb = PKB();
 	RelationManager rm = pkb.GetRelationManager();
 	CFGManager cfgm = pkb.GetCFGManager();
+	PKB::AffectsManager am = pkb.GetAffectsManager();
 
 	if (DEBUG) {
 		cout << "PQLEvaluator - EvaluateNoSynonymSet" << endl;
@@ -985,10 +986,10 @@ bool PQLEvaluator::EvaluateNoSynonymSet(string f_call, string param1, string par
 		return cfgm.IsNextStar(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		// return rm.IsAffects(ParsingStmtRef(param1), ParsingStmtRef(param2));
+		return am.IsAffects(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		// return rm.IsAffectsStar(ParsingStmtRef(param1), ParsingStmtRef(param2));
+		return am.IsAffectsStar(ParsingStmtRef(param1), ParsingStmtRef(param2));
 	}
 	else {
 		// error
@@ -1180,7 +1181,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) 
 		result = ConvertSet(am.GetAffects(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		// result = ConvertSet(pkb.GetAffectsStar(ParsingStmtRef(param)));
+		result = ConvertSet(am.GetAffectsStar(ParsingStmtRef(param)));
 	}
 	else {
 		// error
@@ -1249,7 +1250,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateInverseOneSynonymSet(string f_call, string 
 		result = ConvertSet(am.GetInverseAffects(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		// result = ConvertSet(cfgm.GetInverseAffectsStar(ParsingStmtRef(param)));
+		result = ConvertSet(am.GetInverseAffectsStar(ParsingStmtRef(param)));
 	}
 	else {
 		// error
@@ -1270,6 +1271,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateTwoSynonymSet(string f_call) {
 	PKB pkb = PKB();
 	RelationManager rm = pkb.GetRelationManager();
 	CFGManager cfgm = pkb.GetCFGManager();
+	PKB::AffectsManager am = pkb.GetAffectsManager();
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 
 	if (DEBUG) {
@@ -1349,11 +1351,11 @@ STRINGLIST_SET PQLEvaluator::EvaluateTwoSynonymSet(string f_call) {
 		result = ConvertSet(cfgm.GetAllNextStar());
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		result = ConvertSet(cfgm.GetAllAffects());
+		result = ConvertSet(am.GetAllAffects());
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		result = ConvertSet(cfgm.GetAllAffectsStar());
-	}
+		result = ConvertSet(am.GetAllAffectsStar());
+	} 
 	else {
 		// error
 		if (DEBUG) {

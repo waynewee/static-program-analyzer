@@ -29,7 +29,10 @@ public:
         static STMT_IDX_SET inverse_affects_computed_set_;
         static AFFECTS_TABLE affects_table_;
         static INVERSE_AFFECTS_TABLE inverse_affects_table_;
+        static STMT_IDX_SET all_affects_keys_;
+        static STMT_IDX_SET all_inverse_affects_keys_;
         static STMT_STMT_PAIR_LIST all_affects_;
+
         static STMT_IDX_SET affects_star_computed_set_;
         static STMT_IDX_SET inverse_affects_star_computed_set_;
         static AFFECTS_STAR_TABLE affects_star_table_;
@@ -44,14 +47,15 @@ public:
         STMT_IDX_SET GetInverseAffects(STMT_IDX a);
         STMT_STMT_PAIR_LIST GetAllAffects();
 
-        STMT_IDX_SET GetAffectsStars(STMT_IDX a);
-        STMT_IDX_SET GetInverseAffectsStars(STMT_IDX a);
-        STMT_STMT_PAIR_LIST GetAllAffectsStars();
+        STMT_IDX_SET GetAffectsStar(STMT_IDX a);
+        STMT_IDX_SET GetInverseAffectsStar(STMT_IDX a);
+        STMT_STMT_PAIR_LIST GetAllAffectsStar();
 
     private:
         void RecursiveGetAffects(STMT_IDX node, VAR_NAME lhs_var, STMT_IDX_SET& visited, STMT_IDX_SET& result);
         void RecursiveGetInverseAffects(STMT_IDX node, VAR_NAME rhs_var, INVERSE_AFFECTS_VISITED_SET& visited, STMT_IDX_SET& result);
-
+        STMT_IDX_SET GetAllAffectsKeys();
+        STMT_IDX_SET GetAllInverseAffectsKeys();
     };
 
     void SetASTRoot(TNode* root);
