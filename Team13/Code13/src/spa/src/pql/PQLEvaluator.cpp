@@ -4,6 +4,10 @@
 #include "pkb/PKB.h"
 
 QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - Evaluate" << endl;
+	}
+
 	// Final result to be returned
 	STRINGLIST_SET final_result_set = *(new STRINGLIST_SET());
 
@@ -25,7 +29,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	// Parse clauses conditions
 	bool has_parsed = true;
 	
-	if (!ParseClauses(query_info, &constraints, &results_map)) {
+	if (!ParseClauses(query_info, &constraints)) {
 		if (DEBUG) {
 			cout << "PQLEvaluator - parsing with clause: failed." << endl;
 		}
@@ -43,6 +47,25 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 
 	if (!has_parsed) {
 		return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
+	}
+
+	if (DEBUG_PRINTING) {
+		cout << "constraints after parsing with clause" << endl;
+		Print(constraints);
+	}
+
+	// Evaluate constraints
+	if (!EvaluateConstraints(entity_map, constraints, &results_map)) {
+		if (DEBUG) {
+			cout << "PQLEvaluator - Evaluating with clauses: Constraint not met." << endl;
+		}
+
+		return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
+	}
+
+	if (DEBUG_PRINTING) {
+		cout << "Results map after evaluating constraints" << endl;
+		Print(results_map);
 	}
 	
 	// Evaluate synonyms_map: 1 related-synonyms group at a time
@@ -131,8 +154,24 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 				return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
 			}
 
+			if (DEBUG_PRINTING) {
+				cout << "Results after evaluating 1 clause" << endl;
+				cout << "KEY " << endl;
+				Print(c_key);
+				cout << "VALUE " << endl;
+				Print(c_value);
+			}
+
 			// Add into the tmp_map
 			AddResult(c_key, c_value, &tmp_map);
+			if (tmp_map.empty()) {
+				return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
+			}
+		}
+
+		if (DEBUG_PRINTING) {
+			cout << "Results after evaluating 1 group of clauses" << endl;
+			Print(tmp_map);
 		}
 
 		// Check if any of the synonyms is in expected output list
@@ -142,91 +181,60 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			STRING_LIST* keys = (*tmp_entry).first;
 			STRINGLIST_SET values = (*tmp_entry).second;
 
-			// Check constraints
-			bool is_dependency_checked = CheckConstraints(&constraints, entity_map, &results_map, *keys, &values);
-
-			if (!is_dependency_checked) {
-				AddResult(*keys, values, &results_map);
+			AddResult(*keys, values, &results_map);
+			if (results_map.empty()) {
+				return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
 			}
-			else {
-				if (values.empty()) {
-					// error
-					if (DEBUG) {
-						cout << "PQLEvaluator - Checked constraints: Empty results." << endl;
-					}
-
-					return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
-				}
-
-				if (IsOutputSynonyms(*keys, output_list)) {
-					AddResult(*keys, values, &results_map);
-				}
-			}			
 		}
-		
+
+		if (DEBUG_PRINTING) {
+			cout << "Results map after insertin 1 group's results" << endl;
+			Print(results_map);
+		}
 	}
 
-	if (!is_boolean_output) {
+	if (DEBUG_PRINTING) {
+		cout << "Results map after evaluating clauses" << endl;
+		Print(results_map);
+	}
+
+	if (!is_boolean_output) {	
 		// Get output_list's results from results_map
 		INTEGER_SET retrieved_output_index = INTEGER_SET();
 
-		for (auto result_entry = results_map.cbegin(); result_entry != results_map.cend(); result_entry++) {
-			STRING_LIST* result_key = (*result_entry).first;
-			STRING_LIST* key = new STRING_LIST();
-			INTEGER_LIST index_to_extract = INTEGER_LIST();
+		for (int o = 0; o < output_list.size(); o++) {
+			string parsed_output_synonym = ParsingSynonym(output_list.at(o));
+			string output_synonym_attr = ParsingSynonymAttribute(output_list.at(o));
 
-			for (int i = 0; i < result_key->size(); i++) {
-				for (int o = 0; o < output_list.size(); o++) {
-					string parsed_output_synonym = ParsingSynonym(output_list.at(o));
+			for (auto result_entry = results_map.cbegin(); result_entry != results_map.cend(); result_entry++) {
+				STRING_LIST* result_key = (*result_entry).first;
+				bool is_found = false;
+				for (int i = 0; i < result_key->size(); i++) {
+					if (result_key->at(i).compare(parsed_output_synonym) == 0) {
+						// found output synonym
+						is_found = true;
 
-					if (retrieved_output_index.find(o) == retrieved_output_index.end()) {
-
-						if (result_key->at(i).compare(parsed_output_synonym) == 0) {
-							key->push_back(output_list.at(o));
-
-							// Add index of value to extract to list
-							index_to_extract.push_back(i);
-
-							// Add index of retrieved output synonym to list
-							retrieved_output_index.insert(o);
-						}
+						// Add index of retrieved output synonym to list
+						retrieved_output_index.insert(o);
 					}
 				}
 
-				if (retrieved_output_index.size() == output_list.size()) {
-					break;
-				}
-			}
-
-			if (!key->empty()) {
-				// Has >=1 expected output synonym(s)
-				STRING_LIST output_key = *(new STRING_LIST());
-				STRINGLIST_SET output_result = GetNewResult((*result_entry).second, index_to_extract);
-
-				for (int k = 0; k < key->size(); k++) {
-					string synonym = ParsingSynonym(key->at(k));
-					string synonym_type = ParsingSynonymAttribute(key->at(k));
-
-					output_key.push_back(synonym);
-
-					// Check if output synonym is attribute type
-					STRINGLIST_SET result = STRINGLIST_SET();
-					if (!IsSameEntityType(entity_map.at(synonym), synonym_type)) {
-						result = GetAlternateOutputResult(GetNewResult(output_result, k), synonym_type);
-					}
-
-					if (!result.empty()) {
-						// Combine results
-						output_result = GetCombinedResult(output_result, result, k);
+				if (is_found) {
+					// Has >=1 expected output synonym(s)
+					AddResult(*result_key, (*result_entry).second, &final_results_map);
+					if (final_results_map.empty()) {
+						return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
 					}
 				}
-
-				AddResult(output_key, output_result, &final_results_map);
 			}
 		}
 
+		if (DEBUG_PRINTING) {
+			cout << "Final results map after extracting dependent output synonyms " << endl;
+			Print(final_results_map);
+		}
+
 		// Get all output_list's results that are not in results_map
-		// STRINGLIST_STRINGLISTSET_MAP tmp_map = STRINGLIST_STRINGLISTSET_MAP();
 		for (int i = 0; i < output_list.size(); i++) {
 			if (retrieved_output_index.find(i) == retrieved_output_index.end()) {
 				string synonym = output_list.at(i);
@@ -242,19 +250,13 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 					// not duplicate
 					value = EvaluateAllCall(entity_map.at(parsed_synonym));
 
-					// Check constraints
-					bool is_dependency_checked = CheckConstraints(&constraints, entity_map, &results_map, key, &value);
-					if (is_dependency_checked && value.empty()) {
+					if (value.empty()) {
 						// error
 						if (DEBUG) {
-							cout << "PQLEvaluator - Checked constraints: Empty results." << endl;
+							cout << "PQLEvaluator - Extracting independent output synonyms: Empty results." << endl;
 						}
 
 						return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
-					}
-
-					if (!IsSameEntityType(entity_map.at(parsed_synonym), synonym_type)) {
-						value = ConvertSet(GetAlternateResult(value, entity_map.at(parsed_synonym)));
 					}
 				}
 				else {
@@ -274,204 +276,19 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 				final_results_map.insert({ new STRING_LIST(key), value });
 			}
 		}
-	}
-
-	// PRINT CHECK WITH 
-	cout << "CHECKING WITH CLAUSE AT THE END" << endl;
-	Print(constraints);
-/*
-	// Check the independent constraints: not captured in clauses / output synonyms
-	STRINGPAIR_SET checked = STRINGPAIR_SET();
-	for (STRING_PAIR* check : constraints) {
-		string lhs_synonym = check->first;
-		string rhs_synonym = check->second;
-
-		string parsed_lhs = ParsingSynonym(lhs_synonym);
-		string parsed_rhs = ParsingSynonym(rhs_synonym);
-
-		string lhs_attr = ParsingSynonymAttribute(lhs_synonym);
-		string rhs_attr = ParsingSynonymAttribute(rhs_synonym);
-
-		if (IsVar(parsed_lhs) && !IsVar(parsed_rhs)) {
-			// Synonym = int/str
-			string lhs_type = entity_map.at(parsed_lhs);
-			STRINGLIST_SET lhs = EvaluateAllCall(lhs_type);
-			STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
-
-			if (!IsSameEntityType(lhs_type, lhs_attr)) {
-				for (STRING_LIST* s : lhs) {
-					STRING_SET v = GetAlternateResult(s->at(0), lhs_type);
-
-					lhs_w_attr.insert({ s->at(0), v });
-
-				}
-			}
-
-			STRING_SET rhs = STRING_SET();
-			IsString(rhs_synonym) ? rhs.insert(ParsingEntRef(rhs_synonym)) : rhs.insert(rhs_synonym);
-
-			if (lhs_w_attr.empty()) {
-				// compare lhs and str/int
-				STRINGLIST_SET val = ConvertSet(GetIntersectResult(rhs, lhs, 0));
-
-				if (val.empty()) {
-					// empty result
-					return SetResult(is_boolean_output, "FALSE", {});
-				}
-				else {
-					checked.insert(check);
-				}
-			}
-			else {
-				// compare lhs attr and str/int
-
-				STRING_SET lhs_val = STRING_SET();
-				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-					STRING_SET v = (*f).second;
-					STRING_SET val = GetIntersectResult(rhs, v);
-					lhs_w_attr.at((*f).first) = val;
-
-					if (!val.empty()) {
-						lhs_val.insert((*f).first);
-					}
-				}
-
-				RemoveIrrelevant(&lhs, ConvertSet(lhs_val), 0);
-
-				if (lhs.empty()) {
-					// empty result
-					return SetResult(is_boolean_output, "FALSE", {});
-				}
-				else {
-					checked.insert(check);
-				}
-			}
-		}
-		else if (IsVar(parsed_lhs) && IsVar(parsed_rhs)) {
-			// synonym=synonym
-
-			string lhs_type = entity_map.at(parsed_lhs);
-			STRINGLIST_SET lhs = EvaluateAllCall(lhs_type);
-			STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
-
-			if (!IsSameEntityType(lhs_type, lhs_attr)) {
-				for (STRING_LIST* s : lhs) {
-					STRING_SET v = GetAlternateResult(s->at(0), lhs_type);
-
-					lhs_w_attr.insert({ s->at(0), v });
-
-				}
-			}
-
-			string rhs_type = entity_map.at(parsed_rhs);
-			STRINGLIST_SET rhs = EvaluateAllCall(rhs_type);
-			STRING_STRINGSET_MAP rhs_w_attr = STRING_STRINGSET_MAP();
-
-			if (!IsSameEntityType(rhs_type, rhs_attr)) {
-				for (STRING_LIST* s : rhs) {
-					STRING_SET v = GetAlternateResult(s->at(0), rhs_type);
-
-					rhs_w_attr.insert({ s->at(0), v });
-
-				}
-			}
-
-			if (lhs_w_attr.empty() && rhs_w_attr.empty()) {
-				// compare lhs and rhs
-				STRINGLIST_SET val = GetIntersectResult(lhs, rhs);
-				if (val.empty()) {
-					return SetResult(is_boolean_output, "FALSE", {});
-				}
-				else {
-					checked.insert(check);
-				}
-			}
-			else if (lhs_w_attr.empty() && !rhs_w_attr.empty()) {
-				// compare lhs and rhs attr
-
-				STRING_SET lhs_val = STRING_SET();
-				STRING_SET rhs_val = STRING_SET();
-				for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
-					STRING_SET v = (*f).second;
-					STRING_SET val = GetIntersectResult(v, lhs, 0);
-					rhs_w_attr.at((*f).first) = val;
-					lhs_val.insert(val.begin(), val.end());
-
-					if (!val.empty()) {
-						rhs_val.insert((*f).first);
-					}
-				}
-
-				if (lhs_val.empty() || rhs_val.empty()) {
-					return SetResult(is_boolean_output, "FALSE", {});
-				}
-				else {
-					checked.insert(check);
-				}
-			}
-			else if (!lhs_w_attr.empty() && rhs_w_attr.empty()) {
-				// compare lhs attr and rhs
-
-				STRING_SET lhs_val = STRING_SET();
-				STRING_SET rhs_val = STRING_SET();
-				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-					STRING_SET v = (*f).second;
-					STRING_SET val = GetIntersectResult(v, rhs, 0);
-					lhs_w_attr.at((*f).first) = val;
-					rhs_val.insert(val.begin(), val.end());
-
-					if (!val.empty()) {
-						lhs_val.insert((*f).first);
-					}
-				}
-
-				if (lhs_val.empty() || rhs_val.empty()) {
-					return SetResult(is_boolean_output, "FALSE", {});
-				}
-				else {
-					checked.insert(check);
-				}
-			}
-			else if (!lhs_w_attr.empty() && !rhs_w_attr.empty()) {
-				// compare lhs attr and rhs attr
-
-				STRING_SET lhs_val = STRING_SET();
-				STRING_SET rhs_val = STRING_SET();
-				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-					for (auto g = rhs_w_attr.cbegin(); g != rhs_w_attr.cend(); g++) {
-						STRING_SET lhs_v = (*f).second;
-						STRING_SET rhs_v = (*g).second;
-
-						STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
-
-						if (!val.empty()) {
-							lhs_val.insert((*f).first);
-							rhs_val.insert((*g).first);
-						}
-					}
-				}
-
-				if (lhs_val.empty() || rhs_val.empty()) {
-					return SetResult(is_boolean_output, "FALSE", {});
-				}
-				else {
-					checked.insert(check);
-				}
-			}
-		}
-	}
-
-	for (STRING_PAIR* s : checked) {
-		constraints.erase(s);
-	}
 	
-	// PRINT CHECK WITH 
-	cout << "CHECKING WITH CLAUSE AT THE END end " << endl;
-	Print(constraints);
-*/
-	if (!is_boolean_output) {
+		if (DEBUG_PRINTING) {
+			cout << "Final results map after extracting independent output synonyms " << endl;
+			Print(final_results_map);
+		}
+
 		// Combine all the expected output results
-		final_result_set = GetCartesianProduct(final_results_map, output_list);
+		final_result_set = GetCartesianProduct(final_results_map, output_list, entity_map);
+	}
+
+	if (DEBUG_PRINTING) {
+		cout << "final result set" << endl;
+		Print(final_result_set);
 	}
 
 	/*
@@ -540,52 +357,76 @@ void PQLEvaluator::Print(STRINGLIST_SET to_print) {
 }
 
 void PQLEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP* results_map) {
-	STRING_LIST* check_key = GetRelatedSynonyms(key, *results_map);
-	if (check_key == nullptr) {
-		// not related (yet)
-		results_map->insert({ new STRING_LIST(key), value });
+	if (DEBUG) {
+		cout << "PQLEvaluator - AddResult" << endl;
 	}
-	else {
-		// Merge common synonyms & their results
-		
-		INTEGERPAIR_SET index_to_compare = INTEGERPAIR_SET();
-		INTEGER_SET pos_to_ignore = INTEGER_SET();
-		for (int s = 0; s < check_key->size(); s++) {
-			for (int a = 0; a < key.size(); a++) {
-				if (check_key->at(s).compare(key.at(a)) == 0) {
-					INTEGER_PAIR* pair = new INTEGER_PAIR();
-					pair->first = s;
-					pair->second = a;
 
-					index_to_compare.insert(pair);
-					pos_to_ignore.insert(a);
-				}
-			}
-		}
-
-		STRINGLIST_SET tmp_result = results_map->at(check_key);
-		STRING_LIST new_key = *(new STRING_LIST(*check_key));
-		
-		if (pos_to_ignore.size() == key.size()) {
-			tmp_result = GetDependencyProduct(tmp_result, value, -1, index_to_compare);
+	STRING_LIST* check_key = GetRelatedSynonyms(key, *results_map);
+	do {
+		if (check_key == nullptr) {
+			// not related (yet)
+			results_map->insert({ new STRING_LIST(key), value });
 		}
 		else {
-			for (int i = 0; i < key.size(); i++) {
-				if (pos_to_ignore.find(i) == pos_to_ignore.end()) {
+			// Merge common synonyms & their results
+			INTEGERPAIR_SET index_to_compare = INTEGERPAIR_SET();
+			INTEGER_SET pos_to_ignore = INTEGER_SET();
 
-					tmp_result = GetDependencyProduct(tmp_result, value, i, index_to_compare);
+			for (int s = 0; s < check_key->size(); s++) {
+				for (int a = 0; a < key.size(); a++) {
+					if (check_key->at(s).compare(key.at(a)) == 0) {
+						// common synonym
+						INTEGER_PAIR* pair = new INTEGER_PAIR();
+						pair->first = s;
+						pair->second = a;
 
-					new_key.push_back(key.at(i));
+						index_to_compare.insert(pair);
+						pos_to_ignore.insert(a);
+					}
 				}
 			}
+
+			STRINGLIST_SET tmp_result = results_map->at(check_key);
+			STRING_LIST new_key = *(new STRING_LIST(*check_key));
+
+			if (pos_to_ignore.size() == key.size()) {
+				tmp_result = GetDependencyProduct(tmp_result, value, -1, index_to_compare, "", "");
+			}
+			else {
+				for (int i = 0; i < key.size(); i++) {
+					if (pos_to_ignore.find(i) == pos_to_ignore.end()) {
+
+						tmp_result = GetDependencyProduct(tmp_result, value, i, index_to_compare, "", "");
+
+						new_key.push_back(key.at(i));
+					}
+				}
+			}
+
+			if (tmp_result.empty()) {
+				if (DEBUG) {
+					cout << "PQLEvaluator: AddResult: Empty result." << endl;
+				}
+
+				results_map->clear();
+			}
+			else {
+				results_map->erase(check_key);
+				results_map->insert({ new STRING_LIST(new_key), tmp_result });
+			}
+
+
+			// Stop condition: no more new synonyms
+			new_key == *check_key ? check_key = nullptr : check_key = GetRelatedSynonyms(new_key, *results_map);
 		}
-		
-		results_map->erase(check_key);
-		results_map->insert({ new STRING_LIST(new_key), tmp_result });
-	}
+	} while (check_key != nullptr);
 }
 
 QueryResult PQLEvaluator::SetResult(bool is_boolean_output, string bool_result, STRINGLIST_SET result) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - SetResult" << endl;
+	}
+
 	QueryResult final_result = *(new QueryResult());
 	STRINGLIST_SET final_value = *(new STRINGLIST_SET());
 
@@ -602,7 +443,7 @@ QueryResult PQLEvaluator::SetResult(bool is_boolean_output, string bool_result, 
 	return final_result;
 }
 
-bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints, STRINGLIST_STRINGLISTSET_MAP* results_map) {
+bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints) {
 	if (DEBUG) {
 		cout << "PQLEvaluator - ParseClauses: WITH" << endl;
 	}
@@ -641,47 +482,6 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraint
 					}
 					return false;
 				}
-
-				string parsed_lhs = ParsingSynonym(lhs);
-				string parsed_rhs = ParsingSynonym(rhs);
-
-				STRING_LIST key = *(new STRING_LIST());
-				STRINGLIST_SET value = *(new STRINGLIST_SET());
-
-				// add constraint into result map
-				if (IsVar(lhs) && !IsVar(rhs)) {
-					// synonym=int/string
-					key = { parsed_lhs };
-					if (IsString(rhs)) {
-						value.insert(new STRING_LIST({ ParsingEntRef(rhs) }));
-					}
-					else {
-						value.insert(new STRING_LIST({ rhs }));
-					}
-				}
-				else if (IsVar(lhs) && IsVar(rhs)) {
-					//synonym=synonym
-					key = { parsed_lhs, parsed_rhs };
-					
-					STRINGLIST_SET lhs_value = EvaluateAllCall(query_info.GetEntityMap().at(parsed_lhs));
-					STRINGLIST_SET rhs_value = EvaluateAllCall(query_info.GetEntityMap().at(parsed_rhs));
-					for (STRING_LIST* lhs_s : lhs_value) {
-						for (STRING_LIST* rhs_s : rhs_value) {
-							if (lhs_s->at(0).compare(rhs_s->at(0)) == 0) {
-								STRING_LIST* to_insert = new STRING_LIST();
-								to_insert->push_back(lhs_s->at(0));
-								to_insert->push_back(lhs_s->at(0));
-
-								if (!IsDuplicate(value, *to_insert)) {
-									value.insert(to_insert);
-								}
-							}
-						}
-					}
-				}
-				
-				AddResult(key, value, results_map);
-				
 			}
 		}
 		
@@ -691,6 +491,10 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraint
 }
 
 bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MAP* synonyms_map) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - ParseClauses: Such that and Pattern" << endl;
+	}
+
 	STRING_STRINGLISTLIST_MAP st_map = query_info.GetStMap();
 	STRING_STRINGLISTLIST_MAP pattern_map = query_info.GetPatternMap();
 	// STRING_INTEGER_MAP occurrence_count = *(new STRING_INTEGER_MAP());
@@ -854,6 +658,10 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MA
 }
 
 STRING_LIST* PQLEvaluator::GetRelatedSynonyms(string synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetRelatedSynonyms" << endl;
+	}
+
 	for (auto k = synonyms_map.cbegin(); k != synonyms_map.cend(); k++) {
 		STRING_LIST* existing_key = (*k).first;
 
@@ -868,13 +676,17 @@ STRING_LIST* PQLEvaluator::GetRelatedSynonyms(string synonym, STRINGLIST_STRINGL
 	return nullptr;
 }
 
-STRING_LIST* PQLEvaluator::GetRelatedSynonyms(STRING_LIST synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map) {
+STRING_LIST* PQLEvaluator::GetRelatedSynonyms(STRING_LIST synonyms, STRINGLIST_STRINGLISTSET_MAP synonyms_map) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetRelatedSynonyms" << endl;
+	}
+	
 	for (auto k = synonyms_map.cbegin(); k != synonyms_map.cend(); k++) {
 		STRING_LIST* existing_key = (*k).first;
 
 		for (string existing_synonym: *existing_key) {
 			// found related synonyms in the synonyms_map
-			for (string checking_synonym: synonym) {
+			for (string checking_synonym: synonyms) {
 				if (existing_synonym.compare(checking_synonym) == 0) {
 					return existing_key;
 				}
@@ -886,6 +698,10 @@ STRING_LIST* PQLEvaluator::GetRelatedSynonyms(STRING_LIST synonym, STRINGLIST_ST
 }
 
 STRING_SET* PQLEvaluator::GetRelatedSynonyms(string synonym, STRINGSET_STRINGLISTSET_MAP synonyms_map) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetRelatedSynonyms" << endl;
+	}
+
 	for (auto k = synonyms_map.cbegin(); k != synonyms_map.cend(); k++) {
 		STRING_SET* existing_key = (*k).first;
 
@@ -899,6 +715,10 @@ STRING_SET* PQLEvaluator::GetRelatedSynonyms(string synonym, STRINGSET_STRINGLIS
 }
 
 STRING_SET* PQLEvaluator::GetRelatedSynonyms(STRING_SET synonyms, STRINGSET_STRINGLISTSET_MAP* synonyms_map) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetRelatedSynonyms" << endl;
+	}
+
 	bool has_related_synonyms = false;
 
 	STRING_SET* new_keys = new STRING_SET();
@@ -934,15 +754,15 @@ STRING_SET* PQLEvaluator::GetRelatedSynonyms(STRING_SET synonyms, STRINGSET_STRI
 }
 
 bool PQLEvaluator::EvaluateNoSynonymSet(string f_call, string param1, string param2) {
-	PKB pkb = PKB();
-	RelationManager rm = pkb.GetRelationManager();
-	CFGManager cfgm = pkb.GetCFGManager();
-	PKB::AffectsManager am = pkb.GetAffectsManager();
-
 	if (DEBUG) {
 		cout << "PQLEvaluator - EvaluateNoSynonymSet" << endl;
 		cout << "fcall: " << f_call << "; param1: " << param1 << "; param2: " << param2 << endl;
 	}
+
+	PKB pkb = PKB();
+	RelationManager rm = pkb.GetRelationManager();
+	CFGManager cfgm = pkb.GetCFGManager();
+	PKB::AffectsManager am = pkb.GetAffectsManager();
 
 	if (UNIT_TESTING) {
 		cout << "PQLEvaluator - EvaluateNoSynonymSet - UNIT TESTING" << endl;
@@ -1002,14 +822,14 @@ bool PQLEvaluator::EvaluateNoSynonymSet(string f_call, string param1, string par
 }
 
 STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param1, string param2, string type) {
-	PKB pkb;
-	PatternManager pm = pkb.GetPatternManager();
-	STRINGLIST_SET result = *(new STRINGLIST_SET());
-
 	if (DEBUG) {
 		cout << "PQLEvaluator - EvaluatePatternCall (2 params to pass)" << endl;
 		cout << "fcall: " << f_call << "; param: " << param1 << "; param2: " << param2 << "; type: " << type << endl;
 	}
+	
+	PKB pkb;
+	PatternManager pm = pkb.GetPatternManager();
+	STRINGLIST_SET result = *(new STRINGLIST_SET());
 
 	if (f_call.compare(TYPE_COND_PATTERN_P) == 0) {
 		if (type.compare(TYPE_STMT_ASSIGN) == 0) {
@@ -1059,27 +879,14 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param1, s
 }
 
 STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param, string type) {
-	PKB pkb;
-	PatternManager pm = pkb.GetPatternManager();
-	STRINGLIST_SET result = *(new STRINGLIST_SET());
-
 	if (DEBUG) {
 		cout << "PQLEvaluator - EvaluatePatternCall (1 param to pass)" << endl;
 		cout << "fcall: " << f_call << "; param: " << param << "; type: " << type << endl;
 	}
 
-	if (UNIT_TESTING) {
-		cout << "PQLEvaluator - EvaluateAssignPatternCall (1 param to pass) - UNIT TESTING" << endl;
-
-		STRING_LIST* val1 = new STRING_LIST();
-		val1->push_back("1");
-		val1->push_back("v1");
-		STRING_LIST* val2 = new STRING_LIST();
-		val2->push_back("2");
-		val2->push_back("v2");
-
-		return { val1, val2 };
-	}
+	PKB pkb;
+	PatternManager pm = pkb.GetPatternManager();
+	STRINGLIST_SET result = *(new STRINGLIST_SET());
 
 	if (f_call.compare(TYPE_COND_PATTERN_P) == 0) {
 		if (type.compare(TYPE_STMT_ASSIGN) == 0) {
@@ -1099,7 +906,6 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param, st
 			result = ConvertSet(pm.GetIfStmtVarPairWithPattern(""));
 		}
 		else if (type.compare(TYPE_STMT_WHILE) == 0) {
-			cout << "reached" << endl;
 			result = ConvertSet(pm.GetWhileStmtVarPairWithPattern(""));
 		}
 		else if (type.compare(TYPE_STMT_ASSIGN) == 0) {
@@ -1129,17 +935,168 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param, st
 	return result;
 }
 
-STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) {
-	PKB pkb;
-	RelationManager rm = pkb.GetRelationManager();
-	CFGManager cfgm = pkb.GetCFGManager();
-	PKB::AffectsManager am = pkb.GetAffectsManager();
-	STRINGLIST_SET result = *(new STRINGLIST_SET());
+bool PQLEvaluator::EvaluateConstraints(STRING_STRING_MAP entity_map, STRINGPAIR_SET constraints, STRINGLIST_STRINGLISTSET_MAP* results_map) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - EvaluateConstraints" << endl;
+	}
 
+	for (STRING_PAIR* clause : constraints) {
+		string lhs = clause->first;
+		string rhs = clause->second;
+		string parsed_lhs = ParsingSynonym(lhs);
+		string parsed_rhs = ParsingSynonym(rhs);
+		string lhs_attr = ParsingSynonymAttribute(lhs);
+		string rhs_attr = ParsingSynonymAttribute(rhs);
+		string lhs_type = entity_map.at(parsed_lhs);
+
+		STRING_LIST key = *(new STRING_LIST());
+		STRINGLIST_SET value = *(new STRINGLIST_SET());
+
+		// add constraint into result map
+		if (IsVar(lhs) && !IsVar(rhs)) {
+			// synonym=int/string
+			key = { parsed_lhs };
+
+			string parsed_string = rhs;
+			if (IsString(rhs)) {
+				parsed_string = ParsingEntRef(rhs);
+			}
+
+			if (IsSameEntityType(lhs_type, lhs_attr)) {
+				// store directly
+				value = EvaluateAllCall(lhs_type);
+				STRING_SET tmp = STRING_SET({ parsed_string });
+				RemoveIrrelevant(&value, ConvertSet(tmp), 0);
+			}
+			else {
+				// convert 
+				value = GetAlternateResult(parsed_string, lhs_type);
+			}
+		}
+		else if (IsVar(lhs) && IsVar(rhs)) {
+			//synonym=synonym
+			key = { parsed_lhs, parsed_rhs };
+			
+			string rhs_type = entity_map.at(parsed_rhs);
+			STRINGLIST_SET lhs_value = EvaluateAllCall(lhs_type);
+			STRINGLIST_SET rhs_value = EvaluateAllCall(rhs_type);
+			STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
+			STRING_STRINGSET_MAP rhs_w_attr = STRING_STRINGSET_MAP();
+
+			if (!IsSameEntityType(entity_map.at(parsed_lhs), lhs_attr)) {
+				for (STRING_LIST* s : lhs_value) {
+					STRING_SET v = ConvertSet(GetAlternateResult(s->at(0), lhs_type));
+
+					lhs_w_attr.insert({ s->at(0), v });
+				}
+			}
+
+			if (!IsSameEntityType(entity_map.at(parsed_rhs), rhs_attr)) {
+				for (STRING_LIST* s : rhs_value) {
+					STRING_SET v = ConvertSet(GetAlternateResult(s->at(0), rhs_type));
+
+					rhs_w_attr.insert({ s->at(0), v });
+				}
+			}
+
+			if (lhs_w_attr.empty() && rhs_w_attr.empty()) {
+				// comparing lhs and rhs
+				for (STRING_LIST* lhs_s : lhs_value) {
+					for (STRING_LIST* rhs_s : rhs_value) {
+						if (lhs_s->at(0).compare(rhs_s->at(0)) == 0) {
+							STRING_LIST* to_insert = new STRING_LIST();
+							to_insert->push_back(lhs_s->at(0));
+							to_insert->push_back(lhs_s->at(0));
+
+							if (!IsDuplicate(value, *to_insert)) {
+								value.insert(to_insert);
+							}
+						}
+					}
+				}
+			}
+			else if (!lhs_w_attr.empty() && !rhs_w_attr.empty()) {
+				// compare lhs_w_attr and rhs_w_attr
+				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
+					for (auto g = rhs_w_attr.cbegin(); g != rhs_w_attr.cend(); g++) {
+						string lhs_key = (*f).first;
+						string rhs_key = (*g).first;
+						STRING_SET lhs_v = (*f).second;
+						STRING_SET rhs_v = (*g).second;
+
+						STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
+
+						if (!val.empty()) {
+							STRING_LIST* to_insert = new STRING_LIST();
+							to_insert->push_back(lhs_key);
+							to_insert->push_back(rhs_key);
+
+							if (!IsDuplicate(value, *to_insert)) {
+								value.insert(to_insert);
+							}
+						}
+					}
+				}
+			}
+			else if (!lhs_w_attr.empty() && rhs_w_attr.empty()) {
+				// comparing lhs_w_attr and rhs
+				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
+					string key = (*f).first;
+					STRING_SET v = (*f).second;
+					STRING_SET val = GetIntersectResult(v, rhs_value, 0);
+
+					for (string s : val) {
+						STRING_LIST* to_insert = new STRING_LIST();
+						to_insert->push_back(key);
+						to_insert->push_back(s);
+
+						if (!IsDuplicate(value, *to_insert)) {
+							value.insert(to_insert);
+						}
+					}	
+				}
+			}
+			else if (lhs_w_attr.empty() && !rhs_w_attr.empty()) {
+				// comparing lhs and rhs_w_attr
+				for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
+					string key = (*f).first;
+					STRING_SET v = (*f).second;
+					STRING_SET val = GetIntersectResult(v, lhs_value, 0);
+
+					for (string s : val) {
+						STRING_LIST* to_insert = new STRING_LIST();
+						to_insert->push_back(s);
+						to_insert->push_back(key);
+
+						if (!IsDuplicate(value, *to_insert)) {
+							value.insert(to_insert);
+						}
+					}
+				}
+			}			
+		}
+
+		if (value.empty()) {
+			return false;
+		}
+
+		AddResult(key, value, results_map);
+	}
+	
+	return true;
+}
+
+STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) {
 	if (DEBUG) {
 		cout << "PQLEvaluator - EvaluateOneSynonymSet" << endl;
 		cout << "fcall: " << f_call << "; param: " << param << endl;
 	}
+	
+	PKB pkb;
+	RelationManager rm = pkb.GetRelationManager();
+	CFGManager cfgm = pkb.GetCFGManager();
+	STRINGLIST_SET result = *(new STRINGLIST_SET());
+	PKB::AffectsManager am = pkb.GetAffectsManager();
 
 	if (f_call.compare(TYPE_COND_FOLLOWS) == 0) {
 		result = ConvertSet(rm.GetFollows(ParsingStmtRef(param)));
@@ -1188,10 +1145,8 @@ STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) 
 		if (DEBUG) {
 			cout << "PQLEvaluator - EvaluateOneSynonymSet: No such relref." << endl;
 		}
-
 		return {};
 	}
-
 	if (DEBUG) {
 		cout << "PQLEvaluator - EvaluateOneSynonymSet: Result clause's size = " << result.size() << endl;
 	}
@@ -1199,17 +1154,17 @@ STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) 
 }
 
 STRINGLIST_SET PQLEvaluator::EvaluateInverseOneSynonymSet(string f_call, string param) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - EvaluateInverseOneSynonymSet" << endl;
+		cout << "fcall: " << f_call << "; param: " << param << endl;
+	}
+	
 	PKB pkb = PKB();
 	RelationManager rm = pkb.GetRelationManager();
 	CFGManager cfgm = pkb.GetCFGManager();
 	PKB::AffectsManager am = pkb.GetAffectsManager();
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
-
-	if (DEBUG) {
-		cout << "PQLEvaluator - EvaluateInverseOneSynonymSet" << endl;
-		cout << "fcall: " << f_call << "; param: " << param << endl;
-	}
-
+	
 	if (f_call.compare(TYPE_COND_FOLLOWS) == 0) {
 		result = ConvertSet(rm.GetInverseFollows(ParsingStmtRef(param)));
 	}
@@ -1259,26 +1214,24 @@ STRINGLIST_SET PQLEvaluator::EvaluateInverseOneSynonymSet(string f_call, string 
 		}
 		return {};
 	}
-
 	if (DEBUG) {
 		cout << "PQLEvaluator - EvaluateInverseOneSynonymSet: Result clause's size = " << result.size() << endl;
 	}
-
 	return result;
 }
 
 STRINGLIST_SET PQLEvaluator::EvaluateTwoSynonymSet(string f_call) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - EvaluateTwoSynonymSet" << endl;
+		cout << "fcall: " << f_call << endl;
+	}
+	
 	PKB pkb = PKB();
 	RelationManager rm = pkb.GetRelationManager();
 	CFGManager cfgm = pkb.GetCFGManager();
 	PKB::AffectsManager am = pkb.GetAffectsManager();
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
-
-	if (DEBUG) {
-		cout << "PQLEvaluator - EvaluateTwoSynonymSet" << endl;
-		cout << "fcall: " << f_call << endl;
-	}
-
+	
 	if (UNIT_TESTING) {
 		cout << "PQLEvaluator - EvaluateTwoSynonymSet - UNIT TESTING" << endl;
 		if (f_call.compare(TYPE_COND_USES_S) == 0 || f_call.compare(TYPE_COND_MODIFIES_S) == 0) {
@@ -1371,15 +1324,15 @@ STRINGLIST_SET PQLEvaluator::EvaluateTwoSynonymSet(string f_call) {
 }
 
 STRINGLIST_SET PQLEvaluator::EvaluateAllCall(string output_var_type) {
-	PKB pkb = PKB();
-	DataManager dm = pkb.GetDataManager();
-	STRINGLIST_SET result = *(new STRINGLIST_SET());
-
 	if (DEBUG) {
 		cout << "PQLEvaluator - EvaluateAllCall" << endl;
 		cout << "output_var_type: " << output_var_type << endl;
 	}
-
+	
+	PKB pkb = PKB();
+	DataManager dm = pkb.GetDataManager();
+	STRINGLIST_SET result = *(new STRINGLIST_SET());
+	
 	if (output_var_type.compare(TYPE_STMT) == 0 || output_var_type.compare(TYPE_PROG_LINE) == 0) {
 		result = ConvertSet(dm.GetAllStatements());
 	}
@@ -1424,7 +1377,26 @@ STRINGLIST_SET PQLEvaluator::EvaluateAllCall(string output_var_type) {
 	return result;
 }
 
+STRING_SET PQLEvaluator::ConvertSet(STRINGLIST_SET result_set) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - ConvertSet" << endl;
+	}
+
+	STRING_SET final_result = *(new STRING_SET());
+
+	if (!result_set.empty()) {
+		for (STRING_LIST* k : result_set) {
+			final_result.insert(k->at(0));
+		}
+	}
+	return final_result;
+}
+
 STRINGLIST_SET PQLEvaluator::ConvertSet(STRING_SET result_set) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - ConvertSet" << endl;
+	}
+
 	STRINGLIST_SET final_result = *(new STRINGLIST_SET());
 
 	if (!result_set.empty()) {
@@ -1439,6 +1411,10 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(STRING_SET result_set) {
 }
 
 STRINGLIST_SET PQLEvaluator::ConvertSet(INTEGER_SET result_set) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - ConvertSet" << endl;
+	}
+
 	STRINGLIST_SET final_result = *(new STRINGLIST_SET());
 
 	if (!result_set.empty()) {
@@ -1454,6 +1430,10 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(INTEGER_SET result_set) {
 }
 
 STRINGLIST_SET PQLEvaluator::ConvertSet(DOUBLE_SET result_set) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - ConvertSet" << endl;
+	}
+
 	STRINGLIST_SET final_result = *(new STRINGLIST_SET());
 
 	if (!result_set.empty()) {
@@ -1471,6 +1451,10 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(DOUBLE_SET result_set) {
 }
 
 STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_STMT_PAIR_LIST result_set) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - ConvertSet" << endl;
+	}
+
 	STRINGLIST_SET final_result = *(new STRINGLIST_SET());
 
 	if (!result_set.empty()) {
@@ -1490,6 +1474,10 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_STMT_PAIR_LIST result_set) {
 }
 
 STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_VAR_PAIR_LIST result_set) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - ConvertSet" << endl;
+	}
+
 	STRINGLIST_SET final_result = *(new STRINGLIST_SET());
 
 	if (!result_set.empty()) {
@@ -1509,6 +1497,10 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_VAR_PAIR_LIST result_set) {
 }
 
 STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_VAR_PAIR_LIST result_set) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - ConvertSet" << endl;
+	}
+
 	STRINGLIST_SET final_result = *(new STRINGLIST_SET());
 
 	if (!result_set.empty()) {
@@ -1528,6 +1520,10 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_VAR_PAIR_LIST result_set) {
 }
 
 STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_PROC_PAIR_LIST result_set) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - ConvertSet" << endl;
+	}
+
 	STRINGLIST_SET final_result = *(new STRINGLIST_SET());
 
 	if (!result_set.empty()) {
@@ -1546,758 +1542,11 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_PROC_PAIR_LIST result_set) {
 	return final_result;
 }
 
-bool PQLEvaluator::CheckConstraints(STRINGPAIR_SET* constraints, STRING_STRING_MAP entity_map, 
-	STRINGLIST_STRINGLISTSET_MAP* results_map, STRING_LIST key, STRINGLIST_SET* value) {
-	if (DEBUG) {
-		cout << "PQLEvaluator - Check WITH constraints" << endl;
-	}
-	
-	bool is_checked = true;
-	
-	STRINGPAIR_SET checked = STRINGPAIR_SET();
-	for (STRING_PAIR* check : *constraints) {
-		string lhs_synonym = check->first;
-		string rhs_synonym = check->second;
-
-		string parsed_lhs = ParsingSynonym(lhs_synonym);
-		string parsed_rhs = ParsingSynonym(rhs_synonym);
-
-		string lhs_attr = ParsingSynonymAttribute(lhs_synonym);
-		string rhs_attr = ParsingSynonymAttribute(rhs_synonym);
-		
-		INTEGER_PAIR key_with_constraint = make_pair(-1, -1);
-
-		for (int key_index = 0; key_index < key.size(); key_index++) {
-			// Check if constraint applies to synonyms
-			if (parsed_lhs.compare(key[key_index]) == 0) {
-				key_with_constraint.first = key_index;
-			}
-			else if (parsed_rhs.compare(key[key_index]) == 0) {
-				key_with_constraint.second = key_index;
-			}
-		}
-
-		if (key_with_constraint.first == -1 && key_with_constraint.second == -1) {
-			// not applicable constraint
-			continue;
-		}
-		else if (key_with_constraint.first != -1 && key_with_constraint.second == -1) {
-			// LHS = synonym, RHS = int/str/synonym@result
-			cout << "REACHED key_with_constraint.first != -1 && key_with_constraint.second == -1" << endl;
-
-			STRING_SET lhs = GetNewResult(*value, key_with_constraint.first);
-			STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
-			string lhs_type = entity_map.at(parsed_lhs);
-			if (!IsSameEntityType(lhs_type, lhs_attr)) {
-				for (string s : lhs) {
-					STRING_SET v = GetAlternateResult(s, lhs_type);
-
-					lhs_w_attr.insert({ s, v });
-				}
-			}
-
-			if (IsString(rhs_synonym) || IsInteger(rhs_synonym)) {
-				STRING_SET rhs = STRING_SET();
-
-				IsString(rhs_synonym) ? rhs.insert(ParsingEntRef(rhs_synonym)) : rhs.insert(rhs_synonym);
-				
-				if (lhs_w_attr.empty()) {
-					// compare lhs and str/int
-					STRINGLIST_SET val = ConvertSet(GetIntersectResult(lhs, rhs));
-					RemoveIrrelevant(value, val, key_with_constraint.first);
-				}
-				else {
-					// compare lhs attr and str/int
-					STRING_SET lhs_val = STRING_SET();
-					for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-						STRING_SET v = (*f).second;
-						STRING_SET val = GetIntersectResult(rhs, v);
-						lhs_w_attr.at((*f).first) = val;
-
-						if (!val.empty()) {
-							lhs_val.insert((*f).first);
-						}
-					}
-
-					RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.first);
-				}
-			}
-			else {
-				STRING_LIST* check_key = GetRelatedSynonyms(parsed_rhs, *results_map);
-				if (check_key == nullptr) {
-					// not in results yet
-					is_checked = false;
-					
-					string rhs_type = entity_map.at(parsed_rhs);
-					STRINGLIST_SET rhs = EvaluateAllCall(rhs_type);
-					STRING_STRINGSET_MAP rhs_w_attr = STRING_STRINGSET_MAP();
-
-					if (!IsSameEntityType(rhs_type, rhs_attr)) {
-						for (STRING_LIST* s : rhs) {
-							STRING_SET v = GetAlternateResult(s->at(0), rhs_type);
-
-							rhs_w_attr.insert({ s->at(0), v });
-
-						}
-					}
-
-					if (lhs_w_attr.empty() && rhs_w_attr.empty()) {
-						// compare lhs and rhs
-						STRING_SET val = GetIntersectResult(lhs, rhs, 0);
-
-						if (DEBUG) {
-							cout << "LHS VALUE: " << endl;
-							Print(lhs);
-
-							cout << "RHS VALUE: " << endl;
-							Print(rhs);
-
-							cout << "INTERSECTED VALUE: " << endl;
-							Print(val);
-						}
-
-						RemoveIrrelevant(value, ConvertSet(val), key_with_constraint.first);
-					}
-					else if (lhs_w_attr.empty() && !rhs_w_attr.empty()) {
-						// compare lhs and rhs attr
-
-						STRING_SET lhs_val = STRING_SET();
-						STRING_SET rhs_val = STRING_SET();
-						for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
-
-							STRING_SET v = (*f).second;
-							STRING_SET val = GetIntersectResult(v, lhs);
-
-							if (DEBUG) {
-								cout << "LHS VALUE: " << endl;
-								Print(lhs);
-
-								cout << "RHS VALUE: " << endl;
-								Print(v);
-
-								cout << "INTERSECTED VALUE: " << endl;
-								Print(val);
-							}
-
-							rhs_w_attr.at((*f).first) = val;
-							lhs_val.insert(val.begin(), val.end());
-
-							if (!val.empty()) {
-								rhs_val.insert((*f).first);
-							}
-						}
-
-						RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.first);
-					}
-					else if (!lhs_w_attr.empty() && rhs_w_attr.empty()) {
-						// compare lhs attr and rhs
-
-						STRING_SET lhs_val = STRING_SET();
-						STRING_SET rhs_val = STRING_SET();
-						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-							STRING_SET v = (*f).second;
-							STRING_SET val = GetIntersectResult(v, rhs, 0);
-
-							if (DEBUG) {
-								cout << "LHS VALUE: " << endl;
-								Print(v);
-
-								cout << "RHS VALUE: " << endl;
-								Print(rhs);
-
-								cout << "INTERSECTED VALUE: " << endl;
-								Print(val);
-							}
-
-							lhs_w_attr.at((*f).first) = val;
-							rhs_val.insert(val.begin(), val.end());
-
-							if (!val.empty()) {
-								lhs_val.insert((*f).first);
-							}
-						}
-
-						RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.first);
-					}
-					else if (!lhs_w_attr.empty() && !rhs_w_attr.empty()) {
-						// compare lhs attr and rhs attr
-
-						STRING_SET lhs_val = STRING_SET();
-						STRING_SET rhs_val = STRING_SET();
-						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-							for (auto g = rhs_w_attr.cbegin(); g != rhs_w_attr.cend(); g++) {
-								STRING_SET lhs_v = (*f).second;
-								STRING_SET rhs_v = (*g).second;
-
-								STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
-
-								if (DEBUG) {
-									cout << "LHS VALUE: " << endl;
-									Print(lhs_v);
-
-									cout << "RHS VALUE: " << endl;
-									Print(rhs_v);
-
-									cout << "INTERSECTED VALUE: " << endl;
-									Print(val);
-								}
-
-								if (!val.empty()) {
-									lhs_val.insert((*f).first);
-									rhs_val.insert((*g).first);
-								}
-							}
-						}
-
-						RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.first);
-					}
-				}
-				else {					
-					int index = GetCommonSynonymsIndex(*check_key, parsed_rhs);
-					STRING_SET rhs = GetNewResult(results_map->at(check_key), index);
-					STRING_STRINGSET_MAP rhs_w_attr = STRING_STRINGSET_MAP();
-					string rhs_type = entity_map.at(parsed_rhs);
-
-					if (!IsSameEntityType(rhs_type, rhs_attr)) {
-						for (string s : rhs) {
-							STRING_SET v = GetAlternateResult(s, rhs_type);
-							rhs_w_attr.insert({ s, v });
-						}
-					}
-
-					if (lhs_w_attr.empty() && rhs_w_attr.empty()) {
-						// compare lhs and rhs
-						STRINGLIST_SET val = ConvertSet(GetIntersectResult(lhs, rhs));
-						RemoveIrrelevant(value, val, key_with_constraint.first);
-						RemoveIrrelevant(&results_map->at(check_key), val, index);
-					}
-					else if (lhs_w_attr.empty() && !rhs_w_attr.empty()) {
-						// compare lhs and rhs attr
-
-						STRING_SET lhs_val = STRING_SET();
-						STRING_SET rhs_val = STRING_SET();
-						for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
-							STRING_SET v = (*f).second;
-							STRING_SET val = GetIntersectResult(lhs, v);
-
-							if (DEBUG) {
-								cout << "LHS VALUE: " << endl;
-								Print(lhs);
-
-								cout << "RHS VALUE: " << endl;
-								Print(v);
-
-								cout << "INTERSECTED VALUE: " << endl;
-								Print(val);
-							}
-
-							rhs_w_attr.at((*f).first) = val;
-							lhs_val.insert(val.begin(), val.end());
-
-							if (!val.empty()) {
-								rhs_val.insert((*f).first);
-							}
-						}
-
-						RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.first);
-						RemoveIrrelevant(&results_map->at(check_key), ConvertSet(rhs_val), index);
-					}
-					else if (!lhs_w_attr.empty() && rhs_w_attr.empty()) {
-						// compare lhs attr and rhs
-
-						STRING_SET lhs_val = STRING_SET();
-						STRING_SET rhs_val = STRING_SET();
-						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-							STRING_SET v = (*f).second;
-							STRING_SET val = GetIntersectResult(rhs, v);
-
-							if (DEBUG) {
-								cout << "LHS VALUE: " << endl;
-								Print(rhs);
-
-								cout << "RHS VALUE: " << endl;
-								Print(v);
-
-								cout << "INTERSECTED VALUE: " << endl;
-								Print(val);
-							}
-
-							lhs_w_attr.at((*f).first) = val;
-							rhs_val.insert(val.begin(), val.end());
-
-							if (!val.empty()) {
-								lhs_val.insert((*f).first);
-							}
-						}
-
-						RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.first);
-						RemoveIrrelevant(&results_map->at(check_key), ConvertSet(rhs_val), index);
-					}
-					else if (!lhs_w_attr.empty() && !rhs_w_attr.empty()) {
-						// compare lhs attr and rhs attr
-
-						STRING_SET lhs_val = STRING_SET();
-						STRING_SET rhs_val = STRING_SET();
-						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-							for (auto g = rhs_w_attr.cbegin(); g != rhs_w_attr.cend(); g++) {
-								STRING_SET lhs_v = (*f).second;
-								STRING_SET rhs_v = (*g).second;
-
-								STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
-
-								if (DEBUG) {
-									cout << "LHS VALUE: " << endl;
-									Print(lhs_v);
-
-									cout << "RHS VALUE: " << endl;
-									Print(rhs_v);
-
-									cout << "INTERSECTED VALUE: " << endl;
-									Print(val);
-								}
-
-								if (!val.empty()) {
-									lhs_val.insert((*f).first);
-									rhs_val.insert((*g).first);
-								}
-							}
-						}
-
-						RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.first);
-						RemoveIrrelevant(&results_map->at(check_key), ConvertSet(rhs_val), index);
-					}
-				}
-			}
-
-		}
-		else if (key_with_constraint.first == -1 && key_with_constraint.second != -1) {
-			// LHS = int/str/synonym@result, RHS = synonym
-
-			cout << "REACHED key_with_constraint.first == -1 && key_with_constraint.second != -1" << endl;
-
-			STRING_SET rhs = GetNewResult(*value, key_with_constraint.second);
-			STRING_STRINGSET_MAP rhs_w_attr = STRING_STRINGSET_MAP();
-			string rhs_type = entity_map.at(parsed_rhs);
-
-			if (!IsSameEntityType(rhs_type, rhs_attr)) {
-				for (string s : rhs) {
-					STRING_SET v = GetAlternateResult(s, rhs_type);
-					rhs_w_attr.insert({ s, v });
-				}
-			}
-
-			if (IsString(lhs_synonym) || IsInteger(lhs_synonym)) {
-				cout << "reached string/integer" << endl;
-
-				STRING_SET lhs = STRING_SET();
-
-				IsString(lhs_synonym) ? rhs.insert(ParsingEntRef(lhs_synonym)) : lhs.insert(lhs_synonym);
-
-				if (rhs_w_attr.empty()) {
-					// compare str/int and rhs
-					STRINGLIST_SET val = ConvertSet(GetIntersectResult(rhs, lhs));
-					RemoveIrrelevant(value, val, key_with_constraint.second);
-				}
-				else {
-					// compare str/int and rhs attr 
-					STRING_SET rhs_val = STRING_SET();
-					for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
-						STRING_SET v = (*f).second;
-						STRING_SET val = GetIntersectResult(lhs, v);
-						rhs_w_attr.at((*f).first) = val;
-
-						if (!val.empty()) {
-							rhs_val.insert((*f).first);
-						}
-					}
-
-					RemoveIrrelevant(value, ConvertSet(rhs_val), key_with_constraint.second);
-				}
-			}
-			else {
-				STRING_LIST* check_key = GetRelatedSynonyms(parsed_lhs, *results_map);
-				if (check_key == nullptr) {
-					// not in results yet
-					is_checked = false;
-
-					string lhs_type = entity_map.at(parsed_lhs);
-					STRINGLIST_SET lhs = EvaluateAllCall(lhs_type);
-					STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
-
-					if (!IsSameEntityType(lhs_type, lhs_attr)) {
-						for (STRING_LIST* s : lhs) {
-							STRING_SET v = GetAlternateResult(s->at(0), lhs_type);
-							lhs_w_attr.insert({ s->at(0), v });
-						}
-					}
-
-					if (lhs_w_attr.empty() && rhs_w_attr.empty()) {
-						// compare lhs and rhs
-						STRING_SET val = GetIntersectResult(rhs, lhs, 0);
-						RemoveIrrelevant(value, ConvertSet(val), key_with_constraint.second);
-					}
-					else if (!lhs_w_attr.empty() && rhs_w_attr.empty()) {
-						// compare lhs attr and rhs
-
-						STRING_SET lhs_val = STRING_SET();
-						STRING_SET rhs_val = STRING_SET();
-						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-							STRING_SET v = (*f).second;
-							STRING_SET val = GetIntersectResult(v, rhs);
-
-							if (DEBUG) {
-								cout << "LHS VALUE: " << endl;
-								Print(v);
-
-								cout << "RHS VALUE: " << endl;
-								Print(rhs);
-
-								cout << "INTERSECTED VALUE: " << endl;
-								Print(val);
-							}
-
-							lhs_w_attr.at((*f).first) = val;
-							rhs_val.insert(val.begin(), val.end());
-
-							if (!val.empty()) {
-								lhs_val.insert((*f).first);
-							}
-						}
-
-						RemoveIrrelevant(value, ConvertSet(rhs_val), key_with_constraint.second);
-					}
-					else if (lhs_w_attr.empty() && !rhs_w_attr.empty()) {
-						// compare lhs and rhs attr
-
-						STRING_SET lhs_val = STRING_SET();
-						STRING_SET rhs_val = STRING_SET();
-						for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
-							STRING_SET v = (*f).second;
-							STRING_SET val = GetIntersectResult(v, lhs, 0);
-
-							if (DEBUG) {
-								cout << "LHS VALUE: " << endl;
-								Print(lhs);
-
-								cout << "RHS VALUE: " << endl;
-								Print(v);
-
-								cout << "INTERSECTED VALUE: " << endl;
-								Print(val);
-							}
-
-							rhs_w_attr.at((*f).first) = val;
-							lhs_val.insert(val.begin(), val.end());
-
-							if (!val.empty()) {
-								rhs_val.insert((*f).first);
-							}
-						}
-
-						RemoveIrrelevant(value, ConvertSet(rhs_val), key_with_constraint.second);
-					}
-					else if (!lhs_w_attr.empty() && !rhs_w_attr.empty()) {
-						// compare lhs attr and rhs attr
-
-						STRING_SET lhs_val = STRING_SET();
-						STRING_SET rhs_val = STRING_SET();
-						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-							for (auto g = rhs_w_attr.cbegin(); g != rhs_w_attr.cend(); g++) {
-								STRING_SET lhs_v = (*f).second;
-								STRING_SET rhs_v = (*g).second;
-
-								STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
-
-								if (DEBUG) {
-									cout << "LHS VALUE: " << endl;
-									Print(lhs_val);
-
-									cout << "RHS VALUE: " << endl;
-									Print(rhs_v);
-
-									cout << "INTERSECTED VALUE: " << endl;
-									Print(val);
-								}
-
-								if (!val.empty()) {
-									lhs_val.insert((*f).first);
-									rhs_val.insert((*g).first);
-								}
-							}
-						}
-
-						RemoveIrrelevant(value, ConvertSet(rhs_val), key_with_constraint.second);
-					}
-				}
-				else {
-					int index = GetCommonSynonymsIndex(*check_key, parsed_lhs);
-
-					string lhs_type = entity_map.at(parsed_lhs);
-					STRING_SET lhs = GetNewResult(results_map->at(check_key), index);
-					STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
-
-					if (!IsSameEntityType(lhs_type, lhs_attr)) {
-						for (string s : lhs) {
-							STRING_SET v = GetAlternateResult(s, lhs_type);
-							lhs_w_attr.insert({ s, v });
-						}
-					}
-
-					if (lhs_w_attr.empty() && rhs_w_attr.empty()) {
-						// compare lhs and rhs
-						STRINGLIST_SET val = ConvertSet(GetIntersectResult(rhs, lhs));
-						RemoveIrrelevant(&results_map->at(check_key), val, index);
-						RemoveIrrelevant(value, val, key_with_constraint.second);
-					}
-					else if (lhs_w_attr.empty() && !rhs_w_attr.empty()) {
-						// compare lhs and rhs attr
-
-						STRING_SET lhs_val = STRING_SET();
-						STRING_SET rhs_val = STRING_SET();
-						for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
-							STRING_SET v = (*f).second;
-							STRING_SET val = GetIntersectResult(lhs, v);
-							
-							if (DEBUG) {
-								cout << "LHS VALUE: " << endl;
-								Print(lhs);
-
-								cout << "RHS VALUE: " << endl;
-								Print(v);
-
-								cout << "INTERSECTED VALUE: " << endl;
-								Print(val);
-							}
-
-							rhs_w_attr.at((*f).first) = val;
-							lhs_val.insert(val.begin(), val.end());
-
-							if (!val.empty()) {
-								rhs_val.insert((*f).first);
-							}
-						}
-
-						RemoveIrrelevant(&results_map->at(check_key), ConvertSet(rhs_val), index);
-						RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.second);
-					}
-					else if (!lhs_w_attr.empty() && rhs_w_attr.empty()) {
-						// compare lhs attr and rhs
-
-						STRING_SET lhs_val = STRING_SET();
-						STRING_SET rhs_val = STRING_SET();
-						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-							STRING_SET v = (*f).second;
-							STRING_SET val = GetIntersectResult(rhs, v);
-
-							if (DEBUG) {
-								cout << "LHS VALUE: " << endl;
-								Print(v);
-
-								cout << "RHS VALUE: " << endl;
-								Print(rhs);
-
-								cout << "INTERSECTED VALUE: " << endl;
-								Print(val);
-							}
-
-							lhs_w_attr.at((*f).first) = val;
-							rhs_val.insert(val.begin(), val.end());
-
-							if (!val.empty()) {
-								lhs_val.insert((*f).first);
-							}
-						}
-
-						RemoveIrrelevant(&results_map->at(check_key), ConvertSet(rhs_val), index);
-						RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.second);
-					}
-					else if (!lhs_w_attr.empty() && !rhs_w_attr.empty()) {
-						// compare lhs attr and rhs attr
-
-						STRING_SET lhs_val = STRING_SET();
-						STRING_SET rhs_val = STRING_SET();
-						for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-							for (auto g = rhs_w_attr.cbegin(); g != rhs_w_attr.cend(); g++) {
-								STRING_SET lhs_v = (*f).second;
-								STRING_SET rhs_v = (*g).second;
-
-								STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
-
-								if (DEBUG) {
-									cout << "LHS VALUE: " << endl;
-									Print(lhs_v);
-
-									cout << "RHS VALUE: " << endl;
-									Print(rhs_v);
-
-									cout << "INTERSECTED VALUE: " << endl;
-									Print(val);
-								}
-
-								if (!val.empty()) {
-									lhs_val.insert((*f).first);
-									rhs_val.insert((*g).first);
-								}
-							}
-						}
-
-						RemoveIrrelevant(&results_map->at(check_key), ConvertSet(rhs_val), index);
-						RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.second);
-					}
-				}
-			}
-		}
-		else if (key_with_constraint.first != -1 && key_with_constraint.second != -1) {
-			// LHS = RHS = synonym
-
-			cout << "REACHED key_with_constraint.first != -1 && key_with_constraint.second != -1" << endl;
-
-			STRING_SET lhs = GetNewResult(*value, key_with_constraint.first);
-			STRING_SET rhs = GetNewResult(*value, key_with_constraint.second);
-			STRING_STRINGSET_MAP lhs_w_attr = STRING_STRINGSET_MAP();
-			STRING_STRINGSET_MAP rhs_w_attr = STRING_STRINGSET_MAP();
-			string lhs_type = entity_map.at(parsed_lhs);
-			string rhs_type = entity_map.at(parsed_rhs);
-			if (!IsSameEntityType(lhs_type, lhs_attr)) {
-				for (string s : lhs) {
-					STRING_SET v = GetAlternateResult(s, lhs_type);
-					lhs_w_attr.insert({ s, v });
-				}
-			}
-
-			if (!IsSameEntityType(rhs_type, rhs_attr)) {
-				for (string s : rhs) {
-					STRING_SET v = GetAlternateResult(s, rhs_type);
-					rhs_w_attr.insert({ s, v });
-				}
-			}
-
-			if (lhs_w_attr.empty() && rhs_w_attr.empty()) {
-				// compare lhs and rhs
-				STRINGLIST_SET val = ConvertSet(GetIntersectResult(lhs, rhs));
-				RemoveIrrelevant(value, val, key_with_constraint.first);
-				RemoveIrrelevant(value, val, key_with_constraint.second);
-			}
-			else if (lhs_w_attr.empty() && !rhs_w_attr.empty()) {
-				// compare lhs and rhs attr
-
-				STRING_SET lhs_val = STRING_SET();
-				STRING_SET rhs_val = STRING_SET();
-				for (auto f = rhs_w_attr.cbegin(); f != rhs_w_attr.cend(); f++) {
-					STRING_SET v = (*f).second;
-					STRING_SET val = GetIntersectResult(lhs, v);
-
-					if (DEBUG) {
-						cout << "LHS VALUE: " << endl;
-						Print(lhs);
-
-						cout << "RHS VALUE: " << endl;
-						Print(v);
-
-						cout << "INTERSECTED VALUE: " << endl;
-						Print(val);
-					}
-
-					rhs_w_attr.at((*f).first) = val;
-					lhs_val.insert(val.begin(), val.end());
-
-					if (!val.empty()) {
-						rhs_val.insert((*f).first);
-					}
-				}
-				
-				RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.first);
-				RemoveIrrelevant(value, ConvertSet(rhs_val), key_with_constraint.second);
-			}
-			else if (!lhs_w_attr.empty() && rhs_w_attr.empty()) {
-				// compare lhs attr and rhs
-
-				STRING_SET lhs_val = STRING_SET();
-				STRING_SET rhs_val = STRING_SET();
-				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-					STRING_SET v = (*f).second;
-					STRING_SET val = GetIntersectResult(rhs, v);
-
-					if (DEBUG) {
-						cout << "LHS VALUE: " << endl;
-						Print(v);
-
-						cout << "RHS VALUE: " << endl;
-						Print(rhs);
-
-						cout << "INTERSECTED VALUE: " << endl;
-						Print(val);
-					}
-
-					lhs_w_attr.at((*f).first) = val;
-					rhs_val.insert(val.begin(), val.end());
-
-					if (!val.empty()) {
-						lhs_val.insert((*f).first);
-					}
-				}
-
-				RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.first);
-				RemoveIrrelevant(value, ConvertSet(rhs_val), key_with_constraint.second);
-			}
-			else if (!lhs_w_attr.empty() && !rhs_w_attr.empty()) {
-				// compare lhs attr and rhs attr
-
-				STRING_SET lhs_val = STRING_SET();
-				STRING_SET rhs_val = STRING_SET();
-				for (auto f = lhs_w_attr.cbegin(); f != lhs_w_attr.cend(); f++) {
-					for (auto g = rhs_w_attr.cbegin(); g != rhs_w_attr.cend(); g++) {
-						STRING_SET lhs_v = (*f).second;
-						STRING_SET rhs_v = (*g).second;
-
-						STRING_SET val = GetIntersectResult(lhs_v, rhs_v);
-
-						if (DEBUG) {
-							cout << "LHS VALUE: " << endl;
-							Print(lhs_v);
-
-							cout << "RHS VALUE: " << endl;
-							Print(rhs_v);
-
-							cout << "INTERSECTED VALUE: " << endl;
-							Print(val);
-						}
-
-						if (!val.empty()) {
-							lhs_val.insert((*f).first);
-							rhs_val.insert((*g).first);
-						}
-					}
-				}
-
-				RemoveIrrelevant(value, ConvertSet(lhs_val), key_with_constraint.first);
-				RemoveIrrelevant(value, ConvertSet(rhs_val), key_with_constraint.second);
-			}
-		}
-		else {
-			// error
-			if (DEBUG) {
-				cout << "PQLEvaluator: Checking WITH constraint - Error getting constraint synonyms" << endl;
-			}
-
-			value->clear();
-			break;
-		}
-
-		if (is_checked) {
-			checked.insert(check);
-		}
-	}
-
-	for (STRING_PAIR* s : checked) {
-		constraints->erase(s);
-	}
-	
-	return is_checked;
-}
-
-
 STRING_SET PQLEvaluator::GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2, int pos_to_check) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetIntersectResult" << endl;
+	}
+
 	STRING_SET result = *(new STRING_SET());
 
 	for (STRING_LIST* i : val2) {
@@ -2312,6 +1561,10 @@ STRING_SET PQLEvaluator::GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2
 }
 
 STRING_SET PQLEvaluator::GetIntersectResult(STRING_SET val1, STRING_SET val2) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetIntersectResult" << endl;
+	}
+
 	STRING_SET result = *(new STRING_SET());
 
 	for (auto i = val1.begin(); i != val1.end(); i++) {
@@ -2323,6 +1576,10 @@ STRING_SET PQLEvaluator::GetIntersectResult(STRING_SET val1, STRING_SET val2) {
 }
 
 STRINGLIST_SET PQLEvaluator::GetIntersectResult(STRINGLIST_SET val1, STRINGLIST_SET val2) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetIntersectResult" << endl;
+	}
+
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 
 	for (STRING_LIST* i : val1) {
@@ -2336,85 +1593,62 @@ STRINGLIST_SET PQLEvaluator::GetIntersectResult(STRINGLIST_SET val1, STRINGLIST_
 	return result;
 }
 
-STRING_SET PQLEvaluator::GetAlternateResult(string values, string type) {
+STRINGLIST_SET PQLEvaluator::GetAlternateResult(string values, string type) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetAlternateResult" << endl;
+	}
+
 	RelationManager rm = PKB().GetRelationManager();
 	DataManager dm = PKB().GetDataManager();
 
-	STRING_SET results = *(new STRING_SET());
+	STRINGLIST_SET results = *(new STRINGLIST_SET());
 
 	if (type.compare(TYPE_STMT_PRINT) == 0) {
-		results = rm.GetStmtUses(ParsingStmtRef(values));
+		if (IsInteger(values)) {
+			results = ConvertSet(rm.GetStmtUses(ParsingStmtRef(values)));
+			RemoveIrrelevant(&results, EvaluateAllCall(TYPE_VAR), 0);
+		}
+		else {
+			results = ConvertSet(rm.GetInverseStmtUses(ParsingEntRef(values)));
+			RemoveIrrelevant(&results, EvaluateAllCall(TYPE_STMT_PRINT), 0);
+		}
+
 	}
 	else if (type.compare(TYPE_STMT_READ) == 0) {
-		results = rm.GetStmtModifies(ParsingStmtRef(values));
+		if (IsInteger(values)) {
+			results = ConvertSet(rm.GetStmtModifies(ParsingStmtRef(values)));
+			RemoveIrrelevant(&results, EvaluateAllCall(TYPE_VAR), 0);
+		}
+		else {
+			results = ConvertSet(rm.GetInverseStmtModifies(ParsingEntRef(values)));
+			RemoveIrrelevant(&results, EvaluateAllCall(TYPE_STMT_READ), 0);
+		}
 	}
 	else {
 		// calls
-		string new_value = dm.GetCalledByStmt(ParsingStmtRef(values));
-		if (new_value.compare("") != 0) {
-			results.insert(new_value);
-		}
-	}
-
-	return results;
-}
-/*
-STRING_SET PQLEvaluator::GetAlternateResult(STRING_SET values, string type) {
-	RelationManager rm = PKB().GetRelationManager();
-	STRING_SET results = *(new STRING_SET());
-
-	for (string v : values) {
-		STRING_SET new_values = *(new STRING_SET());
-		if (type.compare(TYPE_STMT_PRINT) == 0) {
-			new_values = rm.GetStmtUses(ParsingStmtRef(v->at(0)));
-		}
-		else if (type.compare(TYPE_STMT_READ) == 0) {
-			new_values = rm.GetStmtModifies(ParsingStmtRef(v->at(0)));
-		}
-		else {
-			// calls
-			string new_value = PKB().GetDataManager().GetCalledByStmt(ParsingStmtRef(v->at(0)));
+		if (IsInteger(values)) {
+			string new_value = dm.GetCalledByStmt(ParsingStmtRef(values));
 			if (new_value.compare("") != 0) {
-				new_values.insert(new_value);
+				results.insert(new STRING_LIST({ new_value }));
 			}
 		}
-
-		if (new_values.empty()) {
-			results.clear();
-			break;
+		else {
+			results = ConvertSet(dm.GetInverseCalledBy(ParsingEntRef(values)));
 		}
-
-		results.insert(new_values.begin(), new_values.end());
 	}
-
 	return results;
 }
-*/
+
 STRING_SET PQLEvaluator::GetAlternateResult(STRINGLIST_SET values, string type) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetAlternateResult" << endl;
+	}
+
 	RelationManager rm = PKB().GetRelationManager();
 	STRING_SET results = *(new STRING_SET());
 
 	for (STRING_LIST* v : values) {
-		STRING_SET new_values = *(new STRING_SET());
-		if (type.compare(TYPE_STMT_PRINT) == 0) {
-			new_values = rm.GetStmtUses(ParsingStmtRef(v->at(0)));
-		}
-		else if (type.compare(TYPE_STMT_READ) == 0) {
-			new_values = rm.GetStmtModifies(ParsingStmtRef(v->at(0)));
-		} 
-		else {
-			// calls
-			string new_value = PKB().GetDataManager().GetCalledByStmt(ParsingStmtRef(v->at(0)));
-			if (new_value.compare("") != 0) {
-				new_values.insert(new_value);
-			}
-		}
-
-		if (new_values.empty()) {
-			results.clear();
-			break;
-		}
-
+		STRING_SET new_values = ConvertSet(GetAlternateResult(v->at(0), type));
 		results.insert(new_values.begin(), new_values.end());
 	}
 
@@ -2422,26 +1656,14 @@ STRING_SET PQLEvaluator::GetAlternateResult(STRINGLIST_SET values, string type) 
 }
 
 STRINGLIST_SET PQLEvaluator::GetAlternateOutputResult(STRING_SET values, string type) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetAlternateOutputResult" << endl;
+	}
 	RelationManager rm = PKB().GetRelationManager();
 	STRINGLIST_SET results = *(new STRINGLIST_SET());
 
-	for (string v : values) {
-		STRING_SET new_values = *(new STRING_SET());
-		if (type.compare(TYPE_STMT_READ) == 0 || type.compare(TYPE_STMT_PRINT) == 0) {
-			new_values = rm.GetStmtUses(ParsingStmtRef(v));
-		}
-		else {
-			// calls
-			string new_value = PKB().GetDataManager().GetCalledByStmt(ParsingStmtRef(v));
-			if (new_value.compare("") != 0) {
-				new_values.insert(new_value);
-			}
-		}
-
-		if (new_values.empty()) {
-			results.clear();
-			break;
-		}
+	for (string v : values) {	
+		STRING_SET new_values = ConvertSet(GetAlternateResult(v, type));
 
 		// Combine the values
 		for (string s : new_values) {
@@ -2453,12 +1675,17 @@ STRINGLIST_SET PQLEvaluator::GetAlternateOutputResult(STRING_SET values, string 
 				results.insert(new STRING_LIST(r));
 			}
 		}
+		
 	}
 
 	return results;
 }
 
 bool PQLEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, int pos_to_check) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - RemoveIrrelevant" << endl;
+	}
+
 	bool is_changed = false;
 
 	auto it = value->begin();
@@ -2484,7 +1711,41 @@ bool PQLEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, i
 	return is_changed;
 }
 
+bool PQLEvaluator::RemoveIrrelevant(STRING_SET* value, STRINGLIST_SET tmp) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - RemoveIrrelevant" << endl;
+	}
+
+	bool is_changed = false;
+
+	auto it = value->begin();
+	while (it != value->end()) {
+		string v = (*it);
+		bool has_value = false;
+		for (STRING_LIST* tmp_entry : tmp) {
+			string check = tmp_entry->at(0);
+			if (check == v) {
+				has_value = true;
+			}
+		}
+
+		if (has_value) {
+			it++;
+		}
+		else {
+			it = value->erase(it);
+			is_changed = true;
+		}
+	}
+
+	return is_changed;
+}
+
 INTEGERPAIR_SET PQLEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, STRING_LIST small_keys) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - RemoveIrrelevant" << endl;
+	}
+
 	INTEGERPAIR_SET results = *(new INTEGERPAIR_SET());
 
 	for (int s_index = 0; s_index < small_keys.size(); s_index++) {
@@ -2505,8 +1766,11 @@ INTEGERPAIR_SET PQLEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, STR
 }
 
 int PQLEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, string synonym) {
-	int results = *(new int());
+	if (DEBUG) {
+		cout << "PQLEvaluator - RemoveIrrelevant" << endl;
+	}
 
+	int results = *(new int());
 	
 	for (int l_index = 0; l_index < large_keys.size(); l_index++) {
 		if (synonym.compare(large_keys[l_index]) == 0) {
@@ -2534,6 +1798,10 @@ STRING_SET PQLEvaluator::GetNewResult(STRINGLIST_SET value, int pos_to_check) {
 }
 
 STRINGLIST_SET PQLEvaluator::GetNewResult(STRINGLIST_SET value, INTEGER_LIST pos_to_check) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetNewResult" << endl;
+	}
+
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 
 	for (STRING_LIST* entry : value) {
@@ -2553,6 +1821,10 @@ STRINGLIST_SET PQLEvaluator::GetNewResult(STRINGLIST_SET value, INTEGER_LIST pos
 }
 
 STRINGLIST_SET PQLEvaluator::GetCombinedResult(STRINGLIST_SET large_values, STRINGLIST_SET small_values, INTEGERLIST_LIST indexes) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetNewResult" << endl;
+	}
+
 	STRINGLIST_SET results = *(new STRINGLIST_SET());
 
 	for (STRING_LIST* l_entry : large_values) {
@@ -2594,6 +1866,10 @@ STRINGLIST_SET PQLEvaluator::GetCombinedResult(STRINGLIST_SET large_values, STRI
 }
 
 STRINGLIST_SET PQLEvaluator::GetCombinedResult(STRINGLIST_SET output_result, STRINGLIST_SET result, int pos_to_compare) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetNewResult" << endl;
+	}
+
 	STRINGLIST_SET combined_result = STRINGLIST_SET();
 	for (auto result_entry = output_result.cbegin(); result_entry != output_result.cend(); result_entry++) {
 		STRING_LIST entry = *(*result_entry);
@@ -2622,17 +1898,18 @@ STRINGLIST_SET PQLEvaluator::GetCombinedResult(STRINGLIST_SET output_result, STR
 	return combined_result;
 }
 
-STRINGLIST_SET PQLEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list) {
+STRINGLIST_SET PQLEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list, STRING_STRING_MAP entity_map) {
 	if (DEBUG) {
 		cout << "PQLEvaluator - GetCartesianProduct" << endl;
-		cout << "Results map: " << endl;
-		Print(results_map);
 	}
 	
 	STRINGLIST_SET results = *(new STRINGLIST_SET());
 	STRING_LIST added_output = STRING_LIST();
 	for (string output : output_list) {
 		string parsed_output = ParsingSynonym(output);
+		string output_attr = ParsingSynonymAttribute(output);
+		string output_type = entity_map.at(parsed_output);
+
 		for (auto entry = results_map.cbegin(); entry != results_map.cend(); entry++) {
 			STRING_LIST* synonyms = (*entry).first;
 			STRINGLIST_SET values = (*entry).second;
@@ -2641,36 +1918,40 @@ STRINGLIST_SET PQLEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP re
 			for (int i = 0; i < synonyms->size(); i++) {
 				if (synonyms->at(i).compare(parsed_output) == 0) {
 					// output synonym found
-					if (!is_tuple) {
+					
+					// Check constraint if synonym has already been added in output list
+					// Added = dependency, else no
+					INTEGERPAIR_SET added_index = INTEGERPAIR_SET();
+					for (int s = 0; s < synonyms->size(); s++) {
+						for (int a = 0; a < added_output.size(); a++) {
+							if (synonyms->at(s).compare(added_output.at(a)) == 0) {
+								INTEGER_PAIR* pair = new INTEGER_PAIR();
+								pair->first = a;
+								pair->second = s;
+
+								added_index.insert(pair);
+							}
+						}
+					}
+
+					if (added_index.empty()) {
+						// Get the values to be added
+						if (is_tuple) {
+							values = ConvertSet(GetNewResult(values, i));
+						}
+							
+						// check attribute
+						if (!IsSameEntityType(output_type, output_attr)) {
+							values = ConvertSet(GetAlternateResult(values, output_type));
+						}
+
 						results = GetNoDependencyProduct(results, values);
 					}
 					else {
-						// Check constraint if synonym has already been added in output list
-						// Added = dependency, else no
-						INTEGERPAIR_SET added_index = INTEGERPAIR_SET();
-						for (int s = 0; s < synonyms->size(); s++) {
-							for (int a = 0; a < added_output.size(); a++) {
-								if (synonyms->at(s).compare(added_output.at(a)) == 0) {
-									INTEGER_PAIR* pair = new INTEGER_PAIR();
-									pair->first = a;
-									pair->second = s;
-
-									added_index.insert(pair);
-								}
-							}
-						}
-
-						if (added_index.empty()) {
-							// Get the values to be added
-							STRINGLIST_SET synonym_values = ConvertSet(GetNewResult(values, i));
-							results = GetNoDependencyProduct(results, synonym_values);
-						}
-						else {
-							// Merge with respect to dependencies
-							results = GetDependencyProduct(results, values, i, added_index);
-						}
+						// Merge with respect to dependencies
+						results = GetDependencyProduct(results, values, i, added_index, output_type, output_attr);
 					}
-					added_output.push_back(output);
+					added_output.push_back(parsed_output);
 					break;
 				}
 			}
@@ -2680,7 +1961,11 @@ STRINGLIST_SET PQLEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP re
 	return results;
 }
 
-STRINGLIST_SET PQLEvaluator::GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, int pos_to_add, INTEGERPAIR_SET to_check) {
+STRINGLIST_SET PQLEvaluator::GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, int pos_to_add, INTEGERPAIR_SET to_check, string output_type, string output_attr) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetDependencyProduct" << endl;
+	}
+
 	STRINGLIST_SET final_results = *(new STRINGLIST_SET());
 
 	if (results.empty()) {
@@ -2693,12 +1978,37 @@ STRINGLIST_SET PQLEvaluator::GetDependencyProduct(STRINGLIST_SET results, STRING
 					STRING_LIST new_value = *(new STRING_LIST());
 					new_value.insert(new_value.end(), set->begin(), set->end());
 
+					STRING_SET tmp = STRING_SET();
 					if (pos_to_add != -1) {
-						new_value.push_back(val->at(pos_to_add));
+						// check attribute 
+						if (output_type.compare("") != 0 && output_attr.compare("") != 0 && !IsSameEntityType(output_type, output_attr)) {
+							// convert
+							tmp = ConvertSet(GetAlternateResult(val->at(pos_to_add), output_type));
+							Print(tmp);
+						}
+						else {
+							// add directly
+							new_value.push_back(val->at(pos_to_add));
+						}
 					}
 
-					if (!IsDuplicate(final_results, new_value)) {
-						final_results.insert(new STRING_LIST(new_value));
+					if (!tmp.empty()) {
+						// converted: add 1 by 1
+						for (string s : tmp) {
+							// keep refreshing state
+							STRING_LIST tmp_value = new_value;
+							tmp_value.push_back(s);
+
+							if (!IsDuplicate(final_results, tmp_value)) {
+								final_results.insert(new STRING_LIST(tmp_value));
+							}
+						}
+					}
+					else {
+						// add directly
+						if (!IsDuplicate(final_results, new_value)) {
+							final_results.insert(new STRING_LIST(new_value));
+						}
 					}
 				}
 			}
@@ -2709,6 +2019,10 @@ STRINGLIST_SET PQLEvaluator::GetDependencyProduct(STRINGLIST_SET results, STRING
 }
 
 STRINGLIST_SET PQLEvaluator::GetNoDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values) {
+	if (DEBUG) {
+		cout << "PQLEvaluator - GetNoDependencyProduct" << endl;
+	}
+
 	STRINGLIST_SET final_results = *(new STRINGLIST_SET());
 
 	if (results.empty()) {
