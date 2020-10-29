@@ -20,17 +20,11 @@ public:
     STMT_IDX_SET GetInverseNext(STMT_IDX s);
     STMT_IDX_SET GetInverseNextStar(STMT_IDX s);
 
-    STMT_IDX_SET GetAffects(STMT_IDX s);
-    STMT_IDX_SET GetAffectsStar(STMT_IDX s);
-    STMT_IDX_SET GetInverseAffectsStar(STMT_IDX s);
-
     bool IsNext(STMT_IDX s1, STMT_IDX s2);
     bool IsNextStar(STMT_IDX s1, STMT_IDX s2);
 
     STMT_STMT_PAIR_LIST GetAllNext();
     STMT_STMT_PAIR_LIST GetAllNextStar();
-    STMT_STMT_PAIR_LIST GetAllAffects();
-    STMT_STMT_PAIR_LIST GetAllAffectsStar();
 
 };
 
