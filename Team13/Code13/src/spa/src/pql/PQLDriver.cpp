@@ -33,8 +33,6 @@ STRING_SET PQLDriver::Query(string query_string) {
 		}
 	}
 	else {
-		result = evaluator.Evaluate(parsed_info);
-
 		// loop: check whats in Query info
 		if (DEBUG) {
 			parsed_info.PrintEntityMap();
@@ -43,6 +41,8 @@ STRING_SET PQLDriver::Query(string query_string) {
 			parsed_info.PrintPatternMap();
 			parsed_info.PrintWithMap();
 		}
+
+		result = evaluator.Evaluate(parsed_info);
 	}
 
 	// loop: check whats in Query result
