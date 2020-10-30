@@ -7,6 +7,7 @@
 class PQLOptimizedEvaluator
 {
 	typedef priority_queue<STRING_LIST, STRINGLIST_LIST, PQLOptimization> FUNCTION_QUEUE;
+	// typedef priority_queue<> CONSTRAINT_QUEUE;
 	typedef unordered_map<STRING_SET*, FUNCTION_QUEUE> STRINGSET_FUNCTIONQUEUE_MAP;
 public:
 	QueryResult Evaluate(QueryInfo query_info);
@@ -22,10 +23,10 @@ public:
 	QueryResult SetResult(bool is_boolean_output, string bool_result, STRINGLIST_SET result);
 		
 	bool ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints);
-	bool ParseClauses(QueryInfo query_info, STRINGSET_FUNCTIONQUEUE_MAP* synonyms_map);
+	bool ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MAP* synonyms_map, STRING_INTEGER_MAP* occurrence_count);
 
-	STRING_SET* GetRelatedSynonyms(string synonym, STRINGSET_FUNCTIONQUEUE_MAP synonyms_map);
-	STRING_SET* GetRelatedSynonyms(STRING_SET synonyms, STRINGSET_FUNCTIONQUEUE_MAP* synonyms_map);
+	STRING_SET* GetRelatedSynonyms(string synonym, STRINGSET_STRINGLISTSET_MAP synonyms_map);
+	STRING_SET* GetRelatedSynonyms(STRING_SET synonyms, STRINGSET_STRINGLISTSET_MAP* synonyms_map);
 	STRING_LIST* GetRelatedSynonyms(string synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
 	STRING_LIST* GetRelatedSynonyms(STRING_LIST synonyms, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
 

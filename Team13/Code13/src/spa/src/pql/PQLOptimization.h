@@ -29,5 +29,9 @@ public:
 
     PQLOptimization(STRING_INTEGER_MAP occurrence_count);
 
+    STRING_INTEGER_MAP GetOccurrenceCount();
+    void SetOccurrenceCount(STRING_INTEGER_MAP occurrence_count);
+
     bool operator()(const STRING_LIST& lhs, const STRING_LIST& rhs);
+    bool operator()(const STRING_PAIR& lhs, const STRING_PAIR& rhs);
 };
