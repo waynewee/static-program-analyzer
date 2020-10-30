@@ -1,3 +1,4 @@
+#include "PKB.h"
 #include "PQLDriver.h"
 #include "PQLEvaluator.h"
 #include "PQLParser.h"
@@ -25,10 +26,10 @@ STRING_SET PQLDriver::Query(string query_string) {
 
 		if (DEBUG) {
 			if (parsed_info.IsSemanticsInvalid()) {
-				cout << "QUERY IS INVALID DUE TO SEMANTICS, NOT SYNTAX" << endl;
+				cout << "Query - Semantically Invalid" << endl;
 			}
 			else {
-				cout << "NOTHING TO DO WITH JUST SEMANTICS" << endl;
+				cout << "Query - Syntactically Invalid" << endl;
 			}
 		}
 	}
@@ -57,11 +58,11 @@ STRING_SET PQLDriver::Query(string query_string) {
 
 			result = PQLEvaluator().Evaluate(parsed_info);
 		}
+
+		// Clear PKB's cache
+		PKB().ClearCache();
 	}
 
-	// loop: check whats in Query result
-
 	final_result = projector.Project(result);
-
 	return final_result;
 }
