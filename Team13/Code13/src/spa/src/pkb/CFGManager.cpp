@@ -197,5 +197,10 @@ void CFGManager::InsertCache(CFG_ADJACENCY_LIST &table, STMT_IDX_SET *result, ST
 CFG &CFGManager::GetCFG() {
     return cfg_;
 }
+void CFGManager::ClearCache() {
+    next_star_cache_.clear();
+    inverse_next_star_cache_.clear();
+    all_next_star_edge_cache_.clear();
+}
 
 

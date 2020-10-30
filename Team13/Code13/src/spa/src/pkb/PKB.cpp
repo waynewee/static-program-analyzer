@@ -42,6 +42,10 @@ CFGManager PKB::GetCFGManager() {
 PKB::AffectsManager PKB::GetAffectsManager() {
     return affects_manager_;
 }
+void PKB::ClearCache() {
+    cfg_manager_.ClearCache();
+    affects_manager_.ClearCache();
+}
 
 STMT_IDX_SET PKB::AffectsManager::affects_computed_set_;
 STMT_IDX_SET PKB::AffectsManager::inverse_affects_computed_set_;
@@ -396,4 +400,18 @@ STMT_IDX_SET PKB::AffectsManager::GetAllInverseAffectsKeys() {
         }
     }
     return all_inverse_affects_keys_;
+}
+void PKB::AffectsManager::ClearCache() {
+    affects_computed_set_.clear();
+    inverse_affects_computed_set_.clear();
+    affects_table_.clear();
+    inverse_affects_table_.clear();
+    all_affects_keys_.clear();
+    all_inverse_affects_keys_.clear();
+    all_affects_.clear();
+    affects_star_computed_set_.clear();
+    inverse_affects_star_computed_set_.clear();
+    affects_star_table_.clear();
+    inverse_affects_star_table_.clear();
+    all_affects_star_.clear();
 }
