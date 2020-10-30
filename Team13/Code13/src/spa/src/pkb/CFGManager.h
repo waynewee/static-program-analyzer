@@ -25,6 +25,7 @@ public:
 
     STMT_STMT_PAIR_LIST GetAllNext();
     STMT_STMT_PAIR_LIST GetAllNextStar();
+    void ClearCache();
 
 };
 

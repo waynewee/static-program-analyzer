@@ -51,6 +51,8 @@ public:
         STMT_IDX_SET GetInverseAffectsStar(STMT_IDX a);
         STMT_STMT_PAIR_LIST GetAllAffectsStar();
 
+        void ClearCache();
+
     private:
         void RecursiveGetAffects(STMT_IDX node, VAR_NAME lhs_var, STMT_IDX_SET& visited, STMT_IDX_SET& result);
         void RecursiveGetInverseAffects(STMT_IDX node, VAR_NAME rhs_var, INVERSE_AFFECTS_VISITED_SET& visited, STMT_IDX_SET& result);
@@ -68,6 +70,7 @@ public:
     CFGManager GetCFGManager();
     AffectsManager GetAffectsManager();
     CFG& GetCFG();
+    void ClearCache();
 
 protected:
     static DataManager data_manager_;
