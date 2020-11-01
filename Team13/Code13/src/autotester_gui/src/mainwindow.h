@@ -7,9 +7,13 @@
 #include <TNode.h>
 #include <QGraphicsItem>
 #include "GUINode.h"
+#include "CFG.h"
+#include "ASTHelper.h"
+#include "CFGHelper.h"
+#include "ASTDrawer.h"
+#include "CFGDrawer.h"
 
 typedef vector<GUINode*> NODE_LIST;
-typedef vector<NODE_LIST*> LIST_OF_NODE_LISTS;
 
 namespace Ui {
 	class MainWindow;
@@ -24,6 +28,9 @@ public:
 	~MainWindow();
 
 
+void resizeEvent(QResizeEvent* event);
+
+
 public slots:
 	void btnLoad_clicked();
 	void btnRun_clicked();
@@ -32,40 +39,28 @@ public slots:
 	void on_verticalSlider_valueChanged(int value);
 
 private:
-
 	Ui::MainWindow *ui;
 	GUIWrapper *wrapper;
 	QGraphicsScene* scene;
-	QGraphicsEllipseItem* ellipse;
-	QGraphicsRectItem* rectangle;
-	QGraphicsTextItem* text;
 	QString file_contents_;
-	int CountMaxDepth(TNode* root_node, int depth);
-	void PopulateNodeList(TNode* root_node, TNode* parent_node, int curr_depth, int* leaf_x);
-	void PrintNodeList();
-	void InitialiseListOfNodeLists(int max_depth);
-	void DrawAST();
-	void DrawNode(GUINode* gui_node);
-	void DrawNode(GUINode* gui_node, QColor color);
-	void DrawLineWithArrow(int x1, int y1, int x2, int y2);
-	void PrintResults(list<string> results);
-	void ColorResultNodes(list<string> results);
-	
-	LIST_OF_NODE_LISTS* list_of_node_lists_;
-	QBrush brush_primary_;
-	QBrush brush_secondary_;
-	QBrush brush_tertiary_;
-	QPen outline_pen_;
-	double prev_scale_value = 1.0;
+	ASTHelper* ast_helper_;
+	CFGHelper* cfg_helper_;
+	ASTDrawer* ast_drawer_;
+	CFGDrawer* cfg_drawer_;
+	list<string> results_;
+	bool ast_drawn_;
 	int prev_value = 1;
 
-	const int diameter_ = 30;
-	const int unit_x_ = 50;
-	const int unit_y_ = 50;
-	const int line_offset_x = diameter_ / 2;
-	const int line_offset_y = diameter_;
-	const int text_offset_x = diameter_ * (2 / 3);
-	const int text_offset_y = diameter_;
+	QBrush brush_primary_;
+	QPen outline_pen_;
+
+	void DrawAST();
+	void DrawCFG();
+	void PrintResults(list<string> results);
+	void BeginSetScene();
+	void EndSetASTScene();
+	void EndSetCFGScene();
+
 
 };
 

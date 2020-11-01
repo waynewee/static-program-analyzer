@@ -22,7 +22,11 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="CodeEditor" name="txtCodeEditor"/>
+        <widget class="CodeEditor" name="txtCodeEditor">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QGraphicsView" name="graphicsView"/>
@@ -33,7 +37,7 @@
           <number>1</number>
          </property>
          <property name="maximum">
-          <number>100</number>
+          <number>10</number>
          </property>
          <property name="value">
           <number>1</number>
@@ -87,7 +91,11 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QTextEdit" name="txtResult"/>
+        <widget class="QTextEdit" name="txtResult">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

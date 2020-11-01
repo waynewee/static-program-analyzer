@@ -90,6 +90,19 @@ string TNode::GetSelectValue() {
 	}
 }
 
+string TNode::GetGUIData() {
+	switch (type) {
+	case TNode::condExpr:
+		return "CondExpr:" + operators_.at(op - 1);
+	case TNode::relExpr:
+		return "RelExpr:" + operators_.at(op - 1);
+	case TNode::expr:
+		return "Expr:" + operators_.at(op - 1);
+	default:
+		return getData();
+	}
+}
+
 string TNode::getData() {
 	switch (type) {
 	case TNode::program:
