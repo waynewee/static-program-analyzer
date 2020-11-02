@@ -1,0 +1,6 @@
+procedure keywordAssignments {
+	procedure = 5;
+	then = 5;
+	read = 3;
+	print = 2;
+}
