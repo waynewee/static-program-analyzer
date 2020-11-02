@@ -1,6 +1,7 @@
 procedure keywordAssignments {
-	procedure = 5;
-	then = 5;
-	read = 3;
-	print = 2;
+	procedure = procedure + 5;
+	then = then * if;
+	read = procedure * else;
+	if = if * if;
+	print = read - print;
 }
