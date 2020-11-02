@@ -215,18 +215,6 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 		if (IsOutputSynonyms(synonyms, output_list) || IsConstraintSynonym(synonyms, constraint_synonyms)) {
 			results_map = tmp_map;
 		}
-		/*
-		for (auto tmp_entry = tmp_map.cbegin(); tmp_entry != tmp_map.cend(); tmp_entry++) {
-			// Should only have 1 entry
-			STRING_LIST* keys = (*tmp_entry).first;
-			STRINGLIST_SET values = (*tmp_entry).second;
-
-			AddResult(*keys, values, &results_map);
-			if (results_map.empty()) {
-				return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
-			}
-		}
-		*/
 
 		if (DEBUG_PRINTING) {
 			cout << "Results map after inserting 1 group's results" << endl;
@@ -417,6 +405,7 @@ void PQLOptimizedEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STR
 	do {
 		if (check_key == nullptr) {
 			// not related (yet)
+			cout << "REACH HERE ONLY ONCE" << endl;
 			results_map->insert({ new STRING_LIST(key), value });
 		}
 		else {
@@ -461,6 +450,7 @@ void PQLOptimizedEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STR
 				}
 
 				results_map->clear();
+				break;
 			}
 			else {
 				results_map->erase(check_key);
@@ -469,7 +459,18 @@ void PQLOptimizedEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STR
 
 
 			// Stop condition: no more new synonyms
+			cout << "check_key";
+			Print(*check_key);
+			cout << "new_key";
+			Print(new_key);
 			new_key == *check_key ? check_key = nullptr : check_key = GetRelatedSynonyms(new_key, *results_map);
+			cout << "check_key ";
+			if (check_key == nullptr) {
+				cout << "NULL PTR" << endl;
+			}
+			else {
+				Print(*check_key); cout << endl;
+			}
 		}
 	} while (check_key != nullptr);
 }
@@ -1651,10 +1652,19 @@ STRING_SET PQLOptimizedEvaluator::GetIntersectResult(STRING_SET val1, STRING_SET
 
 	STRING_SET result = *(new STRING_SET());
 
-	for (auto i = val1.begin(); i != val1.end(); i++) {
-		if (val2.find(*i) != val2.end())
-			result.insert(*i);
+	if (val1.size() > val2.size()) {
+		for (auto i = val2.begin(); i != val2.end(); i++) {
+			if (val1.find(*i) != val1.end())
+				result.insert(*i);
+		}
 	}
+	else {
+		for (auto i = val1.begin(); i != val1.end(); i++) {
+			if (val2.find(*i) != val2.end())
+				result.insert(*i);
+		}
+	}
+	
 
 	return result;
 }
@@ -1666,10 +1676,21 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetIntersectResult(STRINGLIST_SET val1, ST
 
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 
-	for (STRING_LIST* i : val1) {
-		for (STRING_LIST* j : val2) {
-			if (*i == *j) {
-				result.insert(i);
+	if (val1.size() > val2.size()) {
+		for (STRING_LIST* i : val2) {
+			for (STRING_LIST* j : val1) {
+				if (*i == *j) {
+					result.insert(i);
+				}
+			}
+		}
+	}
+	else {
+		for (STRING_LIST* i : val1) {
+			for (STRING_LIST* j : val2) {
+				if (*i == *j) {
+					result.insert(i);
+				}
 			}
 		}
 	}
@@ -1911,8 +1932,14 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetCombinedResult(STRINGLIST_SET large_val
 
 	STRINGLIST_SET results = *(new STRINGLIST_SET());
 
-	for (STRING_LIST* l_entry : large_values) {
-		for (STRING_LIST* s_entry : small_values) {
+	if (large_values.size() < small_values.size()) {
+		STRINGLIST_SET tmp = large_values;
+		large_values = small_values;
+		small_values = tmp;
+	}
+
+	for (STRING_LIST* s_entry : small_values) {
+		for (STRING_LIST* l_entry: large_values) {
 			bool is_common = true;
 			INTEGER_SET index_to_exclude = INTEGER_SET();
 

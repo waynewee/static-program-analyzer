@@ -11,7 +11,7 @@ PQLOptimization::PQLOptimization(STRING_INTEGER_MAP occurrence_count) {
 bool PQLOptimization::operator()(const STRING_LIST& lhs, const STRING_LIST& rhs) {
     int lhs_priority = ranks_of_functions.at(lhs[0]) + GetOccurrenceScore(lhs[1]) + GetOccurrenceScore(lhs[2]);
     int rhs_priority = ranks_of_functions.at(rhs[0]) + GetOccurrenceScore(rhs[1]) + GetOccurrenceScore(rhs[2]);
-    return  lhs_priority < rhs_priority;
+    return  lhs_priority > rhs_priority;
 }
 
 bool PQLOptimization::operator()(const STRING_PAIR& lhs, const STRING_PAIR& rhs) {
