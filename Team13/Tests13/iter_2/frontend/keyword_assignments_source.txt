@@ -1,4 +1,5 @@
 procedure keywordAssignments {
+	while = while % while;
 	procedure = procedure + 5;
 	then = then * if;
 	read = procedure * else;
