@@ -465,7 +465,7 @@ procedure StressTest {
     x = (a * b) % (c + d);
     j = k + (l - m);
     x = (a / b) + (a % b);
-    x = a % (b + c);  
+    x = a % (b + c);
     j = j + x * a;
     f = (g + h) - i;
     x = (a / b) + (a % b) - (a * b);

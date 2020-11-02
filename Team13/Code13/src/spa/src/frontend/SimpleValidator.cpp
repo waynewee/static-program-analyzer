@@ -319,9 +319,9 @@ int SimpleValidator::GetEndIndxOfExpression(ExpressionType expr_type) {
 
 void SimpleValidator::CheckForCyclicCalls() {
 	int node_count = 0;
-	set<DFS_NODE> white_set; // Univisited
-	set<DFS_NODE> gray_set; // Visiting
-	set<DFS_NODE> black_set; // Visited
+	vector<DFS_NODE> white_set; // Univisited
+	vector<DFS_NODE> gray_set; // Visiting
+	vector<DFS_NODE> black_set; // Visited
 	/*for (PROC_ADJ_LIST::const_iterator it = proc_adj_list_.begin();
 		it != proc_adj_list_.end(); ++it)
 	{
@@ -336,7 +336,7 @@ void SimpleValidator::CheckForCyclicCalls() {
 
 	for (map<string, vector<string>>::iterator it = proc_adj_list_.begin(); 
 		it != proc_adj_list_.end(); ++it ) { // Adding all nodes to white set
-		white_set.insert(it->first);
+		white_set.push_back(it->first);
 		node_count++;
 	}
 
@@ -344,11 +344,10 @@ void SimpleValidator::CheckForCyclicCalls() {
 	DFS_NODE curr_node;
 	curr_node = *white_set.begin();
 	white_set.erase(white_set.begin()); // Popping first item from set
-	gray_set.insert(curr_node);
-
+	gray_set.push_back(curr_node);
+	parent_map.insert({ curr_node, "-1" });
 	while ((black_set.size() != node_count) && !cycleDetected) {
-		/*cout << "Curr node: " << curr_node << endl;
-		std::cout << "white set: ";
+		/*std::cout << "white set: ";
 		for (set<DFS_NODE>::iterator it = white_set.begin();
 			it != white_set.end(); it++)
 		{
@@ -370,16 +369,30 @@ void SimpleValidator::CheckForCyclicCalls() {
 		vector<DFS_NODE> adj_list = proc_adj_list_.at(curr_node);
 		bool node_visited = false;
 		for (DFS_NODE node : adj_list) {
-			if (white_set.count(node) > 0) { // Node has not been visited
+			if (find(white_set.begin(), white_set.end(), node) != white_set.end()) { // Node has not been visited
 				parent_map.insert({node, curr_node}); // callee, caller
 				curr_node = node;
-				white_set.erase(white_set.find(node));
-				gray_set.insert(node);
+				white_set.erase(find(white_set.begin(), white_set.end(), node));
+				gray_set.push_back(node);
 				node_visited = true;
 				// cout << "Addded " + node << endl;
 				break;
 			}
-			else if (gray_set.count(node) > 0 ) {
+			else if (find(gray_set.begin(), gray_set.end(), node) != gray_set.end()) {
+				/*std::cout << std::endl << "gray set: ";
+		
+				for (vector<DFS_NODE>::iterator it = gray_set.begin();
+					it != gray_set.end(); it++)
+				{
+					std::cout << *it << " ";
+				}	
+				for (auto mapIter = parent_map.cbegin(); mapIter != parent_map.cend(); ++mapIter)
+				{
+					std::cout << mapIter->first << " " << mapIter->second << "\n";
+				}
+
+				cout << "NODE: " << node << endl;
+				cout << "Current NOde: " << curr_node << endl;*/
 				cycleDetected = true;
 				break;
 			}
@@ -387,15 +400,16 @@ void SimpleValidator::CheckForCyclicCalls() {
 		}
 		if (!node_visited) {
 			// Node has been fully processed, add to black set
-			black_set.insert(curr_node);
+			black_set.push_back(curr_node);
 			if (black_set.size() == node_count) {
 				break;
 			}
-			gray_set.erase(gray_set.find(curr_node));
+			gray_set.erase(find(gray_set.begin(), gray_set.end(), curr_node));
 			if (gray_set.empty()) {
+				parent_map.clear();
 				curr_node = *white_set.begin();
 				white_set.erase(white_set.begin()); // Popping first item from set		
-				gray_set.insert(curr_node);
+				gray_set.push_back(curr_node);
 			}
 			else {
 				curr_node = *(gray_set.rbegin());
