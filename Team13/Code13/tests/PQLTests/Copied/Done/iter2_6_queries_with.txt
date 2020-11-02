@@ -158,18 +158,18 @@ FALSE
 Select BOOLEAN with 1 = "TRUE"
 FALSE
 5000
-33 - valid query (IDENT, ref2 = int different types)
+33 - invalid query (IDENT cannot be starting with digit)
 
 Select BOOLEAN with "3203" = 3203
-FALSE
+none
 5000
 34 - valid query (int, ref2 = attrRef different types)
 read r;
 Select BOOLEAN with 1 = r.varName
 FALSE
 5000
-35 - invalid query (missing quotation marks)
+35 - invalid query (IDENT missing quotation marks)
 read r;
 Select BOOLEAN with one = r.varName
-FALSE
+none
 5000
