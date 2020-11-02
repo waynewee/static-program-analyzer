@@ -18,6 +18,7 @@ public:
 	void Print(STRINGLIST_STRINGLISTSET_MAP to_print);
 	void Print(STRINGSET_STRINGLISTSET_MAP to_print);
 	void Print(STRINGPAIR_SET to_print);
+	void Print(INTEGERPAIR_SET to_print);
 	void Print(STRINGSET_FUNCTIONQUEUE_MAP to_print);
 	void Print(FUNCTION_QUEUE to_print);
 	void Print(CONSTRAINT_QUEUE to_print);

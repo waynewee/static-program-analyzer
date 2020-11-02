@@ -330,6 +330,13 @@ void PQLOptimizedEvaluator::Print(STRINGPAIR_SET to_print) {
 	cout << endl;
 }
 
+void PQLOptimizedEvaluator::Print(INTEGERPAIR_SET to_print) {
+	for (INTEGER_PAIR* p : to_print) {
+		cout << "<" << p->first << "=" << p->second << "> ";
+	}
+	cout << endl;
+}
+
 void PQLOptimizedEvaluator::Print(STRINGLIST_STRINGLISTSET_MAP to_print) {
 	for (auto result_entry = to_print.cbegin(); result_entry != to_print.cend(); result_entry++) {
 		for (string s : *(*result_entry).first) {
@@ -402,13 +409,16 @@ void PQLOptimizedEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STR
 	}
 
 	STRING_LIST* check_key = GetRelatedSynonyms(key, *results_map);
-	do {
-		if (check_key == nullptr) {
-			// not related (yet)
-			cout << "REACH HERE ONLY ONCE" << endl;
-			results_map->insert({ new STRING_LIST(key), value });
-		}
-		else {
+	if (check_key == nullptr) {
+		// not related (yet)
+		results_map->insert({ new STRING_LIST(key), value });
+	}
+	else {
+		STRINGLIST_SET tmp_result = results_map->at(check_key);
+		STRING_LIST new_key = *(new STRING_LIST(*check_key));
+		bool is_empty = false;
+
+		while (check_key != nullptr) {
 			// Merge common synonyms & their results
 			INTEGERPAIR_SET index_to_compare = INTEGERPAIR_SET();
 			INTEGER_SET pos_to_ignore = INTEGER_SET();
@@ -426,20 +436,27 @@ void PQLOptimizedEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STR
 					}
 				}
 			}
-
-			STRINGLIST_SET tmp_result = results_map->at(check_key);
-			STRING_LIST new_key = *(new STRING_LIST(*check_key));
-
+			cout << "key: ";
+			Print(new_key);
+			cout << "tmp result: ";
+			Print(tmp_result);
+			cout << "key: ";
+			Print(*check_key);
+			cout << "value: ";
+			Print(value);
+			cout << endl;
 			if (pos_to_ignore.size() == key.size()) {
 				tmp_result = GetDependencyProduct(tmp_result, value, -1, index_to_compare, "", "");
 			}
 			else {
 				for (int i = 0; i < key.size(); i++) {
 					if (pos_to_ignore.find(i) == pos_to_ignore.end()) {
-
-						tmp_result = GetDependencyProduct(tmp_result, value, i, index_to_compare, "", "");
-
 						new_key.push_back(key.at(i));
+
+						cout << "pos to be added: " << i << endl;
+						cout << "index to compare ";
+						Print(index_to_compare);
+						tmp_result = GetDependencyProduct(tmp_result, value, i, index_to_compare, "", "");
 					}
 				}
 			}
@@ -450,29 +467,29 @@ void PQLOptimizedEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STR
 				}
 
 				results_map->clear();
+				is_empty = true;
 				break;
 			}
 			else {
-				results_map->erase(check_key);
-				results_map->insert({ new STRING_LIST(new_key), tmp_result });
+				results_map->erase(check_key);				
 			}
-
 
 			// Stop condition: no more new synonyms
-			cout << "check_key";
-			Print(*check_key);
-			cout << "new_key";
-			Print(new_key);
-			new_key == *check_key ? check_key = nullptr : check_key = GetRelatedSynonyms(new_key, *results_map);
-			cout << "check_key ";
-			if (check_key == nullptr) {
-				cout << "NULL PTR" << endl;
+			check_key = GetRelatedSynonyms(new_key, *results_map);
+			if (check_key != nullptr) {
+				Print(*check_key);
+
 			}
 			else {
-				Print(*check_key); cout << endl;
+				cout << "check key = null ptr" << endl;
 			}
 		}
-	} while (check_key != nullptr);
+
+		if (!is_empty) {
+			results_map->insert({ new STRING_LIST(new_key), tmp_result });
+			Print(*results_map);
+		}
+	} 
 }
 
 QueryResult PQLOptimizedEvaluator::SetResult(bool is_boolean_output, string bool_result, STRINGLIST_SET result) {
@@ -698,15 +715,12 @@ bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGL
 			if (IsVar(p[0])) {
 				// 1st param = synonym 
 				key->insert(p[0]);
-				check_key = GetRelatedSynonyms(*key, synonyms_map);
 
 				// Increase count for synonym
 				IncreaseOccurrenceCount(p[0], occurrence_count);
 			}
-			else {
-				// both params != synonyms
-				check_key = GetRelatedSynonyms(p[2], *synonyms_map);
-			}
+
+			check_key = GetRelatedSynonyms(*key, synonyms_map);
 
 			if (check_key != nullptr) {
 				key = check_key;
@@ -777,7 +791,6 @@ STRING_SET* PQLOptimizedEvaluator::GetRelatedSynonyms(string synonym, STRINGSET_
 
 	for (auto k = synonyms_map.cbegin(); k != synonyms_map.cend(); k++) {
 		STRING_SET* existing_key = (*k).first;
-
 		if (existing_key->find(synonym) != existing_key->end()) {
 			// found related synonyms in the synonyms_map
 			return existing_key;
@@ -798,22 +811,19 @@ STRING_SET* PQLOptimizedEvaluator::GetRelatedSynonyms(STRING_SET synonyms, STRIN
 	STRINGLIST_SET new_values = *(new STRINGLIST_SET());
 
 	for (auto k = synonyms.cbegin(); k != synonyms.cend(); k++) {
+		Print(*synonyms_map);
 		string curr_check = *k;
 		STRING_SET* check_key = GetRelatedSynonyms(curr_check, *synonyms_map);
-		if (check_key != nullptr) {
+		while (check_key != nullptr) {
 			// found related synonyms in the synonyms_map
 			new_keys->insert(check_key->begin(), check_key->end());
 
 			// combine the clauses
 			new_values.insert(synonyms_map->at(check_key).begin(), synonyms_map->at(check_key).end());
-			/*while (!synonyms_map->at(check_key).empty())
-			{
-				new_values.push(synonyms_map->at(check_key).top());
-				synonyms_map->at(check_key).pop();
-			}*/
 
 			// remove the existing synonyms since already combined
 			synonyms_map->erase(check_key);
+			check_key = GetRelatedSynonyms(curr_check, *synonyms_map);
 		}
 	}
 
