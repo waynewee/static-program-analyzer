@@ -143,13 +143,13 @@ QueryInfo PQLParser::Parse(string s) {
                 }
                 else {
                     // all clause types are wrong
-                    cout << "ALL CLAUSE TYPES ARE WRONG" << endl;
+                    // cout << "ALL CLAUSE TYPES ARE WRONG" << endl;
                     is_query_valid = false;
                     query_info.SetInvalidDueToSemanticsFalse();
                     throw ("Error : Clause type is not suchthat/with/and/pattern");
                 }
             }
-            cout << "CLAUSE TYPE:" << clause_type << "|" << endl;
+            // cout << "CLAUSE TYPE:" << clause_type << "|" << endl;
             first_passed = true;  // first clause has parsed, now 'and' can be allowed in place of such that / pattern / with
 
             // cout << "remainingQuery:" << query << endl;

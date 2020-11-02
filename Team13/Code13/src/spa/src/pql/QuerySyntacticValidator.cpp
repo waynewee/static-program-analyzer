@@ -340,7 +340,7 @@ bool QuerySyntacticValidator::IsAttrRef(string token) {
 }
 
 bool QuerySyntacticValidator::IsRef(string token) {
-	cout << "Checking ref:" << token << endl;
+	// cout << "Checking ref:" << token << endl;
 	bool result = false;
 	if (token.front() == '\"' && token.back() == '\"') {
 		// remember to ensure that what's inside the "" is already trimmed!
@@ -359,7 +359,7 @@ bool QuerySyntacticValidator::IsRef(string token) {
 		return result;
 	}
 	if (IsSynonym(token)) {
-		cout << "YES FIRST ARG IS SYNONYM" << endl;
+		// cout << "YES FIRST ARG IS SYNONYM" << endl;
 		result = true;
 		return result;
 	}
