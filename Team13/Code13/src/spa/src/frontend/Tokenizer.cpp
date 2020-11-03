@@ -172,7 +172,7 @@ void Tokenizer::Tokenize() {
 
 bool Tokenizer::IsStmtName(string stmt_name) {
 
-	int next_ctr = 1;
+	/*int next_ctr = 1;
 	
 	while (IsWhiteSpace(text_.at(pos_ + next_ctr))) {
 		next_ctr += 1;
@@ -180,7 +180,7 @@ bool Tokenizer::IsStmtName(string stmt_name) {
 
 	if (text_.at(pos_ + next_ctr) == '=') {
 		return false;
-	}
+	}*/
 
 	for (string name : stmt_names_) {
 		if (stmt_name == name) {

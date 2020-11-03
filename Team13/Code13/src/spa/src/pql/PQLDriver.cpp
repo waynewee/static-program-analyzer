@@ -9,6 +9,10 @@
 #include <iostream>
 
 STRING_SET PQLDriver::Query(string query_string) {
+	if (DEBUG) {
+		cout << "PQLDriver - Query" << endl;
+	}
+
 	PQLParser parser = PQLParser();
 	PQLProjector projector = PQLProjector();
 
