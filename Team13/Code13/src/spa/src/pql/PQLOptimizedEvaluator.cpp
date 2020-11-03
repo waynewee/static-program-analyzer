@@ -282,12 +282,23 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 
 		// Combine all the expected output results
 		final_result_set = GetCartesianProduct(final_results_map, output_list, entity_map);
+
+		// Convert to attribute if needed
+		for (int i = 0; i < output_list.size(); i++) {
+			string synonym = output_list.at(i);
+			string synonym_type = entity_map.at(ParsingSynonym(synonym));
+			string synonym_attr = ParsingSynonymAttribute(synonym);
+			if (!IsSameEntityType(synonym_type, synonym_attr)) {
+				final_result_set = GetAlternateResult(final_result_set, i, synonym_type);
+			}
+		}
+
+		if (DEBUG) {
+			cout << "final result set" << endl;
+			Print(final_result_set);
+		}
 	}
 
-	if (DEBUG_PRINTING) {
-		cout << "final result set" << endl;
-		Print(final_result_set);
-	}
 
 	return SetResult(is_boolean_output, "TRUE", final_result_set);
 }
@@ -408,20 +419,21 @@ STRINGLIST_STRINGLISTSET_MAP PQLOptimizedEvaluator::AddResult(STRING_LIST key, S
 			}
 		}
 		
-		
-		cout << "check key: ";
-		Print(*check_key);
-		cout << "tmp result: ";
-		Print(tmp_result);
-		cout << "key: ";
-		Print(key);
-		cout << "value: ";
-		Print(value);
-		cout << endl;
+		if (DEBUG) {
+			cout << "check key: ";
+			Print(*check_key);
+			cout << "tmp result: ";
+			Print(tmp_result);
+			cout << "key: ";
+			Print(key);
+			cout << "value: ";
+			Print(value);
+			cout << endl;
+		}
 		
 		if (has_common) {
 			Print(index_to_compare);
-			tmp_result = GetDependencyProduct(tmp_result, value, pos_to_add, index_to_compare, "", "");
+			tmp_result = GetDependencyProduct(tmp_result, value, pos_to_add, index_to_compare);
 		}
 
 		if (tmp_result.empty()) {
@@ -1260,6 +1272,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluateInverseOneSynonymSet(string f_call
 	PKB pkb = PKB();
 	RelationManager rm = pkb.GetRelationManager();
 	CFGManager cfgm = pkb.GetCFGManager();
+	PKB::AffectsManager am = pkb.GetAffectsManager();
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 	
 	if (f_call.compare(TYPE_COND_FOLLOWS) == 0) {
@@ -1299,10 +1312,10 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluateInverseOneSynonymSet(string f_call
 		result = ConvertSet(cfgm.GetInverseNextStar(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		// result = ConvertSet(cfgm.GetInverseAffects(ParsingStmtRef(param)));
+		result = ConvertSet(am.GetInverseAffects(ParsingStmtRef(param)));
 	}
 	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		// result = ConvertSet(cfgm.GetInverseAffectsStar(ParsingStmtRef(param)));
+		result = ConvertSet(am.GetInverseAffectsStar(ParsingStmtRef(param)));
 	}
 	else {
 		// error
@@ -1784,28 +1797,36 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateResult(STRINGLIST_SET values, 
 	STRINGLIST_SET results = *(new STRINGLIST_SET());
 
 	for (STRING_LIST* v : values) {
+		STRINGLIST_SET tmp = STRINGLIST_SET();
 		for (int i = 0; i < v->size(); i++) {
 			STRING_SET new_values = STRING_SET();
-			if (pos_to_check == i) {
-				new_values = ConvertSet(GetAlternateResult(v->at(pos_to_check), type));
+			if (pos_to_check != i) {
+				new_values.insert(v->at(i));
 			}
 			else {
-				new_values.insert(v->at(i));				
+				new_values = ConvertSet(GetAlternateResult(v->at(pos_to_check), type));
 			}
 
-			STRINGLIST_SET tmp = *(new STRINGLIST_SET());
-			for (string s : new_values) {
-				for (STRING_LIST* r : results) {
-					r->push_back(v->at(i));
-
-					if (!IsDuplicate(tmp, *r)) {
-						tmp.insert(r);
+			if (tmp.empty()) {
+				tmp = ConvertSet(new_values);
+			}
+			else {
+				STRINGLIST_SET tmp_clone = STRINGLIST_SET();
+				for (string s : new_values) {
+					for (STRING_LIST* t : tmp) {
+						STRING_LIST t_clone = *t;
+						t_clone.push_back(s);
+						tmp_clone.insert(new STRING_LIST(t_clone));
 					}
 				}
+
+				tmp = tmp_clone;
 			}
 		}
-	}
 
+		results.insert(tmp.begin(), tmp.end());
+	}
+	
 	return results;
 }
 
@@ -2065,114 +2086,8 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTS
 	
 	STRINGLIST_SET results = *(new STRINGLIST_SET());
 	STRING_LIST added_output = STRING_LIST();
-	/*
-	for (auto entry = results_map.cbegin(); entry != results_map.cend(); entry++) {
-		STRING_LIST* synonyms = (*entry).first;
-		STRINGLIST_SET values = (*entry).second;
-
-		INTEGER_LIST index_to_add = INTEGER_LIST();
-		STRING_LIST output_types = STRING_LIST();
-		STRING_LIST output_attrs = STRING_LIST();
-		INTEGERPAIR_SET added_index = INTEGERPAIR_SET();
-
-		for (int i = 0; i < synonyms->size(); i++) {
-			for (string output : output_list) {
-				string synonym_to_be_added = synonyms->at(i);
-				if (synonym_to_be_added.compare(ParsingSynonym(output)) == 0) {
-					index_to_add.push_back(i);
-
-					// get output_type and output_attr of each synonyms to be added
-					output_types.push_back(entity_map.at(synonym_to_be_added));
-					output_attrs.push_back(ParsingSynonymAttribute(output));
-
-					// Check constraint if synonym has already been added in output list: Added = dependency, else no
-					for (int added = 0; added < added_output.size(); added++) {
-						if (synonym_to_be_added.compare(added_output.at(added)) == 0) {
-							INTEGER_PAIR* pair = new INTEGER_PAIR();
-							pair->first = added;
-							pair->second = i;
-
-							added_index.insert(pair);
-						}
-					}
-				}
-			}
-		}
-
-		if (!index_to_add.empty()) {
-			// output synonym found
-
-			if (added_index.empty()) {
-				// no dependencies 
-
-				// Get the values to be added
-				values = GetNewResult(values, index_to_add);
-
-				// check attribute
-				for (int output_index = 0; output_index < output_types.size(); output_index++) {
-					if (!IsSameEntityType(output_types.at(output_index), output_attrs.at(output_index))) {
-						values = GetAlternateResult(values, output_index, output_types.at(output_index));
-					}
-				}
-
-				results = GetNoDependencyProduct(results, values);
-			}
-			else {
-				// Merge with respect to dependencies
-				results = GetDependencyProduct(results, values, index_to_add, added_index, output_types, output_attrs);
-			}
-			added_output.push_back(parsed_output);
-			break;
-		}
-
-
-		for (int i = 0; i < synonyms->size(); i++) {
-			if (synonyms->at(i).compare(parsed_output) == 0) {
-				// output synonym found
-
-				// Check constraint if synonym has already been added in output list
-				// Added = dependency, else no
-				INTEGERPAIR_SET added_index = INTEGERPAIR_SET();
-				for (int s = 0; s < synonyms->size(); s++) {
-					for (int a = 0; a < added_output.size(); a++) {
-						if (synonyms->at(s).compare(added_output.at(a)) == 0) {
-							INTEGER_PAIR* pair = new INTEGER_PAIR();
-							pair->first = a;
-							pair->second = s;
-
-							added_index.insert(pair);
-						}
-					}
-				}
-
-				if (added_index.empty()) {
-					// Get the values to be added
-					if (is_tuple) {
-						values = ConvertSet(GetNewResult(values, i));
-					}
-
-					// check attribute
-					if (!IsSameEntityType(output_type, output_attr)) {
-						values = ConvertSet(GetAlternateResult(values, output_type));
-					}
-
-					results = GetNoDependencyProduct(results, values);
-				}
-				else {
-					// Merge with respect to dependencies
-					results = GetDependencyProduct(results, values, i, added_index, output_type, output_attr);
-				}
-				added_output.push_back(parsed_output);
-				break;
-			}
-		}
-		
-	}
-	*/
 	for (string output : output_list) {
 		string parsed_output = ParsingSynonym(output);
-		string output_attr = ParsingSynonymAttribute(output);
-		string output_type = entity_map.at(parsed_output);
 
 		for (auto entry = results_map.cbegin(); entry != results_map.cend(); entry++) {
 			STRING_LIST* synonyms = (*entry).first;
@@ -2203,17 +2118,12 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTS
 						if (is_tuple) {
 							values = ConvertSet(GetNewResult(values, i));
 						}
-							
-						// check attribute
-						if (!IsSameEntityType(output_type, output_attr)) {
-							values = ConvertSet(GetAlternateResult(values, output_type));
-						}
-
 						results = GetNoDependencyProduct(results, values);
 					}
 					else {
 						// Merge with respect to dependencies
-						results = GetDependencyProduct(results, values, i, added_index, output_type, output_attr);
+						// results = GetDependencyProduct(results, values, i, added_index, output_type, output_attr);
+						results = GetDependencyProduct(results, values, { i }, added_index);
 					}
 					added_output.push_back(parsed_output);
 					break;
@@ -2225,7 +2135,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTS
 	return results;
 }
 
-STRINGLIST_SET PQLOptimizedEvaluator::GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, INTEGER_LIST pos_to_add, INTEGERPAIR_SET to_check, string output_type, string output_attr) {
+STRINGLIST_SET PQLOptimizedEvaluator::GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, INTEGER_LIST pos_to_add, INTEGERPAIR_SET to_check) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetDependencyProduct" << endl;
 	}
@@ -2243,37 +2153,12 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetDependencyProduct(STRINGLIST_SET result
 
 					new_value.insert(new_value.end(), set->begin(), set->end());
 
-					STRING_SET tmp = STRING_SET();
 					for (int i: pos_to_add) {
-						// check attributes
-
-						if (output_type.compare("") != 0 && output_attr.compare("") != 0 && !IsSameEntityType(output_type, output_attr)) {
-							// convert
-							tmp = ConvertSet(GetAlternateResult(val->at(i), output_type));
-						}
-						else {
-							// add directly
-							new_value.push_back(val->at(i));
-						}
+						new_value.push_back(val->at(i));
 					}
 
-					if (!tmp.empty()) {
-						// converted: add 1 by 1
-						for (string s : tmp) {
-							// keep refreshing state
-							STRING_LIST tmp_value = new_value;
-							tmp_value.push_back(s);
-
-							if (!IsDuplicate(final_results, tmp_value)) {
-								final_results.insert(new STRING_LIST(tmp_value));
-							}
-						}
-					}
-					else {
-						// add directly
-						if (!IsDuplicate(final_results, new_value)) {
-							final_results.insert(new STRING_LIST(new_value));
-						}
+					if (!IsDuplicate(final_results, new_value)) {
+						final_results.insert(new STRING_LIST(new_value));
 					}
 				}
 			}
@@ -2282,8 +2167,8 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetDependencyProduct(STRINGLIST_SET result
 
 	return final_results;
 }
-
-STRINGLIST_SET PQLOptimizedEvaluator::GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, int pos_to_add, INTEGERPAIR_SET to_check, string output_type, string output_attr) {
+/*
+STRINGLIST_SET PQLOptimizedEvaluator::GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, int pos_to_add, INTEGERPAIR_SET to_check) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetDependencyProduct" << endl;
 	}
@@ -2300,36 +2185,12 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetDependencyProduct(STRINGLIST_SET result
 					STRING_LIST new_value = *(new STRING_LIST());
 					new_value.insert(new_value.end(), set->begin(), set->end());
 
-					STRING_SET tmp = STRING_SET();
 					if (pos_to_add != -1) {
-						// check attribute 
-						if (output_type.compare("") != 0 && output_attr.compare("") != 0 && !IsSameEntityType(output_type, output_attr)) {
-							// convert
-							tmp = ConvertSet(GetAlternateResult(val->at(pos_to_add), output_type));
-						}
-						else {
-							// add directly
-							new_value.push_back(val->at(pos_to_add));
-						}
+						new_value.push_back(val->at(pos_to_add));
 					}
 
-					if (!tmp.empty()) {
-						// converted: add 1 by 1
-						for (string s : tmp) {
-							// keep refreshing state
-							STRING_LIST tmp_value = new_value;
-							tmp_value.push_back(s);
-
-							if (!IsDuplicate(final_results, tmp_value)) {
-								final_results.insert(new STRING_LIST(tmp_value));
-							}
-						}
-					}
-					else {
-						// add directly
-						if (!IsDuplicate(final_results, new_value)) {
-							final_results.insert(new STRING_LIST(new_value));
-						}
+					if (!IsDuplicate(final_results, new_value)) {
+						final_results.insert(new STRING_LIST(new_value));
 					}
 				}
 			}
@@ -2338,6 +2199,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetDependencyProduct(STRINGLIST_SET result
 
 	return final_results;
 }
+*/
 
 STRINGLIST_SET PQLOptimizedEvaluator::GetNoDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values) {
 	if (DEBUG) {
