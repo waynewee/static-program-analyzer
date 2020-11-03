@@ -1,6 +1,0 @@
-procedure Example {
-
-  procedure = x + 1;
-  if = if + 1;
-
-}
