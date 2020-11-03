@@ -15,14 +15,14 @@ procedure Gandalf {
 		read ginger;
 		ginger = (a+b)*(a+b)*a+b*a+b/a+b%a+b;
 	}
-	if (check == breakfast) {
-		bread = a+b*a+b
-		Food = (a+b)*(a+b)
-		bread = b/a+b
-		Food = b%a+b
+	if (check == breakfast) then {
+		bread = a+b*a+b;
+		Food = (a+b)*(a+b);
+		bread = b/a+b;
+		Food = b%a+b;
 	} else {
-		tomato = (a+b)*a+b*a+b
-		carrot = b*a+b/a
+		tomato = (a+b)*a+b*a+b;
+		carrot = b*a+b/a;
 	}
 	while (f > 10) {
 			read g;
