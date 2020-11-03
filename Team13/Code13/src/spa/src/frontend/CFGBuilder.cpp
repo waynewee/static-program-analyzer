@@ -14,7 +14,7 @@ CFGBuilder::CFGBuilder(TNode* root_node) {
 		BuildCFG(proc_node);
 	}
 
-	PrintCFG();
+	//PrintCFG();
 }
 
 CFG* CFGBuilder::GetCFG() {
