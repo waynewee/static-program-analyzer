@@ -19,6 +19,7 @@ Tokenizer::Tokenizer(string input) {
 
 	Tokenize();
 
+
 }
 
 void Tokenizer::Tokenize() {
@@ -170,6 +171,16 @@ void Tokenizer::Tokenize() {
 }
 
 bool Tokenizer::IsStmtName(string stmt_name) {
+
+	int next_ctr = 1;
+	
+	while (IsWhiteSpace(text_.at(pos_ + next_ctr))) {
+		next_ctr += 1;
+	}
+
+	if (text_.at(pos_ + next_ctr) == '=') {
+		return false;
+	}
 
 	for (string name : stmt_names_) {
 		if (stmt_name == name) {

@@ -495,8 +495,16 @@ bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_name
 	string first_ref_type = "none1";
 	string second_ref_type = "none2";
 	if (IsSynonym(first_ref)) {
-		first_ref_synonym_type = declared_var_names.at(first_ref);
-		if (first_ref_synonym_type.compare(TYPE_DESIGN_ENTITY_PROG_LINE) != 0) {
+		// cout << "FIRST REF!!!" << first_ref << endl;
+		if (declared_var_names.count(first_ref) == 1) {
+			first_ref_synonym_type = declared_var_names.at(first_ref);
+			if (first_ref_synonym_type.compare(TYPE_DESIGN_ENTITY_PROG_LINE) != 0) {
+				result = false;
+				return result;
+			}
+		}
+		else {
+			// synonym not declared
 			result = false;
 			return result;
 		}
@@ -504,8 +512,16 @@ bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_name
 		first_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
 	}
 	if (IsSynonym(second_ref)) {
-		second_ref_synonym_type = declared_var_names.at(second_ref);
-		if (second_ref_synonym_type.compare(TYPE_DESIGN_ENTITY_PROG_LINE) != 0) {
+		// cout << "YES SECOND REF IS SYNOMYM:" << second_ref << endl;
+		if (declared_var_names.count(second_ref) == 1) {
+			second_ref_synonym_type = declared_var_names.at(second_ref);
+			if (second_ref_synonym_type.compare(TYPE_DESIGN_ENTITY_PROG_LINE) != 0) {
+				result = false;
+				return result;
+			}
+		}
+		else {
+			// synonym not declared
 			result = false;
 			return result;
 		}
@@ -1458,7 +1474,8 @@ bool QueryRules::IsAffects(string token, STRING_STRING_MAP declared_var_names) {
 	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
-		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_ASSIGN) != 0 && first_arg_type.compare(TYPE_DESIGN_ENTITY_STMT) != 0) {
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_ASSIGN) != 0 && first_arg_type.compare(TYPE_DESIGN_ENTITY_STMT) != 0
+			&& first_arg_type.compare(TYPE_DESIGN_ENTITY_PROG_LINE) != 0) {
 			result = false;
 			return result;
 		}
@@ -1471,7 +1488,8 @@ bool QueryRules::IsAffects(string token, STRING_STRING_MAP declared_var_names) {
 	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
-		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_ASSIGN) != 0 && second_arg_type.compare(TYPE_DESIGN_ENTITY_STMT) != 0) {
+		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_ASSIGN) != 0 && second_arg_type.compare(TYPE_DESIGN_ENTITY_STMT) != 0
+			&& second_arg_type.compare(TYPE_DESIGN_ENTITY_PROG_LINE) != 0) {
 			result = false;
 			return result;
 		}
@@ -1513,7 +1531,8 @@ bool QueryRules::IsAffectsT(string token, STRING_STRING_MAP declared_var_names) 
 	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
-		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_ASSIGN) != 0 && first_arg_type.compare(TYPE_DESIGN_ENTITY_STMT) != 0) {
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_ASSIGN) != 0 && first_arg_type.compare(TYPE_DESIGN_ENTITY_STMT) != 0
+			&& first_arg_type.compare(TYPE_DESIGN_ENTITY_PROG_LINE) != 0) {
 			result = false;
 			return result;
 		}
@@ -1526,7 +1545,8 @@ bool QueryRules::IsAffectsT(string token, STRING_STRING_MAP declared_var_names) 
 	string second_arg_type = "none";
 	if (declared_var_names.count(second_arg) == 1) {
 		second_arg_type = declared_var_names.at(second_arg);
-		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_ASSIGN) != 0 && second_arg_type.compare(TYPE_DESIGN_ENTITY_STMT) != 0) {
+		if (second_arg_type.compare(TYPE_DESIGN_ENTITY_ASSIGN) != 0 && second_arg_type.compare(TYPE_DESIGN_ENTITY_STMT) != 0
+			&& second_arg_type.compare(TYPE_DESIGN_ENTITY_PROG_LINE) != 0) {
 			result = false;
 			return result;
 		}

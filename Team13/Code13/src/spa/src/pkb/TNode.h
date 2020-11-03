@@ -49,6 +49,23 @@ public:
         mod
     };
 
+    vector<string> operators_ = {
+        "Not",
+        "And",
+        "Or",
+        "Gt"
+        "Geq",
+        "Lt",
+        "Leq",
+        "Eq",
+        "Neq",
+        "Plus",
+        "Minus",
+        "Times",
+        "Divide",
+        "Mod"
+    };
+
 private:
     NODE_TYPE type;
     TNode* parent;
@@ -75,8 +92,10 @@ public:
     list<TNode*> GetChildrenList();
     vector<TNode*> GetChildrenVector();
     STMT_IDX GetStmtIndex();
+    string GetSelectValue();
     OPERATOR GetOperator();
     string getData();
+    string GetGUIData();
     TNode* GetParent();
     CONST_VALUE GetConstValue();
     string* GetName();

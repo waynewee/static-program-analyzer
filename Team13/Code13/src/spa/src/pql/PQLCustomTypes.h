@@ -9,8 +9,14 @@
 
 using namespace std;
 
+// Activates debug prints
 #define DEBUG true
+// Activates debug prints with detailed printing (data structures)
+#define DEBUG_PRINTING false
+// Activates fake data for unit testing
 #define UNIT_TESTING false
+// Activates optimized evaluator
+#define OPTIMIZED_EVALUATION true
 
 #define TYPE_COND_FOLLOWS "Follows"
 #define TYPE_COND_FOLLOWS_T "FollowsT"
@@ -63,9 +69,6 @@ using namespace std;
 #define TYPE_PATTERN_CLAUSE "pattern"
 #define TYPE_SELECT_CLAUSE "Select"
 #define TYPE_AND_CLAUSE "and"
-
-//#define FALSE "FALSE"
-//#define TRUE "TRUE"
 
 typedef pair<string, string> STRING_PAIR;
 typedef pair<int, int> INTEGER_PAIR;

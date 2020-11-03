@@ -7,13 +7,32 @@
 using namespace std;
 
 bool CallsTable::Add(PROC_NAME pname, STMT_IDX s) {
-    return data_.insert(make_pair(s, pname)).second;
+    bool result = true;
+    auto found = inverse_data_.find(pname);
+    if (found == inverse_data_.end()) {
+        STMT_IDX_SET set = STMT_IDX_SET();
+        set.insert(s);
+        result = inverse_data_.insert(make_pair(pname, set)).second;
+    } else {
+        result = inverse_data_.at(pname).insert(s).second;
+    }
+    return result && data_.insert(make_pair(s, pname)).second;
 }
 
 PROC_NAME CallsTable::GetCalledBy(STMT_IDX s) {
     auto got = data_.find(s);
     if (got == data_.end()) {
         return "";
+    }
+    else {
+        return got->second;
+    }
+}
+
+STMT_IDX_SET CallsTable::GetInverseCalledBy(PROC_NAME p) {
+    auto got = inverse_data_.find(p);
+    if (got == inverse_data_.end()) {
+        return STMT_IDX_SET();
     }
     else {
         return got->second;

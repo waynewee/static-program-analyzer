@@ -54,7 +54,15 @@ QueryInfo PQLParser::Parse(string s) {
             }
         }
 
-        string supposed_select_token = PQLTokenizer::RetrieveToken(&query);
+        string supposed_select_token;
+        if (query.find("<") != string::npos) {
+            // tuple in result cl
+            supposed_select_token = PQLTokenizer::RetrieveTokenByOpeningAngleBracket(&query);
+            cout << "SUPPOSED SELECT TOKEN:" << supposed_select_token << endl;
+        }
+        else {
+            supposed_select_token = PQLTokenizer::RetrieveToken(&query);
+        }
 
         if (!query_validator->ValidateSelect(supposed_select_token)) {
             // cout << "NOT SELECT!" << endl;
@@ -63,6 +71,7 @@ QueryInfo PQLParser::Parse(string s) {
         }
 
         string supposed_result_cl;
+        WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&query);
 
         if (query.find(">") != string::npos) {
             // found >, so we know that tuple has multiple elems : e.g. Select <s1, s2>
@@ -134,11 +143,13 @@ QueryInfo PQLParser::Parse(string s) {
                 }
                 else {
                     // all clause types are wrong
+                    // cout << "ALL CLAUSE TYPES ARE WRONG" << endl;
                     is_query_valid = false;
                     query_info.SetInvalidDueToSemanticsFalse();
                     throw ("Error : Clause type is not suchthat/with/and/pattern");
                 }
             }
+            // cout << "CLAUSE TYPE:" << clause_type << "|" << endl;
             first_passed = true;  // first clause has parsed, now 'and' can be allowed in place of such that / pattern / with
 
             // cout << "remainingQuery:" << query << endl;
@@ -206,7 +217,7 @@ QueryInfo PQLParser::Parse(string s) {
                     }
                 }
             }
-
+            
             if (clause_type.compare(TYPE_PATTERN_CLAUSE) == 0) {
                 if (query_validator->ValidatePatternClause(full_clause, entity_map)) {
                     full_clause.erase(0, full_clause.find_first_of(" "));
@@ -256,6 +267,7 @@ QueryInfo PQLParser::Parse(string s) {
             if (clause_type.compare(TYPE_WITH_CLAUSE) == 0) {
                 // cout << "going to validate with clause:" << full_clause << endl;
                 if (query_validator->ValidateWithClause(full_clause, entity_map)) {
+                    // cout << "VALIDATEWITHCLAUSE IS VALID FOR NOW" << endl;
                     full_clause.erase(0, full_clause.find_first_of(" "));
                     WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause); // erase with clause
                     // remaining is xxx = yyy
@@ -272,6 +284,7 @@ QueryInfo PQLParser::Parse(string s) {
                 }
                 else {
                     is_query_valid = false;
+                    // cout << "SDFSDFSDVALIDATING FULL CLAUSE:" << full_clause << endl;
                     if (query_syntactic_validator->ValidateWithClause(full_clause)) {
                         // valid syntactically, failed due to semantics
                         is_query_semantically_invalid_but_syntactically_valid = true;
@@ -300,8 +313,14 @@ QueryInfo PQLParser::Parse(string s) {
 
     if (!is_query_valid) {
         query_info.SetValidToFalse();
-        cout << "QUERY IS INVALID:" << endl;
+        //cout << "QUERY IS INVALID:" << endl;
         query_info.SetOutputList(output_list);
+        if (query_info.IsSemanticsInvalid()) {
+           // cout << "invalid due to semantics, not syntax" << endl;
+        }
+        else {
+           // cout << "invalid due to syntax" << endl;
+        }
     }
     else {
         // QUERY IS VALID BLOCK!!!!!

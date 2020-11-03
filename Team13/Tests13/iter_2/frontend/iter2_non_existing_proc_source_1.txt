@@ -1,3 +1,0 @@
-procedure GhostProc {
-	call Ghost;
-}

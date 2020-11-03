@@ -126,12 +126,6 @@ STMT_STMT_PAIR_LIST CFGManager::GetAllNextStar() {
     }
     return all_next_star_edge_cache_;
 }
-STMT_STMT_PAIR_LIST CFGManager::GetAllAffects() {
-    return STMT_STMT_PAIR_LIST();
-}
-STMT_STMT_PAIR_LIST CFGManager::GetAllAffectsStar() {
-    return STMT_STMT_PAIR_LIST();
-}
 STMT_IDX_SET* CFGManager::DFS(CFG_ADJACENCY_LIST& table, STMT_IDX s) {
     auto result = new STMT_IDX_SET();
     auto stack = std::stack<STMT_IDX>();
@@ -202,6 +196,11 @@ void CFGManager::InsertCache(CFG_ADJACENCY_LIST &table, STMT_IDX_SET *result, ST
 }
 CFG &CFGManager::GetCFG() {
     return cfg_;
+}
+void CFGManager::ClearCache() {
+    next_star_cache_.clear();
+    inverse_next_star_cache_.clear();
+    all_next_star_edge_cache_.clear();
 }
 
 

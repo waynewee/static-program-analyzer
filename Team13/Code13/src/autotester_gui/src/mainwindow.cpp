@@ -11,6 +11,12 @@
 #include <vector>
 #include <list>
 #include "GUINode.h"
+#include <QVector>
+#include <CFG.h>
+#include "CFGHelper.h"
+#include "ASTHelper.h"
+#include "ASTDrawer.h"
+#include "CFGDrawer.h"
 
 
 using namespace std;
@@ -25,9 +31,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	wrapper = new GUIWrapper();
 
-	main_brush_ = QBrush(Qt::blue);
-	outline_pen_ = QPen(Qt::black);
-	outline_pen_.setWidth(1);
 }
 
 MainWindow::~MainWindow()
@@ -35,6 +38,20 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
+
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+	QMainWindow::resizeEvent(event);
+
+	cout << "REZIE" << endl;
+	// Your code here.
+	if (ast_drawn_) {
+		EndSetASTScene();
+	}
+	else {
+		EndSetCFGScene();
+	}
+}
 
 void MainWindow::btnLoad_clicked() {
 
@@ -48,214 +65,126 @@ void MainWindow::btnLoad_clicked() {
 	file_contents_ = file.readAll();
 	ui->txtCodeEditor->document()->setPlainText(file_contents_);	
 	wrapper->parse(src_name.toStdString());
+
+	on_astButton_clicked();
 }
 
 void MainWindow::btnRun_clicked() {
+
 	std::list<std::string> results;
 	wrapper->Evaluate(ui->txtQuery->toPlainText().toStdString(),results);
+
 	QString result_str;
 
 	int i = 0;
 
-	for (auto const& result : results) {
+	PrintResults(results);
 
-		result_str += QString(result.c_str());
-		if (i < results.size()) {
-			result_str += ", ";
-		}
+	results_ = results;
+
+	if (ast_drawn_) {
+		DrawAST();
 	}
-
-	ui->txtResult->document()->setPlainText(result_str);
-
-	for (auto const& result : results) {
-		for (NODE_LIST* node_list : *list_of_node_lists_) {
-			for (GUINode* node : *node_list) {
-				if (node->node_->GetStmtIndex() == stoi(result.c_str())) {
-					DrawNode(node, Qt::red);
-				}
-			}
-		}
+	else {
+		DrawCFG();
 	}
 
 }
 
-// Reference this https://www.bogotobogo.com/Qt/Qt5_QGraphicsView_QGraphicsScene.php
 void MainWindow::on_astButton_clicked() {
 
-	string file_contents = file_contents_.toUtf8().constData();
-	FrontendWrapper wrapper(file_contents);
-	TNode* root_node = wrapper.GetAST();
-	root_node->Print(root_node);
+	ast_drawn_ = true;
 
-	
-	int max_depth = CountMaxDepth(root_node, 0);
-	int leaf_x = 0;
-
-	InitialiseListOfNodeLists(max_depth);
-
-	PopulateNodeList(root_node, NULL, 0, &leaf_x);
-
-	PrintNodeList();
+	ast_helper_ = new ASTHelper(file_contents_.toUtf8().constData());
 
 	DrawAST();
 
 }
 
+
 void MainWindow::on_cfgButton_clicked() {
-	cout << "Hello World" << endl;
+
+	ast_drawn_ = false;
+
+	cfg_helper_ = new CFGHelper(file_contents_.toUtf8().constData());
+
+	DrawCFG();
+
 }
 
-void MainWindow::on_verticalSlider_valueChanged(int value) {
-	ui->graphicsView->resetMatrix();
+void MainWindow::DrawCFG() {
+
+	BeginSetScene();
+
+	cfg_drawer_ = new CFGDrawer(scene, cfg_helper_->GetCFGNodeMap());
 	
-	double scale = value / 50.0;
+	cfg_drawer_->DrawCFG();
 
-	ui->graphicsView->scale(scale, scale);
-
-}
-
-int MainWindow::CountMaxDepth(TNode* root_node, int depth) {
-	//base case
-	if (root_node->GetChildrenVector().size() == 0) {
-		return depth;
-	}
-	else {
-
-		vector<int> depths;
-
-		for (TNode* node : root_node->GetChildrenVector()) {
-			depths.push_back(CountMaxDepth(node, depth + 1));
-		}
-
-		int max = depths.at(0);
-
-		for (int depth : depths) {
-			if (depth > max) {
-				max = depth;
-			}
-		}
-
-		return max;
-	}
-}
-
-void MainWindow::PopulateNodeList(TNode* root_node, TNode* parent_node, int curr_depth, int* leaf_x) {
-
-	if (curr_depth > list_of_node_lists_->size()) {
-		return;
+	if (results_.size() > 0) {
+		cfg_drawer_->ColorResults(results_);
 	}
 
-	NODE_LIST* node_list = list_of_node_lists_->at(curr_depth);
+	EndSetCFGScene();
 
-	int y = curr_depth * unit_y_;
-	int pos = node_list->size();
-	int x = pos * unit_x_;
-
-	if (root_node->GetChildrenVector().size() == 0) {
-		GUINode* gui_node = new GUINode(root_node, parent_node, *leaf_x, y);
-		*leaf_x += unit_x_;
-		node_list->push_back(gui_node);
-	}
-	else {
-
-		for (TNode* child : root_node->GetChildrenVector()) {
-			PopulateNodeList(child, root_node, curr_depth + 1, leaf_x);
-		}
-
-		NODE_LIST* child_node_list = list_of_node_lists_->at(curr_depth + 1);
-		NODE_LIST* filtered_child_node_list = new NODE_LIST();
-
-		for (GUINode* gui_node : *child_node_list) {
-			if (gui_node->parent_ == root_node) {
-				filtered_child_node_list->push_back(gui_node);
-			}
-		}
-
-		int start_x = filtered_child_node_list->at(0)->x_;
-		int end_x = filtered_child_node_list->at(filtered_child_node_list->size() - 1)->x_;
-
-		int parent_x = (end_x + start_x) / 2;
-
-		GUINode* gui_node = new GUINode(root_node, parent_node, parent_x, y);
-		node_list->push_back(gui_node);
-		
-	}
-
-}
-
-void MainWindow::PrintNodeList() {
-	
-	int level = 0;
-	for (NODE_LIST* node_list : *list_of_node_lists_) {
-		
-		cout << "Level " << level << ": [";
-		
-		int idx = 0;
-		for (GUINode* gui_node : *node_list) {
-			cout << gui_node->node_->getData();
-			if (idx < node_list->size() - 1) {
-				cout << ", ";
-			}
-		}
-		cout << "]" << endl;
-		level += 1;
-	}
-}
-
-void MainWindow::InitialiseListOfNodeLists(int max_depth) {
-
-	list_of_node_lists_ = new LIST_OF_NODE_LISTS();
-	
-	for (int i = 0; i < max_depth + 1; i++) {
-		NODE_LIST* node_list = new NODE_LIST;
-		list_of_node_lists_->push_back(node_list);
-	}
 }
 
 void MainWindow::DrawAST() {
 
+	BeginSetScene();
+
+	ast_drawer_ = new ASTDrawer(scene, ast_helper_->GetGUINodeTree());
+
+	ast_drawer_->DrawAST();
+
+	if (results_.size() > 0) {
+		ast_drawer_->ColorResults(results_);
+	}
+
+	EndSetASTScene();
+
+}
+
+void MainWindow::BeginSetScene() {
 	scene->clear();
+	ui->graphicsView->resetTransform();
+	ui->graphicsView->resetMatrix();
+	ui->verticalSlider->setValue(1);
+}
 
-	// set dimensions
-	int diameter = 30;
-
-	for (NODE_LIST* node_list : *list_of_node_lists_) {
-		for (GUINode* gui_node : *node_list) {
-			DrawNode(gui_node);
-		}
-	}
-
-	for (int i = 1; i < list_of_node_lists_->size(); i++) {
-		NODE_LIST* node_list = list_of_node_lists_->at(i);
-		NODE_LIST* parent_node_list = list_of_node_lists_->at(i-1);
-
-		for (GUINode* gui_node : *node_list) {
-			for (GUINode* parent_node : *parent_node_list) {
-				if (gui_node->parent_ == parent_node->node_) {
-					//draw edge
-					scene->addLine(
-						QLine(
-							gui_node->x_ + line_offset_x, 
-							gui_node->y_, 
-							parent_node->x_ + line_offset_x, 
-							parent_node->y_ + line_offset_y
-						), outline_pen_);
-				}
-			}
-		}
-		
-	}
-
+void MainWindow::EndSetASTScene() {
 	ui->graphicsView->fitInView(ui->graphicsView->sceneRect(), Qt::KeepAspectRatio);
-
 }
 
-void MainWindow::DrawNode(GUINode* gui_node) {
-	scene->addEllipse(gui_node->x_, gui_node->y_, diameter_, diameter_, outline_pen_, main_brush_);
-	QGraphicsTextItem* text = scene->addText(QString::fromStdString(gui_node->node_->getData()));
-	text->setPos(gui_node->x_ - text_offset_x, gui_node->y_ + text_offset_y);
+void MainWindow::EndSetCFGScene() {
+	ui->graphicsView->fitInView(ui->graphicsView->sceneRect(), Qt::KeepAspectRatio);
 }
 
-void MainWindow::DrawNode(GUINode* gui_node, QColor color) {
-	scene->addEllipse(gui_node->x_, gui_node->y_, diameter_, diameter_, outline_pen_, QBrush(color));
+void MainWindow::PrintResults(list<string> results) {
+
+	QString result_str;
+	int i = 0;
+
+	for (auto const& result : results) {
+
+		result_str += QString(result.c_str());
+		if (i < results.size() - 1) {
+			result_str += ", ";
+		}
+		i += 1;
+	}
+
+	ui->txtResult->document()->setPlainText(result_str);
+}
+
+void MainWindow::on_verticalSlider_valueChanged(int value) {
+
+	if (value < prev_value) {
+		ui->graphicsView->scale(0.85, 0.85);
+	}
+	else {
+		ui->graphicsView->scale(1.0 / 0.85, 1.0 / 0.85);
+	}
+
+	prev_value = value;
+
 }

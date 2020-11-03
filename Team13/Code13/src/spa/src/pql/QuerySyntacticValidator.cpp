@@ -239,6 +239,11 @@ bool QuerySyntacticValidator::ValidatePatternClause(string token, STRING_STRING_
 		}
 	}
 	if (pattern_type_token_type.compare(TYPE_DESIGN_ENTITY_IF) == 0) {
+		if (temp_token.find(",") == string::npos) {
+			// cannot find comma -> no more arguments
+			result = false;
+			return result;
+		}
 		temp_token.erase(0, temp_token.find_first_of(",") + 1);
 		string third_arg = temp_token.substr(0, temp_token.length() - 1);
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&third_arg);
@@ -254,6 +259,7 @@ bool QuerySyntacticValidator::ValidateWithClause(string token) {
 	bool result = true;
 	string temp_token = token;
 	string with_token = temp_token.substr(0, temp_token.find_first_of(" "));
+	// cout << "reached Here, with_token:" << with_token << "|" << endl;
 	if (with_token.compare(TYPE_WITH_CLAUSE) != 0) {
 		result = false;
 		return result;
@@ -270,6 +276,7 @@ bool QuerySyntacticValidator::ValidateWithClause(string token) {
 	//if (!IsAttrCond(attr_cond_token, declared_var_names)) {
 	//	result = false;
 	// }
+	// cout << "first ref:" << first_ref << endl;
 	if (!IsRef(first_ref)) {
 		result = false;
 		return result;
@@ -333,6 +340,7 @@ bool QuerySyntacticValidator::IsAttrRef(string token) {
 }
 
 bool QuerySyntacticValidator::IsRef(string token) {
+	// cout << "Checking ref:" << token << endl;
 	bool result = false;
 	if (token.front() == '\"' && token.back() == '\"') {
 		// remember to ensure that what's inside the "" is already trimmed!
@@ -351,6 +359,7 @@ bool QuerySyntacticValidator::IsRef(string token) {
 		return result;
 	}
 	if (IsSynonym(token)) {
+		// cout << "YES FIRST ARG IS SYNONYM" << endl;
 		result = true;
 		return result;
 	}
