@@ -19,18 +19,17 @@ private:
         { TYPE_COND_NEXT,       11 },
         { TYPE_COND_PATTERN_F,  12 },
         { TYPE_COND_PATTERN_P,  13 },
-        { TYPE_COND_NEXT_T,     14 },
-        { TYPE_COND_AFFECTS,    15 },
-        { TYPE_COND_AFFECTS_T,  16 }
+        { TYPE_COND_NEXT_T,     50 },
+        { TYPE_COND_AFFECTS,    100 },
+        { TYPE_COND_AFFECTS_T,  150 }
     };
 
 public:
     PQLOptimization();
-
     PQLOptimization(STRING_INTEGER_MAP occurrence_count);
 
-    STRING_INTEGER_MAP GetOccurrenceCount();
-    void SetOccurrenceCount(STRING_INTEGER_MAP occurrence_count);
+    int GetOccurrenceScore(string target);
+    bool Contains(string value);
 
     bool operator()(const STRING_LIST& lhs, const STRING_LIST& rhs);
     bool operator()(const STRING_PAIR& lhs, const STRING_PAIR& rhs);

@@ -7,7 +7,7 @@
 class PQLOptimizedEvaluator
 {
 	typedef priority_queue<STRING_LIST, STRINGLIST_LIST, PQLOptimization> FUNCTION_QUEUE;
-	// typedef priority_queue<> CONSTRAINT_QUEUE;
+	typedef priority_queue<STRING_PAIR, STRINGPAIR_LIST, PQLOptimization> CONSTRAINT_QUEUE;
 	typedef unordered_map<STRING_SET*, FUNCTION_QUEUE> STRINGSET_FUNCTIONQUEUE_MAP;
 public:
 	QueryResult Evaluate(QueryInfo query_info);
@@ -18,11 +18,15 @@ public:
 	void Print(STRINGLIST_STRINGLISTSET_MAP to_print);
 	void Print(STRINGSET_STRINGLISTSET_MAP to_print);
 	void Print(STRINGPAIR_SET to_print);
+	void Print(INTEGERPAIR_SET to_print);
+	void Print(STRINGSET_FUNCTIONQUEUE_MAP to_print);
+	void Print(FUNCTION_QUEUE to_print);
+	void Print(CONSTRAINT_QUEUE to_print);
 
 	void AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP* results_map);
 	QueryResult SetResult(bool is_boolean_output, string bool_result, STRINGLIST_SET result);
 		
-	bool ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints);
+	bool ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints, STRING_INTEGER_MAP* occurrence_count, STRING_SET* constraint_synonyms);
 	bool ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MAP* synonyms_map, STRING_INTEGER_MAP* occurrence_count);
 
 	STRING_SET* GetRelatedSynonyms(string synonym, STRINGSET_STRINGLISTSET_MAP synonyms_map);
@@ -30,7 +34,7 @@ public:
 	STRING_LIST* GetRelatedSynonyms(string synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
 	STRING_LIST* GetRelatedSynonyms(STRING_LIST synonyms, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
 
-	bool EvaluateConstraints(STRING_STRING_MAP entity_map, STRINGPAIR_SET constraints, STRINGLIST_STRINGLISTSET_MAP* results_map);
+	bool EvaluateConstraints(STRING_STRING_MAP entity_map, CONSTRAINT_QUEUE constraints, STRINGLIST_STRINGLISTSET_MAP* results_map);
 	bool EvaluateNoSynonymSet(string f_call, string param1, string param2);
 	STRINGLIST_SET EvaluatePatternCall(string f_call, string param1, string param2, string type);
 	STRINGLIST_SET EvaluatePatternCall(string f_call, string param, string type);
@@ -73,6 +77,8 @@ public:
 	bool IsInteger(string var);
 	bool IsUnderscore(string var);
 	bool IsOutputSynonyms(STRING_LIST synonyms, STRING_LIST output_list);
+	bool IsOutputSynonyms(STRING_SET synonyms, STRING_LIST output_list);
+	bool IsConstraintSynonym(STRING_SET synonyms, STRING_SET constraint_synonyms);
 	bool IsDuplicate(STRINGLIST_SET set, STRING_LIST value);
 	bool IsDependencyStatisfied(STRING_LIST result1, STRING_LIST result2, INTEGERPAIR_SET to_check);
 	bool IsSameEntityType(string type, string check);
@@ -81,4 +87,5 @@ public:
 	string ParsingEntRef(string param);
 	string ParsingSynonym(string synonym);
 	string ParsingSynonymAttribute(string synonym);
+	void IncreaseOccurrenceCount(string target, STRING_INTEGER_MAP* occurrence_count);
 }; 

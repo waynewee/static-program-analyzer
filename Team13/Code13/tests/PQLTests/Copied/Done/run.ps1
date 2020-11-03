@@ -8,7 +8,7 @@ Invoke-Expression -Command "autotester.exe iter2_2_source_alternate_output_attri
 Invoke-Expression -Command "autotester.exe iter2_3_source_multiClauses.txt iter2_3_queries_multiClauses.txt xmls/iter2_3.xml"
 Invoke-Expression -Command "autotester.exe iter2_4_source_complex_callst_graph.txt iter2_4_queries_complex_callst_graph.txt xmls/iter2_4.xml"
 Invoke-Expression -Command "autotester.exe iter2_5_source_complex_calls_graph.txt iter2_5_queries_complex_calls_graph.txt xmls/iter2_5.xml"
-
+Invoke-Expression -Command "autotester.exe iter2_6_source_with.txt iter2_6_queries_with.txt xmls/iter2_6.xml"
 Invoke-Expression -Command "autotester.exe iter2_7_newFeatures_source.txt iter2_7_newFeatures_queries.txt xmls/iter2_7.xml"
 Invoke-Expression -Command "autotester.exe iter2_8_source_NextT.txt iter2_8_queries_NextT.txt xmls/iter2_8.xml"
 
