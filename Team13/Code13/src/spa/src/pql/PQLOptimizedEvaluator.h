@@ -34,8 +34,8 @@ public:
 	STRING_LIST* GetRelatedSynonyms(string synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
 	STRING_LIST* GetRelatedSynonyms(STRING_LIST synonyms, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
 
-	bool EvaluateConstraints(STRING_STRING_MAP entity_map, CONSTRAINT_QUEUE constraints, STRINGLIST_STRINGLISTSET_MAP* results_map);
 	bool EvaluateNoSynonymSet(string f_call, string param1, string param2);
+	STRINGLIST_SET EvaluateWithClause(STRING_STRING_MAP entity_map, string lhs, string rhs);
 	STRINGLIST_SET EvaluatePatternCall(string f_call, string param1, string param2, string type);
 	STRINGLIST_SET EvaluatePatternCall(string f_call, string param, string type);
 	STRINGLIST_SET EvaluateOneSynonymSet(string f_call, string param);
@@ -63,14 +63,18 @@ public:
 	STRINGLIST_SET GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list, STRING_STRING_MAP entity_map);
 	STRINGLIST_SET GetNoDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values);
 	STRINGLIST_SET GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, int pos_to_add, INTEGERPAIR_SET to_check, string output_type, string output_attr);
-	
+	STRINGLIST_SET GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, INTEGER_LIST pos_to_add, INTEGERPAIR_SET to_check, string output_type, string output_attr);
+
 	STRING_SET GetIntersectResult(STRING_SET val1, STRING_SET val2);
 	STRING_SET GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2, int pos_to_check);
 	STRINGLIST_SET GetIntersectResult(STRINGLIST_SET val1, STRINGLIST_SET val2);
 
 	STRINGLIST_SET GetAlternateResult(string values, string type);
 	STRING_SET GetAlternateResult(STRINGLIST_SET values, string type);
+	STRINGLIST_SET GetAlternateResult(STRINGLIST_SET values, int pos_to_check, string type);
 	STRINGLIST_SET GetAlternateOutputResult(STRING_SET values, string type);
+
+	INTEGER_LIST GetOutputSynonyms(STRING_LIST synonyms, STRING_LIST output_list);
 
 	bool IsVar(string var);
 	bool IsString(string var);
@@ -87,5 +91,5 @@ public:
 	string ParsingEntRef(string param);
 	string ParsingSynonym(string synonym);
 	string ParsingSynonymAttribute(string synonym);
-	void IncreaseOccurrenceCount(string target, STRING_INTEGER_MAP* occurrence_count);
+	void IncreaseOccurrenceCount(string target, STRING_INTEGER_MAP* occurrence_count, int count = 1);
 }; 

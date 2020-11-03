@@ -18,7 +18,7 @@ bool PQLOptimization::operator()(const STRING_PAIR& lhs, const STRING_PAIR& rhs)
     int lhs_priority = GetOccurrenceScore(lhs.first) + GetOccurrenceScore(lhs.second);
     int rhs_priority = GetOccurrenceScore(rhs.first) + GetOccurrenceScore(rhs.second);;
    
-    return  lhs_priority < rhs_priority;
+    return  lhs_priority > rhs_priority;
 }
 
 int PQLOptimization::GetOccurrenceScore(string target) {

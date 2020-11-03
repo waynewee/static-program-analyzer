@@ -6,6 +6,7 @@ class PQLOptimization {
 private:
     STRING_INTEGER_MAP occurrence_count_;
     STRING_INTEGER_MAP ranks_of_functions = {
+        { TYPE_WITH_CLAUSE,     0 },
         { TYPE_COND_FOLLOWS,    1 },
         { TYPE_COND_MODIFIES_S, 2 },
         { TYPE_COND_MODIFIES_P, 3 },
