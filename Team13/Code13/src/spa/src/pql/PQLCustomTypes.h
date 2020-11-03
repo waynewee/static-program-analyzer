@@ -10,7 +10,7 @@
 using namespace std;
 
 // Activates debug prints
-#define DEBUG false
+#define DEBUG true
 // Activates debug prints with detailed printing (data structures)
 #define DEBUG_PRINTING false
 // Activates fake data for unit testing

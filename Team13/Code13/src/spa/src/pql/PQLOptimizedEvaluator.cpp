@@ -416,9 +416,9 @@ void PQLOptimizedEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STR
 	else {
 		STRINGLIST_SET tmp_result = results_map->at(check_key);
 		STRING_LIST new_key = *(new STRING_LIST(*check_key));
-		bool is_empty = false;
+		// bool is_empty = false;
 
-		while (check_key != nullptr) {
+		//while (check_key != nullptr) {
 			// Merge common synonyms & their results
 			INTEGERPAIR_SET index_to_compare = INTEGERPAIR_SET();
 			INTEGER_SET pos_to_ignore = INTEGER_SET();
@@ -437,18 +437,19 @@ void PQLOptimizedEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STR
 				}
 			}
 			cout << "key: ";
-			Print(new_key);
-			cout << "tmp result: ";
-			Print(tmp_result);
-			cout << "key: ";
-			Print(*check_key);
+			Print(key);
 			cout << "value: ";
 			Print(value);
+			cout << "key: ";
+			Print(*check_key);
+			cout << "tmp result: ";
+			Print(tmp_result);
 			cout << endl;
 			if (pos_to_ignore.size() == key.size()) {
 				tmp_result = GetDependencyProduct(tmp_result, value, -1, index_to_compare, "", "");
 			}
 			else {
+				// TO CHANGE - ADD A SET OF VALUES INSTEAD OF 1 AT A TIME???????????????????????????????????
 				for (int i = 0; i < key.size(); i++) {
 					if (pos_to_ignore.find(i) == pos_to_ignore.end()) {
 						new_key.push_back(key.at(i));
@@ -467,28 +468,29 @@ void PQLOptimizedEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STR
 				}
 
 				results_map->clear();
-				is_empty = true;
-				break;
+				// is_empty = true;
+				// break;
 			}
 			else {
-				results_map->erase(check_key);				
+				results_map->erase(check_key);
+				AddResult(new_key, tmp_result, results_map);
 			}
 
 			// Stop condition: no more new synonyms
-			check_key = GetRelatedSynonyms(new_key, *results_map);
+			/*check_key = GetRelatedSynonyms(new_key, *results_map);
 			if (check_key != nullptr) {
 				Print(*check_key);
 
 			}
 			else {
 				cout << "check key = null ptr" << endl;
-			}
-		}
-
+			}*/
+		//}
+		/*
 		if (!is_empty) {
 			results_map->insert({ new STRING_LIST(new_key), tmp_result });
 			Print(*results_map);
-		}
+		}*/
 	} 
 }
 

@@ -171,5 +171,5 @@ FALSE
 35 - invalid query (IDENT missing quotation marks)
 read r;
 Select BOOLEAN with one = r.varName
-none
+FALSE
 5000
