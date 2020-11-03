@@ -1,7 +1,0 @@
-procedure WhileWhileNest {
-  while(x<10){
-    while(y<10){
-      x = y;
-    }
-  }
-}

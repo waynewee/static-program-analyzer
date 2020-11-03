@@ -1,0 +1,76 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>iter3</name><parsing_time_taken>718.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" Affectsstar="1" Callsstar="1" Modifies="2" Parentstar="1" UnnamedVar="4" Uses="2" Pattern="2" SuchThat="6" CondNum="20" RelNum="7" comment="sort within group by number of rows in result table">1</id><querystr><![CDATA[assign a; variable v; stmt s1; procedure p1, p2; if ifs;  Select <a, v> pattern ifs("x", _, _) such that Uses(p1, _) such that Affects*(222, s1) such that Calls*(p1, p2) such that Parent*(209, s1) pattern a(v, _) such that Modifies(p2, v) and Modifies(ifs, v) such that Uses(s1, v)        ]]></querystr>
+<stuans>338 a,327 a,243 a,27 a,220 a,100 a,92 a,77 a,377 a,302 a,389 a,332 a</stuans>
+<correct>100 a,220 a,243 a,27 a,302 a,327 a,332 a,338 a,377 a,389 a,77 a,92 a</correct>
+<time_taken>1266.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Affectsstar="1" Callsstar="1" Modifies="2" Parentstar="1" UnnamedVar="4" Uses="2" Pattern="2" SuchThat="3" CondNum="17" RelNum="7" comment="sort within group by number of rows in result table (random order)">2</id><querystr><![CDATA[assign a; variable v; stmt s1; procedure p1, p2; if ifs;  Select <a, v> pattern a(v, _) such that Affects*(222, s1) such that Calls*(p1, p2) and Parent*(209, s1) such that Modifies(ifs, v) and Uses(p1, _) and Uses(s1, v) and Modifies(p2, v) pattern ifs("x", _, _)]]></querystr>
+<stuans>377 a,243 a,389 a,327 a,338 a,100 a,332 a,27 a,77 a,92 a,220 a,302 a</stuans>
+<correct>100 a,220 a,243 a,27 a,302 a,327 a,332 a,338 a,377 a,389 a,77 a,92 a</correct>
+<time_taken>1205.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Follows="4" Parent="1" UnnamedVar="4" Uses="1" Pattern="1" SuchThat="5" With="3" CondNum="20" RelNum="6" comment="number of clauses in asc order (1 s1, 2 s2, 3 r3 p3 a3, 5 ifs5 v5)">3</id><querystr><![CDATA[stmt s1, s2, s5; if ifs2, ifs5; assign a3; while w3; variable v5; read r3; print p3; Select <s1, ifs2, a3, s5> with s1.stmt# = 185 such that Follows(ifs2, s2) with 201 = s2.stmt# such that Follows(r3, p3) and Follows(p3, a3) such that Follows(a3, w3) pattern ifs5("a1a", _, _) and ifs5("ccc", _, _) such that Uses(ifs5, v5) with "bb2" = v5.varName such that Parent (s5, ifs5)]]></querystr>
+<stuans>185 191 208 345</stuans>
+<correct>185 191 208 345</correct>
+<time_taken>291.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Follows="4" Parent="1" UnnamedVar="4" Uses="1" Pattern="2" SuchThat="6" With="3" CondNum="22" RelNum="6" comment="number of clauses in random order">4</id><querystr><![CDATA[stmt s1, s2, s5; if ifs2, ifs5; assign a3; while w3; variable v5; read r3; print p3; Select <s1, ifs2, a3, s5> with s1.stmt# = 185 such that Uses(ifs5, v5) with "bb2" = v5.varName such that Follows(a3, w3) pattern ifs5("a1a", _, _) such that Follows(r3, p3) such that Follows(ifs2, s2) with 201 = s2.stmt#  such that Follows(p3, a3) pattern ifs5("ccc", _, _) such that Parent (s5, ifs5)]]></querystr>
+<stuans>185 191 208 345</stuans>
+<correct>185 191 208 345</correct>
+<time_taken>296.000000</time_taken>
+<passed/>
+</query>
+<query>
+<id ReturnTuple="1" Follows="2" Followsstar="2" Next="2" Nextstar="2" SuchThat="2" CondNum="11" RelNum="8" comment="number of synonyms in asc order (1 group a1 a2, 2 group s1 s2 s3 s4 s5)">5</id><querystr><![CDATA[assign a1, a2, s1, s2, s3, s4, s5; Select <s1, a1> such that Follows(a1, a2) and Follows*(a1, a2) and Next(a1, a2) and Next*(a1, a2) such that Follows(s1, s2) and Follows*(s2, s3) and Next(s3, s4) and Next*(s4, s5)]]></querystr>
+<timeout/>
+</query>
+<query>
+<id ReturnTuple="1" Follows="2" Followsstar="2" Next="2" Nextstar="2" SuchThat="1" CondNum="10" RelNum="8" comment="number of synonyms in random order">6</id><querystr><![CDATA[assign a1, a2, s1, s2, s3, s4, s5; Select <s1, a1> such that Follows(s1, s2) and Follows(a1, a2) and Follows*(s2, s3) and Next*(s4, s5) and Follows*(a1, a2) and Next(s3, s4) and Next(a1, a2) and Next*(a1, a2) ]]></querystr>
+<timeout/>
+</query>
+<query>
+<id ReturnBoolean="1" Modifies="1" Nextstar="1" Parentstar="1" UnnamedVar="4" Uses="1" Pattern="3" SuchThat="3" CondNum="15" RelNum="4" comment="Common synonym group together (1 ifs, 2 w2, 2 w1, 4v)">7</id><querystr><![CDATA[assign a; variable v; procedure p; if ifs; while w1, w2;  Select BOOLEAN pattern ifs("bA", _, _) such that Next*(25, w2) and Parent*(w1, w2) pattern w1(v, _) such that Modifies(ifs, v) such that Uses(p, v) pattern a(v, _)   ]]></querystr>
+<stuans>FALSE</stuans>
+<correct>TRUE</correct>
+<time_taken>48.000000</time_taken>
+<failed>
+<missing>TRUE</missing>
+<additional>FALSE</additional>
+<summary>
+<expected>1</expected>
+<matched>0</matched>
+<missing>1</missing>
+<additional>1</additional>
+</summary>
+</failed>
+</query>
+<query>
+<id ReturnBoolean="1" Modifies="1" Nextstar="1" Parentstar="1" UnnamedVar="4" Uses="1" Pattern="3" SuchThat="4" CondNum="16" RelNum="4" comment="valid query BOOLEAN 7 clauses random order">8</id><querystr><![CDATA[assign a; variable v; procedure p; if ifs; while w1, w2;  Select BOOLEAN such that Next*(25, w2) such that Modifies(ifs, v) such that Uses(p, v) pattern a(v, _) pattern w1(v, _) such that Parent*(w1, w2) pattern ifs("bA", _, _) ]]></querystr>
+<stuans>FALSE</stuans>
+<correct>TRUE</correct>
+<time_taken>49.000000</time_taken>
+<failed>
+<missing>TRUE</missing>
+<additional>FALSE</additional>
+<summary>
+<expected>1</expected>
+<matched>0</matched>
+<missing>1</missing>
+<additional>1</additional>
+</summary>
+</failed>
+</query>
+</queries>
+</test_results>

@@ -1,3 +1,0 @@
-procedure ExtraCharsInExpressionC {
-  x = x - _ 5;
-}

@@ -1,3 +1,0 @@
-procedure WhiteSpaceVarName {
-  x 5 = 10;
-}
