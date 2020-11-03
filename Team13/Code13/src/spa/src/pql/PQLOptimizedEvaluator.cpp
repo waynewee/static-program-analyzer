@@ -103,8 +103,6 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 			else {
 				if (IsVar(param1) && IsVar(param2)) {
 					// both params = synonyms
-					c_key.push_back(param1);
-					c_key.push_back(param2);
 					c_value = EvaluateTwoSynonymSet(f_call);
 
 					STRINGLIST_SET tmp = EvaluateAllCall(entity_map.at(param1));
@@ -113,6 +111,7 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 					tmp = EvaluateAllCall(entity_map.at(param2));
 					RemoveIrrelevant(&c_value, tmp, 1);
 
+					c_key.push_back(param1);
 					if (param1.compare(param2) == 0) {
 						// same synonym
 						tmp.clear();
@@ -124,6 +123,10 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 							}
 						}
 						c_value = tmp;
+					}
+					else {
+						// different synonyms
+						c_key.push_back(param2);
 					}
 				}
 				else if (!IsVar(param1) && IsVar(param2)) {
@@ -405,17 +408,19 @@ STRINGLIST_STRINGLISTSET_MAP PQLOptimizedEvaluator::AddResult(STRING_LIST key, S
 			}
 		}
 		
-		cout << "key: ";
-		Print(key);
-		// cout << "value: ";
-		// Print(value);
+		
 		cout << "check key: ";
 		Print(*check_key);
-		// cout << "tmp result: ";
-		// Print(tmp_result);
+		cout << "tmp result: ";
+		Print(tmp_result);
+		cout << "key: ";
+		Print(key);
+		cout << "value: ";
+		Print(value);
 		cout << endl;
 		
 		if (has_common) {
+			Print(index_to_compare);
 			tmp_result = GetDependencyProduct(tmp_result, value, pos_to_add, index_to_compare, "", "");
 		}
 

@@ -1,0 +1,275 @@
+1 - modifies stmtNo wildcard xxx
+read re;
+Select re such that Modifies(3, _)
+1, 8
+5000
+2 - modifies stmtNo synonym
+variable v;
+Select v such that Modifies(6, v)
+c,a
+5000
+3 - modifies stmtNo identifier
+if ifs;
+Select ifs such that Modifies(8, "c")
+2
+5000
+4 - modifies synonym wildcard
+stmt s;
+Select s such that Modifies(s, _)
+1,2,3,5,6,8,9, 10
+5000
+5 - modifies synonym synonym
+while w; variable v;
+Select w such that Modifies(w, v)
+6
+5000
+6 - modifies synonym identifier
+while w; if ifs;
+Select ifs such that Modifies(w, "a")
+2
+5000
+7 - modifies procedureName identifier
+print pn;
+Select pn such that Modifies("testModifiesSModifiesP", "dd")
+none
+5000
+8 - Invalid modifies query: left param cannot be wildcard
+variable v;
+Select v such that Modifies(_, v)
+none
+5000
+9 - Invalid modifies query: right param cannot be non-variable synonym
+stmt s; while w;
+Select s such that Modifies(s, w)
+none
+5000
+10 - follows stmtNo syn
+stmt s;
+Select s such that Follows(2, s)
+6
+5000
+11 - follows syn syn
+print pn; read re;
+Select re such that Follows(pn, re)
+8
+5000
+12 - follows wildcard syn
+assign a;
+Select a such that Follows(_, a)
+9
+5000
+13 - follows* stmtNo syn
+stmt s;
+Select s such that Follows*(6, s)
+none
+5000
+14 - follows* syn wildcard
+if ifs;
+Select ifs such that Follows*(ifs, _)
+2
+5000
+15 - follows* stmtNo stmtNo
+assign a;
+Select a such that Follows*(3, 5)
+none
+5000
+16 - parent stmtNo syn
+assign a;
+Select a such that Parent(2, a)
+3, 5
+5000
+17 - parent stmtNo stmtNo
+read re;
+Select re such that Parent(1, 2)
+none
+5000
+18 - parent syn syn
+while w; if ifs; assign a;
+Select a such that Parent(w, ifs)
+none
+5000
+19 - parent* stmtNo syn
+stmt s;
+Select s such that Parent*(6, s)
+7,8,9
+5000
+20 - parent* wildcard stmtNo
+read re;
+Select re such that Parent*(_, 5)
+1,8
+5000
+21 - Invalid parent*: right param not a statement synonym
+variable v; stmt s;
+Select s such that Parent*(s, v)
+none
+5000
+22 - Uses syn wildcard
+print pn;
+Select pn such that Uses(pn, _)
+4,7
+5000
+23 - Uses with Id of the var
+stmt s;
+Select s such that Uses(s, "cc")
+3,2,6,7,10
+5000
+24 - pattern wildcard, partial
+assign a;
+Select a pattern a (_, _"cc"_)
+3
+5000
+25 - pattern with IDENT as left param, wildcard
+assign a;
+Select a pattern a ("b", _)
+5
+5000
+26 - pattern ident, partial
+assign a;
+Select a pattern a ("a", _"dd"_)
+9
+5000
+27 - pattern + modifies
+assign a;
+Select a pattern a (_, _"20"_) such that Modifies(a, "b")
+5
+5000
+28 - pattern + modifies
+assign hello; stmt s;
+Select hello pattern hello (_, "99") such that Modifies(s, _)
+none
+5000
+29 - pattern + modifies
+if ifs; assign a;
+Select a pattern a (_, _"dd"_) such that Modifies(ifs, "a")
+9
+5000
+30 - pattern + modifies
+assign a;
+Select a pattern a ("a", _"dd"_) such that Modifies(a, "b")
+none
+5000
+31 - pattern + modifies
+while w; assign a;
+Select w such that Modifies(w, " c ") pattern a ("b", _" bb"_)
+6
+5000
+32 - invalid ident
+stmt s; assign a;
+Select s such that Uses(s, "20") pattern a (_, _"20"_)
+none
+5000
+33 - pattern + follows
+assign a; stmt s;
+Select a such that Follows(a, _) pattern a (_, _)
+3
+5000
+34 - pattern + follows*
+stmt s; assign w;
+Select w such that Follows*(w, s) pattern w ("a", _)
+3
+5000
+35 - pattern + parent
+assign a; stmt s;
+Select s pattern a (_, _"10"_) such that Parent(s, a)
+2
+5000
+36 - pattern + parent*
+assign a;
+Select a pattern a (_, "bb") such that Parent*(6,7)
+none
+5000
+37 - Invalid Uses left param cannot be wildcard
+while w;
+Select w such that Uses(_, "d")
+none
+5000
+38 - parent two param
+assign a; variable v; stmt s;
+Select s such that Parent(s, a) pattern a(_,_)
+2,6
+5000
+39 - mixed with calls //extension iter 2 starts here
+stmt s; procedure p, q;
+Select s such that Modifies(s, _) and Calls(p, q)
+1,2,3,5,6,8,9,10
+5000
+40 - mixed with calls*
+while w; variable v;
+Select w such that Modifies(w, v) and Calls*(_, "testModifiesSModifiesP")
+6
+5000
+41 - mixed with next
+while w; if ifs;
+Select ifs such that Modifies(w, "a") and Next(3, 4)
+2
+5000
+42 - mixed with next*
+variable v;
+Select v such that Modifies(6, v) and Next*(8,8)
+c, a
+5000
+43 - 3 clause modifies call with
+procedure p, q;
+Select p such that Calls (p, q) with  q.procName = "testModifiesSModifiesP" such that Modifies (p, "bb")
+testCallsInModifies
+5000
+44 - 3 clause modifies next with
+stmt s; variable v; constant c;
+Select BOOLEAN such that Next* (2, s) and Modifies(s, v) with s.stmt# = c.value
+FALSE
+5000
+45 - 3 clause modifies use pattern
+while w; assign a; variable v;
+Select w such that Modifies(w, "c") and Uses(w, v) pattern a ("b", _" bb"_)
+6
+5000
+46 - 3 clause modifies parent pattern
+if ifs; assign a;
+Select a.stmt# pattern a (_, _"dd"_) such that Modifies(ifs, "a") and Parent(ifs, 4)
+9
+5000
+47 - 3 clause modifies with follows
+prog_line n; stmt s; variable v;
+Select s such that Modifies(s, v) and Follows* (s, n) with n=9
+8
+5000
+48 - 3 clause select tuple modifies pattern follows*
+stmt s; assign w; variable v;
+Select <w, s, v> such that Follows*(w, s) and Modifies(w, v) pattern w ("a", _)
+3 4 a
+5000
+49 - 3 clause modifies pattern parent*
+assign a; variable v;
+Select BOOLEAN pattern a (_, "bb") such that Modifies(a, v) and Parent*(6, 9)
+FALSE
+5000
+50 - 3 clause modifies next* pattern
+assign a;
+Select a pattern a (_, _"20"_) such that Modifies(a, "b") and Next*(1, 7)
+5
+5000
+51 - 3 clause modifies calls next
+variable v; procedure p, q; stmt s;
+Select s such that Modifies(q, v) and Calls(p, q) and Next(1, 3)
+none
+5000
+52 - 3 clause modifies next* with
+prog_line n1, n2; stmt s;
+Select s.stmt# such that Modifies(s, "a") and Next* (n1, n2) with n1 = 2
+2, 3, 10,6,9
+5000
+53 - 3 clause parent* next* with
+assign a; while w; prog_line n;
+Select BOOLEAN such that Parent* (w, a) and Next* (6, n) with a.stmt# = n
+TRUE
+5000
+54 - 3 clause modifies call pattern
+call c; assign a; procedure p; variable v;
+Select c such that Modifies(c, v) and Calls(p, _) pattern a(v, _)
+10
+5000
+55 - 3 clause modifies call* with
+call c; assign a; procedure p, q; variable v;
+Select c such that Modifies(c, v) and Calls*(p, q) with c.procName = p.procName
+none
+5000
