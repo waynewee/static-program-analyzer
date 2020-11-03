@@ -22,15 +22,28 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="CodeEditor" name="txtCodeEditor"/>
+        <widget class="CodeEditor" name="txtCodeEditor">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QGraphicsView" name="graphicsView"/>
        </item>
        <item>
         <widget class="QSlider" name="verticalSlider">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
          <property name="value">
-          <number>50</number>
+          <number>1</number>
+         </property>
+         <property name="sliderPosition">
+          <number>1</number>
          </property>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -78,7 +91,11 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QTextEdit" name="txtResult"/>
+        <widget class="QTextEdit" name="txtResult">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
