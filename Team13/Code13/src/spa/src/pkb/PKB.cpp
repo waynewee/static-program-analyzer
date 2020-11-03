@@ -130,7 +130,6 @@ STMT_IDX_SET PKB::AffectsManager::GetAffects(STMT_IDX a) {
     auto lhs_var = *(relation_manager_.GetStmtModifies(a).begin());
     auto visited = new STMT_IDX_SET();
     auto result = new STMT_IDX_SET();
-    visited->insert(a);
     auto neighbors = cfg_manager_.GetNext(a);
     for (auto neighbor : neighbors) {
         RecursiveGetAffects(neighbor, lhs_var, *visited, *result);
