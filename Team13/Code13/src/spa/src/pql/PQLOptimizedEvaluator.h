@@ -7,7 +7,6 @@
 class PQLOptimizedEvaluator
 {
 	typedef priority_queue<STRING_LIST, STRINGLIST_LIST, PQLOptimization> FUNCTION_QUEUE;
-	typedef priority_queue<STRING_PAIR, STRINGPAIR_LIST, PQLOptimization> CONSTRAINT_QUEUE;
 	typedef unordered_map<STRING_SET*, FUNCTION_QUEUE> STRINGSET_FUNCTIONQUEUE_MAP;
 public:
 	QueryResult Evaluate(QueryInfo query_info);
@@ -21,9 +20,8 @@ public:
 	void Print(INTEGERPAIR_SET to_print);
 	void Print(STRINGSET_FUNCTIONQUEUE_MAP to_print);
 	void Print(FUNCTION_QUEUE to_print);
-	void Print(CONSTRAINT_QUEUE to_print);
 
-	void AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP* results_map);
+	STRINGLIST_STRINGLISTSET_MAP AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP results_map);
 	QueryResult SetResult(bool is_boolean_output, string bool_result, STRINGLIST_SET result);
 		
 	bool ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints, STRING_INTEGER_MAP* occurrence_count, STRING_SET* constraint_synonyms);
