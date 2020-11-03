@@ -25,6 +25,8 @@ TNode* FrontendWrapper::GetAST() {
 	ASTBuilder ast_builder;
 	TNode* ast_root_node = ast_builder.BuildMainPrgNode(token_list_);
 
+	ast_root_node->Print(ast_root_node);
+
 	return ast_root_node;
 }
 

@@ -53,7 +53,7 @@ public:
         "Not",
         "And",
         "Or",
-        "Gt"
+        "Gt",
         "Gte",
         "Lt",
         "Lte",

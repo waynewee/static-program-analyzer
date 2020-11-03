@@ -93,11 +93,11 @@ string TNode::GetSelectValue() {
 string TNode::GetGUIData() {
 	switch (type) {
 	case TNode::condExpr:
-		return "Cond:" + operators_.at(op - 1);
+		return "Cond:" + operators_.at(op);
 	case TNode::relExpr:
-		return "Rel:" + operators_.at(op - 1);
+		return "Rel:" + operators_.at(op);
 	case TNode::expr:
-		return "Expr:" + operators_.at(op - 1);
+		return "Expr:" + operators_.at(op);
 	case TNode::varName:
 		return "Var:" + GetShortName();
 	case TNode::procName:

@@ -223,6 +223,11 @@ TNode* ASTBuilder::BuildStmtListNode() {
 TNode* ASTBuilder::BuildExpressionNode(ExpressionType expr_type) {
 	TOKEN_LIST expr_tokens = GetExpressionTokens(expr_type);
 
+	for (Token token : expr_tokens) {
+		cout << token.GetValue() << " ";
+		cout << token.GetTokenTypeStr() << endl;
+	}
+
 	ExprParser expr_parser(expr_tokens);
 
 	return expr_parser.Parse();
