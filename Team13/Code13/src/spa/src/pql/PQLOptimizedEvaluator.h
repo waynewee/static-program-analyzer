@@ -11,25 +11,14 @@ class PQLOptimizedEvaluator
 public:
 	QueryResult Evaluate(QueryInfo query_info);
 
-	void Print(STRING_LIST to_print);
-	void Print(STRING_SET to_print);
-	void Print(STRINGLIST_SET to_print);
-	void Print(STRINGLIST_STRINGLISTSET_MAP to_print);
-	void Print(STRINGSET_STRINGLISTSET_MAP to_print);
-	void Print(STRINGPAIR_SET to_print);
-	void Print(INTEGERPAIR_SET to_print);
-	void Print(STRINGSET_FUNCTIONQUEUE_MAP to_print);
-	void Print(FUNCTION_QUEUE to_print);
-
 	STRINGLIST_STRINGLISTSET_MAP AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP results_map);
 	QueryResult SetResult(bool is_boolean_output, string bool_result, STRINGLIST_SET result);
 		
-	bool ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints, STRING_INTEGER_MAP* occurrence_count, STRING_SET* constraint_synonyms);
 	bool ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MAP* synonyms_map, STRING_INTEGER_MAP* occurrence_count);
 
 	STRING_SET* GetRelatedSynonyms(string synonym, STRINGSET_STRINGLISTSET_MAP synonyms_map);
 	STRING_SET* GetRelatedSynonyms(STRING_SET synonyms, STRINGSET_STRINGLISTSET_MAP* synonyms_map);
-	STRING_LIST* GetRelatedSynonyms(string synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
+	// STRING_LIST* GetRelatedSynonyms(string synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
 	STRING_LIST* GetRelatedSynonyms(STRING_LIST synonyms, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
 
 	bool EvaluateNoSynonymSet(string f_call, string param1, string param2);
@@ -43,7 +32,6 @@ public:
 
 	STRING_SET ConvertSet(STRINGLIST_SET result_set);
 	STRINGLIST_SET ConvertSet(INTEGER_SET result_set);
-	STRINGLIST_SET ConvertSet(DOUBLE_SET result_set);
 	STRINGLIST_SET ConvertSet(STRING_SET result_set);
 	STRINGLIST_SET ConvertSet(STMT_STMT_PAIR_LIST result_set);
 	STRINGLIST_SET ConvertSet(STMT_VAR_PAIR_LIST result_set);
@@ -51,25 +39,25 @@ public:
 	STRINGLIST_SET ConvertSet(PROC_PROC_PAIR_LIST result_set);
 
 	bool RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, int pos_to_check);
-	bool RemoveIrrelevant(STRING_SET* value, STRINGLIST_SET tmp);
-	int GetCommonSynonymsIndex(STRING_LIST large_keys, string synonym);
-	INTEGERPAIR_SET GetCommonSynonymsIndex(STRING_LIST large_keys, STRING_LIST small_keys);
+	// bool RemoveIrrelevant(STRING_SET* value, STRINGLIST_SET tmp);
+	// int GetCommonSynonymsIndex(STRING_LIST large_keys, string synonym);
+	// INTEGERPAIR_SET GetCommonSynonymsIndex(STRING_LIST large_keys, STRING_LIST small_keys);
 	STRING_SET GetNewResult(STRINGLIST_SET value, int pos_to_check);
 	STRINGLIST_SET GetNewResult(STRINGLIST_SET value, INTEGER_LIST pos_to_check);
-	STRINGLIST_SET GetCombinedResult(STRINGLIST_SET large_values, STRINGLIST_SET small_values, INTEGERLIST_LIST indexes);
-	STRINGLIST_SET GetCombinedResult(STRINGLIST_SET output_result, STRINGLIST_SET result, int pos_to_compare);
+	// STRINGLIST_SET GetCombinedResult(STRINGLIST_SET large_values, STRINGLIST_SET small_values, INTEGERLIST_LIST indexes);
+	// STRINGLIST_SET GetCombinedResult(STRINGLIST_SET output_result, STRINGLIST_SET result, int pos_to_compare);
 	STRINGLIST_SET GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list, STRING_STRING_MAP entity_map);
 	STRINGLIST_SET GetNoDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values);
 	STRINGLIST_SET GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, INTEGER_LIST pos_to_add, INTEGERPAIR_SET to_check);
 
 	STRING_SET GetIntersectResult(STRING_SET val1, STRING_SET val2);
 	STRING_SET GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2, int pos_to_check);
-	STRINGLIST_SET GetIntersectResult(STRINGLIST_SET val1, STRINGLIST_SET val2);
+	// STRINGLIST_SET GetIntersectResult(STRINGLIST_SET val1, STRINGLIST_SET val2);
 
 	STRINGLIST_SET GetAlternateResult(string values, string type);
-	STRING_SET GetAlternateResult(STRINGLIST_SET values, string type);
 	STRINGLIST_SET GetAlternateResult(STRINGLIST_SET values, int pos_to_check, string type);
-	STRINGLIST_SET GetAlternateOutputResult(STRING_SET values, string type);
+	// STRING_SET GetAlternateResult(STRINGLIST_SET values, string type);
+	// STRINGLIST_SET GetAlternateOutputResult(STRING_SET values, string type);
 
 	INTEGER_LIST GetOutputSynonyms(STRING_LIST synonyms, STRING_LIST output_list);
 
@@ -88,5 +76,16 @@ public:
 	string ParsingEntRef(string param);
 	string ParsingSynonym(string synonym);
 	string ParsingSynonymAttribute(string synonym);
+
 	void IncreaseOccurrenceCount(string target, STRING_INTEGER_MAP* occurrence_count, int count = 1);
+
+	void Print(STRING_LIST to_print);
+	void Print(STRING_SET to_print);
+	void Print(STRINGLIST_SET to_print);
+	void Print(STRINGLIST_STRINGLISTSET_MAP to_print);
+	void Print(STRINGSET_STRINGLISTSET_MAP to_print);
+	void Print(STRINGPAIR_SET to_print);
+	void Print(INTEGERPAIR_SET to_print);
+	void Print(STRINGSET_FUNCTIONQUEUE_MAP to_print);
+	void Print(FUNCTION_QUEUE to_print);
 }; 

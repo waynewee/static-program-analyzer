@@ -301,7 +301,6 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 		}
 	}
 
-
 	return SetResult(is_boolean_output, "TRUE", final_result_set);
 }
 
@@ -478,61 +477,6 @@ QueryResult PQLOptimizedEvaluator::SetResult(bool is_boolean_output, string bool
 	return final_result;
 }
 
-bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints, STRING_INTEGER_MAP* occurrence_count, STRING_SET* constraint_synonyms) {
-	if (DEBUG) {
-		cout << "PQLOptimizedEvaluator - ParseClauses: WITH" << endl;
-	}
-
-	STRINGPAIR_SET with_map = query_info.GetWithMap();
-	for (STRING_PAIR* clause: with_map) {
-		string lhs = clause->first;
-		string rhs = clause->second;
-
-		if (DEBUG) {
-			cout << "LHS: " << lhs << ", RHS: " << rhs << endl;
-		}
-
-		if (!IsVar(lhs) && !IsVar(rhs)) {
-			// INT=INT or STRING=STRING
-			// Check if it is equal
-			// If "FALSE" -> return false, else continue
-			if (lhs.compare(rhs) != 0) {
-				return false;
-			}
-		}
-		else {
-			if (!IsVar(lhs) && IsVar(rhs)) {
-				// INT/STRING=synonyms
-				clause->first = rhs;
-				clause->second = lhs;
-			}
-			
-			if (!(IsVar(rhs) && lhs.compare(rhs) == 0)) {
-				// synonym=synonym: different synonyms
-				// or synonym=INT or synonym=STRING
-				if (constraints->insert(clause).second == 0) {
-					// error
-					if (DEBUG) {
-						cout << "PQLOptimizedEvaluator - Parsing clauses: Error inserting constraints." << endl;
-					}
-					return false;
-				}
-
-				// Increase occurrence count & add synonym into constraint_synonyms
-				IncreaseOccurrenceCount(ParsingSynonym(lhs), occurrence_count);
-				constraint_synonyms->insert(ParsingSynonym(lhs));
-				if (IsVar(rhs)) {
-					IncreaseOccurrenceCount(ParsingSynonym(rhs), occurrence_count);
-					constraint_synonyms->insert(ParsingSynonym(rhs));
-				}
-			}
-		}
-		
-	}
-
-	return true;
-}
-
 bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MAP* synonyms_map, STRING_INTEGER_MAP* occurrence_count) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - ParseClauses: Such that and Pattern" << endl;
@@ -576,9 +520,6 @@ bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGL
 				if (IsVar(clause->second)) {
 					IncreaseOccurrenceCount(ParsingSynonym(clause->second), occurrence_count);
 					key->insert(ParsingSynonym(clause->second));
-				}
-				else {
-					IncreaseOccurrenceCount(ParsingSynonym(clause->first), occurrence_count, 0);
 				}
 
 				STRINGLIST_SET value = *(new STRINGLIST_SET());
@@ -775,7 +716,7 @@ bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGL
 
 	return true;
 }
-
+/*
 STRING_LIST* PQLOptimizedEvaluator::GetRelatedSynonyms(string synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetRelatedSynonyms" << endl;
@@ -794,7 +735,7 @@ STRING_LIST* PQLOptimizedEvaluator::GetRelatedSynonyms(string synonym, STRINGLIS
 
 	return nullptr;
 }
-
+*/
 STRING_LIST* PQLOptimizedEvaluator::GetRelatedSynonyms(STRING_LIST synonyms, STRINGLIST_STRINGLISTSET_MAP synonyms_map) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetRelatedSynonyms" << endl;
@@ -1539,27 +1480,6 @@ STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(INTEGER_SET result_set) {
 	return final_result;
 }
 
-STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(DOUBLE_SET result_set) {
-	if (DEBUG) {
-		cout << "PQLOptimizedEvaluator - ConvertSet" << endl;
-	}
-
-	STRINGLIST_SET final_result = *(new STRINGLIST_SET());
-
-	if (!result_set.empty()) {
-		for (double k : result_set) {
-			char convert_to_str[50];
-			sprintf(convert_to_str, "%.0f", k);
-
-			STRING_LIST* value = new STRING_LIST();
-			value->push_back(convert_to_str);
-
-			final_result.insert(value);
-		}
-	}
-	return final_result;
-}
-
 STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(STMT_STMT_PAIR_LIST result_set) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - ConvertSet" << endl;
@@ -1693,7 +1613,7 @@ STRING_SET PQLOptimizedEvaluator::GetIntersectResult(STRING_SET val1, STRING_SET
 
 	return result;
 }
-
+/*
 STRINGLIST_SET PQLOptimizedEvaluator::GetIntersectResult(STRINGLIST_SET val1, STRINGLIST_SET val2) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetIntersectResult" << endl;
@@ -1722,7 +1642,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetIntersectResult(STRINGLIST_SET val1, ST
 
 	return result;
 }
-
+*/
 STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateResult(string values, string type) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetAlternateResult" << endl;
@@ -1769,22 +1689,6 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateResult(string values, string t
 	return results;
 }
 
-STRING_SET PQLOptimizedEvaluator::GetAlternateResult(STRINGLIST_SET values, string type) {
-	if (DEBUG) {
-		cout << "PQLOptimizedEvaluator - GetAlternateResult" << endl;
-	}
-
-	RelationManager rm = PKB().GetRelationManager();
-	STRING_SET results = *(new STRING_SET());
-
-	for (STRING_LIST* v : values) {
-		STRING_SET new_values = ConvertSet(GetAlternateResult(v->at(0), type));
-		results.insert(new_values.begin(), new_values.end());	
-	}
-
-	return results;
-}
-
 STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateResult(STRINGLIST_SET values, int pos_to_check, string type) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetAlternateResult" << endl;
@@ -1826,6 +1730,22 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateResult(STRINGLIST_SET values, 
 	
 	return results;
 }
+/*
+STRING_SET PQLOptimizedEvaluator::GetAlternateResult(STRINGLIST_SET values, string type) {
+	if (DEBUG) {
+		cout << "PQLOptimizedEvaluator - GetAlternateResult" << endl;
+	}
+
+	RelationManager rm = PKB().GetRelationManager();
+	STRING_SET results = *(new STRING_SET());
+
+	for (STRING_LIST* v : values) {
+		STRING_SET new_values = ConvertSet(GetAlternateResult(v->at(0), type));
+		results.insert(new_values.begin(), new_values.end());
+	}
+
+	return results;
+}
 
 STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateOutputResult(STRING_SET values, string type) {
 	if (DEBUG) {
@@ -1852,7 +1772,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateOutputResult(STRING_SET values
 
 	return results;
 }
-
+*/
 bool PQLOptimizedEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, int pos_to_check) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - RemoveIrrelevant" << endl;
@@ -1882,7 +1802,7 @@ bool PQLOptimizedEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_S
 
 	return is_changed;
 }
-
+/*
 bool PQLOptimizedEvaluator::RemoveIrrelevant(STRING_SET* value, STRINGLIST_SET tmp) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - RemoveIrrelevant" << endl;
@@ -1912,7 +1832,8 @@ bool PQLOptimizedEvaluator::RemoveIrrelevant(STRING_SET* value, STRINGLIST_SET t
 
 	return is_changed;
 }
-
+*/
+/*
 INTEGERPAIR_SET PQLOptimizedEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, STRING_LIST small_keys) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - RemoveIrrelevant" << endl;
@@ -1954,7 +1875,7 @@ int PQLOptimizedEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, string
 
 	return results;
 }
-
+*/
 STRING_SET PQLOptimizedEvaluator::GetNewResult(STRINGLIST_SET value, int pos_to_check) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetNewResult" << endl;
@@ -1991,7 +1912,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetNewResult(STRINGLIST_SET value, INTEGER
 
 	return result;
 }
-
+/*
 STRINGLIST_SET PQLOptimizedEvaluator::GetCombinedResult(STRINGLIST_SET large_values, STRINGLIST_SET small_values, INTEGERLIST_LIST indexes) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetNewResult" << endl;
@@ -2075,7 +1996,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetCombinedResult(STRINGLIST_SET output_re
 
 	return combined_result;
 }
-
+*/
 STRINGLIST_SET PQLOptimizedEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list, STRING_STRING_MAP entity_map) {
 	if (DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetCartesianProduct" << endl;
