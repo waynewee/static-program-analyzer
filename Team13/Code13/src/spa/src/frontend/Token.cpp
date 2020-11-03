@@ -34,6 +34,10 @@ TokenType::STMT_TYPE Token::GetStmtType() {
 	return stmt_type_;
 }
 
+void Token::SetTokenType(TokenType::TOKEN_TYPE token_type) {
+	type_ = token_type;
+}
+
 string Token::GetTokenTypeStr() {
 
 	switch (type_) {

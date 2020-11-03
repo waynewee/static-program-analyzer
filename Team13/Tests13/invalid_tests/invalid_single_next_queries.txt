@@ -1,0 +1,360 @@
+1 -  Invalid argument procedure
+procedure p;
+Select p such that Next(_, p)
+
+5000
+2 -  Invalid argument variable
+variable v;
+Select v such that Next(_, v)
+
+5000
+3 -  Invalid argument constant
+constant c;
+Select c such that Next(c, _)
+
+5000
+4 - Invalid attribute procedure name
+procedure p;
+Select p such that Next(_, p) with p.procName="Name"
+
+5000
+5 - Invalid attribute variable name
+variable v;
+Select v such that Next(v, _) with v.varName="x"
+
+5000
+6 - Invalid attribute constant value
+constant c;
+Select c such that Next(_, c) with c.value=2
+
+5000
+7 - Valid line ref, invalid synonym procedure
+procedure p;
+Select p such that Next(1, p) 
+
+5000
+8 - Valid line ref, invalid synonym variable
+variable v;
+Select v such that Next(1, v)
+
+5000
+9 - Valid line ref, invalid synonym constant
+constant c;
+Select c such that Next(1, c)
+
+5000
+10 - Valid line ref, invalid attribute procedure
+procedure p;
+Select p such that Next(1, p) with p.procName="Name"
+
+5000
+11 - Valid line ref, invalid attribute variable 
+variable v;
+Select v such that Next(1, v) with v.varName="x"
+
+5000
+12 - Valid line ref, invalid attribute constant
+constant c;
+Select c such that Next(1, c) with c.value=2
+
+5000
+13 - Valid line ref, undefined synonym
+
+Select s such that Next(1, s)
+
+5000
+14 - Valid wildcard, invalid synonym procedure
+procedure p;
+Select p such that Next(_, p) 
+
+5000
+15 - Valid wildcard, invalid synonym variable
+variable v;
+Select v such that Next(_, v)
+
+5000
+16 - Valid wildcard, invalid synonym constant
+constant c;
+Select c such that Next(_, c)
+
+5000
+17 - Valid wildcard, invalid attribute procedure
+procedure p;
+Select p such that Next(_, p) with p.procName="Name"
+
+5000
+18 - Valid wildcard, invalid attribute variable 
+variable v;
+Select v such that Next(_, v) with v.varName="x"
+
+5000
+19 - Valid wildcard, invalid attribute constant
+constant c;
+Select c such that Next(_, c) with c.value=2
+
+5000
+20 - Valid wildcard, undefined synonym
+
+Select s such that Next(_, s)
+
+5000
+21 - Valid stmt synonym, invalid synonym procedure
+procedure p; stmt s;
+Select p such that Next(s, p) 
+
+5000
+22 - Valid stmt synonym, invalid synonym variable
+variable v; stmt s;
+Select v such that Next(s, v)
+
+5000
+23 - Valid stmt synonym, invalid synonym constant
+constant c; stmt s;
+Select c such that Next(s, c)
+
+5000
+24 - Valid stmt synonym, invalid attribute procedure
+procedure p; stmt s;
+Select p such that Next(s, p) with p.procName="Name"
+
+5000
+25 - Valid stmt synonym, invalid attribute variable 
+variable v; stmt s;
+Select v such that Next(s, v) with v.varName="x"
+
+5000
+26 - Valid stmt synonym, invalid attribute constant
+constant c; stmt s;
+Select c such that Next(s, c) with c.value=2
+
+5000
+27 - Valid stmt synonym, undefined synonym
+stmt s;
+Select sy such that Next(s, sy)
+
+5000
+28 - Invalid synonym procedure, valid line ref
+procedure p;
+Select p such that Next(p, 1) 
+
+5000
+29 - Invalid synonym variable, valid line ref
+variable v;
+Select v such that Next(v, 1)
+
+5000
+30 - Invalid synonym constant, valid line ref
+constant c;
+Select c such that Next(c, 1)
+
+5000
+31 - Invalid attribute procedure, valid line ref
+procedure p;
+Select p such that Next(p, 1) with p.procName="Name"
+
+5000
+32 - Invalid attribute variable, valid line ref 
+variable v;
+Select v such that Next(v, 1) with v.varName="x"
+
+5000
+33 - Invalid attribute constant, valid line ref
+constant c;
+Select c such that Next(c, 1) with c.value=2
+
+5000
+34 - Undefined synonym, valid line ref
+
+Select s such that Next(s, 1)
+
+5000
+35 - Invalid synonym procedure, valid wildcard
+procedure p;
+Select p such that Next(p, _) 
+
+5000
+36 - Invalid synonym variable, valid wildcard
+variable v;
+Select v such that Next(v, _)
+
+5000
+37 - Invalid synonym constant, valid wildcard
+constant c;
+Select c such that Next(c, _)
+
+5000
+38 - Invalid attribute procedure, valid wildcard
+procedure p;
+Select p such that Next(p, _) with p.procName="Name"
+
+5000
+39 - Invalid attribute variable, valid wildcard 
+variable v;
+Select v such that Next(v, _) with v.varName="x"
+
+5000
+40 - Invalid attribute constant, valid wildcard
+constant c;
+Select c such that Next(c, _) with c.value=2
+
+5000
+41 - Undefined synonym, valid wildcard
+
+Select s such that Next(s, _)
+
+5000
+42 - Invalid synonym procedure, valid stmt synonym
+procedure p; stmt s;
+Select p such that Next(p, s) 
+
+5000
+43 - Invalid synonym variable, valid stmt synonym
+variable v; stmt s;
+Select v such that Next(v, s)
+
+5000
+44 - Invalid synonym constant, valid stmt synonym
+constant c; stmt s;
+Select c such that Next(c, s)
+
+5000
+45 - Invalid attribute procedure, valid stmt synonym
+procedure p; stmt s;
+Select p such that Next(p, s) with p.procName="Name"
+
+5000
+46 - Invalid attribute variable, valid stmt synonym 
+variable v; stmt s;
+Select v such that Next(v, s) with v.varName="x"
+
+5000
+47 - Invalid attribute constant, valid stmt synonym
+constant c; stmt s;
+Select c such that Next(c, s) with c.value=2
+
+5000
+48 - Undefined synonym, valid stmt synonym
+stmt s;
+Select sy such that Next(sy, s)
+
+5000
+49 - Invalid synonym procedure, invalid attribute procedure name 
+procedure p1, p2;
+Select p1 such that Next(p1, p2) with p2.procName="Name"
+
+5000
+50 - Invalid synonym procedure, invalid attribute variable name 
+procedure p; variable v;
+Select p such that Next(p, v) with v.varName="x"
+
+5000
+51 - Invalid synonym procedure, invalid attribute constant value 
+proc p; constant c;
+Select p such that Next(p, c) with c.value=2
+
+5000
+52 - Invalid synonym procedure; invalid undefined synonym
+proc p;
+Select p such that Next(p, p1)
+
+5000
+53 - Invalid synonym variable, invalid attribute procedure name 
+variable v; procedure p;
+Select v such that Next(v, p) with p.procName="Name"
+
+5000
+54 - Invalid synonym variable, invalid attribute variable name 
+variable v1, v2;
+Select v1 such that Next(v1, v2) with v2.varName="x"
+
+5000
+55 - Invalid synonym variable, invalid attribute constant value 
+variable v; constant c;
+Select v such that Next(v, c) with c.value=2
+
+5000
+56 - Invalid synonym variable; invalid undefined synonym
+variable v;
+Select v such that Next(v, s)
+
+5000
+57 - Invalid synonym constant, invalid attribute procedure name 
+constant c; procedure p;
+Select c such that Next(c, p) with p.procName="Name"
+
+5000
+58 - Invalid synonym constant, invalid attribute variable name 
+constant c; variable v;
+Select c such that Next(c, v) with v.varName="x"
+
+5000
+59 - Invalid synonym constant, invalid attribute constant value 
+constant c1, c2;
+Select c1 such that Next(c1, c2) with c2.value=2
+
+5000
+60 - Invalid synonym constant; invalid undefined synonym
+constant c;
+Select c such that Next(p, s)
+
+5000
+61 - Invalid attribute procedure name, invalid synonym procedure 
+procedure p1, p2;
+Select p2 such that Next(p2, p1) with p2.procName="Name"
+
+5000
+62 - Invalid attribute variable name, invalid synonym procedure 
+procedure p; variable v;
+Select v such that Next(v, p) with v.varName="x"
+
+5000
+63 - Invalid attribute constant value, invalid synonym procedure 
+proc p; constant c;
+Select c such that Next(c, p) with c.value=2
+
+5000
+64 - Invalid undefined synonym, invalid synonym procedure
+proc p;
+Select p1 such that Next(p1, p)
+
+5000
+65 - Invalid attribute procedure name, invalid synonym variable 
+variable v; procedure p;
+Select p such that Next(p, v) with p.procName="Name"
+
+5000
+66 - Invalid attribute variable name, invalid synonym variable 
+variable v1, v2;
+Select v2 such that Next(v2, v1) with v2.varName="x"
+
+5000
+67 - Invalid attribute constant value, invalid synonym variable 
+variable v; constant c;
+Select c such that Next(c, v) with c.value=2
+
+5000
+68 - invalid undefined synonym, invalid synonym variable
+variable v;
+Select s such that Next(s, v)
+
+5000
+69 - Invalid attribute procedure name, invalid synonym constant 
+constant c; procedure p;
+Select p such that Next(p, c) with p.procName="Name"
+
+5000
+70 - Invalid attribute variable name, invalid synonym constant 
+constant c; variable v;
+Select v such that Next(v, c) with v.varName="x"
+
+5000
+71 - Invalid attribute constant value, invalid synonym constant 
+constant c1, c2;
+Select c2 such that Next(c2, c1) with c2.value=2
+
+5000
+72 - Invalid undefined synonym, invalid synonym constant
+constant c;
+Select s such that Next(s, c)
+
+5000

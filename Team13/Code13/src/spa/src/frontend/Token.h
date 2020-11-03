@@ -29,6 +29,7 @@ public:
 
 	TokenType::STMT_TYPE GetStmtType();
 	TokenType::TOKEN_TYPE GetTokenType();
+	void SetTokenType(TokenType::TOKEN_TYPE token_type);
 	string GetTokenTypeStr();
 	string GetValue();
 

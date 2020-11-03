@@ -7,7 +7,7 @@ using namespace std;
 
 
 const string hex_procedure = "#ee4035";
-const string hex_stmt = "#f37736";
+const string hex_stmt = "#F7CAC9";
 const string hex_const = "#0392cf";
 const string hex_op = "#7bc043";
 const string hex_others = "#fdf498";

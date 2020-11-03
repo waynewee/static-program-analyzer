@@ -93,11 +93,29 @@ string TNode::GetSelectValue() {
 string TNode::GetGUIData() {
 	switch (type) {
 	case TNode::condExpr:
-		return "CondExpr:" + operators_.at(op - 1);
+		return "Cond:" + operators_.at(op - 1);
 	case TNode::relExpr:
-		return "RelExpr:" + operators_.at(op - 1);
+		return "Rel:" + operators_.at(op - 1);
 	case TNode::expr:
 		return "Expr:" + operators_.at(op - 1);
+	case TNode::varName:
+		return "Var:" + GetShortName();
+	case TNode::procName:
+		return "Proc:" + GetShortName();
+	case TNode::constValue:
+		return "Const:" + to_string(int(value));
+		case TNode::readStmt:
+		return "Read#" + to_string(index);
+	case TNode::printStmt:
+		return "Print#" + to_string(index);
+	case TNode::callStmt:
+		return "Call#" + to_string(index);
+	case TNode::whileStmt:
+		return "While#" + to_string(index);
+	case TNode::ifStmt:
+		return "If#" + to_string(index);
+	case TNode::assignStmt:
+		return "Assign#" + to_string(index);
 	default:
 		return getData();
 	}
@@ -161,6 +179,16 @@ STMT_IDX TNode::GetStmtIndex() {
 TNode *TNode::GetParent() {
     return parent;
 }
+
+string TNode::GetShortName() {
+	if (name->length() < 8) {
+		return *name;
+	}
+	else {
+		return name->substr(0, 5) + "..";
+	}
+}
+
 CONST_VALUE TNode::GetConstValue() {
     return value;
 }

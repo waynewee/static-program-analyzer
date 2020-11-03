@@ -24,7 +24,7 @@ private:
 	const int diameter_ = 30;
 	const int line_offset_x = diameter_ / 2;
 	const int line_offset_y = diameter_;
-	const int text_offset_x = - (diameter_ * (3 / 4));
+	const int text_offset_x = 10;
 	const int text_offset_y = diameter_;
 
 	QPen outline_pen_;

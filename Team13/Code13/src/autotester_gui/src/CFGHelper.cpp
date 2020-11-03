@@ -41,7 +41,7 @@ void CFGHelper::PopulateCFGNodeMap(int max) {
 
 	cfg_node_map_ = new CFG_NODE_MAP();
 
-	int y = 50;
+	int y = 0;
 
 	STMT_IDX_SET* edges = cfg_->GetAdjacencyList()[1];
 
