@@ -31,6 +31,7 @@ public:
 	TokenType::TOKEN_TYPE GetTokenType();
 	void SetTokenType(TokenType::TOKEN_TYPE token_type);
 	string GetTokenTypeStr();
+	void SetTokenType(TokenType::TOKEN_TYPE token_type);
 	string GetValue();
 
 private:

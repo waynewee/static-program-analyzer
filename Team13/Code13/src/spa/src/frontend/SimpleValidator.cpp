@@ -287,8 +287,11 @@ vector<Token> SimpleValidator::GetExpressionTokens(ExpressionType expr_type) {
 	vector<Token> expr_list;
 	int EndIndexOfTokens = GetEndIndxOfExpression(expr_type);
 	while (token_index_ < EndIndexOfTokens) {
-		expr_list.push_back(GetNextToken());
-		
+		Token next_token = GetNextToken();
+		if (next_token.GetTokenType() == TokenType::TOKEN_TYPE::stmt) {
+			next_token.SetTokenType(TokenType::TOKEN_TYPE::var);
+		}
+		expr_list.push_back(next_token);
 	}
 	return expr_list;
 }
