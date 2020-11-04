@@ -10,11 +10,11 @@
 using namespace std;
 
 // Activates debug prints
-#define DEBUG false
+#define PQL_DEBUG false
 // Activates debug prints with detailed printing (data structures)
-#define DEBUG_PRINTING false
+#define PQL_DEBUG_PRINTING false
 // Activates fake data for unit testing
-#define UNIT_TESTING false
+#define PQL_UNIT_TESTING false
 // Activates optimized evaluator
 #define OPTIMIZED_EVALUATION true
 // Actives timer

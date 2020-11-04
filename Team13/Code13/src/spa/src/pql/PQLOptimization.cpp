@@ -20,8 +20,6 @@ bool PQLOptimization::operator()(const STRING_LIST& lhs, const STRING_LIST& rhs)
         l_param2 = ParsingSynonym(lhs[4]);;
     }
 
-    int lhs_priority = GetTotalScore(GetOccurrenceScore(l_param1), GetOccurrenceScore(l_param2));
-
     string r_param1 = ParsingSynonym(rhs[1]);
     string r_param2 = ParsingSynonym(rhs[2]);
     if (rhs.size() == 4) {
@@ -33,10 +31,18 @@ bool PQLOptimization::operator()(const STRING_LIST& lhs, const STRING_LIST& rhs)
         r_param2 = ParsingSynonym(rhs[4]);;
     }
 
+    // INTEGER_PAIR lhs_occurrence_score = make_pair(GetOccurrenceScore(l_param1), GetOccurrenceScore(l_param2));
+    // INTEGER_PAIR rhs_occurrence_score = make_pair(GetOccurrenceScore(r_param1), GetOccurrenceScore(r_param2));
+
+    int lhs_priority = GetTotalScore(GetOccurrenceScore(l_param1), GetOccurrenceScore(l_param2));
     int rhs_priority = GetTotalScore(GetOccurrenceScore(r_param1), GetOccurrenceScore(r_param2));
     
     lhs_priority *= ranks_of_functions.at(lhs[0]);
     rhs_priority *= ranks_of_functions.at(rhs[0]);
+
+    if (lhs_priority == rhs_priority) {
+
+    }
 
     // Ranking: 1-synonym clauses -> 2-synonyms clauses, rank by function & synonym occurrence
     return  lhs_priority > rhs_priority;

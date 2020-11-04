@@ -6,7 +6,7 @@
 using namespace std::chrono;
 
 QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - Evaluate" << endl;
 	}
 
@@ -39,14 +39,14 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 	start = high_resolution_clock::now();
 	STRINGSET_STRINGLISTSET_MAP tmp_map = STRINGSET_STRINGLISTSET_MAP();
 	if (!ParseClauses(query_info, &tmp_map, &occurrence_count)) {
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLOptimizedEvaluator - parsing such that and pattern clause: failed." << endl;
 		}
 
 		return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
 	}
 
-	if (DEBUG_PRINTING) {
+	if (PQL_DEBUG_PRINTING) {
 		cout << "synonym map after parsing clause" << endl;
 		Print(tmp_map);
 	}
@@ -63,7 +63,7 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 		synonyms_map.insert({ new STRING_SET(*(*f).first), priority });
 	}
 	
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "synonym map aft setting priority" << endl;
 		Print(synonyms_map);
 	}
@@ -116,39 +116,46 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 			}
 			else {
 				if (IsVar(param1) && IsVar(param2)) {
-
 					// both params = synonyms
-					c_value = EvaluateTwoSynonymSet(f_call);
-					
-					STRINGLIST_SET tmp = EvaluateAllCall(entity_map.at(param1));
-					RemoveIrrelevant(&c_value, tmp, 0);
 
-					tmp = EvaluateAllCall(entity_map.at(param2));
-					RemoveIrrelevant(&c_value, tmp, 1);
-
-					start = high_resolution_clock::now();
 					c_key.push_back(param1);
+
+					STRINGLIST_SET tmp = STRINGLIST_SET();
+					string entity_type = entity_map.at(param1);
+					if (entity_type.compare(TYPE_STMT) != 0 && entity_type.compare(TYPE_PROG_LINE) != 0) {
+						tmp = EvaluateAllCall(entity_map.at(param1));
+					}
+
 					if (param1.compare(param2) == 0) {
+						auto inner_start = high_resolution_clock::now();
 						// same synonym
-						tmp.clear();
-						for (STRING_LIST* s : c_value) {
-							if (s->at(0).compare(s->at(1)) == 0) {
-								STRING_LIST* to_insert = new STRING_LIST();
-								to_insert->push_back(s->at(0));
-								tmp.insert(to_insert);
-							}
+						c_value = EvaluateTwoSynonymSet(f_call, true);
+
+						// remove for 1 = remove for both
+						if (!tmp.empty()) {
+							RemoveIrrelevant(&c_value, tmp, 0);
 						}
-						c_value = tmp;
+
+						auto inner_stop = high_resolution_clock::now();
+						if (DEBUG_TIMER) {
+							auto inner_duration = duration_cast<milliseconds>(inner_stop - inner_start);
+							cout << "Time taken for same/diff s.t. synonym = " << inner_duration.count() << "ms" << endl;
+						}
 					}
 					else {
 						// different synonyms
 						c_key.push_back(param2);
-					}
+						c_value = EvaluateTwoSynonymSet(f_call);
 
-					stop = high_resolution_clock::now();
-					if (DEBUG_TIMER) {
-						duration = duration_cast<milliseconds>(stop - start);
-						cout << "Time taken for same/diff s.t. synonym = " << duration.count() << "ms" << endl;
+						if (!tmp.empty()) {
+							RemoveIrrelevant(&c_value, tmp, 0);
+						}
+
+						entity_type = entity_map.at(param2);
+						if (entity_type.compare(TYPE_STMT) != 0 && entity_type.compare(TYPE_PROG_LINE) != 0) {
+							tmp = EvaluateAllCall(entity_map.at(param2));
+							RemoveIrrelevant(&c_value, tmp, 1);
+						}
 					}
 				}
 				else if (!IsVar(param1) && IsVar(param2)) {
@@ -157,8 +164,11 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 					c_key.push_back(param2);
 					c_value = EvaluateOneSynonymSet(f_call, param1);
 
-					STRINGLIST_SET tmp = EvaluateAllCall(entity_map.at(param2));
-					RemoveIrrelevant(&c_value, tmp, 0);
+					string entity_type = entity_map.at(param2);
+					if (entity_type.compare(TYPE_STMT) != 0 && entity_type.compare(TYPE_PROG_LINE) != 0) {
+						STRINGLIST_SET tmp = EvaluateAllCall(entity_type);
+						RemoveIrrelevant(&c_value, tmp, 0);
+					}
 				}
 				else {
 					// first param = synonym & second param != synonym
@@ -166,22 +176,24 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 					c_key.push_back(param1);
 					c_value = EvaluateInverseOneSynonymSet(f_call, param2);
 
-					STRINGLIST_SET tmp = EvaluateAllCall(entity_map.at(param1));
-					
-					RemoveIrrelevant(&c_value, tmp, 0);
+					string entity_type = entity_map.at(param1);
+					if (entity_type.compare(TYPE_STMT) != 0 && entity_type.compare(TYPE_PROG_LINE) != 0) {
+						STRINGLIST_SET tmp = EvaluateAllCall(entity_type);
+						RemoveIrrelevant(&c_value, tmp, 0);
+					}
 				}
 			}
 
 			if (c_value.empty()) {
 				// error
-				if (DEBUG) {
+				if (PQL_DEBUG) {
 					cout << "PQLOptimizedEvaluator - Evaluating synonyms_map: Empty results." << endl;
 				}
 
 				return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
 			}
 
-			if (DEBUG_PRINTING) {
+			if (PQL_DEBUG_PRINTING) {
 				cout << "Results after evaluating 1 clause" << endl;
 				cout << "KEY " << endl;
 				Print(c_key);
@@ -190,13 +202,20 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 			}
 
 			// Add into the tmp_map
+			start = high_resolution_clock::now();
 			tmp_map = AddResult(c_key, c_value, tmp_map);
 			if (tmp_map.empty()) {
 				return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
 			}
+
+			stop = high_resolution_clock::now();
+			if (DEBUG_TIMER) {
+				duration = duration_cast<milliseconds>(stop - start);
+				cout << "Time taken for adding result at tmp_map = " << duration.count() << "ms" << endl;
+			}
 		}
 
-		if (DEBUG_PRINTING) {
+		if (PQL_DEBUG_PRINTING) {
 			cout << "Results after evaluating 1 group of clauses" << endl;
 			Print(tmp_map);
 		}
@@ -207,13 +226,18 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 			results_map = tmp_map;
 		}
 
-		if (DEBUG_PRINTING) {
+		if (PQL_DEBUG_PRINTING) {
 			cout << "Results map after inserting 1 group's results" << endl;
 			Print(results_map);
 		}
 	}
+	stop = high_resolution_clock::now();
+	if (DEBUG_TIMER) {
+		duration = duration_cast<milliseconds>(stop - start);
+		cout << "Time taken for evaluating clauses = " << duration.count() << "ms" << endl;
+	}
 
-	if (DEBUG_PRINTING) {
+	if (PQL_DEBUG_PRINTING) {
 		cout << "Results map after evaluating clauses" << endl;
 		Print(results_map);
 	}
@@ -243,15 +267,22 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 
 				if (is_found) {
 					// Has >=1 expected output synonym(s)
+					auto inner_start = high_resolution_clock::now();
 					final_results_map = AddResult(*result_key, (*result_entry).second, final_results_map);
 					if (final_results_map.empty()) {
 						return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
+					}
+
+					auto inner_stop = high_resolution_clock::now();
+					if (DEBUG_TIMER) {
+						duration = duration_cast<milliseconds>(inner_stop - inner_start);
+						cout << "Time taken for adding result at final_results_map = " << duration.count() << "ms" << endl;
 					}
 				}
 			}
 		}
 
-		if (DEBUG_PRINTING) {
+		if (PQL_DEBUG_PRINTING) {
 			cout << "Final results map after extracting dependent output synonyms " << endl;
 			Print(final_results_map);
 		}
@@ -274,7 +305,7 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 
 					if (value.empty()) {
 						// error
-						if (DEBUG) {
+						if (PQL_DEBUG) {
 							cout << "PQLOptimizedEvaluator - Extracting independent output synonyms: Empty results." << endl;
 						}
 
@@ -299,7 +330,7 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 			}
 		}
 	
-		if (DEBUG_PRINTING) {
+		if (PQL_DEBUG_PRINTING) {
 			cout << "Final results map after extracting independent output synonyms " << endl;
 			Print(final_results_map);
 		}
@@ -317,7 +348,7 @@ QueryResult PQLOptimizedEvaluator::Evaluate(QueryInfo query_info) {
 			}
 		}*/
 		
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "final result set" << endl;
 			Print(final_result_set);
 		}
@@ -403,12 +434,12 @@ void PQLOptimizedEvaluator::Print(STRINGLIST_SET to_print) {
 	cout << endl;
 }
 
-STRINGLIST_STRINGLISTSET_MAP PQLOptimizedEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP results_map) {
-	if (DEBUG) {
+STRINGLIST_STRINGLISTSET_MAP PQLOptimizedEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP results_map) {	
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - AddResult" << endl;
 	}
 
-	if (DEBUG_PRINTING) {
+	if (PQL_DEBUG_PRINTING) {
 		Print(key);
 		Print(value);
 	}
@@ -448,7 +479,7 @@ STRINGLIST_STRINGLISTSET_MAP PQLOptimizedEvaluator::AddResult(STRING_LIST key, S
 			}
 		}
 		
-		if (DEBUG) {
+		if (PQL_DEBUG_PRINTING) {
 			cout << "check key: ";
 			Print(*check_key);
 			cout << "tmp result: ";
@@ -465,7 +496,7 @@ STRINGLIST_STRINGLISTSET_MAP PQLOptimizedEvaluator::AddResult(STRING_LIST key, S
 		}
 
 		if (tmp_result.empty()) {
-			if (DEBUG) {
+			if (PQL_DEBUG) {
 				cout << "PQLOptimizedEvaluator: AddResult: Empty result." << endl;
 			}
 
@@ -485,7 +516,7 @@ STRINGLIST_STRINGLISTSET_MAP PQLOptimizedEvaluator::AddResult(STRING_LIST key, S
 }
 
 QueryResult PQLOptimizedEvaluator::SetResult(bool is_boolean_output, string bool_result, STRINGLIST_SET result) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - SetResult" << endl;
 	}
 
@@ -506,7 +537,7 @@ QueryResult PQLOptimizedEvaluator::SetResult(bool is_boolean_output, string bool
 }
 
 bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MAP* synonyms_map, STRING_INTEGER_MAP* occurrence_count) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - ParseClauses" << endl;
 	}
 
@@ -518,7 +549,7 @@ bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGL
 		string lhs = clause->first;
 		string rhs = clause->second;
 
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "LHS: " << lhs << ", RHS: " << rhs << endl;
 		}
 
@@ -567,7 +598,7 @@ bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGL
 					value.insert(parsed_clause);
 					if (synonyms_map->insert({ key, value }).second == 0) {
 						// error
-						if (DEBUG) {
+						if (PQL_DEBUG) {
 							cout << "PQLOptimizedEvaluator - Parsing with clauses: Error inserting into synonyms_map." << endl;
 						}
 						return false;
@@ -585,7 +616,7 @@ bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGL
 		for (STRING_LIST p : all_params) {
 			if (p[0].compare(p[1]) == 0 && !IsUnderscore(p[0]) && f_call.compare(TYPE_COND_NEXT_T) != 0 && f_call.compare(TYPE_COND_AFFECTS) != 0 && f_call.compare(TYPE_COND_AFFECTS_T) != 0) {
 				// same parameter & not _ & not Next* & not Affects & not Affects*
-				if (DEBUG) {
+				if (PQL_DEBUG) {
 					cout << "PQLOptimizedEvaluator - Evaluating such that clauses: Same parameters." << endl;
 				}
 				return false;
@@ -598,7 +629,7 @@ bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGL
 
 			if (clause->empty()) {
 				// error
-				if (DEBUG) {
+				if (PQL_DEBUG) {
 					cout << "PQLOptimizedEvaluator - Parsing such that clauses: Error creating value for such that clauses." << endl;
 				}
 
@@ -611,7 +642,7 @@ bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGL
 				string param2 = IsVar(clause->at(2)) ? "" : clause->at(2);
 
 				if (!EvaluateNoSynonymSet(f_call, param1, param2)) {
-					if (DEBUG) {
+					if (PQL_DEBUG) {
 						cout << "PQLOptimizedEvaluator - Evaluating no synonym clauses: False clause." << endl;
 					}
 
@@ -650,7 +681,7 @@ bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGL
 				}
 				else {
 					// error
-					if (DEBUG) {
+					if (PQL_DEBUG) {
 						cout << "PQLOptimizedEvaluator - Parsing such that clauses: Invalid parameters." << endl;
 					}
 
@@ -661,14 +692,36 @@ bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGL
 				if (check_key != nullptr) {
 					key = check_key;
 					value = synonyms_map->at(key);
-					value.insert(clause);
+
+					int is_needed = 0;
+					for (STRING_LIST* s : value) {
+						if (s->at(1).compare(clause->at(1)) == 0 && s->at(2).compare(clause->at(2)) == 0) {
+							// applicable for follows, parent, next, calls, affects
+							
+							// check if there is similar clause 
+							is_needed = GetSimilarClause(clause->at(0), s->at(0));
+
+							if (is_needed != 0) {
+								if (is_needed == -1) {
+									// replace existing clause with current clause relationship
+									s->at(0) = clause->at(0);
+								}
+								break;
+							}
+						}
+					}
+
+					if (is_needed == 0) {
+						value.insert(clause);	
+					}	
+
 					synonyms_map->at(key) = value;
 				}
 				else {
 					value.insert(clause);
 					if (synonyms_map->insert({ key, value }).second == 0) {
 						// error
-						if (DEBUG) {
+						if (PQL_DEBUG) {
 							cout << "PQLOptimizedEvaluator - Parsing such that clauses: Error inserting into synonyms_map." << endl;
 						}
 						return false;
@@ -698,7 +751,7 @@ bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGL
 
 			if (clause->empty()) {
 				// error
-				if (DEBUG) {
+				if (PQL_DEBUG) {
 					cout << "PQLOptimizedEvaluator - Parsing clauses: Error creating value for pattern clauses." << endl;
 				}
 
@@ -733,7 +786,7 @@ bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGL
 				value.insert(clause);
 				if (synonyms_map->insert({ key, value }).second == 0) {
 					// error
-					if (DEBUG) {
+					if (PQL_DEBUG) {
 						cout << "PQLOptimizedEvaluator - Parsing pattern clauses: Error inserting into synonyms_map." << endl;
 					}
 					return false;
@@ -744,28 +797,9 @@ bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGL
 
 	return true;
 }
-/*
-STRING_LIST* PQLOptimizedEvaluator::GetRelatedSynonyms(string synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map) {
-	if (DEBUG) {
-		cout << "PQLOptimizedEvaluator - GetRelatedSynonyms" << endl;
-	}
 
-	for (auto k = synonyms_map.cbegin(); k != synonyms_map.cend(); k++) {
-		STRING_LIST* existing_key = (*k).first;
-
-		for (string s: *existing_key) {
-			// found related synonyms in the synonyms_map
-			if (s.compare(synonym) == 0) {
-				return existing_key;
-			}
-		}
-	}
-
-	return nullptr;
-}
-*/
 STRING_LIST* PQLOptimizedEvaluator::GetRelatedSynonyms(STRING_LIST synonyms, STRINGLIST_STRINGLISTSET_MAP synonyms_map) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetRelatedSynonyms" << endl;
 	}
 	
@@ -786,7 +820,7 @@ STRING_LIST* PQLOptimizedEvaluator::GetRelatedSynonyms(STRING_LIST synonyms, STR
 }
 
 STRING_SET* PQLOptimizedEvaluator::GetRelatedSynonyms(string synonym, STRINGSET_STRINGLISTSET_MAP synonyms_map) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetRelatedSynonyms" << endl;
 	}
 
@@ -802,7 +836,7 @@ STRING_SET* PQLOptimizedEvaluator::GetRelatedSynonyms(string synonym, STRINGSET_
 }
 
 STRING_SET* PQLOptimizedEvaluator::GetRelatedSynonyms(STRING_SET synonyms, STRINGSET_STRINGLISTSET_MAP* synonyms_map) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetRelatedSynonyms" << endl;
 	}
 
@@ -843,7 +877,7 @@ STRING_SET* PQLOptimizedEvaluator::GetRelatedSynonyms(STRING_SET synonyms, STRIN
 
 bool PQLOptimizedEvaluator::EvaluateNoSynonymSet(string f_call, string param1, string param2) {
 	auto start = high_resolution_clock::now();
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - EvaluateNoSynonymSet" << endl;
 		cout << "fcall: " << f_call << "; param1: " << param1 << "; param2: " << param2 << endl;
 	}
@@ -853,7 +887,7 @@ bool PQLOptimizedEvaluator::EvaluateNoSynonymSet(string f_call, string param1, s
 	PKB::AffectsManager am = pkb.GetAffectsManager();
 	CFGManager cfgm = pkb.GetCFGManager();
 
-	if (UNIT_TESTING) {
+	if (PQL_UNIT_TESTING) {
 		cout << "PQLOptimizedEvaluator - EvaluateNoSynonymSet - UNIT TESTING" << endl;
 		return true;
 	}
@@ -904,7 +938,7 @@ bool PQLOptimizedEvaluator::EvaluateNoSynonymSet(string f_call, string param1, s
 	}
 	else {
 		// error
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLOptimizedEvaluator - EvaluateNoSynonymSet: No such relref." << endl;
 		}
 
@@ -922,7 +956,7 @@ bool PQLOptimizedEvaluator::EvaluateNoSynonymSet(string f_call, string param1, s
 
 STRINGLIST_SET PQLOptimizedEvaluator::EvaluatePatternCall(string f_call, string param1, string param2, string type) {
 	auto start = high_resolution_clock::now();
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - EvaluatePatternCall (2 params to pass)" << endl;
 		cout << "fcall: " << f_call << "; param: " << param1 << "; param2: " << param2 << "; type: " << type << endl;
 	}
@@ -937,7 +971,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluatePatternCall(string f_call, string 
 		}
 		else {
 			// error
-			if (DEBUG) {
+			if (PQL_DEBUG) {
 				cout << "PQLOptimizedEvaluator - EvaluatePatternCall: No such pattern type." << endl;
 			}
 
@@ -956,7 +990,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluatePatternCall(string f_call, string 
 		}
 		else {
 			// error
-			if (DEBUG) {
+			if (PQL_DEBUG) {
 				cout << "PQLOptimizedEvaluator - EvaluatePatternCall: No such pattern type." << endl;
 			}
 
@@ -965,14 +999,14 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluatePatternCall(string f_call, string 
 	}
 	else {
 		// error
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLOptimizedEvaluator - EvaluatePatternCall: No such pattern call." << endl;
 		}
 
 		return {};
 	}
 
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - EvaluatePatternCall: Result clause's size = " << result.size() << endl;
 	}
 
@@ -987,7 +1021,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluatePatternCall(string f_call, string 
 
 STRINGLIST_SET PQLOptimizedEvaluator::EvaluatePatternCall(string f_call, string param, string type) {
 	auto start = high_resolution_clock::now();
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - EvaluatePatternCall (1 param to pass)" << endl;
 		cout << "fcall: " << f_call << "; param: " << param << "; type: " << type << endl;
 	}
@@ -1002,7 +1036,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluatePatternCall(string f_call, string 
 		}
 		else {
 			// error 
-			if (DEBUG) {
+			if (PQL_DEBUG) {
 				cout << "PQLOptimizedEvaluator - EvaluatePatternCall: No such pattern type." << endl;
 			}
 
@@ -1021,7 +1055,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluatePatternCall(string f_call, string 
 		}
 		else {
 			// error 
-			if (DEBUG) {
+			if (PQL_DEBUG) {
 				cout << "PQLOptimizedEvaluator - EvaluatePatternCall: No such pattern type." << endl;
 			}
 
@@ -1030,14 +1064,14 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluatePatternCall(string f_call, string 
 	}
 	else {
 		// error
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLOptimizedEvaluator - EvaluatePatternCall: No such pattern call." << endl;
 		}
 
 		return {};
 	}
 
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - EvaluatePatternCall: Result clause's size = " << result.size() << endl;
 	}
 
@@ -1053,7 +1087,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluatePatternCall(string f_call, string 
 STRINGLIST_SET PQLOptimizedEvaluator::EvaluateWithClause(STRING_STRING_MAP entity_map, string lhs, string rhs) {
 	auto start = high_resolution_clock::now();
 
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - EvaluateConstraints" << endl;
 	}
 
@@ -1202,7 +1236,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluateWithClause(STRING_STRING_MAP entit
 STRINGLIST_SET PQLOptimizedEvaluator::EvaluateOneSynonymSet(string f_call, string param) {
 	auto start = high_resolution_clock::now();
 
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - EvaluateOneSynonymSet" << endl;
 		cout << "fcall: " << f_call << "; param: " << param << endl;
 	}
@@ -1257,14 +1291,14 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluateOneSynonymSet(string f_call, strin
 	}
 	else {
 		// error
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLOptimizedEvaluator - EvaluateOneSynonymSet: No such relref." << endl;
 		}
 
 		return {};
 	}
 
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - EvaluateOneSynonymSet: Result clause's size = " << result.size() << endl;
 	}
 
@@ -1280,7 +1314,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluateOneSynonymSet(string f_call, strin
 STRINGLIST_SET PQLOptimizedEvaluator::EvaluateInverseOneSynonymSet(string f_call, string param) {
 	auto start = high_resolution_clock::now();
 
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - EvaluateInverseOneSynonymSet" << endl;
 		cout << "fcall: " << f_call << "; param: " << param << endl;
 	}
@@ -1335,13 +1369,13 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluateInverseOneSynonymSet(string f_call
 	}
 	else {
 		// error
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLOptimizedEvaluator - EvaluateInverseOneSynonymSet: No such relref." << endl;
 		}
 		return {};
 	}
 
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - EvaluateInverseOneSynonymSet: Result clause's size = " << result.size() << endl;
 	}
 
@@ -1354,9 +1388,9 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluateInverseOneSynonymSet(string f_call
 	return result;
 }
 
-STRINGLIST_SET PQLOptimizedEvaluator::EvaluateTwoSynonymSet(string f_call) {
+STRINGLIST_SET PQLOptimizedEvaluator::EvaluateTwoSynonymSet(string f_call, bool is_same_synonyms) {
 	auto start = high_resolution_clock::now();
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - EvaluateTwoSynonymSet" << endl;
 		cout << "fcall: " << f_call << endl;
 	}
@@ -1367,65 +1401,85 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluateTwoSynonymSet(string f_call) {
 	PKB::AffectsManager am = pkb.GetAffectsManager();
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 
-	if (f_call.compare(TYPE_COND_FOLLOWS) == 0) {
-		result = ConvertSet(rm.GetAllFollows());
-	}
-	else if (f_call.compare(TYPE_COND_FOLLOWS_T) == 0) {
-		result = ConvertSet(rm.GetAllFollowsStars());
-	}
-	else if (f_call.compare(TYPE_COND_PARENT) == 0) {
-		result = ConvertSet(rm.GetAllParents());
-	}
-	else if (f_call.compare(TYPE_COND_PARENT_T) == 0) {
-		result = ConvertSet(rm.GetAllParentStars());
-	}
-	else if (f_call.compare(TYPE_COND_USES_S) == 0) {
-		result = ConvertSet(rm.GetAllStmtUses());
-	}
-	else if (f_call.compare(TYPE_COND_USES_P) == 0) {
-		result = ConvertSet(rm.GetAllProcUses());
-	}
-	else if (f_call.compare(TYPE_COND_MODIFIES_S) == 0) {
-		result = ConvertSet(rm.GetAllStmtModifies());
-	}
-	else if (f_call.compare(TYPE_COND_MODIFIES_P) == 0) {
-		result = ConvertSet(rm.GetAllProcModifies());
-	}
-	else if (f_call.compare(TYPE_COND_CALLS) == 0) {
-		result = ConvertSet(rm.GetAllCalls());
-	}
-	else if (f_call.compare(TYPE_COND_CALLS_T) == 0) {
-		result = ConvertSet(rm.GetAllCallsStar());
-	}
-	else if (f_call.compare(TYPE_COND_NEXT) == 0) {
-		result = ConvertSet(cfgm.GetAllNext());
-	}
-	else if (f_call.compare(TYPE_COND_NEXT_T) == 0) {
-		result = ConvertSet(cfgm.GetAllNextStar());
-	}
-	else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
-		auto start = high_resolution_clock::now();
-		result = ConvertSet(am.GetAllAffects());
-		auto stop = high_resolution_clock::now();
-		auto duration = duration_cast<milliseconds>(stop - start);
-		cout << "Time taken for GetAllAffects: " << duration.count() << endl;
-	}
-	else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
-		auto start = high_resolution_clock::now();
-		result = ConvertSet(am.GetAllAffectsStar());
-		auto stop = high_resolution_clock::now();
-		auto duration = duration_cast<milliseconds>(stop - start);
-		cout << "Time taken for GetAllAffectsStar: " << duration.count() << endl;		
+	if (is_same_synonyms) {
+		if (f_call.compare(TYPE_COND_NEXT_T) == 0) {
+			result = ConvertSet(cfgm.GetAllNextStarWithSameSynonyms());
+		}
+		else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
+			result = ConvertSet(am.GetAllAffectsWithSameSynonyms());
+		}
+		else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
+			result = ConvertSet(am.GetAllAffectsStarWithSameSynonyms());
+		}
+		else {
+			// error
+			if (PQL_DEBUG) {
+				cout << "PQLOptimizedEvaluator - EvaluateTwoSynonymSet: No such relref (same synonyms)." << endl;
+			}
+			return {};
+		}
 	}
 	else {
-		// error
-		if (DEBUG) {
-			cout << "PQLOptimizedEvaluator - EvaluateTwoSynonymSet: No such relref." << endl;
+		if (f_call.compare(TYPE_COND_FOLLOWS) == 0) {
+			result = ConvertSet(rm.GetAllFollows());
 		}
-		return {};
+		else if (f_call.compare(TYPE_COND_FOLLOWS_T) == 0) {
+			result = ConvertSet(rm.GetAllFollowsStars());
+		}
+		else if (f_call.compare(TYPE_COND_PARENT) == 0) {
+			result = ConvertSet(rm.GetAllParents());
+		}
+		else if (f_call.compare(TYPE_COND_PARENT_T) == 0) {
+			result = ConvertSet(rm.GetAllParentStars());
+		}
+		else if (f_call.compare(TYPE_COND_USES_S) == 0) {
+			result = ConvertSet(rm.GetAllStmtUses());
+		}
+		else if (f_call.compare(TYPE_COND_USES_P) == 0) {
+			result = ConvertSet(rm.GetAllProcUses());
+		}
+		else if (f_call.compare(TYPE_COND_MODIFIES_S) == 0) {
+			result = ConvertSet(rm.GetAllStmtModifies());
+		}
+		else if (f_call.compare(TYPE_COND_MODIFIES_P) == 0) {
+			result = ConvertSet(rm.GetAllProcModifies());
+		}
+		else if (f_call.compare(TYPE_COND_CALLS) == 0) {
+			result = ConvertSet(rm.GetAllCalls());
+		}
+		else if (f_call.compare(TYPE_COND_CALLS_T) == 0) {
+			result = ConvertSet(rm.GetAllCallsStar());
+		}
+		else if (f_call.compare(TYPE_COND_NEXT) == 0) {
+			result = ConvertSet(cfgm.GetAllNext());
+		}
+		else if (f_call.compare(TYPE_COND_NEXT_T) == 0) {
+			result = ConvertSet(cfgm.GetAllNextStar());
+		}
+		else if (f_call.compare(TYPE_COND_AFFECTS) == 0) {
+			auto start = high_resolution_clock::now();
+			result = ConvertSet(am.GetAllAffects());
+			auto stop = high_resolution_clock::now();
+			auto duration = duration_cast<milliseconds>(stop - start);
+			cout << "Time taken for GetAllAffects: " << duration.count() << endl;
+		}
+		else if (f_call.compare(TYPE_COND_AFFECTS_T) == 0) {
+			auto start = high_resolution_clock::now();
+			result = ConvertSet(am.GetAllAffectsStar());
+			auto stop = high_resolution_clock::now();
+			auto duration = duration_cast<milliseconds>(stop - start);
+			cout << "Time taken for GetAllAffectsStar: " << duration.count() << endl;
+		}
+		else {
+			// error
+			if (PQL_DEBUG) {
+				cout << "PQLOptimizedEvaluator - EvaluateTwoSynonymSet: No such relref." << endl;
+			}
+			return {};
+		}
 	}
 
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - EvaluateTwoSynonymSet: Result clause's size = " << result.size() << endl;
 	}
 
@@ -1439,7 +1493,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluateTwoSynonymSet(string f_call) {
 
 STRINGLIST_SET PQLOptimizedEvaluator::EvaluateAllCall(string output_var_type) {
 	auto start = high_resolution_clock::now();
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - EvaluateAllCall" << endl;
 		cout << "output_var_type: " << output_var_type << endl;
 	}
@@ -1480,13 +1534,13 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluateAllCall(string output_var_type) {
 	}
 	else {
 		// error
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLOptimizedEvaluator - EvaluateAllCall: No such relref." << endl;
 		}
 		return {};
 	}
 
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - EvaluateAllCall: Result clause's size = " << result.size() << endl;
 	}
 
@@ -1499,7 +1553,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluateAllCall(string output_var_type) {
 }
 
 STRING_SET PQLOptimizedEvaluator::ConvertSet(STRINGLIST_SET result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - ConvertSet" << endl;
 	}
 
@@ -1514,7 +1568,7 @@ STRING_SET PQLOptimizedEvaluator::ConvertSet(STRINGLIST_SET result_set) {
 }
 
 STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(STRING_SET result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - ConvertSet" << endl;
 	}
 
@@ -1532,7 +1586,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(STRING_SET result_set) {
 }
 
 STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(INTEGER_SET result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - ConvertSet" << endl;
 	}
 
@@ -1551,7 +1605,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(INTEGER_SET result_set) {
 }
 
 STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(STMT_STMT_PAIR_LIST result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - ConvertSet" << endl;
 	}
 
@@ -1574,7 +1628,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(STMT_STMT_PAIR_LIST result_set)
 }
 
 STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(STMT_VAR_PAIR_LIST result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - ConvertSet" << endl;
 	}
 
@@ -1597,7 +1651,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(STMT_VAR_PAIR_LIST result_set) 
 }
 
 STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(PROC_VAR_PAIR_LIST result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - ConvertSet" << endl;
 	}
 
@@ -1620,7 +1674,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(PROC_VAR_PAIR_LIST result_set) 
 }
 
 STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(PROC_PROC_PAIR_LIST result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - ConvertSet" << endl;
 	}
 
@@ -1643,7 +1697,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::ConvertSet(PROC_PROC_PAIR_LIST result_set)
 }
 
 STRING_SET PQLOptimizedEvaluator::GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2, int pos_to_check) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetIntersectResult" << endl;
 	}
 
@@ -1661,7 +1715,7 @@ STRING_SET PQLOptimizedEvaluator::GetIntersectResult(STRING_SET val1, STRINGLIST
 }
 
 STRING_SET PQLOptimizedEvaluator::GetIntersectResult(STRING_SET val1, STRING_SET val2) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetIntersectResult" << endl;
 	}
 
@@ -1683,38 +1737,9 @@ STRING_SET PQLOptimizedEvaluator::GetIntersectResult(STRING_SET val1, STRING_SET
 
 	return result;
 }
-/*
-STRINGLIST_SET PQLOptimizedEvaluator::GetIntersectResult(STRINGLIST_SET val1, STRINGLIST_SET val2) {
-	if (DEBUG) {
-		cout << "PQLOptimizedEvaluator - GetIntersectResult" << endl;
-	}
 
-	STRINGLIST_SET result = *(new STRINGLIST_SET());
-
-	if (val1.size() > val2.size()) {
-		for (STRING_LIST* i : val2) {
-			for (STRING_LIST* j : val1) {
-				if (*i == *j) {
-					result.insert(i);
-				}
-			}
-		}
-	}
-	else {
-		for (STRING_LIST* i : val1) {
-			for (STRING_LIST* j : val2) {
-				if (*i == *j) {
-					result.insert(i);
-				}
-			}
-		}
-	}
-
-	return result;
-}
-*/
 STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateResult(string values, string type) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetAlternateResult" << endl;
 	}
 
@@ -1792,7 +1817,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateResult(STRING_LIST values, int
 }
 
 STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateResult(STRINGLIST_SET values, int pos_to_check, string type) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetAlternateResult" << endl;
 	}
 
@@ -1832,61 +1857,18 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateResult(STRINGLIST_SET values, 
 	
 	return results;
 }
-/*
-STRING_SET PQLOptimizedEvaluator::GetAlternateResult(STRINGLIST_SET values, string type) {
-	if (DEBUG) {
-		cout << "PQLOptimizedEvaluator - GetAlternateResult" << endl;
-	}
 
-	RelationManager rm = PKB().GetRelationManager();
-	STRING_SET results = *(new STRING_SET());
-
-	for (STRING_LIST* v : values) {
-		STRING_SET new_values = ConvertSet(GetAlternateResult(v->at(0), type));
-		results.insert(new_values.begin(), new_values.end());
-	}
-
-	return results;
-}
-
-STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateOutputResult(STRING_SET values, string type) {
-	if (DEBUG) {
-		cout << "PQLOptimizedEvaluator - GetAlternateOutputResult" << endl;
-	}
-	RelationManager rm = PKB().GetRelationManager();
-	STRINGLIST_SET results = *(new STRINGLIST_SET());
-
-	for (string v : values) {	
-		STRING_SET new_values = ConvertSet(GetAlternateResult(v, type));
-
-		// Combine the values
-		for (string s : new_values) {
-			STRING_LIST r = STRING_LIST();
-			r.push_back(v);
-			r.push_back(s);
-			
-			if (!IsDuplicate(results, r)) {
-				results.insert(new STRING_LIST(r));
-			}
-		}
-		
-	}
-
-	return results;
-}
-*/
-bool PQLOptimizedEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, int pos_to_check) {
+void PQLOptimizedEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, int pos_to_check) {
 	auto start = high_resolution_clock::now();
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - RemoveIrrelevant" << endl;
 	}
-
-	bool is_changed = false;
 
 	auto it = value->begin();
 	while (it != value->end()) {
 		string v = (*it)->at(pos_to_check);
 		bool has_value = false;
+		
 		for (STRING_LIST* tmp_entry : tmp) {
 			string check = tmp_entry->at(0);
 			if (check == v) {
@@ -1894,13 +1876,7 @@ bool PQLOptimizedEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_S
 			}
 		}
 
-		if (has_value) {
-			it++;
-		}
-		else {
-			it = value->erase(it);
-			is_changed = true;
-		}
+		has_value ? it++ : it = value->erase(it);
 	}
 
 	auto stop = high_resolution_clock::now();
@@ -1908,85 +1884,11 @@ bool PQLOptimizedEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_S
 		auto duration = duration_cast<milliseconds>(stop - start);
 		cout << "Time taken for removeirrelevant = " << duration.count() << "ms" << endl;
 	}
-
-	return is_changed;
-}
-/*
-bool PQLOptimizedEvaluator::RemoveIrrelevant(STRING_SET* value, STRINGLIST_SET tmp) {
-	if (DEBUG) {
-		cout << "PQLOptimizedEvaluator - RemoveIrrelevant" << endl;
-	}
-
-	bool is_changed = false;
-
-	auto it = value->begin();
-	while (it != value->end()) {
-		string v = (*it);
-		bool has_value = false;
-		for (STRING_LIST* tmp_entry : tmp) {
-			string check = tmp_entry->at(0);
-			if (check == v) {
-				has_value = true;
-			}
-		}
-
-		if (has_value) {
-			it++;
-		}
-		else {
-			it = value->erase(it);
-			is_changed = true;
-		}
-	}
-
-	return is_changed;
-}
-*/
-/*
-INTEGERPAIR_SET PQLOptimizedEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, STRING_LIST small_keys) {
-	if (DEBUG) {
-		cout << "PQLOptimizedEvaluator - RemoveIrrelevant" << endl;
-	}
-
-	INTEGERPAIR_SET results = *(new INTEGERPAIR_SET());
-
-	for (int s_index = 0; s_index < small_keys.size(); s_index++) {
-		for (int l_index = 0; l_index < large_keys.size(); l_index++) {
-			if (small_keys[s_index].compare(large_keys[l_index]) == 0) {
-				INTEGER_PAIR* pair = new INTEGER_PAIR();
-				// l_key = s_key
-				pair->first = l_index;
-				pair->second = s_index;
-				results.insert(pair);
-				// should not have duplicated key
-				break;
-			}
-		}
-	}
-
-	return results;
 }
 
-int PQLOptimizedEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, string synonym) {
-	if (DEBUG) {
-		cout << "PQLOptimizedEvaluator - RemoveIrrelevant" << endl;
-	}
 
-	int results = *(new int());
-	
-	for (int l_index = 0; l_index < large_keys.size(); l_index++) {
-		if (synonym.compare(large_keys[l_index]) == 0) {
-			results = l_index;
-			// should not have duplicated key
-			break;
-		}
-	}
-
-	return results;
-}
-*/
 STRING_SET PQLOptimizedEvaluator::GetNewResult(STRINGLIST_SET value, int pos_to_check) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetNewResult" << endl;
 	}
 
@@ -2000,7 +1902,7 @@ STRING_SET PQLOptimizedEvaluator::GetNewResult(STRINGLIST_SET value, int pos_to_
 }
 
 STRINGLIST_SET PQLOptimizedEvaluator::GetNewResult(STRINGLIST_SET value, INTEGER_LIST pos_to_check) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetNewResult" << endl;
 	}
 
@@ -2021,93 +1923,9 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetNewResult(STRINGLIST_SET value, INTEGER
 
 	return result;
 }
-/*
-STRINGLIST_SET PQLOptimizedEvaluator::GetCombinedResult(STRINGLIST_SET large_values, STRINGLIST_SET small_values, INTEGERLIST_LIST indexes) {
-	if (DEBUG) {
-		cout << "PQLOptimizedEvaluator - GetNewResult" << endl;
-	}
 
-	STRINGLIST_SET results = *(new STRINGLIST_SET());
-
-	if (large_values.size() < small_values.size()) {
-		STRINGLIST_SET tmp = large_values;
-		large_values = small_values;
-		small_values = tmp;
-	}
-
-	for (STRING_LIST* s_entry : small_values) {
-		for (STRING_LIST* l_entry: large_values) {
-			bool is_common = true;
-			INTEGER_SET index_to_exclude = INTEGER_SET();
-
-			// Check if the common synonyms is of the same value
-			for (INTEGER_LIST index_entry : indexes) {
-				if (l_entry->at(index_entry[0]) != s_entry->at(index_entry[1])) {
-					is_common = false;
-					break;
-				}
-				else {
-					index_to_exclude.insert(index_entry[1]);
-				}
-			}
-
-			// Same value -> merge both values, but don't duplicate the common synonyms
-			if (is_common) {
-				STRING_LIST* entry = new STRING_LIST();
-				entry = l_entry;
-
-				// Prevent duplicates
-				for (int s = 0; s < s_entry->size(); s++) {
-					if (index_to_exclude.find(s) == index_to_exclude.end()) {
-						entry->push_back(s_entry->at(s));
-					}
-				}
-
-				if (!IsDuplicate(results, *entry)) {
-					results.insert(entry);
-				}
-			}
-		}
-	}
-
-	return results;
-}
-
-STRINGLIST_SET PQLOptimizedEvaluator::GetCombinedResult(STRINGLIST_SET output_result, STRINGLIST_SET result, int pos_to_compare) {
-	if (DEBUG) {
-		cout << "PQLOptimizedEvaluator - GetNewResult" << endl;
-	}
-
-	STRINGLIST_SET combined_result = STRINGLIST_SET();
-	for (auto result_entry = output_result.cbegin(); result_entry != output_result.cend(); result_entry++) {
-		STRING_LIST entry = *(*result_entry);
-		for (auto r = result.cbegin(); r != result.cend(); r++) {
-			STRING_LIST converted_entry = *(*r);
-
-			if (entry.at(pos_to_compare).compare(converted_entry.at(0)) == 0) {
-				STRING_LIST val = STRING_LIST();
-				for (int i = 0; i < entry.size(); i++) {
-					if (i != pos_to_compare) {
-						val.push_back(entry.at(i));
-					}
-					else {
-						val.push_back(converted_entry.at(1));
-					}
-
-				}
-
-				if (!IsDuplicate(combined_result, val)) {
-					combined_result.insert(new STRING_LIST(val));
-				}
-			}
-		}
-	}
-
-	return combined_result;
-}
-*/
 STRINGLIST_SET PQLOptimizedEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list, STRING_STRING_MAP entity_map) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetCartesianProduct" << endl;
 	}
 	
@@ -2168,7 +1986,8 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTS
 }
 
 STRINGLIST_SET PQLOptimizedEvaluator::GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, INTEGER_LIST pos_to_add, INTEGERPAIR_SET to_check, string type, string attr) {
-	if (DEBUG) {
+	auto start = high_resolution_clock::now();
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetDependencyProduct" << endl;
 	}
 
@@ -2218,11 +2037,17 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetDependencyProduct(STRINGLIST_SET result
 		}
 	}
 
+	auto stop = high_resolution_clock::now();
+	if (DEBUG_TIMER) {
+		auto duration = duration_cast<milliseconds>(stop - start);
+		cout << "Time taken for GetDependencyProduct = " << duration.count() << "ms" << endl;
+	}
+
 	return final_results;
 }
 
 STRINGLIST_SET PQLOptimizedEvaluator::GetNoDependencyProduct(STRINGLIST_SET results, STRING_SET values, string type, string attr) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetNoDependencyProduct" << endl;
 	}
 
@@ -2280,6 +2105,29 @@ INTEGER_LIST PQLOptimizedEvaluator::GetOutputSynonyms(STRING_LIST synonyms, STRI
 	}
 
 	return index;
+}
+
+int PQLOptimizedEvaluator::GetSimilarClause(string to_be_added_function, string existing_function) {
+	if ((to_be_added_function.compare(TYPE_COND_PARENT) == 0 && existing_function.compare(TYPE_COND_PARENT_T) == 0) || 
+		(to_be_added_function.compare(TYPE_COND_FOLLOWS) == 0 && existing_function.compare(TYPE_COND_FOLLOWS_T) == 0) ||
+		(to_be_added_function.compare(TYPE_COND_CALLS) == 0 && existing_function.compare(TYPE_COND_CALLS_T) == 0) ||
+		(to_be_added_function.compare(TYPE_COND_NEXT) == 0 && existing_function.compare(TYPE_COND_NEXT_T) == 0) ||
+		(to_be_added_function.compare(TYPE_COND_AFFECTS) == 0 && existing_function.compare(TYPE_COND_AFFECTS_T) == 0)) {
+		// replace
+		return -1;
+	}
+	else if ((to_be_added_function.compare(TYPE_COND_PARENT_T) == 0 && existing_function.compare(TYPE_COND_PARENT) == 0) || 
+		(to_be_added_function.compare(TYPE_COND_FOLLOWS_T) == 0 && existing_function.compare(TYPE_COND_FOLLOWS) == 0) ||
+		(to_be_added_function.compare(TYPE_COND_CALLS_T) == 0 && existing_function.compare(TYPE_COND_CALLS) == 0) ||
+		(to_be_added_function.compare(TYPE_COND_NEXT_T) == 0 && existing_function.compare(TYPE_COND_NEXT) == 0) ||
+		(to_be_added_function.compare(TYPE_COND_AFFECTS_T) == 0 && existing_function.compare(TYPE_COND_AFFECTS) == 0)) {
+		// skip 
+		return 1;
+	}
+	else {
+		// add
+		return 0;
+	}
 }
 
 bool PQLOptimizedEvaluator::IsVar(string var) {

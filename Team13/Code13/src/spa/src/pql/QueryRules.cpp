@@ -241,7 +241,7 @@ bool QueryRules::IsDeclaration(string token, STRING_STRING_MAP entity_map) {
 			return result;
 		}
 	}
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		if (!result) {
 			cout << "Error at QueryRules::IsDeclaration()" << endl;
 		}
@@ -385,7 +385,7 @@ bool QueryRules::IsTuple(string token, STRING_STRING_MAP declared_var_names) {
 			return result;
 		}
 	}
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		if (!result) {
 			// cout << "Error at QueryRules::IsTuple()" << endl;
 		}

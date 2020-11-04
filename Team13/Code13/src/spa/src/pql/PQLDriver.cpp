@@ -13,7 +13,7 @@
 using namespace std::chrono;
 
 STRING_SET PQLDriver::Query(string query_string) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLDriver - Query" << endl;
 	}
 
@@ -22,7 +22,7 @@ STRING_SET PQLDriver::Query(string query_string) {
 
 	STRING_SET final_result;
 
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "Query: " << query_string << endl;
 	}
 
@@ -39,7 +39,7 @@ STRING_SET PQLDriver::Query(string query_string) {
 		// Query invalid - get false result: bool/empty
 		result.SetResult(parsed_info.GetFalseResult());
 
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			if (parsed_info.IsSemanticsInvalid()) {
 				cout << "Query - Semantically Invalid" << endl;
 			}
@@ -50,7 +50,7 @@ STRING_SET PQLDriver::Query(string query_string) {
 	}
 	else {
 		// loop: check whats in Query info
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			parsed_info.PrintEntityMap();
 			parsed_info.PrintOutputList();
 			parsed_info.PrintStMap();
@@ -62,14 +62,14 @@ STRING_SET PQLDriver::Query(string query_string) {
 
 		// Toggle optimization switch
 		if (OPTIMIZED_EVALUATION) {
-			if (DEBUG) {
+			if (PQL_DEBUG) {
 				cout << "Using optimized evaluator" << endl;
 			}
 
 			result = PQLOptimizedEvaluator().Evaluate(parsed_info);
 		}
 		else {
-			if (DEBUG) {
+			if (PQL_DEBUG) {
 				cout << "Using basic evaluator" << endl;
 			}
 
