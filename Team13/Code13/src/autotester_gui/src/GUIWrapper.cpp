@@ -48,7 +48,7 @@ void GUIWrapper::Evaluate(std::string query, std::list<std::string>& results){
 	// each result must be a string.
 	cout << "RESULTS" << endl;
 	for (string res : evaluated_result) {
-		cout << res << endl;
+		// cout << res << endl;
 		results.push_back(res);
 	}
 }

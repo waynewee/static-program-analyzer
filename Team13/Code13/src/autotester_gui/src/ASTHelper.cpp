@@ -33,7 +33,7 @@ AST_GUI_NODE_TREE* ASTHelper::GetGUINodeTree() {
 
 	int leaf_x = 0;
 
-	root_node_->Print(root_node_);
+	// root_node_->Print(root_node_);
 	
 	PopulateNodeList(root_node_, NULL, 0, &leaf_x);
 
