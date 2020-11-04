@@ -41,7 +41,7 @@ public:
 
     bool IsAssignStmt(STMT_IDX s);
     bool IsCallStmt(STMT_IDX s);
-
+    bool IsReadStmt(STMT_IDX s);
 };
 
 #endif // DATA_MANAGER_H
