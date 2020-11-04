@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
+#define PKB_DEBUG true
 #define TYPE_CONST "constant"
 #define TYPE_PROC "procedure"
 #define TYPE_VAR "variable"

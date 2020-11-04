@@ -41,7 +41,18 @@ STMT_IDX_SET PatternManager::GetAssignWithSubPattern(VAR_NAME v, EXPRESSION e) {
     return GetStmtOfMatchingAssignments(v, e, false, assign_pattern_table_.GetData());
 }
 STMT_IDX_SET PatternManager::GetIfWithPattern(VAR_NAME v) {
-    return GetStmtOfMatchingContainers(v, if_pattern_table_.GetData());
+    if (PKB_DEBUG) {
+        std::cout << "PKB: GetIfWithPattern(" << v << ")" << std::endl;
+    }
+    auto result = GetStmtOfMatchingContainers(v, if_pattern_table_.GetData());
+
+    if (PKB_DEBUG) {
+        for (auto s : result) {
+            std::cout << "" << s << " ";
+        }
+        std::cout << std::endl;
+    }
+    return result;
 }
 STMT_IDX_SET PatternManager::GetWhileWithPattern(VAR_NAME v) {
     return GetStmtOfMatchingContainers(v, while_pattern_table_.GetData());
