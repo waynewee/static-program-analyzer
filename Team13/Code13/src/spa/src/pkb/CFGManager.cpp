@@ -115,17 +115,20 @@ bool CFGManager::IsNextStar(STMT_IDX s1, STMT_IDX s2) {
 STMT_STMT_PAIR_LIST CFGManager::GetAllNext() {
     return cfg_.GetAllEdeges();
 }
-STMT_STMT_PAIR_LIST CFGManager::GetAllNextStar() {
+STMT_STMT_PAIR_LIST CFGManager::GetAllNextWithSameSynonyms() {
     auto result = STMT_STMT_PAIR_LIST();
-    auto nodes = cfg_.GetAllAdjacencyListKeys();
-    for (auto node: nodes) {
-        auto cache_iter = next_star_cache_.find(node);
-        if (cache_iter == next_star_cache_.end()) {
-            auto next_star_of_node = GetNextStar(node);
-        }
-    }
+    return GetAllPairsWithSameSynonyms(cfg_.GetAdjacencyList());
+}
+STMT_STMT_PAIR_LIST CFGManager::GetAllNextStar() {
+    FillNextStarTable();
     return all_next_star_edge_cache_;
 }
+
+STMT_STMT_PAIR_LIST CFGManager::GetAllNextStarWithSameSynonyms() {
+    FillNextStarTable();
+    return GetAllPairsWithSameSynonyms(next_star_cache_);
+}
+
 STMT_IDX_SET* CFGManager::DFS(CFG_ADJACENCY_LIST& table, STMT_IDX s) {
     auto result = new STMT_IDX_SET();
     auto stack = std::stack<STMT_IDX>();
@@ -196,6 +199,26 @@ void CFGManager::InsertCache(CFG_ADJACENCY_LIST &table, STMT_IDX_SET *result, ST
 }
 CFG &CFGManager::GetCFG() {
     return cfg_;
+}
+void CFGManager::FillNextStarTable() {
+    auto nodes = cfg_.GetAllAdjacencyListKeys();
+    for (auto node : nodes) {
+        auto cache_iter = next_star_cache_.find(node);
+        if (cache_iter == next_star_cache_.end()) {
+            auto next_star_of_node = GetNextStar(node);
+        }
+    }
+}
+STMT_STMT_PAIR_LIST CFGManager::GetAllPairsWithSameSynonyms(CFG_ADJACENCY_LIST& adjacency_list) {
+    auto result = STMT_STMT_PAIR_LIST();
+    for (auto iter : adjacency_list) {
+        auto s1 = iter.first;
+        auto set = iter.second;
+        if (set->find(s1) != set->end()) {
+            result.push_back({ s1, s1 });
+        }
+    }
+    return result;
 }
 void CFGManager::ClearCache() {
     next_star_cache_.clear();

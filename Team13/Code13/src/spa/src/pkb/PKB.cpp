@@ -62,14 +62,13 @@ INVERSE_AFFECTS_STAR_TABLE PKB::AffectsManager::inverse_affects_star_table_;
 STMT_STMT_PAIR_LIST PKB::AffectsManager::all_affects_star_;
 
 STMT_STMT_PAIR_LIST PKB::AffectsManager::GetAllAffects() {
-    auto result = STMT_STMT_PAIR_LIST();
-    STMT_IDX_SET assign_stmts = data_manager_.GetAllStatements(STATEMENT_TYPE::assignStatement);
-    for (auto a : assign_stmts) {
-        if (affects_computed_set_.find(a) == affects_computed_set_.end()) {
-            GetAffects(a);
-        }
-    }
+    FillAffectsTable();
     return all_affects_;
+}
+
+STMT_STMT_PAIR_LIST PKB::AffectsManager::GetAllAffectsWithSameSynonyms() {
+    FillAffectsTable();
+    return GetAllPairsWithSameSynonyms(affects_table_);
 }
 
 bool PKB::AffectsManager::IsAffects(STMT_IDX a1, STMT_IDX a2) {
@@ -317,12 +316,7 @@ STMT_STMT_PAIR_LIST PKB::AffectsManager::GetAllAffectsStar() {
     if (!all_affects_star_.empty()) {
         return all_affects_star_;
     }
-    STMT_IDX_SET assign_stmts = data_manager_.GetAllStatements(STATEMENT_TYPE::assignStatement);
-    for (auto a : assign_stmts) {
-        if (affects_star_computed_set_.find(a) == affects_star_computed_set_.end()) {
-            GetAffectsStar(a);
-        }
-    }
+    FillAffectsStarTable();
     for (auto pair : affects_star_table_) {
         auto a1 = pair.first;
         for (auto a2 : *(pair.second)) {
@@ -330,6 +324,10 @@ STMT_STMT_PAIR_LIST PKB::AffectsManager::GetAllAffectsStar() {
         }
     }
     return all_affects_star_;
+}
+STMT_STMT_PAIR_LIST PKB::AffectsManager::GetAllAffectsStarWithSameSynonyms() {
+    FillAffectsStarTable();
+    return GetAllPairsWithSameSynonyms(affects_star_table_);
 }
 void PKB::AffectsManager::RecursiveGetAffects(STMT_IDX node, VAR_NAME lhs_var, STMT_IDX_SET& visited, STMT_IDX_SET& result) {
     if (visited.find(node) != visited.end()) {
@@ -356,7 +354,22 @@ void PKB::AffectsManager::RecursiveGetAffects(STMT_IDX node, VAR_NAME lhs_var, S
         RecursiveGetAffects(neighbor, lhs_var, visited, result);
     }
 }
-
+void PKB::AffectsManager::FillAffectsTable() {
+    STMT_IDX_SET assign_stmts = data_manager_.GetAllStatements(STATEMENT_TYPE::assignStatement);
+    for (auto a : assign_stmts) {
+        if (affects_computed_set_.find(a) == affects_computed_set_.end()) {
+            GetAffects(a);
+        }
+    }
+}
+void PKB::AffectsManager::FillAffectsStarTable() {
+    STMT_IDX_SET assign_stmts = data_manager_.GetAllStatements(STATEMENT_TYPE::assignStatement);
+    for (auto a : assign_stmts) {
+        if (affects_star_computed_set_.find(a) == affects_star_computed_set_.end()) {
+            GetAffectsStar(a);
+        }
+    }
+}
 void PKB::AffectsManager::RecursiveGetInverseAffects(STMT_IDX node, VAR_NAME rhs_var, INVERSE_AFFECTS_VISITED_SET& visited, STMT_IDX_SET& result) {
     //debug
     //std::cout << "PKB: RecursiveGetInverseAffects for node " << node << ", rhs_var " << rhs_var << std::endl;
@@ -414,6 +427,17 @@ STMT_IDX_SET PKB::AffectsManager::GetAllInverseAffectsKeys() {
         }
     }
     return all_inverse_affects_keys_;
+}
+STMT_STMT_PAIR_LIST PKB::AffectsManager::GetAllPairsWithSameSynonyms(STMT_STMT_RELATION_TABLE table) {
+    auto result = STMT_STMT_PAIR_LIST();
+    for (auto iter : table) {
+        auto a1 = iter.first;
+        auto set = iter.second;
+        if (set->find(a1) != set->end()) {
+            result.push_back({ a1, a1 });
+        }
+    }
+    return result;
 }
 void PKB::AffectsManager::ClearCache() {
     affects_computed_set_.clear();
