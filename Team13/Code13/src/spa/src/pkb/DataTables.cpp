@@ -46,45 +46,35 @@ bool ProcedureTable::Add(PROC_NAME p) {
     return data_.insert(p).second;
 }
 
-bool StatementTable::Add(STATEMENT_TYPE t, STMT_IDX s) {
-    bool insert_type = false;
-    switch (t) {
-        case assignStatement:
-            insert_type = stmt_data_[_ASSIGN_].insert(s).second;
-            break;
-        case whileStatement:
-            insert_type = stmt_data_[_WHILE_].insert(s).second;
-            break;
-        case readStatement:
-            insert_type = stmt_data_[_READ_].insert(s).second;
-            break;
-        case printStatement:
-            insert_type = stmt_data_[_PRINT_].insert(s).second;
-            break;
-        case ifStatement:
-            insert_type = stmt_data_[_IF_].insert(s).second;
-            break;
-        case callStatement:
-            insert_type = stmt_data_[_CALL_].insert(s).second;
-            break;
+int StatementTable::ConvertStmtType(STATEMENT_TYPE type) {
+    switch (type) {
+    case assignStatement:
+        return _ASSIGN_;
+    case whileStatement:
+        return _WHILE_;
+    case readStatement:
+        return _READ_;
+    case printStatement:
+        return _PRINT_;
+    case ifStatement:
+        return _IF_;
+    case callStatement:
+        return _CALL_;
     }
-    return insert_type && stmt_data_[_ALL_].insert(s).second;
+    return -1;
+}
+bool StatementTable::Add(STATEMENT_TYPE t, STMT_IDX s) {
+    auto type = ConvertStmtType(t);
+    if (type > 0) {
+        return stmt_data_[type].insert(s).second && stmt_data_[_ALL_].insert(s).second;
+    }
+    return false;
 }
 
 STMT_IDX_SET StatementTable::GetAll(STATEMENT_TYPE t) {
-    switch (t) {
-        case assignStatement:
-            return stmt_data_[_ASSIGN_];
-        case whileStatement:
-            return stmt_data_[_WHILE_];
-        case readStatement:
-            return stmt_data_[_READ_];
-        case printStatement:
-            return stmt_data_[_PRINT_];
-        case ifStatement:
-            return stmt_data_[_IF_];
-        case callStatement:
-            return stmt_data_[_CALL_];
+    auto type = ConvertStmtType(t);
+    if (type > 0) {
+        return stmt_data_[type];
     }
     return STMT_IDX_SET();
 }
@@ -121,6 +111,14 @@ bool StatementTable::IsReadStmt(STMT_IDX s) {
     return stmt_data_[_READ_].find(s) != stmt_data_[_READ_].end();
 }
 
+bool StatementTable::IsStmt(STATEMENT_TYPE t, STMT_IDX s) {
+    auto type = ConvertStmtType(t);
+    if (type > 0) {
+        return stmt_data_[type].find(s) != stmt_data_[type].end();
+    }
+    return false;
+}
+
 VAR_NAME_SET VariableTable::GetAll() {
     return data_;
 }
@@ -133,3 +131,4 @@ bool ConstTable::Add(CONST_VALUE cv) {
 INT_SET ConstTable::GetAll() {
     return data_;
 }
+
