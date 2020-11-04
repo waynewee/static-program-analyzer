@@ -30,7 +30,7 @@ bool SimpleValidator::IsValid(TOKEN_LIST token_list) {
 
 	while (token_index_ < (int)token_list_.size() - 1) {
 		if (SimpleValidator::GetNextToken().GetValue() != "procedure") {
-			cout << "(Line " << statement_index_ << ")";
+			// cout << "(Line " << statement_index_ << ")";
 			throw "Missing procedure";
 		}
 		SimpleValidator::IsValidProc();
@@ -42,7 +42,7 @@ bool SimpleValidator::IsValid(TOKEN_LIST token_list) {
 		for (int i = 0; i < it->second.size(); i++) {
 			if (!proc_adj_list_.count(it->second[i])) {
 				// Key does not exist
-				cout << "(" << it->second[i] << ") ";
+				// cout << "(" << it->second[i] << ") ";
 				throw "Undefined procedure ";
 			}
 		}
@@ -52,7 +52,7 @@ bool SimpleValidator::IsValid(TOKEN_LIST token_list) {
 }
 
 bool SimpleValidator::IsValidStmt() {
-	cout << endl << "Line " << statement_index_ + 1<< ": ";
+	// cout << endl << "Line " << statement_index_ + 1<< ": ";
 	Token first_token = SimpleValidator::GetNextToken();
 	statement_index_++;
 
@@ -77,7 +77,7 @@ bool SimpleValidator::IsValidStmt() {
 	case TokenType::TOKEN_TYPE::var: // For assignment statements
 		return SimpleValidator::IsValidAssignment(first_token);
 	default:
-		cout << "(" << first_token.GetValue() << ") ";
+		// cout << "(" << first_token.GetValue() << ") ";
 		throw "Unhandled Token" + first_token.GetValue();
 	}
 }
@@ -85,7 +85,7 @@ bool SimpleValidator::IsValidStmt() {
 bool SimpleValidator::IsValidProc() {
 	Token name_token = SimpleValidator::GetNextToken();
 	if (proc_adj_list_.count(name_token.GetValue()) != 0) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Redefining procedure";
 	}
 	curr_proc_ = name_token.GetValue();
@@ -93,7 +93,7 @@ bool SimpleValidator::IsValidProc() {
 
 	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var &&
 		name_token.GetTokenType() != TokenType::TOKEN_TYPE::stmt) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 
 		throw "Invalid procedure name";
 	}
@@ -106,12 +106,12 @@ bool SimpleValidator::IsValidReadStmt() {
 
 	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var &&
 		name_token.GetTokenType() != TokenType::TOKEN_TYPE::stmt) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid variable name for read statement";
 	}
 
 	if (SimpleValidator::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Missing ';'";
 	}
 
@@ -123,12 +123,12 @@ bool SimpleValidator::IsValidPrintStmt() {
 
 	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var &&
 		name_token.GetTokenType() != TokenType::TOKEN_TYPE::stmt) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid variable name for print statement";
 	}
 
 	if (SimpleValidator::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Missing ';'";
 	}
 
@@ -140,7 +140,7 @@ bool SimpleValidator::IsValidCallStmt() {
 	
 	if (name_token.GetTokenType() != TokenType::TOKEN_TYPE::var &&
 		name_token.GetTokenType() != TokenType::TOKEN_TYPE::stmt) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid variable name for call statement";
 	}
 
@@ -150,7 +150,7 @@ bool SimpleValidator::IsValidCallStmt() {
 	proc_adj_list_.at(curr_proc_) = lst;
 
 	if (SimpleValidator::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Missing ';'";
 	}
 
@@ -159,19 +159,19 @@ bool SimpleValidator::IsValidCallStmt() {
 
 bool SimpleValidator::IsValidIfBlock() {
 	if (!SimpleValidator::IsValidExpression(GetExpressionTokens(ExpressionType::_if))) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid expression in if block";
 	}
 	
 	if (SimpleValidator::GetNextToken().GetValue() != TYPE_STMT_IF_THEN) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Missing 'then'";
 	}
 
 	SimpleValidator::IsValidStmtList();
 
 	if (SimpleValidator::GetNextToken().GetValue() != TYPE_STMT_IF_ELSE) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Missing 'else'";
 	}
 
@@ -182,7 +182,7 @@ bool SimpleValidator::IsValidIfBlock() {
 
 bool SimpleValidator::IsValidWhileBlock() {
 	if (!SimpleValidator::IsValidExpression(GetExpressionTokens(ExpressionType::_while))) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid expression in while block";
 	}
 
@@ -192,16 +192,16 @@ bool SimpleValidator::IsValidWhileBlock() {
 
 bool SimpleValidator::IsValidAssignment(Token name_token) {
 	if (SimpleValidator::GetNextToken().GetValue() != TYPE_EQUALS) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Missing '='";
 	}
 	if (!SimpleValidator::IsValidExpression(GetExpressionTokens(_assign))) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid expression in assignment";
 	}
 
 	if (SimpleValidator::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Missing ';'";
 	}
 	return true;
@@ -220,7 +220,7 @@ bool SimpleValidator::IsValidStmtList() {
 		SimpleValidator::IsValidStmt();
 	}
 	if (initial_indx == statement_index_) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Empty statement block detected";
 	}
 	return true;
@@ -231,10 +231,10 @@ bool SimpleValidator::IsValidExpression(TOKEN_LIST expr_list) {
 	/*cout << "Expression" << endl;
 
 	for (Token token : expr_list) {
-		cout << token.GetValue();
+		// cout << token.GetValue();
 	}*/
 	if (!ExprValidator::Validate(expr_list)) {
-		cout << "(Line: " << statement_index_ << ") ";
+		// cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid expression";
 	}
 	return true;
@@ -270,7 +270,7 @@ Token SimpleValidator::GetNextToken() {
 	token_index_++;
 
 	if (token_index_ < token_list_.size()) {
-		cout << token_list_[token_index_].GetValue() << " ";
+		// cout << token_list_[token_index_].GetValue() << " ";
 		return token_list_[token_index_];
 	}
 	else {
@@ -334,11 +334,11 @@ void SimpleValidator::CheckForCyclicCalls() {
 	{
 		std::cout << it->first << ": "; 
 		for (std::vector<DFS_NODE>::const_iterator i = it->second.begin(); i != it->second.end(); ++i) {
-			cout << *i << ' ';
+			// cout << *i << ' ';
 		}
-		cout << endl;
+		// cout << endl;
 	}	
-	cout << endl;*/
+	// cout << endl;*/
 	map<DFS_NODE, DFS_NODE> parent_map;
 
 	for (map<string, vector<string>>::iterator it = proc_adj_list_.begin(); 
@@ -398,8 +398,8 @@ void SimpleValidator::CheckForCyclicCalls() {
 					std::cout << mapIter->first << " " << mapIter->second << "\n";
 				}
 
-				cout << "NODE: " << node << endl;
-				cout << "Current NOde: " << curr_node << endl;*/
+				// cout << "NODE: " << node << endl;
+				// cout << "Current NOde: " << curr_node << endl;*/
 				cycleDetected = true;
 				break;
 			}

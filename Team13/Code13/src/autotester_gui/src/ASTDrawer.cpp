@@ -14,7 +14,7 @@ void ASTDrawer::DrawAST() {
 	cout << "DRAWING" << endl;
 	for (NODE_LIST* node_list : *ast_gui_node_tree_) {
 		for (GUINode* gui_node : *node_list) {
-			cout << gui_node->node_->getData() << endl;
+			// cout << gui_node->node_->getData() << endl;
 			DrawASTNode(gui_node);
 			DrawASTLabel(gui_node);
 		}
