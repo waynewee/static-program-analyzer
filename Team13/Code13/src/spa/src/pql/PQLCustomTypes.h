@@ -17,6 +17,8 @@ using namespace std;
 #define UNIT_TESTING false
 // Activates optimized evaluator
 #define OPTIMIZED_EVALUATION true
+// Actives timer
+#define DEBUG_TIMER true
 
 #define TYPE_COND_FOLLOWS "Follows"
 #define TYPE_COND_FOLLOWS_T "FollowsT"
