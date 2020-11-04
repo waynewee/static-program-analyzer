@@ -479,7 +479,7 @@ QueryResult PQLOptimizedEvaluator::SetResult(bool is_boolean_output, string bool
 
 bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MAP* synonyms_map, STRING_INTEGER_MAP* occurrence_count) {
 	if (DEBUG) {
-		cout << "PQLOptimizedEvaluator - ParseClauses: Such that and Pattern" << endl;
+		cout << "PQLOptimizedEvaluator - ParseClauses" << endl;
 	}
 
 	STRINGPAIR_SET with_map = query_info.GetWithMap();
@@ -555,8 +555,8 @@ bool PQLOptimizedEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGL
 		STRINGLIST_LIST all_params = (*f).second;
 
 		for (STRING_LIST p : all_params) {
-			if (p[0].compare(p[1]) == 0 && !IsUnderscore(p[0]) && f_call.compare(TYPE_COND_NEXT_T) != 0) {
-				// same parameter & not _ & not Next*
+			if (p[0].compare(p[1]) == 0 && !IsUnderscore(p[0]) && f_call.compare(TYPE_COND_NEXT_T) != 0 && f_call.compare(TYPE_COND_AFFECTS) != 0 && f_call.compare(TYPE_COND_AFFECTS_T) != 0) {
+				// same parameter & not _ & not Next* & not Affects & not Affects*
 				if (DEBUG) {
 					cout << "PQLOptimizedEvaluator - Evaluating such that clauses: Same parameters." << endl;
 				}
