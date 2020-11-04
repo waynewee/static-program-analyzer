@@ -117,6 +117,9 @@ bool StatementTable::IsAssignStmt(STMT_IDX s) {
 bool StatementTable::IsCallStmt(STMT_IDX s) {
     return stmt_data_[_CALL_].find(s) != stmt_data_[_CALL_].end();
 }
+bool StatementTable::IsReadStmt(STMT_IDX s) {
+    return stmt_data_[_READ_].find(s) != stmt_data_[_READ_].end();
+}
 
 VAR_NAME_SET VariableTable::GetAll() {
     return data_;
