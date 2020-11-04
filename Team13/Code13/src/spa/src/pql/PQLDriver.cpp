@@ -6,7 +6,11 @@
 #include "PQLOptimizedEvaluator.h"
 #include "QueryInfo.h"
 #include "QueryResult.h"
+
 #include <iostream>
+#include <chrono> 
+
+using namespace std::chrono;
 
 STRING_SET PQLDriver::Query(string query_string) {
 	if (DEBUG) {
@@ -21,8 +25,15 @@ STRING_SET PQLDriver::Query(string query_string) {
 	if (DEBUG) {
 		cout << "Query: " << query_string << endl;
 	}
+
+	auto start = high_resolution_clock::now();
+
 	QueryInfo parsed_info = parser.Parse(query_string);
 	QueryResult result = QueryResult();
+
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<milliseconds>(stop - start);
+	cout << "Time taken for PQLParser = " << duration.count() << "ms" << endl;
 
 	if (!parsed_info.IsQueryInfoValid()) {
 		// Query invalid - get false result: bool/empty
@@ -47,6 +58,8 @@ STRING_SET PQLDriver::Query(string query_string) {
 			parsed_info.PrintWithMap();
 		}
 
+		start = high_resolution_clock::now();
+
 		// Toggle optimization switch
 		if (OPTIMIZED_EVALUATION) {
 			if (DEBUG) {
@@ -63,10 +76,21 @@ STRING_SET PQLDriver::Query(string query_string) {
 			result = PQLEvaluator().Evaluate(parsed_info);
 		}
 
+		stop = high_resolution_clock::now();
+		duration = duration_cast<milliseconds>(stop - start);
+		cout << "Time taken for PQLEvaluator = " << duration.count() << "ms" << endl;
+
 		// Clear PKB's cache
 		PKB().ClearCache();
 	}
 
+	start = high_resolution_clock::now();
+
 	final_result = projector.Project(result);
+
+	stop = high_resolution_clock::now();
+	duration = duration_cast<milliseconds>(stop - start);
+	cout << "Time taken for PQLProjector = " << duration.count() << "ms" << endl;
+
 	return final_result;
 }
