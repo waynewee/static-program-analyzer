@@ -31,6 +31,7 @@ public:
 	STRINGLIST_SET ConvertSet(PROC_VAR_PAIR_LIST result_set);
 	STRINGLIST_SET ConvertSet(PROC_PROC_PAIR_LIST result_set);
 
+	int GetSimilarClause(string to_be_added_function, string existing_function);
 	INTEGER_LIST GetOutputSynonyms(STRING_LIST synonyms, STRING_LIST output_list);
 	STRING_SET GetIntersectResult(STRING_SET val1, STRING_SET val2);
 	STRING_SET GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2, int pos_to_check);
