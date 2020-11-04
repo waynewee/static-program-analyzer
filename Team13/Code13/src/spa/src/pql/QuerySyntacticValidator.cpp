@@ -305,7 +305,7 @@ bool QuerySyntacticValidator::ValidatePatternClause(string token, STRING_STRING_
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
 
-	if (!IsValidRelRefArgument(first_arg)) {
+	if (!IsValidEntRef(first_arg)) {
 		result = false;
 		return result;
 	}
@@ -313,6 +313,12 @@ bool QuerySyntacticValidator::ValidatePatternClause(string token, STRING_STRING_
 	string pattern_type_token_type = "none";
 	if (declared_var_names.count(pattern_type_token) != 0) {
 		pattern_type_token_type = declared_var_names.at(pattern_type_token);
+	}
+
+	if (!IsExpressionSpec(second_arg)) {
+		// syntax error in expression spec.
+		result = false;
+		return result;
 	}
 
 	if (pattern_type_token_type.compare(TYPE_DESIGN_ENTITY_IF) == 0 || pattern_type_token_type.compare(TYPE_DESIGN_ENTITY_WHILE) == 0) {
@@ -445,6 +451,132 @@ bool QuerySyntacticValidator::IsRef(string token) {
 		// cout << "YES FIRST ARG IS SYNONYM" << endl;
 		result = true;
 		return result;
+	}
+	return result;
+}
+
+bool QuerySyntacticValidator::IsExpr(string token) {
+	bool result = true;
+	string expression_token = token;
+
+	int open_bracket_count = 0;
+	bool prev_was_operator = false;
+	bool prev_was_open_bracket = false;
+	bool prev_is_term = false;
+	bool prev_is_whitespace = false;
+
+	if (IsOperator(expression_token.front()) || IsOperator(expression_token.back())) {
+		result = false;
+		return result;
+	}
+
+	for (char const& c : expression_token) {
+		if (c == ' ') {
+			prev_is_whitespace = true;
+			continue;
+		}
+		if (c == '(') {
+			if (prev_is_term) {
+				result = false;
+				return result;
+			}
+			open_bracket_count++;
+			prev_was_open_bracket = true;
+			prev_is_term = false;
+			prev_is_whitespace = false;
+			continue;
+		}
+		else if (c == ')') {
+			if (open_bracket_count <= 0 || prev_was_operator) {
+				result = false;
+				return result;
+			}
+			prev_is_term = false;
+			prev_is_whitespace = false;
+			open_bracket_count--;
+		}
+		else if (IsOperator(c)) {
+			if (prev_was_operator || prev_was_open_bracket) {
+				result = false;
+				return result;
+			}
+			prev_was_operator = true;
+			prev_is_term = false;
+			prev_is_whitespace = false;
+			continue;
+		}
+		else if (!isalpha(c) && !isdigit(c)) {
+			result = false;
+			return result;
+		}
+		else if (isalpha(c) || isdigit(c)) {
+			if (prev_is_whitespace && prev_is_term) {
+				// to catch like "10 10"
+				result = false;
+				return result;
+			}
+			else {
+				prev_is_term = true;
+				prev_is_whitespace = false;
+			}
+		}
+		prev_was_operator = false;
+		prev_was_open_bracket = false;
+	}
+
+	if (prev_was_operator || prev_was_open_bracket) {
+		result = false;
+		return result;
+	}
+	if (open_bracket_count != 0) {
+		result = false;
+		return result;
+	}
+	return result;
+}
+
+bool QuerySyntacticValidator::IsOperator(char c) {
+	bool result = false;
+
+	switch (c) {
+	case '+':
+		result = true;
+	case '/':
+		result = true;
+	case '-':
+		result = true;
+	case '%':
+		result = true;
+	case '*':
+		result = true;
+	}
+
+	return result;
+}
+
+bool QuerySyntacticValidator::IsExpressionSpec(string token) {
+	bool result = false;
+	string temp_token = token;
+	if (temp_token.compare("_") == 0) {
+		result = true;
+		return result;
+	}
+	if (temp_token.front() == '\"' && temp_token.back() == '\"') {
+		temp_token = temp_token.substr(1, temp_token.length() - 2);
+		if (IsExpr(temp_token)) {
+			result = true;
+			return result;
+		}
+	}
+	if (temp_token.front() == '_' && temp_token.back() == '_') {
+		temp_token = temp_token.substr(1, temp_token.length() - 2);
+		if (temp_token.front() == '\"' && temp_token.back() == '\"') {
+			temp_token = temp_token.substr(1, temp_token.length() - 2);
+			if (IsExpr(temp_token)) {
+				result = true;
+				return result;
+			}
+		}
 	}
 	return result;
 }
