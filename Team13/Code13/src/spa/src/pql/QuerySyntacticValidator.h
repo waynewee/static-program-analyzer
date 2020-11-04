@@ -31,5 +31,9 @@ public:
 
 	bool IsAttrRef(string token);
 	bool IsRef(string token);
+
+	bool IsExpr(string token);
+	bool IsOperator(char c);
+	bool IsExpressionSpec(string token);
 };
 

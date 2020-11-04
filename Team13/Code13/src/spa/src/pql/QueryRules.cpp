@@ -1716,6 +1716,10 @@ bool QueryRules::IsExpr(string token) {
 			continue;
 		}
 		if (c == '(') {
+			if (prev_is_term) {
+				result = false;
+				return result;
+			}
 			open_bracket_count++;
 			prev_was_open_bracket = true;
 			prev_is_term = false;
