@@ -47,14 +47,15 @@ public:
 	// STRINGLIST_SET GetCombinedResult(STRINGLIST_SET large_values, STRINGLIST_SET small_values, INTEGERLIST_LIST indexes);
 	// STRINGLIST_SET GetCombinedResult(STRINGLIST_SET output_result, STRINGLIST_SET result, int pos_to_compare);
 	STRINGLIST_SET GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list, STRING_STRING_MAP entity_map);
-	STRINGLIST_SET GetNoDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values);
-	STRINGLIST_SET GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, INTEGER_LIST pos_to_add, INTEGERPAIR_SET to_check);
+	STRINGLIST_SET GetNoDependencyProduct(STRINGLIST_SET results, STRING_SET values, string type = "", string attr = "");
+	STRINGLIST_SET GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, INTEGER_LIST pos_to_add, INTEGERPAIR_SET to_check, string type = "", string attr = "");
 
 	STRING_SET GetIntersectResult(STRING_SET val1, STRING_SET val2);
 	STRING_SET GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2, int pos_to_check);
 	// STRINGLIST_SET GetIntersectResult(STRINGLIST_SET val1, STRINGLIST_SET val2);
 
 	STRINGLIST_SET GetAlternateResult(string values, string type);
+	STRINGLIST_SET GetAlternateResult(STRING_LIST values, int pos_to_check, string type);
 	STRINGLIST_SET GetAlternateResult(STRINGLIST_SET values, int pos_to_check, string type);
 	// STRING_SET GetAlternateResult(STRINGLIST_SET values, string type);
 	// STRINGLIST_SET GetAlternateOutputResult(STRING_SET values, string type);
