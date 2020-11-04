@@ -40,6 +40,7 @@ void TestWrapper::parse(string filename) {
 	string file_contents = file_reader.ReadFile();
 	FrontendWrapper frontend_wrapper(file_contents);
 
+
 	TNode* ast_root = frontend_wrapper.GetAST();
 	CFG* cfg = frontend_wrapper.GetCFG(ast_root);
 

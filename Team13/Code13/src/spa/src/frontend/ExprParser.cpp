@@ -19,6 +19,7 @@ ExprParser::ExprParser(TOKEN_LIST expr_list) {
 	ExprValidator::Validate(expr_list);
 
 	token_list_ = expr_list;
+
 }
 
 TNode* ExprParser::Parse() {
