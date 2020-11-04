@@ -57,16 +57,13 @@ TNode* ASTBuilder::BuildStmtNode() {
 		case TokenType::STMT_TYPE::_while:
 			return ASTBuilder::BuildWhileNode();
 		case TokenType::STMT_TYPE::_procedure:
-			cout << "problem1" << endl;
 			throw "Cannot define a procedure within a procedure";
 		default:
-			cout << "problem2" << endl;
 			throw "Validation error thrown in ASTBuilder at line " + statement_index_;
 		}
 	case TokenType::TOKEN_TYPE::var: // For assignment statements
 		return ASTBuilder::BuildAssignNode(first_token);
 	default:
-		cout << "problem3" << endl;
 		throw "Validation error thrown in ASTBuilder for the token: " + first_token.GetValue();
 	}
 }
