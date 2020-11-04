@@ -12,6 +12,7 @@ private:
     void AddAllInverseNext();
     void InsertCache(CFG_ADJACENCY_LIST &table, STMT_STMT_PAIR_LIST &edges, STMT_IDX_SET *result, STMT_IDX s);
     void InsertCache(CFG_ADJACENCY_LIST &table, STMT_IDX_SET *result, STMT_IDX s);
+    STMT_STMT_PAIR_LIST GetAllPairsWithSameSynonyms(CFG_ADJACENCY_LIST& adjacency_list);
 public:
     void SetCFG(CFG& cfg);
     CFG& GetCFG();
@@ -24,7 +25,11 @@ public:
     bool IsNextStar(STMT_IDX s1, STMT_IDX s2);
 
     STMT_STMT_PAIR_LIST GetAllNext();
+    STMT_STMT_PAIR_LIST GetAllNextWithSameSynonyms();
     STMT_STMT_PAIR_LIST GetAllNextStar();
+    STMT_STMT_PAIR_LIST GetAllNextStarWithSameSynonyms();
+
+    void FillNextStarTable();
     void ClearCache();
 
 };

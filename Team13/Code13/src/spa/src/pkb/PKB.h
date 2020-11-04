@@ -46,10 +46,12 @@ public:
         STMT_IDX_SET GetAffects(STMT_IDX a);
         STMT_IDX_SET GetInverseAffects(STMT_IDX a);
         STMT_STMT_PAIR_LIST GetAllAffects();
+        STMT_STMT_PAIR_LIST GetAllAffectsWithSameSynonyms();
 
         STMT_IDX_SET GetAffectsStar(STMT_IDX a);
         STMT_IDX_SET GetInverseAffectsStar(STMT_IDX a);
         STMT_STMT_PAIR_LIST GetAllAffectsStar();
+        STMT_STMT_PAIR_LIST GetAllAffectsStarWithSameSynonyms();
 
         void ClearCache();
 
@@ -58,6 +60,9 @@ public:
         void RecursiveGetInverseAffects(STMT_IDX node, VAR_NAME rhs_var, INVERSE_AFFECTS_VISITED_SET& visited, STMT_IDX_SET& result);
         STMT_IDX_SET GetAllAffectsKeys();
         STMT_IDX_SET GetAllInverseAffectsKeys();
+        void FillAffectsTable();
+        void FillAffectsStarTable();
+        STMT_STMT_PAIR_LIST GetAllPairsWithSameSynonyms(STMT_STMT_RELATION_TABLE table);
     };
 
     void SetASTRoot(TNode* root);
