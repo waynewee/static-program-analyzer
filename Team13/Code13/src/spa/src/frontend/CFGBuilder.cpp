@@ -70,12 +70,6 @@ void CFGBuilder::TraverseAST(vector<TNode*> stmt_list) {
 
 
 						GetLeafNodes(leaf_nodes, child_last);
-						cout << leaf_nodes->size() << endl;
-						for (TNode* leaf_node : *leaf_nodes) {
-							cout << leaf_node->getData();
-						}
-
-						cout << endl;
 
 						for (TNode* leaf : *leaf_nodes) {
 							cfg_->AddEdge(leaf->GetStmtIndex(), node->GetStmtIndex());
@@ -151,7 +145,7 @@ vector<TNode*> CFGBuilder::FilterStmtsAndStmtLists(vector<TNode*>stmt_list) {
 }
 
 void CFGBuilder::GetLeafNodes(vector<TNode*>* leaf_nodes, TNode* root_node) {
-	cout << root_node->getData() << endl;
+	//cout << root_node->getData() << endl;
 	if (root_node->GetNodeType() == TNode::NODE_TYPE::whileStmt 
 	|| FilterStmtsAndStmtLists(root_node->GetChildrenVector()).size() == 0) {
 		leaf_nodes->push_back(root_node);
@@ -165,10 +159,6 @@ void CFGBuilder::GetLeafNodes(vector<TNode*>* leaf_nodes, TNode* root_node) {
 		for (TNode* stmt : filtered_nodes) {
 
 			vector<TNode*> children = stmt->GetChildrenVector();
-
-			for (TNode* child : children) {
-				cout << child->getData() << endl;
-			}
 
 			TNode* last_child = children.at(children.size() - 1);
 
