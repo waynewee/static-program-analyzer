@@ -4,7 +4,7 @@
 #include "pkb/PKB.h"
 
 QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - Evaluate" << endl;
 	}
 
@@ -30,7 +30,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	bool has_parsed = true;
 	
 	if (!ParseClauses(query_info, &constraints)) {
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLEvaluator - parsing with clause: failed." << endl;
 		}
 
@@ -38,7 +38,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 	}
 	
 	if (!ParseClauses(query_info, &synonyms_map)) {
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLEvaluator - parsing such that and pattern clause: failed." << endl;
 		}
 
@@ -49,21 +49,21 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 		return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
 	}
 
-	if (DEBUG_PRINTING) {
+	if (PQL_DEBUG_PRINTING) {
 		cout << "constraints after parsing with clause" << endl;
 		Print(constraints);
 	}
 
 	// Evaluate constraints
 	if (!EvaluateConstraints(entity_map, constraints, &results_map)) {
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLEvaluator - Evaluating with clauses: Constraint not met." << endl;
 		}
 
 		return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
 	}
 
-	if (DEBUG_PRINTING) {
+	if (PQL_DEBUG_PRINTING) {
 		cout << "Results map after evaluating constraints" << endl;
 		Print(results_map);
 	}
@@ -147,14 +147,14 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 
 			if (c_value.empty()) {
 				// error
-				if (DEBUG) {
+				if (PQL_DEBUG) {
 					cout << "PQLEvaluator - Evaluating synonyms_map: Empty results." << endl;
 				}
 
 				return SetResult(is_boolean_output, "FALSE", *(new STRINGLIST_SET()));
 			}
 
-			if (DEBUG_PRINTING) {
+			if (PQL_DEBUG_PRINTING) {
 				cout << "Results after evaluating 1 clause" << endl;
 				cout << "KEY " << endl;
 				Print(c_key);
@@ -169,7 +169,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			}
 		}
 
-		if (DEBUG_PRINTING) {
+		if (PQL_DEBUG_PRINTING) {
 			cout << "Results after evaluating 1 group of clauses" << endl;
 			Print(tmp_map);
 		}
@@ -187,13 +187,13 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			}
 		}
 
-		if (DEBUG_PRINTING) {
+		if (PQL_DEBUG_PRINTING) {
 			cout << "Results map after insertin 1 group's results" << endl;
 			Print(results_map);
 		}
 	}
 
-	if (DEBUG_PRINTING) {
+	if (PQL_DEBUG_PRINTING) {
 		cout << "Results map after evaluating clauses" << endl;
 		Print(results_map);
 	}
@@ -229,7 +229,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			}
 		}
 
-		if (DEBUG_PRINTING) {
+		if (PQL_DEBUG_PRINTING) {
 			cout << "Final results map after extracting dependent output synonyms " << endl;
 			Print(final_results_map);
 		}
@@ -252,7 +252,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 
 					if (value.empty()) {
 						// error
-						if (DEBUG) {
+						if (PQL_DEBUG) {
 							cout << "PQLEvaluator - Extracting independent output synonyms: Empty results." << endl;
 						}
 
@@ -277,7 +277,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 			}
 		}
 	
-		if (DEBUG_PRINTING) {
+		if (PQL_DEBUG_PRINTING) {
 			cout << "Final results map after extracting independent output synonyms " << endl;
 			Print(final_results_map);
 		}
@@ -286,7 +286,7 @@ QueryResult PQLEvaluator::Evaluate(QueryInfo query_info) {
 		final_result_set = GetCartesianProduct(final_results_map, output_list, entity_map);
 	}
 
-	if (DEBUG_PRINTING) {
+	if (PQL_DEBUG_PRINTING) {
 		cout << "final result set" << endl;
 		Print(final_result_set);
 	}
@@ -357,7 +357,7 @@ void PQLEvaluator::Print(STRINGLIST_SET to_print) {
 }
 
 void PQLEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP* results_map) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - AddResult" << endl;
 	}
 
@@ -404,7 +404,7 @@ void PQLEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_S
 			}
 
 			if (tmp_result.empty()) {
-				if (DEBUG) {
+				if (PQL_DEBUG) {
 					cout << "PQLEvaluator: AddResult: Empty result." << endl;
 				}
 
@@ -423,7 +423,7 @@ void PQLEvaluator::AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_S
 }
 
 QueryResult PQLEvaluator::SetResult(bool is_boolean_output, string bool_result, STRINGLIST_SET result) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - SetResult" << endl;
 	}
 
@@ -444,7 +444,7 @@ QueryResult PQLEvaluator::SetResult(bool is_boolean_output, string bool_result, 
 }
 
 bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraints) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - ParseClauses: WITH" << endl;
 	}
 
@@ -453,7 +453,7 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraint
 		string lhs = clause->first;
 		string rhs = clause->second;
 
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "LHS: " << lhs << ", RHS: " << rhs << endl;
 		}
 
@@ -477,7 +477,7 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraint
 				// or synonym=INT or synonym=STRING
 				if (constraints->insert(clause).second == 0) {
 					// error
-					if (DEBUG) {
+					if (PQL_DEBUG) {
 						cout << "PQLEvaluator - Parsing clauses: Error inserting constraints." << endl;
 					}
 					return false;
@@ -491,7 +491,7 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGPAIR_SET* constraint
 }
 
 bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MAP* synonyms_map) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - ParseClauses: Such that and Pattern" << endl;
 	}
 
@@ -506,7 +506,7 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MA
 		for (STRING_LIST p : all_params) {
 			if (p[0].compare(p[1]) == 0 && !IsUnderscore(p[0]) && f_call.compare(TYPE_COND_NEXT_T) != 0) {
 				// same parameter & not _ & not Next*
-				if (DEBUG) {
+				if (PQL_DEBUG) {
 					cout << "PQLEvaluator - Evaluating such that clauses: Same parameters." << endl;
 				}
 				return false;
@@ -519,7 +519,7 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MA
 
 			if (clause->empty()) {
 				// error
-				if (DEBUG) {
+				if (PQL_DEBUG) {
 					cout << "PQLEvaluator - Parsing such that clauses: Error creating value for such that clauses." << endl;
 				}
 
@@ -532,7 +532,7 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MA
 				string param2 = IsVar(clause->at(2)) ? "" : clause->at(2);
 
 				if (!EvaluateNoSynonymSet(f_call, param1, param2)) {
-					if (DEBUG) {
+					if (PQL_DEBUG) {
 						cout << "PQLEvaluator - Evaluating no synonym clauses: False clause." << endl;
 					}
 
@@ -563,7 +563,7 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MA
 				}
 				else {
 					// error
-					if (DEBUG) {
+					if (PQL_DEBUG) {
 						cout << "PQLEvaluator - Parsing such that clauses: Invalid parameters." << endl;
 					}
 
@@ -580,7 +580,7 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MA
 					value.insert(clause);
 					if (synonyms_map->insert({ key, value }).second == 0) {
 						// error
-						if (DEBUG) {
+						if (PQL_DEBUG) {
 							cout << "PQLEvaluator - Parsing such that clauses: Error inserting into synonyms_map." << endl;
 						}
 						return false;
@@ -612,7 +612,7 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MA
 
 			if (clause->empty()) {
 				// error
-				if (DEBUG) {
+				if (PQL_DEBUG) {
 					cout << "PQLEvaluator - Parsing clauses: Error creating value for pattern clauses." << endl;
 				}
 
@@ -645,7 +645,7 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MA
 				value.insert(clause);
 				if (synonyms_map->insert({ key, value }).second == 0) {
 					// error
-					if (DEBUG) {
+					if (PQL_DEBUG) {
 						cout << "PQLEvaluator - Parsing pattern clauses: Error inserting into synonyms_map." << endl;
 					}
 					return false;
@@ -658,7 +658,7 @@ bool PQLEvaluator::ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MA
 }
 
 STRING_LIST* PQLEvaluator::GetRelatedSynonyms(string synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetRelatedSynonyms" << endl;
 	}
 
@@ -677,7 +677,7 @@ STRING_LIST* PQLEvaluator::GetRelatedSynonyms(string synonym, STRINGLIST_STRINGL
 }
 
 STRING_LIST* PQLEvaluator::GetRelatedSynonyms(STRING_LIST synonyms, STRINGLIST_STRINGLISTSET_MAP synonyms_map) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetRelatedSynonyms" << endl;
 	}
 	
@@ -698,7 +698,7 @@ STRING_LIST* PQLEvaluator::GetRelatedSynonyms(STRING_LIST synonyms, STRINGLIST_S
 }
 
 STRING_SET* PQLEvaluator::GetRelatedSynonyms(string synonym, STRINGSET_STRINGLISTSET_MAP synonyms_map) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetRelatedSynonyms" << endl;
 	}
 
@@ -715,7 +715,7 @@ STRING_SET* PQLEvaluator::GetRelatedSynonyms(string synonym, STRINGSET_STRINGLIS
 }
 
 STRING_SET* PQLEvaluator::GetRelatedSynonyms(STRING_SET synonyms, STRINGSET_STRINGLISTSET_MAP* synonyms_map) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetRelatedSynonyms" << endl;
 	}
 
@@ -754,7 +754,7 @@ STRING_SET* PQLEvaluator::GetRelatedSynonyms(STRING_SET synonyms, STRINGSET_STRI
 }
 
 bool PQLEvaluator::EvaluateNoSynonymSet(string f_call, string param1, string param2) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - EvaluateNoSynonymSet" << endl;
 		cout << "fcall: " << f_call << "; param1: " << param1 << "; param2: " << param2 << endl;
 	}
@@ -764,7 +764,7 @@ bool PQLEvaluator::EvaluateNoSynonymSet(string f_call, string param1, string par
 	CFGManager cfgm = pkb.GetCFGManager();
 	PKB::AffectsManager am = pkb.GetAffectsManager();
 
-	if (UNIT_TESTING) {
+	if (PQL_UNIT_TESTING) {
 		cout << "PQLEvaluator - EvaluateNoSynonymSet - UNIT TESTING" << endl;
 		return true;
 	}
@@ -813,7 +813,7 @@ bool PQLEvaluator::EvaluateNoSynonymSet(string f_call, string param1, string par
 	}
 	else {
 		// error
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLEvaluator - EvaluateNoSynonymSet: No such relref." << endl;
 		}
 
@@ -822,7 +822,7 @@ bool PQLEvaluator::EvaluateNoSynonymSet(string f_call, string param1, string par
 }
 
 STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param1, string param2, string type) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - EvaluatePatternCall (2 params to pass)" << endl;
 		cout << "fcall: " << f_call << "; param: " << param1 << "; param2: " << param2 << "; type: " << type << endl;
 	}
@@ -837,7 +837,7 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param1, s
 		}
 		else {
 			// error
-			if (DEBUG) {
+			if (PQL_DEBUG) {
 				cout << "PQLEvaluator - EvaluatePatternCall: No such pattern type." << endl;
 			}
 
@@ -856,7 +856,7 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param1, s
 		}
 		else {
 			// error
-			if (DEBUG) {
+			if (PQL_DEBUG) {
 				cout << "PQLEvaluator - EvaluatePatternCall: No such pattern type." << endl;
 			}
 
@@ -865,21 +865,21 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param1, s
 	}
 	else {
 		// error
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLEvaluator - EvaluatePatternCall: No such pattern call." << endl;
 		}
 
 		return {};
 	}
 
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - EvaluatePatternCall: Result clause's size = " << result.size() << endl;
 	}
 	return result;
 }
 
 STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param, string type) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - EvaluatePatternCall (1 param to pass)" << endl;
 		cout << "fcall: " << f_call << "; param: " << param << "; type: " << type << endl;
 	}
@@ -894,7 +894,7 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param, st
 		}
 		else {
 			// error 
-			if (DEBUG) {
+			if (PQL_DEBUG) {
 				cout << "PQLEvaluator - EvaluatePatternCall: No such pattern type." << endl;
 			}
 
@@ -913,7 +913,7 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param, st
 		}
 		else {
 			// error 
-			if (DEBUG) {
+			if (PQL_DEBUG) {
 				cout << "PQLEvaluator - EvaluatePatternCall: No such pattern type." << endl;
 			}
 
@@ -922,21 +922,21 @@ STRINGLIST_SET PQLEvaluator::EvaluatePatternCall(string f_call, string param, st
 	}
 	else {
 		// error
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLEvaluator - EvaluatePatternCall: No such pattern call." << endl;
 		}
 
 		return {};
 	}
 
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - EvaluatePatternCall: Result clause's size = " << result.size() << endl;
 	}
 	return result;
 }
 
 bool PQLEvaluator::EvaluateConstraints(STRING_STRING_MAP entity_map, STRINGPAIR_SET constraints, STRINGLIST_STRINGLISTSET_MAP* results_map) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - EvaluateConstraints" << endl;
 	}
 
@@ -1087,7 +1087,7 @@ bool PQLEvaluator::EvaluateConstraints(STRING_STRING_MAP entity_map, STRINGPAIR_
 }
 
 STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - EvaluateOneSynonymSet" << endl;
 		cout << "fcall: " << f_call << "; param: " << param << endl;
 	}
@@ -1142,19 +1142,19 @@ STRINGLIST_SET PQLEvaluator::EvaluateOneSynonymSet(string f_call, string param) 
 	}
 	else {
 		// error
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLEvaluator - EvaluateOneSynonymSet: No such relref." << endl;
 		}
 		return {};
 	}
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - EvaluateOneSynonymSet: Result clause's size = " << result.size() << endl;
 	}
 	return result;
 }
 
 STRINGLIST_SET PQLEvaluator::EvaluateInverseOneSynonymSet(string f_call, string param) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - EvaluateInverseOneSynonymSet" << endl;
 		cout << "fcall: " << f_call << "; param: " << param << endl;
 	}
@@ -1209,19 +1209,19 @@ STRINGLIST_SET PQLEvaluator::EvaluateInverseOneSynonymSet(string f_call, string 
 	}
 	else {
 		// error
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLEvaluator - EvaluateInverseOneSynonymSet: No such relref." << endl;
 		}
 		return {};
 	}
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - EvaluateInverseOneSynonymSet: Result clause's size = " << result.size() << endl;
 	}
 	return result;
 }
 
 STRINGLIST_SET PQLEvaluator::EvaluateTwoSynonymSet(string f_call) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - EvaluateTwoSynonymSet" << endl;
 		cout << "fcall: " << f_call << endl;
 	}
@@ -1232,7 +1232,7 @@ STRINGLIST_SET PQLEvaluator::EvaluateTwoSynonymSet(string f_call) {
 	PKB::AffectsManager am = pkb.GetAffectsManager();
 	STRINGLIST_SET result = *(new STRINGLIST_SET());
 	
-	if (UNIT_TESTING) {
+	if (PQL_UNIT_TESTING) {
 		cout << "PQLEvaluator - EvaluateTwoSynonymSet - UNIT TESTING" << endl;
 		if (f_call.compare(TYPE_COND_USES_S) == 0 || f_call.compare(TYPE_COND_MODIFIES_S) == 0) {
 			STRING_LIST* val1 = new STRING_LIST();
@@ -1311,20 +1311,20 @@ STRINGLIST_SET PQLEvaluator::EvaluateTwoSynonymSet(string f_call) {
 	} 
 	else {
 		// error
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLEvaluator - EvaluateTwoSynonymSet: No such relref." << endl;
 		}
 		return {};
 	}
 
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - EvaluateTwoSynonymSet: Result clause's size = " << result.size() << endl;
 	}
 	return result;
 }
 
 STRINGLIST_SET PQLEvaluator::EvaluateAllCall(string output_var_type) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - EvaluateAllCall" << endl;
 		cout << "output_var_type: " << output_var_type << endl;
 	}
@@ -1365,20 +1365,20 @@ STRINGLIST_SET PQLEvaluator::EvaluateAllCall(string output_var_type) {
 	}
 	else {
 		// error
-		if (DEBUG) {
+		if (PQL_DEBUG) {
 			cout << "PQLEvaluator - EvaluateAllCall: No such relref." << endl;
 		}
 		return {};
 	}
 
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - EvaluateAllCall: Result clause's size = " << result.size() << endl;
 	}
 	return result;
 }
 
 STRING_SET PQLEvaluator::ConvertSet(STRINGLIST_SET result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - ConvertSet" << endl;
 	}
 
@@ -1393,7 +1393,7 @@ STRING_SET PQLEvaluator::ConvertSet(STRINGLIST_SET result_set) {
 }
 
 STRINGLIST_SET PQLEvaluator::ConvertSet(STRING_SET result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - ConvertSet" << endl;
 	}
 
@@ -1411,7 +1411,7 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(STRING_SET result_set) {
 }
 
 STRINGLIST_SET PQLEvaluator::ConvertSet(INTEGER_SET result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - ConvertSet" << endl;
 	}
 
@@ -1430,7 +1430,7 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(INTEGER_SET result_set) {
 }
 
 STRINGLIST_SET PQLEvaluator::ConvertSet(DOUBLE_SET result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - ConvertSet" << endl;
 	}
 
@@ -1451,7 +1451,7 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(DOUBLE_SET result_set) {
 }
 
 STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_STMT_PAIR_LIST result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - ConvertSet" << endl;
 	}
 
@@ -1474,7 +1474,7 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_STMT_PAIR_LIST result_set) {
 }
 
 STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_VAR_PAIR_LIST result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - ConvertSet" << endl;
 	}
 
@@ -1497,7 +1497,7 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(STMT_VAR_PAIR_LIST result_set) {
 }
 
 STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_VAR_PAIR_LIST result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - ConvertSet" << endl;
 	}
 
@@ -1520,7 +1520,7 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_VAR_PAIR_LIST result_set) {
 }
 
 STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_PROC_PAIR_LIST result_set) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - ConvertSet" << endl;
 	}
 
@@ -1543,7 +1543,7 @@ STRINGLIST_SET PQLEvaluator::ConvertSet(PROC_PROC_PAIR_LIST result_set) {
 }
 
 STRING_SET PQLEvaluator::GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2, int pos_to_check) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetIntersectResult" << endl;
 	}
 
@@ -1561,7 +1561,7 @@ STRING_SET PQLEvaluator::GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2
 }
 
 STRING_SET PQLEvaluator::GetIntersectResult(STRING_SET val1, STRING_SET val2) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetIntersectResult" << endl;
 	}
 
@@ -1576,7 +1576,7 @@ STRING_SET PQLEvaluator::GetIntersectResult(STRING_SET val1, STRING_SET val2) {
 }
 
 STRINGLIST_SET PQLEvaluator::GetIntersectResult(STRINGLIST_SET val1, STRINGLIST_SET val2) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetIntersectResult" << endl;
 	}
 
@@ -1594,7 +1594,7 @@ STRINGLIST_SET PQLEvaluator::GetIntersectResult(STRINGLIST_SET val1, STRINGLIST_
 }
 
 STRINGLIST_SET PQLEvaluator::GetAlternateResult(string values, string type) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetAlternateResult" << endl;
 	}
 
@@ -1640,7 +1640,7 @@ STRINGLIST_SET PQLEvaluator::GetAlternateResult(string values, string type) {
 }
 
 STRING_SET PQLEvaluator::GetAlternateResult(STRINGLIST_SET values, string type) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetAlternateResult" << endl;
 	}
 
@@ -1656,7 +1656,7 @@ STRING_SET PQLEvaluator::GetAlternateResult(STRINGLIST_SET values, string type) 
 }
 
 STRINGLIST_SET PQLEvaluator::GetAlternateOutputResult(STRING_SET values, string type) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetAlternateOutputResult" << endl;
 	}
 	RelationManager rm = PKB().GetRelationManager();
@@ -1682,7 +1682,7 @@ STRINGLIST_SET PQLEvaluator::GetAlternateOutputResult(STRING_SET values, string 
 }
 
 bool PQLEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, int pos_to_check) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - RemoveIrrelevant" << endl;
 	}
 
@@ -1712,7 +1712,7 @@ bool PQLEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_SET tmp, i
 }
 
 bool PQLEvaluator::RemoveIrrelevant(STRING_SET* value, STRINGLIST_SET tmp) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - RemoveIrrelevant" << endl;
 	}
 
@@ -1742,7 +1742,7 @@ bool PQLEvaluator::RemoveIrrelevant(STRING_SET* value, STRINGLIST_SET tmp) {
 }
 
 INTEGERPAIR_SET PQLEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, STRING_LIST small_keys) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - RemoveIrrelevant" << endl;
 	}
 
@@ -1766,7 +1766,7 @@ INTEGERPAIR_SET PQLEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, STR
 }
 
 int PQLEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, string synonym) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - RemoveIrrelevant" << endl;
 	}
 
@@ -1784,7 +1784,7 @@ int PQLEvaluator::GetCommonSynonymsIndex(STRING_LIST large_keys, string synonym)
 }
 
 STRING_SET PQLEvaluator::GetNewResult(STRINGLIST_SET value, int pos_to_check) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetNewResult" << endl;
 	}
 
@@ -1798,7 +1798,7 @@ STRING_SET PQLEvaluator::GetNewResult(STRINGLIST_SET value, int pos_to_check) {
 }
 
 STRINGLIST_SET PQLEvaluator::GetNewResult(STRINGLIST_SET value, INTEGER_LIST pos_to_check) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetNewResult" << endl;
 	}
 
@@ -1821,7 +1821,7 @@ STRINGLIST_SET PQLEvaluator::GetNewResult(STRINGLIST_SET value, INTEGER_LIST pos
 }
 
 STRINGLIST_SET PQLEvaluator::GetCombinedResult(STRINGLIST_SET large_values, STRINGLIST_SET small_values, INTEGERLIST_LIST indexes) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetNewResult" << endl;
 	}
 
@@ -1866,7 +1866,7 @@ STRINGLIST_SET PQLEvaluator::GetCombinedResult(STRINGLIST_SET large_values, STRI
 }
 
 STRINGLIST_SET PQLEvaluator::GetCombinedResult(STRINGLIST_SET output_result, STRINGLIST_SET result, int pos_to_compare) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetNewResult" << endl;
 	}
 
@@ -1899,7 +1899,7 @@ STRINGLIST_SET PQLEvaluator::GetCombinedResult(STRINGLIST_SET output_result, STR
 }
 
 STRINGLIST_SET PQLEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list, STRING_STRING_MAP entity_map) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetCartesianProduct" << endl;
 	}
 	
@@ -1962,7 +1962,7 @@ STRINGLIST_SET PQLEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP re
 }
 
 STRINGLIST_SET PQLEvaluator::GetDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values, int pos_to_add, INTEGERPAIR_SET to_check, string output_type, string output_attr) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetDependencyProduct" << endl;
 	}
 
@@ -2019,7 +2019,7 @@ STRINGLIST_SET PQLEvaluator::GetDependencyProduct(STRINGLIST_SET results, STRING
 }
 
 STRINGLIST_SET PQLEvaluator::GetNoDependencyProduct(STRINGLIST_SET results, STRINGLIST_SET values) {
-	if (DEBUG) {
+	if (PQL_DEBUG) {
 		cout << "PQLEvaluator - GetNoDependencyProduct" << endl;
 	}
 
