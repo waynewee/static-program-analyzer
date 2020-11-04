@@ -1,0 +1,160 @@
+1 - invalid declarations - design entity - caps first letter
+Assign a; While w; Calls c;
+Select a
+none
+5000
+2 - invalid declarations - design entity - uppercase
+WHILE w; IF ifs; VARIABLE v;
+Select w
+none
+5000
+3 - invalid declarations - design entity - mixed case
+AsSiGn a; callS c; prog_LIne pl;
+Select a
+none
+5000
+4 - invalid declarations - design entity - doesn't exist
+select a; parent p;
+Select a
+none
+5000
+5 - invalid declarations - missing comma
+assign a1 a2 a3; while w1 w2; variable v1 v2 v3 v4;
+Select a1
+none
+5000
+6 - invalid declarations - missing semicolon
+assign a
+Select a
+none
+5000
+7 - invalid declarations - invalid use of comma and semicolon
+assign a1;a2;a3, while w1;w2;w3,
+Select a1
+none
+5000
+8 - - invalid declarations - invalid use of comma and semicolon
+assign a1, a2; a3, while w1; w2
+Select w2
+none
+5000
+9 - invalid declarations - same synonyms within a declaration
+assign a1, a1; while w1, w1;
+Select a1
+none
+5000
+10 - invalid declarations - same synonyms across invalid declarations
+assign a1; while a1; variable a1; if ifs;
+Select ifs
+none
+5000
+11 - invalid declarations - invalid naming convention for synonym
+assign 123; while d*d; ifs a.a; print print3r!; read o-o;
+Select print3r!
+none
+5000
+12 - invalid select - lowercase - select
+
+select BOOLEAN
+none
+5000
+13 invalid select - uppercase - SELECT
+
+SELECT BOOLEAN
+none
+5000
+13 - invalid select - mixed case - SeLeCt
+
+SeLeCt BOOLEAN
+none
+5000
+14 - invalid select - invalid use of semicolon after statement
+assign a;
+Select a;
+none
+5000
+15 - invalid select - invalid use of symbols in between clauses: comma, semicolon, asterisk, etc.
+assign a; stmt s1; prog_line n;
+Select a such that Parent (s1, 2) , Follows ((s1, a)) , Uses (1*2, _) pattern a (_, _)
+none
+5000
+16 - invalid select - invalid use of 'and' between clauses - no 'and' before pattern
+assign a; stmt s1;
+Select a such that Parent (1, 2) and pattern a (_, _)
+none
+5000
+16 - invalid select - invalid use of 'and' between clauses - no 'and' before with
+assign a; stmt s1;
+Select a such that Modifies (s1, _) and Parent (1, 2) and with 10 = 10
+none
+5000
+17 - invalid select - invalid use of 'and' between clauses - no 'and' before such that
+assign a; stmt s1;
+Select a pattern a (_, _) and such that Parent (1, 2)
+none
+5000
+18 - invalid select - invalid use of 'and' between different clause-type
+assign a;
+Select a pattern a (_, _) and Parent (1, 2) and 10 = 10
+none
+5000
+19 - invalid select - invalid spacing - such that - no >1 space between 'such' and 'that'
+
+Select BOOLEAN such                         that Parent (1, 2)
+none
+5000
+20 - invalid select - invalid spacing - such that - no tabs between 'such' and 'that'
+
+Select BOOLEAN such             that Parent (1, 2)
+none
+5000
+21 - invalid select - invalid use of brackets
+
+Select BOOLEAN such that Parent (((((( 1 , 2)))))) and Follows ((1), (2))
+none
+5000
+22 - invalid select - uppercase - SUCH THAT
+
+Select BOOLEAN SUCH THAT Follows (1, 2)
+none
+5000
+23 - invalid select - mixed case - SuCh ThAt
+
+Select BOOLEAN SuCh ThAt Follows (1, 2)
+none
+5000
+24 - invalid select - caps first letter - Such That
+
+Select BOOLEAN Such That Follows (1, 2)
+none
+5000
+25 - invalid select - uppercase - PATTERN
+while w;
+Select w PATTERN w (_, _)
+none
+5000
+26 - invalid select - mixed case - pAttErN
+while w;
+Select w pAttErN w (_, _)
+none
+5000
+27 - invalid select - caps first letter - Pattern
+while w;
+Select w Pattern w (_, _)
+none
+5000
+28 - invalid select - uppercase - WITH
+
+Select BOOLEAN WITH 1 = 1
+none
+5000
+23 - invalid select - mixed case - wItH
+
+Select BOOLEAN wItH 1 = 1
+none
+5000
+24 - invalid select - caps first letter - With
+
+Select BOOLEAN With 1 = 1
+none
+5000

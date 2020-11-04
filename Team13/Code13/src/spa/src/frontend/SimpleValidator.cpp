@@ -24,8 +24,7 @@ bool SimpleValidator::IsValid(TOKEN_LIST token_list) {
 	token_list_ = token_list;
 	token_index_ = -1;
 	statement_index_ = 0;
-
-	if (token_list.size() == 0) {
+ 	if (token_list.size() == 0) {
 		throw "Program cannot be empty";
 	}
 
@@ -53,6 +52,7 @@ bool SimpleValidator::IsValid(TOKEN_LIST token_list) {
 }
 
 bool SimpleValidator::IsValidStmt() {
+	cout << endl << "Line " << statement_index_ + 1<< ": ";
 	Token first_token = SimpleValidator::GetNextToken();
 	statement_index_++;
 
@@ -195,7 +195,6 @@ bool SimpleValidator::IsValidAssignment(Token name_token) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Missing '='";
 	}
-
 	if (!SimpleValidator::IsValidExpression(GetExpressionTokens(_assign))) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid expression in assignment";
@@ -211,6 +210,7 @@ bool SimpleValidator::IsValidAssignment(Token name_token) {
 
 bool SimpleValidator::IsValidStmtList() {
 	int end_index = SimpleValidator::GetEndIndxOfStatementList();
+	int initial_indx = statement_index_;
 	while ((token_index_) < end_index) {
 		if (SimpleValidator::PeekNextToken().GetValue() == TYPE_PUNC_OPEN_BRACKET ||
 			SimpleValidator::PeekNextToken().GetValue() == TYPE_PUNC_CLOSED_BRACKET) {
@@ -219,7 +219,10 @@ bool SimpleValidator::IsValidStmtList() {
 		}
 		SimpleValidator::IsValidStmt();
 	}
-
+	if (initial_indx == statement_index_) {
+		cout << "(Line: " << statement_index_ << ") ";
+		throw "Empty statement block detected";
+	}
 	return true;
 }
 
@@ -267,6 +270,7 @@ Token SimpleValidator::GetNextToken() {
 	token_index_++;
 
 	if (token_index_ < token_list_.size()) {
+		cout << token_list_[token_index_].GetValue() << " ";
 		return token_list_[token_index_];
 	}
 	else {

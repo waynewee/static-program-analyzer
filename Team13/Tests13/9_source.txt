@@ -1,1 +1,0 @@
-procedure AssgnTest2 {x = 7;}

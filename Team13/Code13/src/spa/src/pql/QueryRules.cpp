@@ -928,6 +928,11 @@ bool QueryRules::IsModifiesS(string token, STRING_STRING_MAP declared_var_names)
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
 	}
+	// first arg of modifiesS cannot be print
+	if (first_arg_type.compare(TYPE_DESIGN_ENTITY_PRINT) == 0) {
+		result = false;
+		return result;
+	}
 	if (!IsStmtRef(first_arg, first_arg_type) && !IsLineRef(first_arg, first_arg_type)) {
 		result = false;
 		return result;
@@ -1037,6 +1042,11 @@ bool QueryRules::IsUsesS(string token, STRING_STRING_MAP declared_var_names) {
 	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
+	}
+	// first arg cannot be read
+	if (first_arg_type.compare(TYPE_DESIGN_ENTITY_READ) == 0) {
+		result = false;
+		return result;
 	}
 	if (!IsStmtRef(first_arg, first_arg_type) && !IsLineRef(first_arg, first_arg_type)) {
 		result = false;
@@ -1706,6 +1716,10 @@ bool QueryRules::IsExpr(string token) {
 			continue;
 		}
 		if (c == '(') {
+			if (prev_is_term) {
+				result = false;
+				return result;
+			}
 			open_bracket_count++;
 			prev_was_open_bracket = true;
 			prev_is_term = false;

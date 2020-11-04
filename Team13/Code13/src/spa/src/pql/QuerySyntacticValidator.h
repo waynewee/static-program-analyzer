@@ -20,6 +20,10 @@ public:
 
 	bool IsRelRef(string token);
 	bool IsValidRelRefArgument(string token);
+
+	bool IsValidStmtRef(string token);
+	bool IsValidEntRef(string token);
+
 	bool IsIdent(string token);
 	bool IsName(string token);
 	bool IsInteger(string token);
@@ -27,5 +31,9 @@ public:
 
 	bool IsAttrRef(string token);
 	bool IsRef(string token);
+
+	bool IsExpr(string token);
+	bool IsOperator(char c);
+	bool IsExpressionSpec(string token);
 };
 

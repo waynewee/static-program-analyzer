@@ -1,8 +1,0 @@
-procedure Example {
- while( x == 2) {
-   while( x == 3 ) {
-      x = 3;
-   }
- }
- z = 6;
-}

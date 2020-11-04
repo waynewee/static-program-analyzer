@@ -3,5 +3,5 @@ procedure A{
 }
 
 procedure B{
-	a = 1;
+	a = 1; 
 }

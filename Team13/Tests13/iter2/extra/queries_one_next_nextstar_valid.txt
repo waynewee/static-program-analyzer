@@ -1,0 +1,90 @@
+1 - Next - synonym, synonym 
+stmt s1, s2;
+Select s1 such that Next (s1, s2)
+none
+5000
+2 - Next - synonym, int
+stmt s1;
+Select s1 such that Next (s1, 2)
+none
+5000
+3 - Next - int, synonym
+stmt s1;
+Select s1 such that Next (2, s1)
+none
+5000
+4 - Next - synonym, wildcard
+stmt s1;
+Select s1 such that Next (s1, _)
+none
+5000
+5 - Next - wildcard, synonym
+stmt s1;
+Select s1 such that Next (_, s1)
+none
+5000
+6 - Next - int, int
+stmt s1;
+Select s1 such that Next (5, 6)
+none
+5000
+7 - Next - wildcard, wildcard
+stmt s1;
+Select s1 such that Next (_, _)
+none
+5000
+8 - Next - int, wildcard
+stmt s1;
+Select s1 such that Next (5, _)
+none
+5000
+9 - Next - wildcard, int
+stmt s1;
+Select s1 such that Next (_, 6)
+none
+5000
+10 - Next* - synonym, synonym
+stmt s1, s2;
+Select s1 such that Next (s1, s2)
+none
+5000
+11 - Next* - synonym, int
+stmt s1;
+Select s1 such that Next (s1, 2)
+none
+5000
+12 - Next* - int, synonym
+stmt s1;
+Select s1 such that Next (2, s1)
+none
+5000
+13 - Next* - synonym, wildcard
+stmt s1;
+Select s1 such that Next (s1, _)
+none
+5000
+14 - Next* - wildcard, synonym
+stmt s1;
+Select s1 such that Next (_, s1)
+none
+5000
+15 - Next* - int, int
+stmt s1;
+Select s1 such that Next (5, 6)
+none
+5000
+16 - Next* - wildcard, wildcard
+stmt s1;
+Select s1 such that Next (_, _)
+none
+5000
+17 - Next* - int, wildcard
+stmt s1;
+Select s1 such that Next (5, _)
+none
+5000
+18 - Next* - wildcard, int
+stmt s1;
+Select s1 such that Next (_, 6)
+none
+5000

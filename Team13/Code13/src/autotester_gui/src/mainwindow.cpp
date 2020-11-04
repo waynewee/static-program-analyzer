@@ -43,8 +43,6 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
 	QMainWindow::resizeEvent(event);
 
-	cout << "REZIE" << endl;
-	// Your code here.
 	if (ast_drawn_) {
 		EndSetASTScene();
 	}
@@ -67,12 +65,14 @@ void MainWindow::btnLoad_clicked() {
 		file_contents_ = file.readAll();
 		ui->txtCodeEditor->document()->setPlainText(file_contents_);	
 		wrapper->parse(src_name.toStdString());
-
 		on_astButton_clicked();
 
 	}
-	catch (...) {
-		SetErrorMessage();
+	catch (exception& e) {
+		SetErrorMessage(e.what());
+	}
+	catch (char* except) {
+		SetErrorMessage(except);
 	}
 }
 
@@ -102,8 +102,11 @@ void MainWindow::btnRun_clicked() {
 			DrawCFG();
 		}
 	}
-	catch (...) {
-		SetErrorMessage();
+	catch (exception& e) {
+		SetErrorMessage(e.what());
+	}
+	catch (char* except) {
+		SetErrorMessage(except);
 	}
 
 
@@ -123,8 +126,11 @@ void MainWindow::on_astButton_clicked() {
 
 		DrawAST();
 	}
-	catch (...) {
-		SetErrorMessage();
+	catch (exception& e) {
+		SetErrorMessage(e.what());
+	}
+	catch (char* except) {
+		SetErrorMessage(except);
 	}
 
 
@@ -145,14 +151,18 @@ void MainWindow::on_cfgButton_clicked() {
 
 		DrawCFG();
 	}
-	catch (...) {
-		SetErrorMessage();
+	catch (exception& e) {
+		SetErrorMessage(e.what());
+	}
+	catch (char* except) {
+		SetErrorMessage(except);
 	}
 
 
 }
 
 void MainWindow::DrawCFG() {
+
 
 	BeginSetScene();
 
@@ -185,9 +195,8 @@ void MainWindow::DrawAST() {
 }
 
 void MainWindow::BeginSetScene() {
-	scene->clear();
-	ui->graphicsView->resetTransform();
-	ui->graphicsView->resetMatrix();
+	scene = new QGraphicsScene(this);
+	ui->graphicsView->setScene(scene);
 	ui->verticalSlider->setValue(1);
 }
 
