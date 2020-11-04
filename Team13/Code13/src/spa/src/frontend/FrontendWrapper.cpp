@@ -7,10 +7,11 @@
 #include <SimpleValidator.h>
 
 FrontendWrapper::FrontendWrapper(string file_contents) {
-	Tokenizer tokenizer(file_contents);
-	token_list_ = tokenizer.GetTokenList();
 
 	try {
+		Tokenizer tokenizer(file_contents);
+		token_list_ = tokenizer.GetTokenList();
+		
 		SimpleValidator simple_validator;
 		simple_validator.IsValid(tokenizer.GetTokenList());
 	}
@@ -18,6 +19,11 @@ FrontendWrapper::FrontendWrapper(string file_contents) {
 		std::cout << exception << std::endl;
 		exit(1);
 	}
+	catch (logic_error& e) {
+		cout << e.what() << endl;
+		exit(1);
+	}
+
 }
 
 TNode* FrontendWrapper::GetAST() {
