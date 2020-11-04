@@ -36,26 +36,37 @@ TestWrapper::TestWrapper() {
 // method for parsing the SIMPLE source
 void TestWrapper::parse(string filename) {
 
-	FileReader file_reader(filename);
-	string file_contents = file_reader.ReadFile();
-	FrontendWrapper frontend_wrapper(file_contents);
+	try {
+		FileReader file_reader(filename);
+		string file_contents = file_reader.ReadFile();
+		FrontendWrapper frontend_wrapper(file_contents);
 
 
-	TNode* ast_root = frontend_wrapper.GetAST();
-	CFG* cfg = frontend_wrapper.GetCFG(ast_root);
+		TNode* ast_root = frontend_wrapper.GetAST();
+		CFG* cfg = frontend_wrapper.GetCFG(ast_root);
 
-	TestWrapper::pkb->SetASTRoot(ast_root);
-	TestWrapper::pkb->SetCFG(*cfg);
+		TestWrapper::pkb->SetASTRoot(ast_root);
+		TestWrapper::pkb->SetCFG(*cfg);
 
-	DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
-	DesignExtractor::ExtractAssignStmtInProcs(pkb->GetDataManager(), pkb->GetASTRoot());
-	DesignExtractor::ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
-	DesignExtractor::ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
-	DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
-	DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
-	DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
-	DesignExtractor::ExtractAssignPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
-	DesignExtractor::ExtractContainerPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
+		DesignExtractor::ExtractData(pkb->GetDataManager(), pkb->GetASTRoot());
+		DesignExtractor::ExtractAssignStmtInProcs(pkb->GetDataManager(), pkb->GetASTRoot());
+		DesignExtractor::ExtractFollows(pkb->GetRelationManager(), pkb->GetASTRoot());
+		DesignExtractor::ExtractParent(pkb->GetRelationManager(), pkb->GetASTRoot());
+		DesignExtractor::ExtractCalls(pkb->GetRelationManager(), pkb->GetASTRoot());
+		DesignExtractor::ExtractModifies(pkb->GetRelationManager(), pkb->GetASTRoot());
+		DesignExtractor::ExtractUses(pkb->GetRelationManager(), pkb->GetASTRoot());
+		DesignExtractor::ExtractAssignPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
+		DesignExtractor::ExtractContainerPattern(pkb->GetPatternManager(), pkb->GetASTRoot());
+	}
+	catch (char* exception) {
+		std::cout << exception << std::endl;
+		exit(1);
+	}
+	catch (logic_error& e) {
+		cout << e.what() << endl;
+		exit(1);
+	}
+
 }
 
 // method to evaluating a query

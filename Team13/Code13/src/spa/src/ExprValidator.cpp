@@ -8,10 +8,6 @@ using namespace std;
 
 bool ExprValidator::Validate(TOKEN_LIST token_list) {
 
-	/*for (Token token : token_list) {
-		cout << token.GetValue() << endl;
-	}*/
-
 	int prev_index = -1;
 	int curr_index = 0;
 
