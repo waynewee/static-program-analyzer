@@ -210,6 +210,7 @@ bool SimpleValidator::IsValidAssignment(Token name_token) {
 
 bool SimpleValidator::IsValidStmtList() {
 	int end_index = SimpleValidator::GetEndIndxOfStatementList();
+	int initial_indx = statement_index_;
 	while ((token_index_) < end_index) {
 		if (SimpleValidator::PeekNextToken().GetValue() == TYPE_PUNC_OPEN_BRACKET ||
 			SimpleValidator::PeekNextToken().GetValue() == TYPE_PUNC_CLOSED_BRACKET) {
@@ -218,7 +219,10 @@ bool SimpleValidator::IsValidStmtList() {
 		}
 		SimpleValidator::IsValidStmt();
 	}
-
+	if (initial_indx == statement_index_) {
+		cout << "(Line: " << statement_index_ << ") ";
+		throw "Empty statement block detected";
+	}
 	return true;
 }
 
