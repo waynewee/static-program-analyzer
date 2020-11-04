@@ -13,6 +13,9 @@ const STRING_SET valid_rel_ref_names = { TYPE_COND_FOLLOWS , TYPE_COND_FOLLOWS_T
 										TYPE_COND_CALLS , TYPE_COND_CALLS_T , TYPE_COND_CALLS_STAR , TYPE_COND_NEXT ,
 										TYPE_COND_NEXT_T , TYPE_COND_NEXT_STAR , TYPE_COND_AFFECTS , TYPE_COND_AFFECTS_T ,
 										TYPE_COND_AFFECTS_STAR };
+const STRING_SET valid_stmtref_stmtref_relrefs = { TYPE_COND_PARENT, TYPE_COND_PARENT_STAR, TYPE_COND_FOLLOWS , TYPE_COND_FOLLOWS_STAR
+											TYPE_COND_NEXT , TYPE_COND_NEXT_STAR , TYPE_COND_AFFECTS , TYPE_COND_AFFECTS_STAR
+												};
 const STRING_SET valid_stmt_ref_synonyms = { TYPE_DESIGN_ENTITY_STMT , TYPE_DESIGN_ENTITY_READ , TYPE_DESIGN_ENTITY_PRINT ,
 											TYPE_DESIGN_ENTITY_CALL , TYPE_DESIGN_ENTITY_WHILE , TYPE_DESIGN_ENTITY_IF ,
 											TYPE_DESIGN_ENTITY_ASSIGN };
@@ -149,13 +152,49 @@ bool QuerySyntacticValidator::IsRelRef(string token) {
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
 
-	if (!IsValidRelRefArgument(first_arg)) {
-		result = false;
-		return result;
+	cout << "Checking syntactics for Relref Type:" << relref_token_type << endl;
+
+	if (relref_token_type.compare(TYPE_COND_MODIFIES) == 0 || relref_token_type.compare(TYPE_COND_USES) == 0) {
+		// first arg cannot be underscore
+		if (first_arg.compare("_") == 0) {
+			result = false;
+			return result;
+		}
+		// first arg can be stmtref or entref
+		if (!IsValidRelRefArgument(first_arg)) {
+			result = false;
+			return result;
+		}
+		// second arg must be entref
+		if (!IsValidEntRef(second_arg)) {
+			result = false;
+			return result;
+		}
 	}
-	if (!IsValidRelRefArgument(second_arg)) {
-		result = false;
-		return result;
+	
+	if (relref_token_type.compare(TYPE_COND_CALLS) == 0 || relref_token_type.compare(TYPE_COND_CALLS_STAR) == 0) {
+		// first arg must be entref
+		if (!IsValidEntRef(first_arg)) {
+			result = false;
+			return result;
+		}
+		// second arg must be entref
+		if (!IsValidEntRef(second_arg)) {
+			result = false;
+			return result;
+		}
+	}
+
+	if (valid_stmtref_stmtref_relrefs.count(relref_token_type) == 1) {
+		// both first and 2nd arg must be stmtref
+		if (!IsValidStmtRef(first_arg)) {
+			result = false;
+			return result;
+		}
+		if (!IsValidStmtRef(second_arg)) {
+			result = false;
+			return result;
+		}
 	}
 	return result;
 }
@@ -175,6 +214,50 @@ bool QuerySyntacticValidator::IsValidRelRefArgument(string token) {
 		return result;
 	}
 	if (IsInteger(token)) {
+		result = true;
+		return result;
+	}
+	if (token.front() == '\"' && token.back() == '\"') {
+		string ident = token.substr(1, token.length() - 2);
+		// cout << "internal ident:" << ident << endl;
+		if (IsIdent(ident)) {
+			result = true;
+			return result;
+		}
+	}
+	return result;
+}
+
+bool QuerySyntacticValidator::IsValidStmtRef(string token) {
+	// either synonym, underscore, integer, or "IDENT"
+	bool result = false;
+
+	// if its either, true, and continue
+	if (IsSynonym(token)) {
+		result = true;
+		return result;
+	}
+	if (token.compare("_") == 0) {
+		result = true;
+		return result;
+	}
+	if (IsInteger(token)) {
+		result = true;
+		return result;
+	}
+	return result;
+}
+
+bool QuerySyntacticValidator::IsValidEntRef(string token) {
+	// either synonym, underscore, integer, or "IDENT"
+	bool result = false;
+
+	// if its either, true, and continue
+	if (IsSynonym(token)) {
+		result = true;
+		return result;
+	}
+	if (token.compare("_") == 0) {
 		result = true;
 		return result;
 	}
