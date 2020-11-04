@@ -121,6 +121,9 @@ STMT_IDX_SET PKB::AffectsManager::GetAffects(STMT_IDX a) {
     if (a < 0) {
         return GetAllInverseAffectsKeys();
     }
+    if (!data_manager_.IsAssignStmt(a)) {
+        return STMT_IDX_SET();
+    }
     if (affects_table_.find(a) != affects_table_.end()) {
         return *affects_table_.at(a);
     }
@@ -154,6 +157,9 @@ STMT_IDX_SET PKB::AffectsManager::GetInverseAffects(STMT_IDX a) {
     std::cout << "PKB:GetInverseAffects(" << a << ")" << std::endl;
     if (a < 0) {
         return GetAllAffectsKeys();
+    }
+    if (!data_manager_.IsAssignStmt(a)) {
+        return STMT_IDX_SET();
     }
     if (inverse_affects_table_.find(a) != inverse_affects_table_.end()) {
         return *inverse_affects_table_.at(a);
