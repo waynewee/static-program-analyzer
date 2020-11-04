@@ -1,9 +1,0 @@
-procedure WhileIfNest {
-  while(x<10){
-    if(y == x) then{
-      print y;
-    } else {
-      print x;
-    }
-  }
-}

@@ -316,7 +316,7 @@ Select s such that Affects*(186, s)
 64 - valid query (1 Affects* clause, stmtRef1 = int, stmtRef2 = synonym)
 stmt s;
 Select BOOLEAN such that Affects*(204, s)
-false
+FALSE
 5000
 65 - valid query (1 Affects* clause, stmtRef1 = int, stmtRef2 = synonym)
 stmt s;
@@ -336,42 +336,42 @@ Select s such that Affects*(202, s)
 68 - valid query (1 Affects* clause, stmtRef1 = int, stmtRef2 = synonym)
 stmt s;
 Select BOOLEAN such that Affects*(189, s)
-false
+FALSE
 5000
 69 - valid query (1 Affects* clause, stmtRef1 = int, stmtRef2 = synonym)
 stmt s;
 Select BOOLEAN such that Affects*(199, s)
-true
+TRUE
 5000
 70 - valid query (1 Affects* clause, stmtRef1 = int, stmtRef2 = int)
 
 Select BOOLEAN such that Affects*(1, 1)
-false
+FALSE
 5000
 71 - valid query (1 Affects* clause, stmtRef1 = int, stmtRef2 = int)
 
 Select BOOLEAN such that Affects*(146, 152)
-false
+FALSE
 5000
 72 - valid query (1 Affects* clause, stmtRef1 = int, stmtRef2 = int)
 
 Select BOOLEAN such that Affects*(149, 149)
-true
+TRUE
 5000
 73 - valid query (1 Affects* clause, stmtRef1 = int, stmtRef2 = int)
 
 Select BOOLEAN such that Affects*(176, 184)
-true
+TRUE
 5000
 74 - valid query (1 Affects* clause, stmtRef1 = int, stmtRef2 = int)
 
 Select BOOLEAN such that Affects*(155, 155)
-false
+FALSE
 5000
 75 - valid query (1 Affects* clause, stmtRef1 = int, stmtRef2 = int)
 
 Select BOOLEAN such that Affects*(190, 202)
-true
+TRUE
 5000
 76 - valid query (1 Affects* clause, stmtRef1 = synonym, stmtRef2 = int)
 assign a;

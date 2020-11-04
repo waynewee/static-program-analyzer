@@ -1,3 +1,0 @@
-procedure SpecialCharVarName {
-  test* = 10;
-}
