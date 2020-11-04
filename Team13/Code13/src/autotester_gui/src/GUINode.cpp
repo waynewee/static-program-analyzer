@@ -12,7 +12,7 @@ GUINode::GUINode(int stmt_idx, int x, int y) {
     stmt_idx_ = stmt_idx;
     x_ = x;
     y_ = y;
-	hex_color_code_ = "#F7CAC9";
+	hex_color_code_ = hex_stmt;
 }
 
 string GUINode::GetHexCode(TNode* node) {

@@ -16,7 +16,7 @@
 #include "ASTHelper.h"
 
 
-using namespace std;
+using namespace std; 
 
 ASTHelper::ASTHelper(string file_contents) {
 
@@ -32,6 +32,8 @@ AST_GUI_NODE_TREE* ASTHelper::GetGUINodeTree() {
 	InitialiseListOfNodeLists(max_depth);
 
 	int leaf_x = 0;
+
+	root_node_->Print(root_node_);
 	
 	PopulateNodeList(root_node_, NULL, 0, &leaf_x);
 

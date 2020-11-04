@@ -53,16 +53,16 @@ public:
         "Not",
         "And",
         "Or",
-        "Gt"
-        "Geq",
+        "Gt",
+        "Gte",
         "Lt",
-        "Leq",
+        "Lte",
         "Eq",
         "Neq",
         "Plus",
         "Minus",
         "Times",
-        "Divide",
+        "Div",
         "Mod"
     };
 
@@ -99,6 +99,7 @@ public:
     TNode* GetParent();
     CONST_VALUE GetConstValue();
     string* GetName();
+    string GetShortName();
     void Print(TNode* root);
 };
 

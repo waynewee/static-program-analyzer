@@ -11,7 +11,10 @@ CFGHelper::CFGHelper(string file_contents) {
 	FrontendWrapper wrapper(file_contents);
 	TNode* root_node = wrapper.GetAST();
 	cfg_ = wrapper.GetCFG(root_node);
-	cfg_node_map_ = NULL;
+
+	if (cfg_->GetAdjacencyList().size() == 0) {
+		throw "There must be at least one procedure with >1 statement for CFG to be drawn";
+	}
 }
 
 CFG_NODE_MAP* CFGHelper::GetCFGNodeMap() {
@@ -21,8 +24,8 @@ CFG_NODE_MAP* CFGHelper::GetCFGNodeMap() {
 }
 
 int CFGHelper::GetMaxStmtIdx() {
+	
 	int max = 0;
-
 	for (auto const& pair : cfg_->GetAdjacencyList()) {
 		if (pair.first > max) {
 			max = pair.first;
@@ -41,7 +44,7 @@ void CFGHelper::PopulateCFGNodeMap(int max) {
 
 	cfg_node_map_ = new CFG_NODE_MAP();
 
-	int y = 50;
+	int y = 0;
 
 	STMT_IDX_SET* edges = cfg_->GetAdjacencyList()[1];
 

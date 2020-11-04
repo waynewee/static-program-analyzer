@@ -60,6 +60,8 @@ private:
 	void BeginSetScene();
 	void EndSetASTScene();
 	void EndSetCFGScene();
+	void SetErrorMessage();
+	void SetErrorMessage(string msg);
 
 
 };

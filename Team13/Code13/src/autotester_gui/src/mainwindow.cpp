@@ -43,8 +43,6 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
 	QMainWindow::resizeEvent(event);
 
-	cout << "REZIE" << endl;
-	// Your code here.
 	if (ast_drawn_) {
 		EndSetASTScene();
 	}
@@ -54,65 +52,117 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 }
 
 void MainWindow::btnLoad_clicked() {
+	
+	try {
 
-	QString src_name = QFileDialog::getOpenFileName(this,
-		tr("Open Source file"), ".", tr("txt Files (*.txt)"));
+		QString src_name = QFileDialog::getOpenFileName(this,
+			tr("Open Source file"), ".", tr("txt Files (*.txt)"));
 
-	QFile file;
-	file.setFileName(src_name);
-	if (!file.open(QIODevice::ReadOnly))
-		return;
-	file_contents_ = file.readAll();
-	ui->txtCodeEditor->document()->setPlainText(file_contents_);	
-	wrapper->parse(src_name.toStdString());
+		QFile file;
+		file.setFileName(src_name);
+		if (!file.open(QIODevice::ReadOnly))
+			return;
+		file_contents_ = file.readAll();
+		ui->txtCodeEditor->document()->setPlainText(file_contents_);	
+		wrapper->parse(src_name.toStdString());
+		on_astButton_clicked();
 
-	on_astButton_clicked();
+	}
+	catch (exception& e) {
+		SetErrorMessage(e.what());
+	}
+	catch (char* except) {
+		SetErrorMessage(except);
+	}
 }
 
 void MainWindow::btnRun_clicked() {
 
-	std::list<std::string> results;
-	wrapper->Evaluate(ui->txtQuery->toPlainText().toStdString(),results);
-
-	QString result_str;
-
-	int i = 0;
-
-	PrintResults(results);
-
-	results_ = results;
-
-	if (ast_drawn_) {
-		DrawAST();
+	if (file_contents_ == NULL) {
+		SetErrorMessage("No loaded file found.");
+		return;
 	}
-	else {
-		DrawCFG();
+
+	try {
+		std::list<std::string> results;
+		wrapper->Evaluate(ui->txtQuery->toPlainText().toStdString(),results);
+
+		QString result_str;
+
+		int i = 0;
+
+		PrintResults(results);
+
+		results_ = results;
+
+		if (ast_drawn_) {
+			DrawAST();
+		}
+		else {
+			DrawCFG();
+		}
 	}
+	catch (exception& e) {
+		SetErrorMessage(e.what());
+	}
+	catch (char* except) {
+		SetErrorMessage(except);
+	}
+
 
 }
 
 void MainWindow::on_astButton_clicked() {
 
-	ast_drawn_ = true;
+	if (file_contents_ == NULL) {
+		SetErrorMessage("No loaded file found.");
+		return;
+	}
 
-	ast_helper_ = new ASTHelper(file_contents_.toUtf8().constData());
+	try {
+		ast_drawn_ = true;
 
-	DrawAST();
+		ast_helper_ = new ASTHelper(file_contents_.toUtf8().constData());
+
+		DrawAST();
+	}
+	catch (exception& e) {
+		SetErrorMessage(e.what());
+	}
+	catch (char* except) {
+		SetErrorMessage(except);
+	}
+
 
 }
 
 
 void MainWindow::on_cfgButton_clicked() {
+	
+	if (file_contents_ == NULL) {
+		SetErrorMessage("No loaded file found.");
+		return;
+	}
 
-	ast_drawn_ = false;
+	try {
+		ast_drawn_ = false;
 
-	cfg_helper_ = new CFGHelper(file_contents_.toUtf8().constData());
+		cfg_helper_ = new CFGHelper(file_contents_.toUtf8().constData());
 
-	DrawCFG();
+		DrawCFG();
+	}
+	catch (exception& e) {
+		SetErrorMessage(e.what());
+	}
+	catch (char* except) {
+		SetErrorMessage(except);
+	}
+
 
 }
 
 void MainWindow::DrawCFG() {
+
 
 	BeginSetScene();
 
@@ -145,13 +195,13 @@ void MainWindow::DrawAST() {
 }
 
 void MainWindow::BeginSetScene() {
-	scene->clear();
-	ui->graphicsView->resetTransform();
-	ui->graphicsView->resetMatrix();
+	scene = new QGraphicsScene(this);
+	ui->graphicsView->setScene(scene);
 	ui->verticalSlider->setValue(1);
 }
 
 void MainWindow::EndSetASTScene() {
+	//ui->graphicsView->fitInView(0, 0, ui->graphicsView->width(), ui->graphicsView->height());
 	ui->graphicsView->fitInView(ui->graphicsView->sceneRect(), Qt::KeepAspectRatio);
 }
 
@@ -187,4 +237,12 @@ void MainWindow::on_verticalSlider_valueChanged(int value) {
 
 	prev_value = value;
 
+}
+
+void MainWindow::SetErrorMessage() {
+	ui->txtResult->setHtml(QString::fromStdString("<span style=\"color:red\">An error occurred. Please contact CS3219 T13 for clarification<span>"));
+}
+
+void MainWindow::SetErrorMessage(string msg) {
+	ui->txtResult->setHtml(QString::fromStdString("<span style=\"color:red\">" + msg + "<span>"));
 }
