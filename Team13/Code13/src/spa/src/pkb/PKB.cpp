@@ -117,7 +117,9 @@ bool PKB::AffectsManager::IsAffects(STMT_IDX a1, STMT_IDX a2) {
 }
 STMT_IDX_SET PKB::AffectsManager::GetAffects(STMT_IDX a) {
     //debug
-    std::cout << "PKB: GetAffects(" << a << ")" << std::endl;
+    if (PKB_DEBUG) {
+        std::cout << "PKB: GetAffects(" << a << ")" << std::endl;
+    }
     if (a < 0) {
         return GetAllInverseAffectsKeys();
     }
@@ -144,9 +146,12 @@ STMT_IDX_SET PKB::AffectsManager::GetAffects(STMT_IDX a) {
         }
     }
     //debug
-    std::cout << "PKB: printing result from GetAffects(" << a << std::endl;
-    for (auto e : *result) {
-        std::cout << "" << e << std::endl;
+
+    if (PKB_DEBUG) {
+        std::cout << "PKB: printing result from GetAffects(" << a << std::endl;
+        for (auto e : *result) {
+            std::cout << "" << e << std::endl;
+        }
     }
     affects_computed_set_.insert(a);
     return *result;
@@ -154,7 +159,10 @@ STMT_IDX_SET PKB::AffectsManager::GetAffects(STMT_IDX a) {
 
 STMT_IDX_SET PKB::AffectsManager::GetInverseAffects(STMT_IDX a) {
     //debug
-    std::cout << "PKB:GetInverseAffects(" << a << ")" << std::endl;
+
+    if (PKB_DEBUG) {
+        std::cout << "PKB:GetInverseAffects(" << a << ")" << std::endl;
+    }
     if (a < 0) {
         return GetAllAffectsKeys();
     }
@@ -173,7 +181,10 @@ STMT_IDX_SET PKB::AffectsManager::GetInverseAffects(STMT_IDX a) {
     auto neighbors = cfg_manager_.GetInverseNext(a);
     for (auto rhs_var : rhs_vars) {
         //debug
-        std::cout << "PKB: GetInverseAffects: rhs_var = " << rhs_var << std::endl;
+
+        if (PKB_DEBUG) {
+            std::cout << "PKB: GetInverseAffects: rhs_var = " << rhs_var << std::endl;
+        }
         if (visited->find(rhs_var) == visited->end()) {
             visited->insert({ rhs_var, new STMT_IDX_SET() });
         }
@@ -185,9 +196,11 @@ STMT_IDX_SET PKB::AffectsManager::GetInverseAffects(STMT_IDX a) {
         inverse_affects_table_.insert({ a, result });
     }
     //debug
-    std::cout << "PKB: printing result from GetInverseAffects(" << a << std::endl;
-    for (auto e : *result) {
-        std::cout << "" << e << std::endl;
+    if (PKB_DEBUG) {
+        std::cout << "PKB: printing result from GetInverseAffects(" << a << std::endl;
+        for (auto e : *result) {
+            std::cout << "" << e << std::endl;
+        }
     }
     inverse_affects_computed_set_.insert(a);
     return *result;
