@@ -77,3 +77,6 @@ bool DataManager::IsAssignStmt(STMT_IDX s) {
 bool DataManager::IsReadStmt(STMT_IDX s) {
     return stmt_table_.IsReadStmt(s);
 }
+bool DataManager::IsStmt(STATEMENT_TYPE t, STMT_IDX s) {
+    return stmt_table_.IsStmt(t, s);
+}

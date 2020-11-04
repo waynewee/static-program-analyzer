@@ -143,7 +143,6 @@ public:
     PROC_NAME_SET GetInverseCallsStars(PROC_NAME p);
     PROC_PROC_PAIR_LIST GetAllCallsStar();
 
-
 };
 
 #endif // RELATION_MANAGER_H

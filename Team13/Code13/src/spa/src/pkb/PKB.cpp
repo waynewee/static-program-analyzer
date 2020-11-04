@@ -61,6 +61,26 @@ AFFECTS_STAR_TABLE PKB::AffectsManager::affects_star_table_;
 INVERSE_AFFECTS_STAR_TABLE PKB::AffectsManager::inverse_affects_star_table_;
 STMT_STMT_PAIR_LIST PKB::AffectsManager::all_affects_star_;
 
+
+STMT_IDX_SET PKB::FilterStmtTypes(STMT_IDX_SET unfiltered, STATEMENT_TYPE type) {
+    auto result = STMT_IDX_SET();
+    for (auto s : unfiltered) {
+        if (data_manager_.IsStmt(type, s)) {
+            result.insert(s);
+        }
+    }
+    return result;
+}
+STMT_STMT_PAIR_LIST PKB::FilterStmtTypes(STMT_STMT_PAIR_LIST unfiltered, STATEMENT_TYPE type1, STATEMENT_TYPE type2) {
+    auto result = STMT_STMT_PAIR_LIST();
+    for (auto pair : unfiltered) {
+        if (data_manager_.IsStmt(type1, pair.s1) && data_manager_.IsStmt(type2, pair.s2)) {
+            result.push_back(pair);
+        }
+    }
+    return result;
+}
+
 STMT_STMT_PAIR_LIST PKB::AffectsManager::GetAllAffects() {
     FillAffectsTable();
     return all_affects_;

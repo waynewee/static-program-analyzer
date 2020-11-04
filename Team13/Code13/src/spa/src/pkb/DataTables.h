@@ -39,6 +39,7 @@ class StatementTable {
 private:
     std::vector<STMT_IDX_SET> stmt_data_;
     std::unordered_map<PROC_NAME, STMT_IDX_SET> proc_to_assign_stmt_data_;
+    int ConvertStmtType(STATEMENT_TYPE type);
 public:
     StatementTable() {
         for (int i = 0; i < _size_; i++) {
@@ -53,6 +54,9 @@ public:
     bool IsAssignStmt(STMT_IDX s);
     bool IsCallStmt(STMT_IDX s);
     bool IsReadStmt(STMT_IDX s);
+
+    bool IsStmt(STATEMENT_TYPE t, STMT_IDX s);
+
 };
 
 class VariableTable {

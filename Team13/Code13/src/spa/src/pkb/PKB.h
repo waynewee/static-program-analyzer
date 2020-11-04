@@ -75,7 +75,11 @@ public:
     CFGManager GetCFGManager();
     AffectsManager GetAffectsManager();
     CFG& GetCFG();
+
     void ClearCache();
+
+    STMT_IDX_SET FilterStmtTypes(STMT_IDX_SET unfiltered, STATEMENT_TYPE type);
+    STMT_STMT_PAIR_LIST FilterStmtTypes(STMT_STMT_PAIR_LIST unfiltered, STATEMENT_TYPE type1, STATEMENT_TYPE type2);
 
 protected:
     static DataManager data_manager_;
