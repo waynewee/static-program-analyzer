@@ -2,15 +2,15 @@
 #define _EXPRVALIDATOR_H
 
 #include <FrontendTypes.h>
+#include <TNode.h>
 
 using namespace std;
 
 class ExprValidator {
 public:
-	static bool Validate(TOKEN_LIST expr_list);
-
+	static void Validate(TNode* root_node);
 private:
-	static bool CheckValid(Token prevToken, Token currToken);
+	static void ValidateExpression(TNode* ast_node);
 
 };
 

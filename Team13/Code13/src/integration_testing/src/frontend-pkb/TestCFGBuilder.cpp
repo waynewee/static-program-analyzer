@@ -68,7 +68,7 @@ TEST_CASE("Build Single Stmt CFG") {
 	
 	CFGBuilder cfgbuilder = CFGBuilder(actualRoot);
 	
-	REQUIRE(SameCFG(SingleStmtTest.cfg, cfgbuilder.GetCFG()));
+	REQUIRE(SameCFG(SingleStmtTest.cfg, cfgbuilder.cfg_));
 }
 
 TEST_CASE("Build Double Stmt CFG") {
@@ -79,7 +79,7 @@ TEST_CASE("Build Double Stmt CFG") {
 
 	CFGBuilder cfgbuilder = CFGBuilder(actualRoot);
 
-	REQUIRE(SameCFG(DoubleStmtTest.cfg, cfgbuilder.GetCFG()));
+	REQUIRE(SameCFG(DoubleStmtTest.cfg, cfgbuilder.cfg_));
 }
 
 TEST_CASE("If Stmt CFG") {
@@ -90,7 +90,7 @@ TEST_CASE("If Stmt CFG") {
 
 	CFGBuilder cfgbuilder = CFGBuilder(actualRoot);
 
-	REQUIRE(SameCFG(IfStmtTest.cfg, cfgbuilder.GetCFG()));
+	REQUIRE(SameCFG(IfStmtTest.cfg, cfgbuilder.cfg_));
 }
 
 TEST_CASE("If Stmt CFG with exit") {
@@ -101,7 +101,7 @@ TEST_CASE("If Stmt CFG with exit") {
 
 	CFGBuilder cfgbuilder = CFGBuilder(actualRoot);
 
-	REQUIRE(SameCFG(IfStmtWithExitTest.cfg, cfgbuilder.GetCFG()));
+	REQUIRE(SameCFG(IfStmtWithExitTest.cfg, cfgbuilder.cfg_));
 }
 
 TEST_CASE("While Stmt CFG") {
@@ -112,7 +112,7 @@ TEST_CASE("While Stmt CFG") {
 
 	CFGBuilder cfgbuilder = CFGBuilder(actualRoot);
 
-	REQUIRE(SameCFG(WhileStmtTest.cfg, cfgbuilder.GetCFG()));
+	REQUIRE(SameCFG(WhileStmtTest.cfg, cfgbuilder.cfg_));
 }
 
 TEST_CASE("While Stmt CFG with exit") {
@@ -123,7 +123,7 @@ TEST_CASE("While Stmt CFG with exit") {
 
 	CFGBuilder cfgbuilder = CFGBuilder(actualRoot);
 
-	REQUIRE(SameCFG(WhileStmtWithExitTest.cfg, cfgbuilder.GetCFG()));
+	REQUIRE(SameCFG(WhileStmtWithExitTest.cfg, cfgbuilder.cfg_));
 }
 
 TEST_CASE("Nested If While Stmt CFG") {
@@ -134,7 +134,7 @@ TEST_CASE("Nested If While Stmt CFG") {
 
 	CFGBuilder cfgbuilder = CFGBuilder(actualRoot);
 
-	REQUIRE(SameCFG(NestedIfWhileStmtTest.cfg, cfgbuilder.GetCFG()));
+	REQUIRE(SameCFG(NestedIfWhileStmtTest.cfg, cfgbuilder.cfg_));
 }
 
 TEST_CASE("Nested While If Stmt CFG") {
@@ -145,7 +145,7 @@ TEST_CASE("Nested While If Stmt CFG") {
 
 	CFGBuilder cfgbuilder = CFGBuilder(actualRoot);
 
-	REQUIRE(SameCFG(NestedWhileIfStmtTest.cfg, cfgbuilder.GetCFG()));
+	REQUIRE(SameCFG(NestedWhileIfStmtTest.cfg, cfgbuilder.cfg_));
 }
 
 TEST_CASE("Multiple Nested If While Stmt CFG") {
@@ -156,7 +156,7 @@ TEST_CASE("Multiple Nested If While Stmt CFG") {
 
 	CFGBuilder cfgbuilder = CFGBuilder(actualRoot);
 
-	REQUIRE(SameCFG(MultipleNestedIfWhileTest.cfg, cfgbuilder.GetCFG()));
+	REQUIRE(SameCFG(MultipleNestedIfWhileTest.cfg, cfgbuilder.cfg_));
 }
 
 TEST_CASE("Multiple Proc CFG") {
@@ -167,5 +167,5 @@ TEST_CASE("Multiple Proc CFG") {
 
 	CFGBuilder cfgbuilder = CFGBuilder(actualRoot);
 
-	REQUIRE(SameCFG(MultipleProcTest.cfg, cfgbuilder.GetCFG()));
+	REQUIRE(SameCFG(MultipleProcTest.cfg, cfgbuilder.cfg_));
 }
