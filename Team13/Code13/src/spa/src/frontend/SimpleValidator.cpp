@@ -160,6 +160,7 @@ bool SimpleValidator::IsValidCallStmt() {
 }
 
 bool SimpleValidator::IsValidIfBlock() {
+	GetExpressionTokens(ExpressionType::_if);
 	/*if (!SimpleValidator::IsValidExpression(GetExpressionTokens(ExpressionType::_if))) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid expression in if block";
@@ -183,6 +184,7 @@ bool SimpleValidator::IsValidIfBlock() {
 }
 
 bool SimpleValidator::IsValidWhileBlock() {
+	GetExpressionTokens(ExpressionType::_while);
 	/*if (!SimpleValidator::IsValidExpression(GetExpressionTokens(ExpressionType::_while))) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid expression in while block";
@@ -197,6 +199,8 @@ bool SimpleValidator::IsValidAssignment(Token name_token) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Missing '='";
 	}
+
+	GetExpressionTokens(_assign);
 	/*if (!SimpleValidator::IsValidExpression(GetExpressionTokens(_assign))) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid expression in assignment";

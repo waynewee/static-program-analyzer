@@ -34,9 +34,6 @@ TNode* ASTBuilder::BuildMainPrgNode(TOKEN_LIST token_list) {
 		program_node->AddChild(proc_node);
 	}
 
-	//last validation for expressions
-	ExprValidator::Validate(program_node);
-
 	return program_node;
 }
 

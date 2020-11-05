@@ -23,27 +23,29 @@ void ExprValidator::ValidateExpression(TNode* ast_node) {
 	//allowed types are condExpr, relExpr
 		for (TNode* child : ast_node->GetChildrenVector()) {
 			if (child->GetNodeType() != TNode::condExpr
-				|| child->GetNodeType() != TNode::relExpr) {
+				&& child->GetNodeType() != TNode::relExpr) {
 				throw "Invalid Expression";
 			}
 		}
 	}
 
 	if (ast_node->GetNodeType() == TNode::relExpr) {
-	//allowed types are rel expr and expr
+	//allowed types are expr or constant or var
 		for (TNode* child : ast_node->GetChildrenVector()) {
-			if (child->GetNodeType() != TNode::relExpr
-				|| child->GetNodeType() != TNode::expr) {
+				if(child->GetNodeType() != TNode::expr
+				&& child->GetNodeType() != TNode::constValue
+				&& child->GetNodeType() != TNode::varName) {
 				throw "Invalid Expression";
 			}
 		}
 	}
 
 	if (ast_node->GetNodeType() == TNode::expr) {
-	// allowed types are const and var
+	// allowed types are expr and const and var
 		for (TNode* child : ast_node->GetChildrenVector()) {
 			if (child->GetNodeType() != TNode::constValue
-				|| child->GetNodeType() != TNode::varName) {
+				&& child->GetNodeType() != TNode::expr
+				&& child->GetNodeType() != TNode::varName) {
 				throw "Invalid Expression";
 			}
 		}
