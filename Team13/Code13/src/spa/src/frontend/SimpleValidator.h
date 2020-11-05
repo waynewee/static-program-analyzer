@@ -4,6 +4,8 @@
 #include <vector>
 #include "FrontendTypes.h"
 
+#define SHOW_STMT_INDX false
+
 using namespace std;
 
 class SimpleValidator {
