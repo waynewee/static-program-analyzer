@@ -80,6 +80,7 @@ public:
 
     STMT_IDX_SET FilterStmtTypes(STMT_IDX_SET unfiltered, STATEMENT_TYPE type);
     STMT_STMT_PAIR_LIST FilterStmtTypes(STMT_STMT_PAIR_LIST unfiltered, STATEMENT_TYPE type1, STATEMENT_TYPE type2);
+    STMT_VAR_PAIR_LIST FilterStmtTypes(STMT_VAR_PAIR_LIST unfiltered, STATEMENT_TYPE type);
 
 protected:
     static DataManager data_manager_;

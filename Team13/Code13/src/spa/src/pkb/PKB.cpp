@@ -64,6 +64,9 @@ STMT_STMT_PAIR_LIST PKB::AffectsManager::all_affects_star_;
 
 STMT_IDX_SET PKB::FilterStmtTypes(STMT_IDX_SET unfiltered, STATEMENT_TYPE type) {
     auto result = STMT_IDX_SET();
+    if (type == allStatement) {
+        return unfiltered;
+    }
     for (auto s : unfiltered) {
         if (data_manager_.IsStmt(type, s)) {
             result.insert(s);
@@ -72,9 +75,39 @@ STMT_IDX_SET PKB::FilterStmtTypes(STMT_IDX_SET unfiltered, STATEMENT_TYPE type) 
     return result;
 }
 STMT_STMT_PAIR_LIST PKB::FilterStmtTypes(STMT_STMT_PAIR_LIST unfiltered, STATEMENT_TYPE type1, STATEMENT_TYPE type2) {
+    if (type1 == allStatement && type2 == allStatement) {
+        return unfiltered;
+    }
     auto result = STMT_STMT_PAIR_LIST();
+    if (type1 == allStatement) {
+        for (auto pair : unfiltered) {
+            if (data_manager_.IsStmt(type2, pair.s2)) {
+                result.push_back(pair);
+            }
+        }
+
+    } else if (type2 == allStatement) {
+        for (auto pair : unfiltered) {
+            if (data_manager_.IsStmt(type1, pair.s1)) {
+                result.push_back(pair);
+            }
+        }
+    } else {
+        for (auto pair : unfiltered) {
+            if (data_manager_.IsStmt(type1, pair.s1) && data_manager_.IsStmt(type2, pair.s2)) {
+                result.push_back(pair);
+            }
+        }
+    }
+    return result;
+}
+STMT_VAR_PAIR_LIST PKB::FilterStmtTypes(STMT_VAR_PAIR_LIST unfiltered, STATEMENT_TYPE type) {
+    if (type == allStatement) {
+        return unfiltered;
+    }
+    auto result = STMT_VAR_PAIR_LIST();
     for (auto pair : unfiltered) {
-        if (data_manager_.IsStmt(type1, pair.s1) && data_manager_.IsStmt(type2, pair.s2)) {
+        if (data_manager_.IsStmt(type, pair.s)) {
             result.push_back(pair);
         }
     }
