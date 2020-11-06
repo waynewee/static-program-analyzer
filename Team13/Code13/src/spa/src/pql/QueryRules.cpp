@@ -50,7 +50,7 @@ bool QueryRules::IsName(string token) {
 
 bool QueryRules::IsInteger(string token) {
 	bool result = false;
-	regex expr("[0-9]*");
+	regex expr("[1-9][0-9]*");
 	if (regex_match(token, expr)) {
 		result = true;
 	}
@@ -676,7 +676,11 @@ bool QueryRules::IsRelCond(string token, STRING_STRING_MAP declared_var_names) {
 	bool result = true;
 	string temp_token = token;
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
-
+	if (!IsRelRef(temp_token, declared_var_names)) {
+		result = false;
+		return result;
+	}
+	/*
 	string and_token = "and";
 	size_t pos = 0;
 	while ((pos = temp_token.find(and_token)) != string::npos) {
@@ -692,6 +696,7 @@ bool QueryRules::IsRelCond(string token, STRING_STRING_MAP declared_var_names) {
 			return result;
 		}
 	}
+	*/
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token); // no and only one clause, OR and is erased until last clause
 
 	// cout << "relCond temptoken:" << temp_token << endl;
@@ -1579,7 +1584,7 @@ bool QueryRules::IsPatternCond(string token, STRING_STRING_MAP declared_var_name
 	bool first_passed = false;
 	while (temp_token.find_first_not_of(' ') != string::npos && !temp_token.empty()) {
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
-		if (first_passed) {
+		/* if (first_passed) {
 			string and_token = temp_token.substr(0, temp_token.find_first_of(" "));
 			// cout << "AND TOKEN:" << and_token << endl;
 			if (and_token.compare("and") != 0) {
@@ -1587,7 +1592,7 @@ bool QueryRules::IsPatternCond(string token, STRING_STRING_MAP declared_var_name
 				return result;
 			}
 			temp_token.erase(0, temp_token.find_first_of(" "));
-		}
+		}*/
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
 		string pattern_token = temp_token;
 		// cout << "patterntoken:" << pattern_token << endl;

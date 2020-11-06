@@ -10,6 +10,7 @@
 #include <TokenType.h>
 #include <Token.h>
 #include <FrontendTypes.h>
+#include <ExprValidator.h>
 
 using namespace std;
 
@@ -32,8 +33,6 @@ TNode* ASTBuilder::BuildMainPrgNode(TOKEN_LIST token_list) {
 		TNode* proc_node = ASTBuilder::BuildProcNode();
 		program_node->AddChild(proc_node);
 	}
-
-	//program_node->Print(program_node);
 
 	return program_node;
 }

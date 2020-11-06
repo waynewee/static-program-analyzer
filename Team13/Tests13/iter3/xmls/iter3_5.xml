@@ -1,0 +1,8 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>iter3</name><parsing_time_taken>834.000000</parsing_time_taken>
+</info>
+<queries>
+<query>
+<id ReturnTuple="1" Affectsstar="1" Callsstar="1" Modifies="2" Parentstar="1" UnnamedVar="4" Uses="2" Pattern="2" SuchThat="6" CondNum="20" RelNum="7" comment="sort within group by number of rows in result table">1</id><querystr><![CDATA[assign a; variable v; stmt s1; procedure p1, p2; if ifs;  Select <a, v> pattern ifs("x", _, _) such that Uses(p1, _) such that Affects*(222, s1) such that Calls*(p1, p2) such that Parent*(209, s1) pattern a(v, _) such that Modifies(p2, v) and Modifies(ifs, v) such that Uses(s1, v)        ]]></querystr>

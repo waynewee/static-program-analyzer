@@ -3,4 +3,6 @@ Invoke-Expression -Command "autotester.exe iter3_2_source_patternAssign.txt iter
 Invoke-Expression -Command "autotester.exe iter3_3_affects_source.txt iter3_3_affects_queries.txt xmls/iter3_3.xml"
 Invoke-Expression -Command "autotester.exe iter3_4_affectsT_source.txt iter3_4_affectsT_queries.txt xmls/iter3_4.xml"
 Invoke-Expression -Command "autotester.exe iter3_5_optimization_source.txt iter3_5_optimization_queries.txt xmls/iter3_5.xml"
-Invoke-Expression -Command "autotester.exe iter3-S5-source_many_assigns.txt iter3-S5-queries_affects.txt xmls/iter3_S5.xml"
+Invoke-Expression -Command "autotester.exe iter3_6_source_stress.txt iter3_6_queries_stress.txt xmls/iter3_6.xml"
+Invoke-Expression -Command "autotester.exe iter3_7_source_many_assigns.txt iter3_7_queries_affects.txt xmls/iter3_7.xml"
+Invoke-Expression -Command "autotester.exe iter3_8_source_multiple_clauses.txt iter3_8_queries_multiple_clauses.txt xmls/iter3_8.xml"

@@ -156,8 +156,9 @@ bool QuerySyntacticValidator::IsRelRef(string token) {
 
 	if (relref_token_type.compare(TYPE_COND_MODIFIES) == 0 || relref_token_type.compare(TYPE_COND_USES) == 0) {
 		// first arg cannot be underscore
+		cout << "GOT USES:FIRST ARG IS:" << first_arg << endl;
 		if (first_arg.compare("_") == 0) {
-			result = false;
+			result = true;
 			return result;
 		}
 		// first arg can be stmtref or entref
@@ -314,27 +315,36 @@ bool QuerySyntacticValidator::ValidatePatternClause(string token, STRING_STRING_
 	if (declared_var_names.count(pattern_type_token) != 0) {
 		pattern_type_token_type = declared_var_names.at(pattern_type_token);
 	}
-
-	if (!IsExpressionSpec(second_arg)) {
+	cout << "SECOND_ARG IS :" << second_arg << endl;
+	if (!IsExpressionSpec(second_arg) && pattern_type_token_type.compare(TYPE_DESIGN_ENTITY_IF) != 0) {
 		// syntax error in expression spec.
+		cout << "WE REACHED HERE EXPRESSION SPEC" << endl;
 		result = false;
 		return result;
 	}
 
-	if (pattern_type_token_type.compare(TYPE_DESIGN_ENTITY_IF) == 0 || pattern_type_token_type.compare(TYPE_DESIGN_ENTITY_WHILE) == 0) {
+	if (pattern_type_token_type.compare(TYPE_DESIGN_ENTITY_WHILE) == 0) {
 		if (second_arg.compare("_") != 0) {
 			result = false;
 			return result;
 		}
 	}
+
 	if (pattern_type_token_type.compare(TYPE_DESIGN_ENTITY_IF) == 0) {
 		if (temp_token.find(",") == string::npos) {
 			// cannot find comma -> no more arguments
 			result = false;
 			return result;
 		}
-		temp_token.erase(0, temp_token.find_first_of(",") + 1);
-		string third_arg = temp_token.substr(0, temp_token.length() - 1);
+		string supposed_second_arg = second_arg.substr(0, second_arg.find_first_of(","));
+		// cout << "supposed_second_arg" << supposed_second_arg << "|"<< endl;
+		if (supposed_second_arg.compare("_") != 0) {
+			result = false;
+			return result;
+		}
+		second_arg.erase(0, second_arg.find_first_of(",") + 1);
+		string third_arg = second_arg;
+		// cout << "third_arg is:" << third_arg << "|" << endl;
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&third_arg);
 		if (third_arg.compare("_") != 0) {
 			result = false;
@@ -397,7 +407,7 @@ bool QuerySyntacticValidator::IsName(string token) {
 
 bool QuerySyntacticValidator::IsInteger(string token) {
 	bool result = false;
-	regex expr("[0-9]*");
+	regex expr("[1-9][0-9]*");
 	if (regex_match(token, expr)) {
 		result = true;
 	}
