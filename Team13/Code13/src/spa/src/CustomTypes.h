@@ -127,6 +127,7 @@ enum STATEMENT_TYPE {
     readStatement,
     printStatement,
     callStatement,
+    allStatement
 };
 
 #endif
