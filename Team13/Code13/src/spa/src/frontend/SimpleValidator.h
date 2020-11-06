@@ -31,7 +31,7 @@ private:
 	bool IsValidCallStmt();
 	bool IsValidAssignment(Token name_token);
 	bool IsValidStmtList();
-	bool IsValidExpression(TOKEN_LIST expr_list);
+	//bool IsValidExpression(TOKEN_LIST expr_list);
 
 	vector<Token> GetExpressionTokens(ExpressionType expr_type);
 	int GetEndIndxOfExpression(ExpressionType expr_type);

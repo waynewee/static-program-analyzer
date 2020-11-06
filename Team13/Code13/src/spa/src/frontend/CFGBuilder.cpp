@@ -17,10 +17,6 @@ CFGBuilder::CFGBuilder(TNode* root_node) {
 	//PrintCFG();
 }
 
-CFG* CFGBuilder::GetCFG() {
-	return cfg_;
-}
-
 void CFGBuilder::BuildCFG(TNode* proc_node) {
 
 	TNode* first_stmt_list_node = proc_node->GetChildrenVector().at(1);
