@@ -18,9 +18,9 @@ public:
 	STRINGLIST_SET EvaluateWithClause(STRING_STRING_MAP entity_map, string lhs, string rhs);
 	STRINGLIST_SET EvaluatePatternCall(string f_call, string param1, string param2, string type);
 	STRINGLIST_SET EvaluatePatternCall(string f_call, string param, string type);
-	STRINGLIST_SET EvaluateOneSynonymSet(string f_call, string param);
-	STRINGLIST_SET EvaluateInverseOneSynonymSet(string f_call, string param);
-	STRINGLIST_SET EvaluateTwoSynonymSet(string output_var_type, bool is_same_synonyms = false);
+	STRINGLIST_SET EvaluateOneSynonymSet(string f_call, string param, string entity_type);
+	STRINGLIST_SET EvaluateInverseOneSynonymSet(string f_call, string param, string entity_type);
+	STRINGLIST_SET EvaluateTwoSynonymSet(string output_var_type, string param1_entity_type, string param2_entity_type, bool is_same_synonyms = false);
 	STRINGLIST_SET EvaluateAllCall(string output_var_type);
 
 	STRING_SET ConvertSet(STRINGLIST_SET result_set);
@@ -46,6 +46,7 @@ public:
 	STRINGLIST_SET GetAlternateResult(string values, string type);
 	STRINGLIST_SET GetAlternateResult(STRING_LIST values, int pos_to_check, string type);
 	STRINGLIST_SET GetAlternateResult(STRINGLIST_SET values, int pos_to_check, string type);
+	STATEMENT_TYPE GetStmtType(string entity_type);
 
 	bool IsVar(string var);
 	bool IsString(string var);
