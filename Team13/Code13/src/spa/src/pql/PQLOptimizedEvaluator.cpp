@@ -1886,7 +1886,6 @@ void PQLOptimizedEvaluator::RemoveIrrelevant(STRINGLIST_SET* value, STRINGLIST_S
 	}
 }
 
-
 STRING_SET PQLOptimizedEvaluator::GetNewResult(STRINGLIST_SET value, int pos_to_check) {
 	if (PQL_DEBUG) {
 		cout << "PQLOptimizedEvaluator - GetNewResult" << endl;
@@ -1972,7 +1971,6 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetCartesianProduct(STRINGLIST_STRINGLISTS
 					}
 					else {
 						// Merge with respect to dependencies
-						
 						results = GetDependencyProduct(results, values, { i }, added_index, type, attr);
 					}
 					added_output.push_back(parsed_output);
@@ -1994,7 +1992,12 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetDependencyProduct(STRINGLIST_SET result
 	STRINGLIST_SET final_results = *(new STRINGLIST_SET());
 
 	if (results.empty()) {
-		results = GetNewResult(values, pos_to_add);
+		final_results = GetNewResult(values, pos_to_add);
+
+		// Only should be called by GetCartesianProduct()
+		if (!type.empty() && !attr.empty() && !IsSameEntityType(type, attr)) {
+			final_results = GetAlternateResult(final_results, pos_to_add.at(0), type);
+		}
 	}
 	else {
 		for (STRING_LIST* set : results) {
@@ -2054,7 +2057,11 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetNoDependencyProduct(STRINGLIST_SET resu
 	STRINGLIST_SET final_results = *(new STRINGLIST_SET());
 
 	if (results.empty()) {
+		// check attribute if present
 		final_results = ConvertSet(values);
+		if (!type.empty() && !attr.empty() && !IsSameEntityType(type, attr)) {
+			final_results = GetAlternateResult(final_results, 0, type);
+		}
 	}
 	else {
 		for (STRING_LIST* set : results) {
