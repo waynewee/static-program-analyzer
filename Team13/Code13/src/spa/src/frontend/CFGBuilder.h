@@ -18,7 +18,6 @@ public:
 
 	CFGBuilder(TNode* root_node);
 	void BuildCFG(TNode* proc_node);
-	CFG* GetCFG();
 	void TraverseAST(vector<TNode*> stmt_list);
 	bool IsStmt(TNode* ast_node);
 	bool IsStmtList(TNode* ast_node);

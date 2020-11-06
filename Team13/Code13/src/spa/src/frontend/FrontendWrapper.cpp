@@ -16,6 +16,14 @@ FrontendWrapper::FrontendWrapper(string file_contents) {
 
 }
 
+CFG* FrontendWrapper::GetCFG(TNode* ast_root_node) {
+
+	CFGBuilder cfg_builder = CFGBuilder(ast_root_node);
+	CFG* cfg = cfg_builder.cfg_;
+
+	return cfg;
+}
+
 TNode* FrontendWrapper::GetAST() {
 
 	ASTBuilder ast_builder;
@@ -24,12 +32,5 @@ TNode* FrontendWrapper::GetAST() {
 	// ast_root_node->Print(ast_root_node);
 
 	return ast_root_node;
-}
 
-CFG* FrontendWrapper::GetCFG(TNode* ast_root_node) {
-
-	CFGBuilder cfg_builder = CFGBuilder(ast_root_node);
-	CFG* cfg = cfg_builder.GetCFG();
-
-	return cfg;
 }

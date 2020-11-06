@@ -11,18 +11,20 @@
 #include <testUtils/TreeTraverse.h>
 #include <Token.h>
 #include <TokenType.h>
+#include <ExprValidator.h>
 
 using namespace std;
 
 ExprParser::ExprParser(TOKEN_LIST expr_list) {
 
-	ExprValidator::Validate(expr_list);
-
 	token_list_ = expr_list;
 }
 
 TNode* ExprParser::Parse() {
-	return ParseQueue(Shunt());
+	TNode* root_node = ParseQueue(Shunt());
+	ExprValidator::Validate(root_node);
+
+	return root_node;
 }
 
 TNode* ExprParser::ParseQueue( SHUNTING_QUEUE shunted_queue ) {
