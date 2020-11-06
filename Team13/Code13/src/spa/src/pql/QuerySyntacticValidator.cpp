@@ -397,7 +397,7 @@ bool QuerySyntacticValidator::IsName(string token) {
 
 bool QuerySyntacticValidator::IsInteger(string token) {
 	bool result = false;
-	regex expr("[0-9]*");
+	regex expr("[1-9][0-9]*");
 	if (regex_match(token, expr)) {
 		result = true;
 	}
