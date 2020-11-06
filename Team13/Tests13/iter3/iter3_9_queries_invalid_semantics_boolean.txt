@@ -43,15 +43,15 @@ call cl; while w;
 Select BOOLEAN pattern w (cl, _)
 FALSE
 5000
-10 - invalid semantics but valid syntax - stmtref instead of entref in if pattern
-assign a; if ifs;
-Select BOOLEAN pattern ifs (a, _)
-FALSE
+10 - invalid syntax, assign pattern type with 3 args
+assign a; if ifs; variable v;
+Select BOOLEAN pattern a (v, _, _)
+none
 5000
-11 - invalid semantics but valid syntax - entref instead of stmtref in 2nd arg of such that clause
+11 - syntax error : string found in 2nd arg of parent clause
 stmt s; procedure p;
 Select BOOLEAN such that Parent ( 12 , "x" )
-FALSE
+none
 5000
 12 - invalid semantics but valid syntax - redeclared synonym in same declaration
 stmt s, s;
@@ -78,10 +78,10 @@ stmt s;
 Select BOOLEAN such that Modifies ( _ , "x")
 FALSE
 5000
-17 - invalid semantics but valid syntax - stmtref instead of entref in first arg of modifies
+17 - valid - ModifiesS
 stmt s, s1;
 Select BOOLEAN such that Modifies ( s , "x")
-FALSE
+TRUE
 5000
 18 - invalid semantics but valid syntax - stmtref instead of entref in second arg of uses
 stmt s, s1;
@@ -111,5 +111,10 @@ FALSE
 23 - invalid semantics but valid syntax - variable inside Calls
 variable v; procedure cl;
 Select BOOLEAN such that Calls (_, "procA")
+FALSE
+5000
+24 - invalid semantics but valid syntax - underscore as first arg of Uses
+stmt s;
+Select BOOLEAN such that Uses ( _ , "x")
 FALSE
 5000

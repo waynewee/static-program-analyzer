@@ -107,7 +107,7 @@ QueryInfo PQLParser::Parse(string s) {
         This loop erases the clause after parsing them, and loops until the string is empty.
         If it's a suchthat or with clause,
         */
-        regex r("such[\\s]that[\\s*]|pattern[\\s*]|with[\\s*]|and[\\s*]");
+        regex r("such[\\s]that[\\s]+[A-Z]|pattern[\\s]+[a-zA-Z]|with[\\s]+[a-zA-Z0-9|\\\"]|and[\\s]+[a-zA-Z0-9|\\\"]");
         string current_clause_type;
         bool current_is_and_clause = false;
         bool first_passed = false;
