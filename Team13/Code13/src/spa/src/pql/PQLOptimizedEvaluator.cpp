@@ -1236,12 +1236,15 @@ STRINGLIST_SET PQLOptimizedEvaluator::EvaluateWithClause(STRING_STRING_MAP entit
 			// remove directly
 			STRING_SET tmp = STRING_SET({ parsed_string });
 			RemoveIrrelevant(&value, ConvertSet(tmp), 0);
+			Print(value);
 		}
 		else {
 			// convert then remove
 			STRINGLIST_SET tmp = GetAlternateResult(parsed_string, lhs_type);
-
+			cout << parsed_string << endl;
+			Print(tmp);
 			lhs_result.empty() || tmp.empty() ? value = tmp : RemoveIrrelevant(&value, tmp, 0);
+			Print(value);
 		}
 	}
 	else if (IsVar(lhs) && IsVar(rhs)) {
@@ -1875,7 +1878,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateResult(string values, string t
 			results = ConvertSet(rm.GetStmtUses(ParsingStmtRef(values)));
 		}
 		else {
-			results = ConvertSet(PKB().FilterStmtTypes(rm.GetInverseStmtUses(ParsingEntRef(values)), STATEMENT_TYPE::printStatement));
+			results = ConvertSet(rm.GetInverseStmtUses(ParsingEntRef(values)));
 		}
 
 	}
@@ -1884,7 +1887,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateResult(string values, string t
 			results = ConvertSet(rm.GetStmtModifies(ParsingStmtRef(values)));
 		}
 		else {
-			results = ConvertSet(PKB().FilterStmtTypes(rm.GetInverseStmtModifies(ParsingEntRef(values)), STATEMENT_TYPE::printStatement));
+			results = ConvertSet(rm.GetInverseStmtModifies(ParsingEntRef(values)));
 		}
 	}
 	else {
