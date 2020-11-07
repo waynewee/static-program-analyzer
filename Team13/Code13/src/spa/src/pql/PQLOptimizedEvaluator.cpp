@@ -1878,7 +1878,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateResult(string values, string t
 			results = ConvertSet(rm.GetStmtUses(ParsingStmtRef(values)));
 		}
 		else {
-			results = ConvertSet(rm.GetInverseStmtUses(ParsingEntRef(values)));
+			results = ConvertSet(PKB().FilterStmtTypes(rm.GetInverseStmtUses(ParsingEntRef(values)), STATEMENT_TYPE::printStatement));
 		}
 
 	}
@@ -1887,7 +1887,7 @@ STRINGLIST_SET PQLOptimizedEvaluator::GetAlternateResult(string values, string t
 			results = ConvertSet(rm.GetStmtModifies(ParsingStmtRef(values)));
 		}
 		else {
-			results = ConvertSet(rm.GetInverseStmtModifies(ParsingEntRef(values)));
+			results = ConvertSet(PKB().FilterStmtTypes(rm.GetInverseStmtModifies(ParsingEntRef(values)), STATEMENT_TYPE::readStatement));
 		}
 	}
 	else {
