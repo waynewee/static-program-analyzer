@@ -177,7 +177,18 @@ QueryInfo PQLParser::Parse(string s) {
             }
             full_clause.append(" ");
             full_clause.append(clause_arguments);
+            cout << "FULLCLAUSE BEFORE TRIM WHITESPACE:" << full_clause << endl;
             WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&full_clause);
+
+            if (full_clause.compare(TYPE_WITH_CLAUSE) == 0 
+                || full_clause.compare(TYPE_AND_CLAUSE) == 0
+                || full_clause.compare(TYPE_SUCH_THAT_CLAUSE) == 0
+                || full_clause.compare(TYPE_PATTERN_CLAUSE) == 0
+                )
+            {
+                // found and with/ with and / with pattern (basically two clause names that spoils the regex)
+                throw("syntax error: two clause separators found in consecutive");
+            }
             // cout << "full_clause:" << full_clause << endl;
             // cout << "REMAINING QUERY:" << query << endl;
 
