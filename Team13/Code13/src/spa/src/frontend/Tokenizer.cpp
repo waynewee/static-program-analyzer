@@ -193,6 +193,14 @@ bool Tokenizer::IsStmtName(string stmt_name) {
 }
 
 bool Tokenizer::IsInteger(string integer) {
+
+	//check if first character is digit and is not zero
+
+	char first_char = integer.at(0);
+
+	if (!isdigit(first_char) || first_char == '0') {
+		return false;
+	}
 	
 	for (char _c : integer) {
 		if (!isdigit(_c)) {
