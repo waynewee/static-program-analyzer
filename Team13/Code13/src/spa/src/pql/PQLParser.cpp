@@ -541,6 +541,16 @@ bool PQLParser::IsPatternPartial(string token) {
 
     string second_arg_first_two_chars;
     string second_arg_last_two_chars;
+
+    if (second_arg.front() == '_' && second_arg.back() == '_') {
+        string temp_second_arg = second_arg.substr(1, second_arg.length() - 2);
+        WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_second_arg);
+        string fixed_second_arg = "_";
+        fixed_second_arg.append(temp_second_arg);
+        fixed_second_arg.append("_");
+        second_arg = fixed_second_arg;
+    } 
+
     if (second_arg.length() > 2) {
         second_arg_first_two_chars = second_arg.substr(0, 2);
         second_arg_last_two_chars = second_arg.substr(second_arg.length() - 2, second_arg.length());
