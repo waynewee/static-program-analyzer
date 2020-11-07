@@ -193,14 +193,16 @@ bool Tokenizer::IsStmtName(string stmt_name) {
 }
 
 bool Tokenizer::IsInteger(string integer) {
-	
-	for (char _c : integer) {
-		if (!isdigit(_c)) {
-			return false;
-		}
+
+	bool result = false;
+
+	regex expr("^0$|^[1-9][0-9]*$");
+
+	if (regex_match(integer, expr)) {
+		result = true;
 	}
 
-	return true;
+	return result;
 }
 
 bool Tokenizer::IsVar(string var_name) {
