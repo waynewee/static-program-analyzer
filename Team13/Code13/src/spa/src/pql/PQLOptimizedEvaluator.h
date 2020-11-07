@@ -10,18 +10,21 @@ class PQLOptimizedEvaluator
 	typedef unordered_map<STRING_SET*, FUNCTION_QUEUE> STRINGSET_FUNCTIONQUEUE_MAP;
 public:
 	QueryResult Evaluate(QueryInfo query_info);
-	STRINGLIST_STRINGLISTSET_MAP AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP results_map);
+	STRINGLIST_STRINGLISTSET_MAP AddResult(STRING_LIST key, STRINGLIST_SET value, STRINGLIST_STRINGLISTSET_MAP results_map, bool is_loop = false);
 	QueryResult SetResult(bool is_boolean_output, string bool_result, STRINGLIST_SET result);
 		
 	bool ParseClauses(QueryInfo query_info, STRINGSET_STRINGLISTSET_MAP* synonyms_map, STRING_INTEGER_MAP* occurrence_count);
 	bool EvaluateNoSynonymSet(string f_call, string param1, string param2);
-	STRINGLIST_SET EvaluateWithClause(STRING_STRING_MAP entity_map, string lhs, string rhs);
+	STRINGLIST_SET EvaluateWithClause(STRING_STRING_MAP entity_map, string lhs, string rhs, STRINGLIST_SET lhs_result = STRINGLIST_SET(), STRINGLIST_SET rhs_result = STRINGLIST_SET());
 	STRINGLIST_SET EvaluatePatternCall(string f_call, string param1, string param2, string type);
 	STRINGLIST_SET EvaluatePatternCall(string f_call, string param, string type);
 	STRINGLIST_SET EvaluateOneSynonymSet(string f_call, string param, string entity_type);
 	STRINGLIST_SET EvaluateInverseOneSynonymSet(string f_call, string param, string entity_type);
 	STRINGLIST_SET EvaluateTwoSynonymSet(string output_var_type, string param1_entity_type, string param2_entity_type, bool is_same_synonyms = false);
 	STRINGLIST_SET EvaluateAllCall(string output_var_type);
+
+	// STRING_STRINGLISTSET_MAP GetConvertTable(STRINGLIST_SET c_value, int index);
+	void AddResult(STRING_LIST curr_key, STRING_LIST* tmp_key, STRING_STRING_STRINGLISTSET_MAP curr_lookup, STRING_STRING_STRINGLISTSET_MAP* tmp_lookup);
 
 	STRING_SET ConvertSet(STRINGLIST_SET result_set);
 	STRINGLIST_SET ConvertSet(INTEGER_SET result_set);
@@ -35,10 +38,12 @@ public:
 	INTEGER_LIST GetOutputSynonyms(STRING_LIST synonyms, STRING_LIST output_list);
 	STRING_SET GetIntersectResult(STRING_SET val1, STRING_SET val2);
 	STRING_SET GetIntersectResult(STRING_SET val1, STRINGLIST_SET val2, int pos_to_check);
+	STRINGLIST_SET GetRelatedResult(string synonym, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
 	STRING_SET GetNewResult(STRINGLIST_SET value, int pos_to_check);
 	STRING_SET* GetRelatedSynonyms(string synonym, STRINGSET_STRINGLISTSET_MAP synonyms_map);
 	STRING_SET* GetRelatedSynonyms(STRING_SET synonyms, STRINGSET_STRINGLISTSET_MAP* synonyms_map);
 	STRING_LIST* GetRelatedSynonyms(STRING_LIST synonyms, STRINGLIST_STRINGLISTSET_MAP synonyms_map);
+	STRING_LIST GetClauseKey(STRING_LIST clause);
 	STRINGLIST_SET GetNewResult(STRINGLIST_SET value, INTEGER_LIST pos_to_check);
 	STRINGLIST_SET GetCartesianProduct(STRINGLIST_STRINGLISTSET_MAP results_map, STRING_LIST output_list, STRING_STRING_MAP entity_map);
 	STRINGLIST_SET GetNoDependencyProduct(STRINGLIST_SET results, STRING_SET values, string type = "", string attr = "");
@@ -76,4 +81,5 @@ public:
 	void Print(INTEGERPAIR_SET to_print);
 	void Print(STRINGSET_FUNCTIONQUEUE_MAP to_print);
 	void Print(FUNCTION_QUEUE to_print);
+	void Print(STRING_STRINGLISTSET_MAP to_print);
 }; 
