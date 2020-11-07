@@ -1,6 +1,0 @@
-Invoke-Expression -Command "autotester.exe iter3_1_source_BOOLEAN.txt iter3_1_queries_BOOLEAN.txt xmls/iter3_1.xml"
-Invoke-Expression -Command "autotester.exe iter3_2_source_patternAssign.txt iter3_2_queries_patternAssign.txt xmls/iter3_2.xml"
-Invoke-Expression -Command "autotester.exe iter3_3_affects_source.txt iter3_3_affects_queries.txt xmls/iter3_3.xml"
-Invoke-Expression -Command "autotester.exe iter3_4_affectsT_source.txt iter3_4_affectsT_queries.txt xmls/iter3_4.xml"
-Invoke-Expression -Command "autotester.exe iter3_5_optimization_source.txt iter3_5_optimization_queries.txt xmls/iter3_5.xml"
-Invoke-Expression -Command "autotester.exe iter3-S5-source_many_assigns.txt iter3-S5-queries_affects.txt xmls/iter3_S5.xml"
