@@ -402,6 +402,10 @@ bool QueryRules::IsWithClause(string token, STRING_STRING_MAP declared_var_names
 	}
 	temp_token.erase(0, temp_token.find_first_of(" "));
 	WhitespaceHandler::TrimLeadingWhitespaces(&temp_token);
+	if (temp_token.empty()) {
+		result = false;
+		return result;
+	}
 	string attr_cond_token = temp_token;
 
 	if (!IsAttrCond(attr_cond_token, declared_var_names)) {
@@ -549,16 +553,22 @@ bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_name
 		// cout << "YES FIRST REF IS INT" << endl;
 		first_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
 	}
-	else if (first_ref.front() == '\"' && first_ref.back() == '\"') {
-		string ident = first_ref.substr(1, first_ref.length() - 2);
-		//cout << "IDENT IS:" << ident << endl;
-		if (IsIdent(ident)) {
-			first_ref_type = TYPE_WITH_ARGUMENT_STRING;
+	else if (first_ref.length() != 0) {
+		if (first_ref.front() == '\"' && first_ref.back() == '\"') {
+			string ident = first_ref.substr(1, first_ref.length() - 2);
+			//cout << "IDENT IS:" << ident << endl;
+			if (IsIdent(ident)) {
+				first_ref_type = TYPE_WITH_ARGUMENT_STRING;
+			}
+			else {
+				result = false;
+				return result;
+			}
 		}
-		else {
-			result = false;
-			return result;
-		}
+	}
+	else if (first_ref.length() == 0) {
+		result = false;
+		return result;
 	}
 	if (second_ref.find(".") != string::npos) {
 		second_ref_synonym = second_ref.substr(0, second_ref.find_first_of("."));
@@ -583,16 +593,22 @@ bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_name
 		second_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
 		result = true;
 	}
-	else if (second_ref.front() == '\"' && second_ref.back() == '\"') {
-		string ident = second_ref.substr(1, second_ref.length() - 2);
-		// cout << "ident is :" << ident << endl;
-		if (IsIdent(ident)) {
-			second_ref_type = TYPE_WITH_ARGUMENT_STRING;
+	else if (second_ref.length() != 0) {
+			if (second_ref.front() == '\"' && second_ref.back() == '\"') {
+			string ident = second_ref.substr(1, second_ref.length() - 2);
+			// cout << "ident is :" << ident << endl;
+			if (IsIdent(ident)) {
+				second_ref_type = TYPE_WITH_ARGUMENT_STRING;
+			}
+			else {
+				result = false;
+				return result;
+			}
 		}
-		else {
-			result = false;
-			return result;
-		}
+	}
+	else if (second_ref.length() == 0) {
+		result = false;
+		return result;
 	}
 	// cout << "FIRST_ARG_TYPE:" << first_ref_type << endl;
 	// cout << "SECOND_ARG_TYPE:" << second_ref_type << endl;
@@ -605,6 +621,10 @@ bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_name
 
 bool QueryRules::IsRef(string token, string synonym_type) {
 	bool result = false;
+	if (token.length() == 0) {
+		result = false;
+		return result;
+	}
 	if (token.front() == '\"' && token.back() == '\"') {
 		// remember to ensure that what's inside the "" is already trimmed!
 		string ident = token.substr(1, token.length() - 2);
@@ -880,7 +900,13 @@ bool QueryRules::IsModifiesP(string token, STRING_STRING_MAP declared_var_names)
 	}
 	// Erase Modifies away
 	temp_token.erase(0, temp_token.find_first_of("("));
-	if (temp_token.front() != '(' || temp_token.back() != ')') {
+	if (temp_token.length() != 0) {
+		if (temp_token.front() != '(' || temp_token.back() != ')') {
+			result = false;
+			return result;
+		}
+	}
+	else {
 		result = false;
 		return result;
 	}
