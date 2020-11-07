@@ -50,7 +50,7 @@ bool QueryRules::IsName(string token) {
 
 bool QueryRules::IsInteger(string token) {
 	bool result = false;
-	regex expr("[1-9][0-9]*");
+	regex expr("^0$|^[1-9][0-9]*$");
 	if (regex_match(token, expr)) {
 		result = true;
 	}
@@ -546,6 +546,7 @@ bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_name
 		}
 	}
 	else if (IsInteger(first_ref)) {
+		// cout << "YES FIRST REF IS INT" << endl;
 		first_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
 	}
 	else if (first_ref.front() == '\"' && first_ref.back() == '\"') {
@@ -578,7 +579,9 @@ bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_name
 		}
 	}
 	else if (IsInteger(second_ref)) {
+		// cout << "YES SECOND REF IS INT" << endl;
 		second_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
+		result = true;
 	}
 	else if (second_ref.front() == '\"' && second_ref.back() == '\"') {
 		string ident = second_ref.substr(1, second_ref.length() - 2);
