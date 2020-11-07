@@ -94,11 +94,12 @@ typedef unordered_map<string, int> STRING_INTEGER_MAP;
 typedef unordered_map<string, STRING_LIST> STRING_STRINGLIST_MAP;
 typedef unordered_map<string, STRING_SET> STRING_STRINGSET_MAP;
 typedef unordered_map<string, STRINGLIST_LIST> STRING_STRINGLISTLIST_MAP;
+typedef unordered_map<string, STRINGLIST_SET> STRING_STRINGLISTSET_MAP;
 typedef unordered_map<STRING_LIST*, STRING_LIST> STRINGLIST_STRINGLIST_MAP;
 typedef unordered_map<STRING_LIST*, STRINGLIST_SET> STRINGLIST_STRINGLISTSET_MAP;
 typedef unordered_map<STRING_LIST*, STRING_SET> STRINGLIST_STRINGSET_MAP;
 typedef unordered_map<STRING_SET*, STRINGLIST_SET> STRINGSET_STRINGLISTSET_MAP;
-
+typedef unordered_map<string, STRING_STRINGLISTSET_MAP> STRING_STRING_STRINGLISTSET_MAP;
 #endif
 
 
