@@ -58,7 +58,7 @@ QueryInfo PQLParser::Parse(string s) {
         if (query.find("<") != string::npos) {
             // tuple in result cl
             supposed_select_token = PQLTokenizer::RetrieveTokenByOpeningAngleBracket(&query);
-            cout << "SUPPOSED SELECT TOKEN:" << supposed_select_token << endl;
+            // cout << "SUPPOSED SELECT TOKEN:" << supposed_select_token << endl;
         }
         else {
             supposed_select_token = PQLTokenizer::RetrieveToken(&query);
@@ -72,6 +72,9 @@ QueryInfo PQLParser::Parse(string s) {
 
         string supposed_result_cl;
         WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&query);
+        if (query.length() == 0) {
+            throw ("Empty after select clause.");
+        }
 
         if (query.find(">") != string::npos) {
             // found >, so we know that tuple has multiple elems : e.g. Select <s1, s2>
@@ -313,7 +316,7 @@ QueryInfo PQLParser::Parse(string s) {
 
     if (!is_query_valid) {
         query_info.SetValidToFalse();
-        //cout << "QUERY IS INVALID:" << endl;
+        cout << "QUERY IS INVALID:" << endl;
         query_info.SetOutputList(output_list);
         if (query_info.IsSemanticsInvalid()) {
            // cout << "invalid due to semantics, not syntax" << endl;
@@ -541,6 +544,16 @@ bool PQLParser::IsPatternPartial(string token) {
 
     string second_arg_first_two_chars;
     string second_arg_last_two_chars;
+
+    if (second_arg.front() == '_' && second_arg.back() == '_') {
+        string temp_second_arg = second_arg.substr(1, second_arg.length() - 2);
+        WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_second_arg);
+        string fixed_second_arg = "_";
+        fixed_second_arg.append(temp_second_arg);
+        fixed_second_arg.append("_");
+        second_arg = fixed_second_arg;
+    } 
+
     if (second_arg.length() > 2) {
         second_arg_first_two_chars = second_arg.substr(0, 2);
         second_arg_last_two_chars = second_arg.substr(second_arg.length() - 2, second_arg.length());

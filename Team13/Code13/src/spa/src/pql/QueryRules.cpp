@@ -50,7 +50,7 @@ bool QueryRules::IsName(string token) {
 
 bool QueryRules::IsInteger(string token) {
 	bool result = false;
-	regex expr("[1-9][0-9]*");
+	regex expr("^0$|^[1-9][0-9]*$");
 	if (regex_match(token, expr)) {
 		result = true;
 	}
@@ -546,6 +546,7 @@ bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_name
 		}
 	}
 	else if (IsInteger(first_ref)) {
+		// cout << "YES FIRST REF IS INT" << endl;
 		first_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
 	}
 	else if (first_ref.front() == '\"' && first_ref.back() == '\"') {
@@ -578,7 +579,9 @@ bool QueryRules::IsAttrCompare(string token, STRING_STRING_MAP declared_var_name
 		}
 	}
 	else if (IsInteger(second_ref)) {
+		// cout << "YES SECOND REF IS INT" << endl;
 		second_ref_type = TYPE_WITH_ARGUMENT_INTEGER;
+		result = true;
 	}
 	else if (second_ref.front() == '\"' && second_ref.back() == '\"') {
 		string ident = second_ref.substr(1, second_ref.length() - 2);
@@ -709,6 +712,32 @@ bool QueryRules::IsRelCond(string token, STRING_STRING_MAP declared_var_names) {
 
 bool QueryRules::IsRelRef(string token, STRING_STRING_MAP declared_var_names) {
 	bool result = false;
+	//cout << "THE RELREFCHECKING IS:" << token << endl;
+	string removed_relref_cond = token.substr(token.find_first_of("("), token.length());
+	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&removed_relref_cond);
+	//cout << "REMOVED RELREF COND:" << removed_relref_cond << endl;
+
+	string first_arg = removed_relref_cond.substr(0, removed_relref_cond.find_first_of(","));
+	//cout << "his length:" << removed_relref_cond.length() << endl;
+	string second_arg = removed_relref_cond.substr(removed_relref_cond.find_first_of(",") + 1);
+
+	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
+	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
+	//cout << "FIRST_ARG:" << first_arg << "|" << endl;
+	//cout << "SECOND_ARG:" << second_arg << "|" << endl;
+	if (first_arg.compare("(") == 0) {
+		// first arg empty
+		// cout << "first arg empty." << endl;
+		result = false;
+		return result;
+	}
+	if (second_arg.compare(")") == 0) {
+		// second arg empty
+		// cout << "second arg empty." << endl;
+		result = false;
+		return result;
+	}
+
 	if (IsModifiesP(token, declared_var_names)) {
 		result = true;
 		// cout << "It is ModifiesP" << endl;
@@ -1656,11 +1685,26 @@ bool QueryRules::IsAssign(string token, STRING_STRING_MAP declared_var_names) {
 
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
+
+	if (first_arg.empty()) {
+		result = false;
+		return result;
+	}
+
+	if (second_arg.empty()) {
+		result = false;
+		return result;
+	}
+
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
 	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_PROCEDURE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(first_arg, first_arg_type)) {
 		result = false;
@@ -1713,6 +1757,14 @@ bool QueryRules::IsExpressionSpec(string token) {
 bool QueryRules::IsExpr(string token) {
 	bool result = true;
 	string expression_token = token;
+	string empty_expr_check = token;
+
+	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&empty_expr_check);
+
+	if (empty_expr_check.empty()) {
+		result = false;
+		return result;
+	}
 
 	int open_bracket_count = 0;
 	bool prev_was_operator = false;
@@ -1720,6 +1772,8 @@ bool QueryRules::IsExpr(string token) {
 	bool prev_is_term = false;
 	bool prev_is_whitespace = false;
 	bool prev_is_zero = false;
+
+
 
 	if (IsOperator(expression_token.front()) || IsOperator(expression_token.back())) {
 		result = false;
@@ -1905,12 +1959,33 @@ bool QueryRules::IsSynIf(string token, STRING_STRING_MAP declared_var_names) {
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&third_arg);
+
+	if (first_arg.empty()) {
+		result = false;
+		return result;
+	}
+
+	if (second_arg.empty()) {
+		result = false;
+		return result;
+	}
+
+	if (third_arg.empty()) {
+		result = false;
+		return result;
+	}
+
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
 	// cout << "3rd arg:" << third_arg << "|" << endl;
 	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
+		// first arg cannot be proc.
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_PROCEDURE) == 0) {
+			result = false; 
+			return result;
+		}
 	}
 	if (!IsEntRef(first_arg, first_arg_type)) {
 		result = false;
@@ -1959,12 +2034,26 @@ bool QueryRules::IsSynWhile(string token, STRING_STRING_MAP declared_var_names) 
 
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
+
+	if (first_arg.empty()) {
+		result = false;
+		return result;
+	}
+
+	if (second_arg.empty()) {
+		result = false;
+		return result;
+	}
 	// cout << "First arg:" << first_arg << "|" << endl;
 	// cout << "2nd arg:" << second_arg << "|" << endl;
 	// cout << "3rd arg:" << third_arg << "|" << endl;
 	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_PROCEDURE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(first_arg, first_arg_type)) {
 		result = false;
