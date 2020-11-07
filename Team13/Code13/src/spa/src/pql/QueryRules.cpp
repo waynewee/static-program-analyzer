@@ -902,6 +902,10 @@ bool QueryRules::IsModifiesP(string token, STRING_STRING_MAP declared_var_names)
 	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(first_arg, first_arg_type)) {
 		result = false;
@@ -1022,6 +1026,10 @@ bool QueryRules::IsUsesP(string token, STRING_STRING_MAP declared_var_names) {
 	string first_arg_type = "none";
 	if (declared_var_names.count(first_arg) == 1) {
 		first_arg_type = declared_var_names.at(first_arg);
+		if (first_arg_type.compare(TYPE_DESIGN_ENTITY_VARIABLE) == 0) {
+			result = false;
+			return result;
+		}
 	}
 	if (!IsEntRef(first_arg, first_arg_type)) {
 		result = false;
