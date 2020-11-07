@@ -1681,6 +1681,10 @@ bool QueryRules::IsExpressionSpec(string token) {
 		return result;
 	}
 	if (temp_token.front() == '\"' && temp_token.back() == '\"') {
+		if (temp_token.length() <= 2) {
+			result = false;
+			return result;
+		}
 		temp_token = temp_token.substr(1, temp_token.length() - 2);
 		if (IsExpr(temp_token)) {
 			result = true;
@@ -1688,7 +1692,13 @@ bool QueryRules::IsExpressionSpec(string token) {
 		}
 	}
 	if (temp_token.front() == '_' && temp_token.back() == '_') {
+		if (temp_token.length() <= 4) {
+			result = false;
+			return result;
+		}
 		temp_token = temp_token.substr(1, temp_token.length() - 2);
+		// cout << "TEMP TOKEN IS:" << temp_token << "|" << endl;
+		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&temp_token);
 		if (temp_token.front() == '\"' && temp_token.back() == '\"') {
 			temp_token = temp_token.substr(1, temp_token.length() - 2);
 			if (IsExpr(temp_token)) {
@@ -1709,6 +1719,7 @@ bool QueryRules::IsExpr(string token) {
 	bool prev_was_open_bracket = false;
 	bool prev_is_term = false;
 	bool prev_is_whitespace = false;
+	bool prev_is_zero = false;
 
 	if (IsOperator(expression_token.front()) || IsOperator(expression_token.back())) {
 		result = false;
@@ -1718,6 +1729,7 @@ bool QueryRules::IsExpr(string token) {
 	for (char const& c : expression_token) {
 		if (c == ' ') {
 			prev_is_whitespace = true;
+			prev_is_zero = false;
 			continue;
 		}
 		if (c == '(') {
@@ -1729,6 +1741,7 @@ bool QueryRules::IsExpr(string token) {
 			prev_was_open_bracket = true;
 			prev_is_term = false;
 			prev_is_whitespace = false;
+			prev_is_zero = false;
 			continue;
 		}
 		else if (c == ')') {
@@ -1739,6 +1752,7 @@ bool QueryRules::IsExpr(string token) {
 			prev_is_term = false;
 			prev_is_whitespace = false;
 			open_bracket_count--;
+			prev_is_zero = false;
 		}
 		else if (IsOperator(c)) {
 			if (prev_was_operator || prev_was_open_bracket) {
@@ -1748,6 +1762,7 @@ bool QueryRules::IsExpr(string token) {
 			prev_was_operator = true;
 			prev_is_term = false;
 			prev_is_whitespace = false;
+			prev_is_zero = false;
 			continue;
 		}
 		else if (!isalpha(c) && !isdigit(c)) {
@@ -1755,6 +1770,11 @@ bool QueryRules::IsExpr(string token) {
 			return result;
 		}
 		else if (isalpha(c) || isdigit(c)) {
+			if (prev_is_zero && isdigit(c)) {
+				// to catch e.g. 009. 09 should be error too right.
+				result = false;
+				return result;
+			}
 			if (prev_is_whitespace && prev_is_term) {
 				// to catch like "10 10"
 				result = false;
@@ -1763,6 +1783,12 @@ bool QueryRules::IsExpr(string token) {
 			else {
 				prev_is_term = true;
 				prev_is_whitespace = false;
+				if (c == '0') {
+					prev_is_zero = true;
+				}
+				else {
+					prev_is_zero = false;
+				}
 			}
 		}
 		prev_was_operator = false;

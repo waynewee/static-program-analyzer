@@ -418,6 +418,16 @@ STRING_LIST PQLParser::ExtractArguments(string token) {
         // cout << "2nd arg:" << second_arg << endl;
         WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
         WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
+        // cout << "EXTRACTING 2nd ARG:" << second_arg << endl;
+        if (second_arg.front() == '_' && second_arg.back() == '_' && second_arg.length() > 1) {
+            second_arg = second_arg.substr(1, second_arg.length() - 2);
+            WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
+            string fixed_second_arg = "_";
+            fixed_second_arg.append(second_arg);
+            fixed_second_arg.append("_");
+            second_arg = fixed_second_arg;
+            // cout << "AFTER EXTRACTING WHITESPACE:" << second_arg << endl;
+        }
         string first_arg_first_two_chars;
         string first_arg_last_two_chars;
         string second_arg_first_two_chars;
