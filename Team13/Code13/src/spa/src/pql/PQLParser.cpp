@@ -316,7 +316,7 @@ QueryInfo PQLParser::Parse(string s) {
 
     if (!is_query_valid) {
         query_info.SetValidToFalse();
-        //cout << "QUERY IS INVALID:" << endl;
+        cout << "QUERY IS INVALID:" << endl;
         query_info.SetOutputList(output_list);
         if (query_info.IsSemanticsInvalid()) {
            // cout << "invalid due to semantics, not syntax" << endl;

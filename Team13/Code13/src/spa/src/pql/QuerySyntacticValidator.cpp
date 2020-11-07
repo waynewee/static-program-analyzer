@@ -152,11 +152,21 @@ bool QuerySyntacticValidator::IsRelRef(string token) {
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
 
-	cout << "Checking syntactics for Relref Type:" << relref_token_type << endl;
+	if (first_arg.empty()) {
+		result = false;
+		return result;
+	}
+
+	if (second_arg.empty()) {
+		result = false;
+		return result;
+	}
+
+	// cout << "Checking syntactics for Relref Type:" << relref_token_type << endl;
 
 	if (relref_token_type.compare(TYPE_COND_MODIFIES) == 0 || relref_token_type.compare(TYPE_COND_USES) == 0) {
 		// first arg cannot be underscore
-		cout << "GOT USES:FIRST ARG IS:" << first_arg << endl;
+		// cout << "GOT USES:FIRST ARG IS:" << first_arg << endl;
 		if (first_arg.compare("_") == 0) {
 			result = true;
 			return result;
@@ -306,6 +316,16 @@ bool QuerySyntacticValidator::ValidatePatternClause(string token, STRING_STRING_
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&first_arg);
 	WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&second_arg);
 
+	if (first_arg.empty()) {
+		result = false;
+		return result;
+	}
+
+	if (second_arg.empty()) {
+		result = false;
+		return result;
+	}
+
 	if (!IsValidEntRef(first_arg)) {
 		result = false;
 		return result;
@@ -346,6 +366,10 @@ bool QuerySyntacticValidator::ValidatePatternClause(string token, STRING_STRING_
 		string third_arg = second_arg;
 		// cout << "third_arg is:" << third_arg << "|" << endl;
 		WhitespaceHandler::TrimLeadingAndTrailingWhitespaces(&third_arg);
+		if (third_arg.empty()) {
+			result = false;
+			return result;
+		}
 		if (third_arg.compare("_") != 0) {
 			result = false;
 			return result;
