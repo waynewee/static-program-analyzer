@@ -23,9 +23,6 @@ public:
 	STRINGLIST_SET EvaluateTwoSynonymSet(string output_var_type, string param1_entity_type, string param2_entity_type, bool is_same_synonyms = false);
 	STRINGLIST_SET EvaluateAllCall(string output_var_type);
 
-	// STRING_STRINGLISTSET_MAP GetConvertTable(STRINGLIST_SET c_value, int index);
-	void AddResult(STRING_LIST curr_key, STRING_LIST* tmp_key, STRING_STRING_STRINGLISTSET_MAP curr_lookup, STRING_STRING_STRINGLISTSET_MAP* tmp_lookup);
-
 	STRING_SET ConvertSet(STRINGLIST_SET result_set);
 	STRINGLIST_SET ConvertSet(INTEGER_SET result_set);
 	STRINGLIST_SET ConvertSet(STRING_SET result_set);
@@ -81,5 +78,4 @@ public:
 	void Print(INTEGERPAIR_SET to_print);
 	void Print(STRINGSET_FUNCTIONQUEUE_MAP to_print);
 	void Print(FUNCTION_QUEUE to_print);
-	void Print(STRING_STRINGLISTSET_MAP to_print);
 }; 
