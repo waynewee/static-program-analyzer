@@ -6,10 +6,10 @@ none
 2 - Select variable modified in while container and alot whitespace
 variable v;     while                   w;
 Select       v          such that       Modifies       (w, v)
-b, k, x, a, c
+b, x, a, c
 5000
 3 - Select variable modified in while container and even more whitespace
 variable                                    v       ;         while                   w       ;
 Select                    v                   such that                 Modifies             (              w          ,       v       )
-b, k, x, a, c
+b, x, a, c
 5000
