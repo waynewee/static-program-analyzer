@@ -229,13 +229,13 @@ TEST_CASE("Expression parser | Parses two clause expressions") {
 	token_list.push_back(token_punc_open_paran);
 	token_list.push_back(token_punc_open_paran);
 	token_list.push_back(token_var_x);
-	token_list.push_back(token_expr_plus);
+	token_list.push_back(token_rel_expr_gte);
 	token_list.push_back(token_const_4);
 	token_list.push_back(token_punc_closed_paran);
 	token_list.push_back(token_cond_expr_and);
 	token_list.push_back(token_punc_open_paran);
 	token_list.push_back(token_var_x);
-	token_list.push_back(token_expr_minus);
+	token_list.push_back(token_rel_expr_gte);
 	token_list.push_back(token_const_4);
 	token_list.push_back(token_punc_closed_paran);
 	token_list.push_back(token_punc_closed_paran);
@@ -243,7 +243,7 @@ TEST_CASE("Expression parser | Parses two clause expressions") {
 	ExprParser parser(token_list);
 	TNode* rootNode = parser.Parse();
 	string actual = TreeTraverse::traverse(rootNode);
-	string expected = "CondExpr:1Expr:9Expr:10VarName:xConstValue:4VarName:xConstValue:4";
+	string expected = "CondExpr:1RelExpr:4RelExpr:4VarName:xConstValue:4VarName:xConstValue:4";
 
 	REQUIRE(actual == expected);
 }
