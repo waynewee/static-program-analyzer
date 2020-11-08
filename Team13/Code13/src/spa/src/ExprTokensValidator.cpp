@@ -17,6 +17,9 @@ bool ExprTokensValidator::Validate(TOKEN_LIST token_list) {
 			Token prev_token = token_list.at(prev_index);
 			Token curr_token = token_list.at(curr_index);
 
+			cout << prev_token.GetValue() << endl;
+			cout << curr_token.GetValue() << endl;
+
 			if (!ExprTokensValidator::CheckValid(prev_token, curr_token)) {
 				return false;
 			}
@@ -36,6 +39,7 @@ bool ExprTokensValidator::CheckValid(Token prev_token, Token curr_token) {
 
 	TokenType::TOKEN_TYPE prev_type = prev_token.GetTokenType();
 	TokenType::TOKEN_TYPE curr_type = curr_token.GetTokenType();
+
 
 	string prev_val = prev_token.GetValue();
 	string curr_val = curr_token.GetValue();
