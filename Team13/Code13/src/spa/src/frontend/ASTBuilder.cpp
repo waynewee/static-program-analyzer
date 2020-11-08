@@ -27,7 +27,7 @@ TNode* ASTBuilder::BuildMainPrgNode(TOKEN_LIST token_list) {
 		Token proc_token = GetNextToken();
 
 		if (proc_token.GetValue() != TYPE_PROC) {
-			throw "Missing procedure at line " + statement_index_;
+			throw "Missing procedure at line ";
 		}
 
 		TNode* proc_node = ASTBuilder::BuildProcNode();
@@ -58,7 +58,7 @@ TNode* ASTBuilder::BuildStmtNode() {
 		case TokenType::STMT_TYPE::_procedure:
 			throw "Cannot define a procedure within a procedure";
 		default:
-			throw "Validation error thrown in ASTBuilder at line " + statement_index_;
+			throw "Validation error thrown in ASTBuilder at line ";
 		}
 	case TokenType::TOKEN_TYPE::var: // For assignment statements
 		return ASTBuilder::BuildAssignNode(first_token);
@@ -105,7 +105,7 @@ TNode* ASTBuilder::BuildPrintNode() {
 	ASTBuilder::GetNextToken(); // Pop ';' token
 
 	if (!print_node->AddChild(var_node)) {
-		throw "Null node added to child of print node at line " + statement_index_;
+		throw "Null node added to child of print node at line ";
 	}
 
 	return print_node;
@@ -129,7 +129,7 @@ TNode* ASTBuilder::BuildIfNode() {
 	TNode* expr_node = ASTBuilder::BuildExpressionNode(_FRONTENDTYPES_H_::ExpressionType::_if);
 	// Hmm wrong place to put? 
 	if (expr_node->GetNodeType() != TNode::NODE_TYPE::relExpr && expr_node->GetNodeType() != TNode::NODE_TYPE::condExpr) {
-		throw "Invalid expression at " + statement_index_;
+		throw "Invalid expression at ";
 	}
 	TNode* thenStmtListNode = ASTBuilder::BuildStmtListNode();
 
@@ -138,7 +138,7 @@ TNode* ASTBuilder::BuildIfNode() {
 	}
 
 	if (!if_node->AddChild(expr_node) || !if_node->AddChild(thenStmtListNode)) {
-		throw "Null node added to child of if node at line " + statement_index_;
+		throw "Null node added to child of if node at line ";
 	}
 
 	ASTBuilder::GetNextToken(); // Pop 'else' token
@@ -150,7 +150,7 @@ TNode* ASTBuilder::BuildIfNode() {
 	}
 
 	if (!if_node->AddChild(elseStmtListNode)) {
-		throw "Null node added to child of if node at line " + statement_index_;
+		throw "Null node added to child of if node at line ";
 	}
 
 	return if_node;
@@ -162,7 +162,7 @@ TNode* ASTBuilder::BuildWhileNode() {
 	TNode* stmt_list_node = ASTBuilder::BuildStmtListNode();
 
 	if (expr_node->GetNodeType() != TNode::NODE_TYPE::relExpr && expr_node->GetNodeType() != TNode::NODE_TYPE::condExpr) {
-		throw "Invalid expression at line " + statement_index_;
+		throw "Invalid expression at line ";
 	}
 
 	for (TNode* child : stmt_list_node->GetChildrenVector()) {
@@ -170,7 +170,7 @@ TNode* ASTBuilder::BuildWhileNode() {
 	}
 
 	if (!whleNode->AddChild(expr_node) || !whleNode->AddChild(stmt_list_node)) {
-		throw "Null node added to child of while node at line " + statement_index_;
+		throw "Null node added to child of while node at line ";
 	}
 
 	return whleNode;

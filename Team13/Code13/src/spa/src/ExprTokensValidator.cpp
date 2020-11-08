@@ -26,7 +26,6 @@ bool ExprTokensValidator::Validate(TOKEN_LIST token_list) {
 		curr_index++;
 	}
 
-	//cout << "valid" << endl;
 
 	return true;
 

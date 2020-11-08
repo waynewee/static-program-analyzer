@@ -80,7 +80,7 @@ bool SimpleValidator::IsValidStmt() {
 		return SimpleValidator::IsValidAssignment(first_token);
 	default:
 		cout << "(" << first_token.GetValue() << ") ";
-		throw "Unhandled Token" + first_token.GetValue();
+		throw "Unhandled Token";
 	}
 }
 
