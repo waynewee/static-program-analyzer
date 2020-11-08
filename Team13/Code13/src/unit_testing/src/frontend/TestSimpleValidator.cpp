@@ -55,12 +55,12 @@ TEST_CASE("Parsing regular if/else program") {
 	REQUIRE(simple_validator.IsValid(tokenizer.GetTokenList()));
 }
 
-/*TEST_CASE("Parsing If statement without valid expression") {
+TEST_CASE("Parsing If statement without valid expression") {
 	Tokenizer tokenizer(*(IfTestCase2.SourceProgram));
 	tokenizer.Tokenize();
 	SimpleValidator simple_validator;
 	CHECK_THROWS(simple_validator.IsValid(tokenizer.GetTokenList()));
-}*/
+}
 /*
 TEST_CASE("Parsing if statement without else block") {
 	Tokenizer tokenizer(*(IfTestCase3.SourceProgram));
@@ -168,4 +168,3 @@ TEST_CASE("Parsing call statement with wrong spelling") {
 	tokenizer.Tokenize();
 	REQUIRE_THROWS_AS(parser.Parse(tokenizer.GetTokenList()), std::logic_error);
 }*/
-

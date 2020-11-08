@@ -11,7 +11,7 @@
 #include <set>
 
 #include <SimpleValidator.h>
-//#include <ExprValidator.h>
+#include <ExprTokensValidator.h>
 #include <TokenType.h>
 #include <Token.h>
 #include <FrontendTypes.h>
@@ -161,10 +161,10 @@ bool SimpleValidator::IsValidCallStmt() {
 
 bool SimpleValidator::IsValidIfBlock() {
 	GetExpressionTokens(ExpressionType::_if);
-	/*if (!SimpleValidator::IsValidExpression(GetExpressionTokens(ExpressionType::_if))) {
+	if (!SimpleValidator::IsValidExpression(GetExpressionTokens(ExpressionType::_if))) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid expression in if block";
-	}*/
+	}
 	
 	if (SimpleValidator::GetNextToken().GetValue() != TYPE_STMT_IF_THEN) {
 		cout << "(Line: " << statement_index_ << ") ";
@@ -185,10 +185,10 @@ bool SimpleValidator::IsValidIfBlock() {
 
 bool SimpleValidator::IsValidWhileBlock() {
 	GetExpressionTokens(ExpressionType::_while);
-	/*if (!SimpleValidator::IsValidExpression(GetExpressionTokens(ExpressionType::_while))) {
+	if (!SimpleValidator::IsValidExpression(GetExpressionTokens(ExpressionType::_while))) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid expression in while block";
-	}*/
+	}
 
 	SimpleValidator::IsValidStmtList();
 	return true;
@@ -201,10 +201,10 @@ bool SimpleValidator::IsValidAssignment(Token name_token) {
 	}
 
 	GetExpressionTokens(_assign);
-	/*if (!SimpleValidator::IsValidExpression(GetExpressionTokens(_assign))) {
+	if (!SimpleValidator::IsValidExpression(GetExpressionTokens(_assign))) {
 		cout << "(Line: " << statement_index_ << ") ";
 		throw "Invalid expression in assignment";
-	}*/
+	}
 
 	if (SimpleValidator::GetNextToken().GetValue() != TYPE_PUNC_SEMICOLON) {
 		cout << "(Line: " << statement_index_ << ") ";
@@ -232,13 +232,13 @@ bool SimpleValidator::IsValidStmtList() {
 	return true;
 }
 
-//bool SimpleValidator::IsValidExpression(TOKEN_LIST expr_list) {
-//	if (!ExprValidator::Validate(expr_list)) {
-//		cout << "(Line: " << statement_index_ << ") ";
-//		throw "Invalid expression";
-//	}
-//	return true;
-//}
+bool SimpleValidator::IsValidExpression(TOKEN_LIST expr_list) {
+	if (!ExprTokensValidator::Validate(expr_list)) {
+		cout << "(Line: " << statement_index_ << ") ";
+		throw "Invalid expression";
+	}
+	return true;
+}
 
 // Returns the number of tokens inside a statement list
 int SimpleValidator::GetEndIndxOfStatementList() {

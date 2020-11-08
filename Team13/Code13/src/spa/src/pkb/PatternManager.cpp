@@ -3,6 +3,7 @@
 #include <ExprParser.h>
 #include "PatternManager.h"
 #include <Tokenizer.h>
+#include <ExprTokensValidator.h>
 
 
 ASSIGN_EXPRESSION_TABLE* AssignPatternTable::GetData() {
@@ -282,6 +283,12 @@ VAR_NAME_SET PatternManager::GetAllUsedVars(TNode root) {
 }
 TNode* PatternManager::ParseExpression(EXPRESSION s) {
     Tokenizer tokenizer = Tokenizer(s);
+    bool is_valid = ExprTokensValidator::Validate(tokenizer.token_list_);
+
+    if (!is_valid) {
+        throw "Invalid Expression";
+    }
+
     ExprParser expr_parser = ExprParser(tokenizer.token_list_);
     TNode* node = expr_parser.Parse();
 

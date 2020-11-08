@@ -85,6 +85,7 @@ TNode* ExprParser::ParseQueue( SHUNTING_QUEUE shunted_queue ) {
 
 		}
 
+
 	}
 
 	if (root_node_ptr != NULL) {
